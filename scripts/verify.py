@@ -24,10 +24,13 @@ Usage:
 from __future__ import annotations
 
 import copy
+import csv
 import json
+import math
 import os
 import re
 import sys
+from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -41,6 +44,12 @@ MAX_NOTIONAL = BALANCE * LEVERAGE
 RANK1_PNL = 2_303_725.00
 RANK1_PCT = 921.49
 EXPECTED_UNIVERSE_SIZE = 94
+EXPECTED_COMPETITION_START = "2026-09-01T08:00:00Z"
+EXPECTED_COMPETITION_END = "2026-09-30T12:00:00Z"
+EXPECTED_REGISTRATION_CLOSE = "2026-09-23T08:00:00Z"
+EXPECTED_MINIMUM_ACTIVE_DAYS = 5
+EXPECTED_PRIZE_RANKS = 300
+EXPECTED_PUBLIC_LAST_RANK = 250
 EQUITY_EXCHANGES = {"NASDAQ", "NYSE", "AMEX", "NASDAQ_MINI"}
 
 OFFICIAL_DOMAINS = (
@@ -93,6 +102,10 @@ def approx(a: float, b: float, tol: float = 0.01) -> bool:
     return abs(a - b) <= tol
 
 
+def parse_utc(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
 # ---------------------------------------------------------------------------
 # Checks
 # ---------------------------------------------------------------------------
@@ -114,7 +127,23 @@ def check_sources(rep: Report) -> dict:
         if s["tier"] not in ("official_primary", "official_secondary", "non_official",
                              "market_data_vendor"):
             rep.fail("sources.tier", f"{sid}: unknown tier {s['tier']!r}")
+        if not s["url"].startswith("https://"):
+            rep.fail("sources.https", f"{sid}: source URL must use https")
         host = re.sub(r"^https?://", "", s["url"]).split("/")[0]
+        endpoint_urls = s.get("endpoint_urls", [])
+        endpoint_labels = [item.get("label") for item in endpoint_urls]
+        endpoint_values = [item.get("url") for item in endpoint_urls]
+        if len(endpoint_labels) != len(set(endpoint_labels)) or any(not x for x in endpoint_labels):
+            rep.fail("sources.endpoint_labels", f"{sid}: duplicate or empty endpoint label")
+        if len(endpoint_values) != len(set(endpoint_values)) or any(
+                not isinstance(x, str) or not x.startswith("https://") for x in endpoint_values):
+            rep.fail("sources.endpoint_urls", f"{sid}: endpoint URLs must be unique https URLs")
+        for endpoint in endpoint_values:
+            if isinstance(endpoint, str):
+                endpoint_host = re.sub(r"^https?://", "", endpoint).split("/")[0]
+                if endpoint_host != host:
+                    rep.fail("sources.endpoint_domain",
+                             f"{sid}: endpoint host {endpoint_host} differs from primary host {host}")
         if s["tier"] == "market_data_vendor":
             # Vendor tier: allowed only for known vendors, and must be explicitly
             # labelled non-official so it can never be mistaken for a primary source.
@@ -142,6 +171,269 @@ def check_sources(rep: Report) -> dict:
         else:
             rep.warn(f"{sid}: no evidence_file declared (claims citing it are less auditable)")
     return ids
+
+
+def check_config(rep: Report, source_ids: dict) -> dict:
+    """Check the machine-readable transcription of the live rulebook."""
+    cfg = load("data/contest_config.json")
+    expected = {
+        "competition_start_utc": EXPECTED_COMPETITION_START,
+        "competition_end_utc": EXPECTED_COMPETITION_END,
+        "registration_close_utc": EXPECTED_REGISTRATION_CLOSE,
+        "minimum_active_days": EXPECTED_MINIMUM_ACTIVE_DAYS,
+        "maximum_prize_recipients": EXPECTED_PRIZE_RANKS,
+        "public_leaderboard_last_visible_rank": EXPECTED_PUBLIC_LAST_RANK,
+    }
+    for field, want in expected.items():
+        if cfg.get(field) != want:
+            rep.fail("config.official_fact", f"{field}={cfg.get(field)!r}, expected {want!r}")
+    if not approx(cfg["starting_balance_virtual_usd"], BALANCE):
+        rep.fail("config.balance", f"balance {cfg['starting_balance_virtual_usd']} != {BALANCE}")
+    if not approx(cfg["futures_leverage_ratio"], LEVERAGE):
+        rep.fail("config.leverage", f"leverage {cfg['futures_leverage_ratio']} != {LEVERAGE}")
+    expected_notional = cfg["starting_balance_virtual_usd"] * cfg["futures_leverage_ratio"]
+    if not approx(cfg["maximum_initial_notional_usd"], expected_notional):
+        rep.fail("config.notional", "maximum initial notional != balance × leverage")
+    else:
+        rep.ok(f"contest config: {BALANCE:,.0f} balance × {LEVERAGE:.0f}:1 = {MAX_NOTIONAL:,.0f}")
+
+    try:
+        start = parse_utc(cfg["competition_start_utc"])
+        end = parse_utc(cfg["competition_end_utc"])
+        reg = parse_utc(cfg["registration_close_utc"])
+        if not start < reg < end:
+            rep.fail("config.dates", "expected competition_start < registration_close < competition_end")
+        else:
+            rep.ok("contest dates are parseable, ordered, and registration remains inside the window")
+    except (TypeError, ValueError) as exc:
+        rep.fail("config.dates", f"invalid UTC timestamp: {exc}")
+
+    tiers = cfg["prize_tiers"]
+    cursor, cash_total = 1, 0.0
+    for tier in tiers:
+        if tier["from_rank"] != cursor or tier["to_rank"] < tier["from_rank"]:
+            rep.fail("config.prize_contiguous", f"prize tier is not contiguous at rank {cursor}: {tier}")
+        places = tier["to_rank"] - tier["from_rank"] + 1
+        cash_total += places * (tier["cash_usd_each"] or 0.0)
+        cursor = tier["to_rank"] + 1
+    if cursor - 1 != cfg["maximum_prize_recipients"]:
+        rep.fail("config.prize_count", f"tiers end at {cursor - 1}, expected {cfg['maximum_prize_recipients']}")
+    if not approx(cash_total, cfg["cash_prize_total_arv_usd"]):
+        rep.fail("config.prize_cash", f"tier cash {cash_total} != ARV {cfg['cash_prize_total_arv_usd']}")
+    else:
+        rep.ok(f"prize tiers are contiguous through rank {cursor - 1}; cash total {cash_total:,.0f} recomputed")
+    if cfg["cash_payment_method_threshold_usd"] != 1000.0:
+        rep.fail("config.payment", "cash payment-method threshold must preserve the rules value: 1000 USD")
+    if cfg["cash_payment_methods"]["at_or_above_1000_usd"] != ["wire", "PayPal"]:
+        rep.fail("config.payment", "cash payment methods >=1000 must preserve rules value: wire or PayPal")
+    if cfg["cash_payment_methods"]["below_1000_usd"] != ["PayPal"]:
+        rep.fail("config.payment", "cash payment method below 1000 must preserve the rules value: PayPal")
+    expected_mechanics = {
+        "ranking_metric": "realized_profit_loss_usd_on_closed_positions",
+        "leaderboard_update_frequency": "no_more_than_once_per_hour",
+        "end_of_competition_auto_close": True,
+        "account_reset_allowed": False,
+    }
+    for field, want in expected_mechanics.items():
+        if cfg.get(field) != want:
+            rep.fail("config.mechanics", f"{field}={cfg.get(field)!r}, expected {want!r}")
+    if cfg["public_leaderboard_last_visible_rank"] >= cfg["maximum_prize_recipients"]:
+        rep.fail("config.public_boundary", "last public rank must remain below the maximum prize rank")
+    if cfg["transaction_rate_prohibited_at_or_above_per_minute"] != 60:
+        rep.fail("config.transaction_limit", "transaction prohibition threshold must be 60 per minute")
+    for sid in cfg["source_ids"]:
+        if sid not in source_ids:
+            rep.fail("config.source", f"unregistered source {sid}")
+    meta_sid = cfg["_meta"]["source_id"]
+    if meta_sid not in source_ids or cfg["_meta"]["source_url"] != source_ids[meta_sid]["url"]:
+        rep.fail("config.source", "primary metadata URL does not match the source registry")
+    return cfg
+
+
+def check_live_snapshot(rep: Report, cfg: dict, source_ids: dict) -> dict:
+    """Audit timestamped leaderboard rows and displayed quote inputs."""
+    snap = load("data/live_contest_snapshot.json")
+    meta = snap["_meta"]
+    try:
+        parse_utc(meta["captured_at_utc"])
+    except (TypeError, ValueError) as exc:
+        rep.fail("snapshot.timestamp", f"invalid capture timestamp: {exc}")
+    rows = snap["leaderboard"]
+    quotes = snap["quotes"]
+    if not approx(meta["starting_balance_virtual_usd"], cfg["starting_balance_virtual_usd"]):
+        rep.fail("snapshot.balance", "snapshot starting balance differs from contest config")
+    if snap["participants_displayed"] < cfg["public_leaderboard_last_visible_rank"]:
+        rep.fail("snapshot.participants", "displayed participants cannot be below the visible rank range")
+    if meta["public_rows_captured"] != len(rows):
+        rep.fail("snapshot.row_count", "declared leaderboard row count does not match")
+    if meta["quote_rows_captured"] != len(quotes):
+        rep.fail("snapshot.quote_count", "declared quote row count does not match")
+    ranks = [r["rank"] for r in rows]
+    if len(ranks) != len(set(ranks)) or ranks != sorted(ranks):
+        rep.fail("snapshot.ranks", "captured leaderboard ranks must be unique and sorted")
+    if 1 not in ranks or cfg["public_leaderboard_last_visible_rank"] not in ranks:
+        rep.fail("snapshot.boundaries", "snapshot must include rank 1 and last visible rank")
+    traders = [r["trader"] for r in rows]
+    if len(traders) != len(set(traders)) or any(not t for t in traders):
+        rep.fail("snapshot.traders", "captured traders must be nonempty and unique")
+    if any(rows[i]["realized_profit_usd"] < rows[i + 1]["realized_profit_usd"]
+           or rows[i]["realized_profit_pct"] < rows[i + 1]["realized_profit_pct"]
+           for i in range(len(rows) - 1)):
+        rep.fail("snapshot.order", "profit must not increase as captured rank number increases")
+    rounding_bound = cfg["starting_balance_virtual_usd"] * 0.00005
+    for row in rows:
+        expected_usd = cfg["starting_balance_virtual_usd"] * row["realized_profit_pct"] / 100
+        if abs(row["realized_profit_usd"] - expected_usd) > rounding_bound + 1e-6:
+            rep.fail("snapshot.leaderboard_math", f"rank {row['rank']} %/$ differ beyond rounding bound")
+    rep.ok(f"all {len(rows)} captured leaderboard rows pass the ±${rounding_bound:.2f} display-rounding check")
+
+    syms = [q["symbol"] for q in quotes]
+    if len(syms) != len(set(syms)):
+        rep.fail("snapshot.quote_unique", "duplicate quote symbol")
+    reported_time_pattern = re.compile(
+        rf"{re.escape(meta['captured_at_utc'][:10])} \d{{2}}:\d{{2}} GMT[+-]\d{{1,2}}")
+    for q in quotes:
+        if q["price"] <= 0:
+            rep.fail("snapshot.quote_positive", f"{q['symbol']}: non-positive quote")
+        if q["currency"] != "USD" or q["market_state"] not in ("open", "closed"):
+            rep.fail("snapshot.quote_metadata", f"{q['symbol']}: invalid currency or market state")
+        if not reported_time_pattern.fullmatch(q["source_reported_as_of"]):
+            rep.fail("snapshot.quote_time", f"{q['symbol']}: malformed source-reported timestamp")
+        if q["source_id"] not in source_ids:
+            rep.fail("snapshot.quote_source", f"{q['symbol']}: unregistered source {q['source_id']}")
+        else:
+            source = source_ids[q["source_id"]]
+            if not source.get("url") or q["symbol"] not in source.get("title", ""):
+                rep.fail("snapshot.quote_source", f"{q['symbol']}: source lacks matching symbol/manual-review URL")
+    expected_source_ids = [meta["leaderboard_source_id"], *[q["source_id"] for q in quotes]]
+    if snap["source_ids"] != expected_source_ids:
+        rep.fail("snapshot.source_list", "source_ids must exactly list the leaderboard then each quote source")
+    for sid in snap["source_ids"]:
+        if sid not in source_ids:
+            rep.fail("snapshot.source", f"unregistered source {sid}")
+    if meta["leaderboard_source_id"] in source_ids and meta["leaderboard_url"] != source_ids[meta["leaderboard_source_id"]]["url"]:
+        rep.fail("snapshot.leaderboard_url", "leaderboard URL differs from its registered source")
+
+    registered_quote_ids = [q["source_id"] for q in quotes if q["source_id"] in source_ids]
+    quote_evidence_files = {source_ids[sid].get("evidence_file") for sid in registered_quote_ids}
+    if len(registered_quote_ids) == len(quotes) and len(quote_evidence_files) == 1 and None not in quote_evidence_files:
+        evidence = read(next(iter(quote_evidence_files)))
+        for q in quotes:
+            match = re.search(
+                rf"^> {re.escape(q['symbol'])} — ([\d,.]+) USD — market (open|closed) — "
+                rf"(?:as of|at close) (\d{{2}}:\d{{2}} GMT[+-]\d{{1,2}})$",
+                evidence,
+                re.MULTILINE,
+            )
+            if not match:
+                rep.fail("snapshot.quote_evidence", f"{q['symbol']}: no matching evidence quotation")
+                continue
+            quoted_price = float(match.group(1).replace(",", ""))
+            if not approx(q["price"], quoted_price, 1e-9) or q["market_state"] != match.group(2):
+                rep.fail("snapshot.quote_evidence", f"{q['symbol']}: price/state differs from evidence quotation")
+            if not q["source_reported_as_of"].endswith(match.group(3)):
+                rep.fail("snapshot.quote_evidence", f"{q['symbol']}: source-reported time differs from evidence")
+            if f"- {source_ids[q['source_id']]['url']}" not in evidence:
+                rep.fail("snapshot.quote_evidence", f"{q['symbol']}: exact review page absent from evidence")
+    else:
+        rep.fail("snapshot.quote_evidence", "quote sources must resolve to one captured evidence file")
+    rep.ok(f"snapshot has {len(quotes)} positive quote inputs matching evidence and manual-review links")
+    return snap
+
+
+def check_capacity(rep: Report, cfg: dict, snap: dict, master: dict, source_ids: dict) -> None:
+    """Recompute the initial capacity screen from config, quotes, caps and multipliers."""
+    cap = load("data/initial_capacity.json")
+    rows = cap["entries"]
+    if cap["_meta"]["row_count"] != len(rows) or len(rows) != len(master["entries"]):
+        rep.fail("capacity.count", "capacity count must match its metadata and master list")
+    qmap = {q["symbol"]: q for q in snap["quotes"]}
+    mmap = {m["symbol"]: m for m in master["entries"]}
+    lmap = {r["rank"]: r for r in snap["leaderboard"]}
+    target = lmap[cap["_meta"]["target_rank"]]["realized_profit_usd"]
+    if not approx(cap["_meta"]["target_realized_profit_usd"], target):
+        rep.fail("capacity.target", "capacity target does not match snapshot rank")
+    if cap["_meta"]["target_snapshot_utc"] != snap["_meta"]["captured_at_utc"]:
+        rep.fail("capacity.target_time", "capacity target timestamp does not match snapshot")
+    expected_order = []
+    for row in rows:
+        sym = row["symbol"]
+        if sym not in mmap or sym not in qmap:
+            rep.fail("capacity.symbol", f"{sym}: missing master or quote input")
+            continue
+        m, q = mmap[sym], qmap[sym]
+        per_contract = q["price"] * m["contract_multiplier"]
+        margin_floor = math.floor(cfg["maximum_initial_notional_usd"] / per_contract)
+        quantity = min(int(m["max_open_position_contracts"]), margin_floor)
+        notional = quantity * per_contract
+        expected = {
+            "quote_price": q["price"],
+            "contract_multiplier": m["contract_multiplier"],
+            "rules_position_cap_contracts": m["max_open_position_contracts"],
+            "max_whole_contracts_at_initial_balance": quantity,
+            "modeled_initial_notional_usd": notional,
+            "modeled_pnl_for_favorable_1pct_move_usd": notional * 0.01,
+            "favorable_move_pct_needed_for_rank250_snapshot": target / notional * 100,
+            "favorable_move_pct_needed_for_rank1_snapshot": lmap[1]["realized_profit_usd"] / notional * 100,
+            "underlying_move_needed_for_rank250_snapshot": target / (quantity * m["contract_multiplier"]),
+            "underlying_move_needed_for_rank1_snapshot": lmap[1]["realized_profit_usd"] / (quantity * m["contract_multiplier"]),
+        }
+        for field, want in expected.items():
+            got = row[field]
+            tol = max(1e-6, abs(want) * 1e-7)
+            if not approx(got, want, tol):
+                rep.fail("capacity.math", f"{sym}.{field}={got} != {want}")
+        constraint = "rules_position_cap" if int(m["max_open_position_contracts"]) <= margin_floor else "20_to_1_buying_power"
+        if row["initial_constraint"] != constraint:
+            rep.fail("capacity.constraint", f"{sym}: wrong initial constraint label")
+        if row["quote_source_id"] != q["source_id"] or q["source_id"] not in source_ids:
+            rep.fail("capacity.source", f"{sym}: quote provenance mismatch")
+        expected_order.append(expected["favorable_move_pct_needed_for_rank250_snapshot"])
+    if expected_order != sorted(expected_order):
+        rep.fail("capacity.order", "capacity rows must be sorted by rank-250 required move")
+    else:
+        rep.ok(f"all {len(rows)} capacity rows and their ordering were re-derived from source inputs")
+
+
+def check_strategy_models(rep: Report, cfg: dict, source_ids: dict) -> None:
+    models = load("research/strategy/models.json")
+    rows = models["models"]
+    if models["_meta"]["model_count"] != len(rows):
+        rep.fail("strategy.count", "strategy model count mismatch")
+    ids = [r["id"] for r in rows]
+    if len(ids) != len(set(ids)):
+        rep.fail("strategy.unique", "duplicate strategy model id")
+    for row in rows:
+        for field in ("name", "hypothesis", "entry_logic", "exit_logic", "falsification_rule"):
+            if not row.get(field):
+                rep.fail("strategy.fields", f"{row['id']}: missing {field}")
+        if row["status"] == "untested" and row.get("result") is not None:
+            rep.fail("strategy.result", f"{row['id']}: untested model must have null result")
+        if row["status"] not in ("untested", "supported", "refuted", "inconclusive"):
+            rep.fail("strategy.status", f"{row['id']}: invalid status")
+    for sid in models["_meta"]["source_ids"]:
+        if sid not in source_ids:
+            rep.fail("strategy.source", f"unregistered source {sid}")
+    for field in ("implementation_file", "test_protocol_file"):
+        rel = models["_meta"][field]
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            rep.fail("strategy.file", f"missing {rel}")
+    pine = read(models["_meta"]["implementation_file"])
+    margin_pct = 100 / cfg["futures_leverage_ratio"]
+    required_tokens = (
+        "//@version=6",
+        f"initial_capital = {int(cfg['starting_balance_virtual_usd'])}",
+        f"margin_long = {margin_pct:g}",
+        f"margin_short = {margin_pct:g}",
+        "use_bar_magnifier = true",
+        "calc_on_every_tick = false",
+    )
+    for token in required_tokens:
+        if token not in pine:
+            rep.fail("strategy.pine_config", f"Pine implementation missing {token!r}")
+    if models["_meta"]["platform_validation_status"] != "not_run":
+        rep.fail("strategy.validation_status", "no platform export exists, so status must remain not_run")
+    rep.ok(f"{len(rows)} pre-registered strategy models are explicitly untested and have implementation/protocol files")
 
 
 def check_evidence_quotes(rep: Report) -> None:
@@ -201,7 +493,7 @@ def check_universe(rep: Report) -> dict:
     return {r["tradingview_symbol"]: r for r in rows}
 
 
-def check_master_list(rep: Report, universe: dict, source_ids: dict) -> None:
+def check_master_list(rep: Report, universe: dict, source_ids: dict) -> dict:
     ml = load("data/master_list.json")
     entries = ml["entries"]
     if ml["_meta"]["row_count"] != len(entries):
@@ -228,6 +520,12 @@ def check_master_list(rep: Report, universe: dict, source_ids: dict) -> None:
         for sid in e["source_ids"]:
             if sid not in source_ids:
                 rep.fail("master_list.source", f"{eid}: cites unregistered source {sid}")
+        if not e.get("selection_rationale"):
+            rep.fail("master_list.rationale", f"{eid}: missing selection_rationale")
+        if "volatility_rationale" in e:
+            rep.fail("master_list.stale_field", f"{eid}: stale volatility_rationale field remains")
+        if "launch_date_pending_regulatory_review_confirmation" in e["flags"]:
+            rep.fail("master_list.resolved_flag", f"{eid}: resolved XRP launch flag remains")
 
         m = e["contract_multiplier"]
         if m is not None:
@@ -285,9 +583,41 @@ def check_master_list(rep: Report, universe: dict, source_ids: dict) -> None:
         rep.fail("master_list.notional", f"max notional {consts['max_notional_usd']} != {MAX_NOTIONAL}")
     else:
         rep.ok(f"max notional {MAX_NOTIONAL:,.0f} == {BALANCE:,.0f} x {LEVERAGE:.0f} (recomputed)")
+    return ml
 
 
-def check_returns(rep: Report, source_ids: dict) -> None:
+def check_master_csv(rep: Report, master: dict, rows: list[dict] | None = None) -> None:
+    """Check that the convenience CSV projection has not drifted from JSON."""
+    if rows is None:
+        with open(os.path.join(ROOT, "data", "master_list.csv"), newline="", encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+    entries = master["entries"]
+    if len(rows) != len(entries):
+        rep.fail("master_csv.count", f"CSV has {len(rows)} rows, JSON has {len(entries)}")
+        return
+    expected_fields = list(entries[0])
+    if list(rows[0]) != expected_fields:
+        rep.fail("master_csv.columns", "CSV columns do not exactly match the JSON entry schema")
+    csv_by_symbol = {r["symbol"]: r for r in rows}
+    for entry in entries:
+        row = csv_by_symbol.get(entry["symbol"])
+        if not row:
+            rep.fail("master_csv.symbol", f"missing {entry['symbol']}")
+            continue
+        for field in expected_fields:
+            value = entry[field]
+            if isinstance(value, list):
+                want = "|".join(map(str, value))
+            elif value is None:
+                want = ""
+            else:
+                want = str(value)
+            if row.get(field) != want:
+                rep.fail("master_csv.parity", f"{entry['symbol']}.{field}: {row.get(field)!r} != {want!r}")
+    rep.ok(f"master_list.csv exactly matches all fields in {len(entries)} JSON rows")
+
+
+def check_returns(rep: Report, source_ids: dict, cfg: dict, snap: dict) -> None:
     er = load("data/verified_explosive_returns.json")
     recs = er["records"]
     if er["_meta"]["record_count"] != len(recs):
@@ -311,13 +641,25 @@ def check_returns(rep: Report, source_ids: dict) -> None:
         if usd is None:
             rep.fail("returns.live_usd", f"{r['edition_label']}: in_progress record has no $ figure")
             continue
-        exp_usd = BALANCE * (r["return_multiple"] - 1)
+        balance = cfg["starting_balance_virtual_usd"]
+        exp_usd = balance * (r["return_multiple"] - 1)
         if not approx(usd, exp_usd, 1.0):
             rep.fail("returns.live_consistency",
                      f"{r['edition_label']}: ${usd:,.2f} vs balance*(mult-1)=${exp_usd:,.2f}")
         else:
             rep.ok(f"live leaderboard self-consistent: ${usd:,.2f} == "
-                   f"{BALANCE:,.0f} x ({r['return_multiple']}-1) = ${exp_usd:,.2f}")
+                   f"{balance:,.0f} x ({r['return_multiple']}-1) = ${exp_usd:,.2f}")
+        rank1 = next(x for x in snap["leaderboard"] if x["rank"] == 1)
+        sync = (
+            approx(r["net_profit_pct_as_published"], rank1["realized_profit_pct"], 1e-9)
+            and approx(usd, rank1["realized_profit_usd"], 1e-9)
+            and r.get("participants") == snap["participants_displayed"]
+            and r.get("captured_at_utc") == snap["_meta"]["captured_at_utc"]
+        )
+        if not sync:
+            rep.fail("returns.live_snapshot_sync", f"{r['edition_label']}: live record is stale vs snapshot")
+        else:
+            rep.ok("in-progress return row matches the timestamped live snapshot")
 
     thr = er["threshold_analysis"]
     for key, blk in thr.items():
@@ -422,16 +764,59 @@ def check_volatile_stocks(rep: Report, source_ids: dict) -> None:
             rep.ok(f"{rid}: {r['symbol']} multiple {r['return_multiple']}x recomputed from archived values")
         if not r.get("window_bounded"):
             rep.fail("volatile_stocks.window", f"{rid}: must be flagged window_bounded")
-        for field in ("trough_window", "peak_window"):
+        for field, observation in (("trough_window", r["trough"]), ("peak_window", r["peak"])):
             w = r.get(field)
             if not w or not w.get("endpoint") or not w.get("sessions"):
                 rep.fail("volatile_stocks.window_meta", f"{rid}: incomplete {field}")
+                continue
+            expected_endpoint = (
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{r['symbol']}"
+                f"?period1={w['period1']}&period2={w['period2']}&interval=1d"
+            )
+            if w["endpoint"] != expected_endpoint:
+                rep.fail("volatile_stocks.window_endpoint", f"{rid}: malformed exact endpoint for {field}")
+            if not w["period1"] <= observation["epoch"] < w["period2"]:
+                rep.fail("volatile_stocks.window_bounds", f"{rid}: observation outside {field}")
+            start = datetime.fromisoformat(w["start_utc"]).replace(tzinfo=timezone.utc)
+            end = datetime.fromisoformat(w["end_utc"]).replace(tzinfo=timezone.utc)
+            # Some archived requests use the next trading boundary (up to a weekend) for
+            # period1/period2. Preserve the human-readable inclusive range, but reject
+            # timestamps more than three calendar days away from those labels.
+            if abs(w["period1"] - start.timestamp()) > 3 * 86_400:
+                rep.fail("volatile_stocks.window_date", f"{rid}: period1/start_utc differ by >3 days for {field}")
+            if abs(w["period2"] - end.timestamp()) > 3 * 86_400:
+                rep.fail("volatile_stocks.window_date", f"{rid}: period2/end_utc differ by >3 days for {field}")
+            observation_date = datetime.fromtimestamp(observation["epoch"], timezone.utc).date()
+            if observation_date.isoformat() != observation["date_utc"]:
+                rep.fail("volatile_stocks.observation_date", f"{rid}: epoch/date mismatch for {field}")
+            if not start.date() <= observation_date <= end.date():
+                rep.fail("volatile_stocks.window_label_bounds", f"{rid}: observation outside labeled {field}")
+        if not all(r.get(field, {}).get("endpoint") for field in ("trough_window", "peak_window")):
+            continue
+        endpoint_owners = []
         for sid in r["source_ids"]:
             if sid not in source_ids:
                 rep.fail("volatile_stocks.source", f"{rid}: cites unregistered source {sid}")
             elif source_ids[sid]["tier"] not in ("market_data_vendor",):
                 rep.fail("volatile_stocks.source_tier",
                          f"{rid}: stock evidence must cite market_data_vendor sources, got {sid}")
+            elif source_ids[sid].get("endpoint_urls"):
+                endpoint_owners.append(sid)
+                registered_map = {x["label"]: x["url"] for x in source_ids[sid]["endpoint_urls"]}
+                expected_map = {
+                    "trough_window": r["trough_window"]["endpoint"],
+                    "peak_window": r["peak_window"]["endpoint"],
+                }
+                registered = set(registered_map.values())
+                if registered_map != expected_map:
+                    rep.fail("volatile_stocks.endpoint_registry",
+                             f"{rid}: registry endpoints do not match labeled trough/peak windows")
+                elif source_ids[sid]["url"] not in registered:
+                    rep.fail("volatile_stocks.endpoint_primary",
+                             f"{rid}: primary registry URL is not one of the two exact windows")
+        if len(endpoint_owners) != 1:
+            rep.fail("volatile_stocks.source_count",
+                     f"{rid}: expected one daily source record owning both endpoints, got {endpoint_owners}")
 
     thr = vs["thresholds"]
     for key, t in thr.items():
@@ -495,6 +880,12 @@ def self_test(rep: Report) -> None:
     ml = load("data/master_list.json")
     er = load("data/verified_explosive_returns.json")
     vs = load("data/volatile_stocks.json")
+    cfg = load("data/contest_config.json")
+    snap = load("data/live_contest_snapshot.json")
+    capacity = load("data/initial_capacity.json")
+    models = load("research/strategy/models.json")
+    with open(os.path.join(ROOT, "data", "master_list.csv"), newline="", encoding="utf-8") as fh:
+        master_csv_rows = list(csv.DictReader(fh))
     source_ids = {s["source_id"]: s for s in src["sources"]}
     universe = {r["tradingview_symbol"]: r for r in uni["instruments"]}
 
@@ -523,6 +914,26 @@ def self_test(rep: Report) -> None:
         fn(v)
         return "data/volatile_stocks.json", v
 
+    def corrupt_cfg(fn):
+        value = copy.deepcopy(cfg)
+        fn(value)
+        return "data/contest_config.json", value
+
+    def corrupt_snap(fn):
+        value = copy.deepcopy(snap)
+        fn(value)
+        return "data/live_contest_snapshot.json", value
+
+    def corrupt_capacity(fn):
+        value = copy.deepcopy(capacity)
+        fn(value)
+        return "data/initial_capacity.json", value
+
+    def corrupt_models(fn):
+        value = copy.deepcopy(models)
+        fn(value)
+        return "research/strategy/models.json", value
+
     def set_cap(e): e["max_open_position_contracts"] = 999.0
     def set_exposure(e): e["max_underlying_exposure"] = 1.0
     def set_move(e): e["underlying_price_move_needed_for_current_rank1_pnl_usd"] = 1.0
@@ -543,6 +954,9 @@ def self_test(rep: Report) -> None:
     def uni_equity(u): u["instruments"][0]["exchange"] = "NASDAQ"
     def src_count(s): s["_meta"]["source_count"] = 999
     def src_domain(s): s["sources"][0]["url"] = "https://example.com/x"
+    def src_endpoint(s):
+        owner = next(item for item in s["sources"] if item.get("endpoint_urls"))
+        owner["endpoint_urls"][1]["url"] = owner["endpoint_urls"][0]["url"]
     def src_vendor_honesty(s):
         for src_ in s["sources"]:
             if src_["tier"] == "market_data_vendor":
@@ -553,10 +967,21 @@ def self_test(rep: Report) -> None:
     def vs_thr(v): v["thresholds"]["ge_100x"]["count"] = 3
     def vs_source(v): v["records"][0]["source_ids"] = ["FAKE-SRC"]
     def vs_window(v): v["records"][0]["window_bounded"] = False
+    def vs_endpoint(v): v["records"][0]["peak_window"]["endpoint"] += "&corrupt=1"
+    def cfg_notional(v): v["maximum_initial_notional_usd"] = 1.0
+    def snapshot_math(v): v["leaderboard"][0]["realized_profit_usd"] += 100.0
+    def snapshot_quote(v): v["quotes"][0]["price"] += 1.0
+    def capacity_math(v): v["entries"][0]["modeled_initial_notional_usd"] += 1_000.0
+    def model_result(v): v["models"][0]["result"] = {"net_profit": 1}
+
+    bad_master_csv = copy.deepcopy(master_csv_rows)
+    bad_master_csv[0]["max_open_position_contracts"] = "999"
 
     scenarios = [
         ("master_list.cap", corrupt_ml(set_cap),
          lambda r: check_master_list(r, universe, source_ids)),
+        ("master_csv.parity", ("unused-self-test-path", None),
+         lambda r: check_master_csv(r, ml, bad_master_csv)),
         ("master_list.exposure_math", corrupt_ml(set_exposure),
          lambda r: check_master_list(r, universe, source_ids)),
         ("master_list.move_math", corrupt_ml(set_move),
@@ -569,19 +994,31 @@ def self_test(rep: Report) -> None:
          lambda r: check_no_unsourced_numbers(r)),
         ("master_list.status", corrupt_ml(bad_status),
          lambda r: check_master_list(r, universe, source_ids)),
-        ("returns.math", corrupt_er(er_math), lambda r: check_returns(r, source_ids)),
-        ("returns.threshold", corrupt_er(er_thr), lambda r: check_returns(r, source_ids)),
-        ("returns.100x", corrupt_er(er_100x), lambda r: check_returns(r, source_ids)),
-        ("returns.count", corrupt_er(er_count), lambda r: check_returns(r, source_ids)),
+        ("returns.math", corrupt_er(er_math), lambda r: check_returns(r, source_ids, cfg, snap)),
+        ("returns.threshold", corrupt_er(er_thr), lambda r: check_returns(r, source_ids, cfg, snap)),
+        ("returns.100x", corrupt_er(er_100x), lambda r: check_returns(r, source_ids, cfg, snap)),
+        ("returns.count", corrupt_er(er_count), lambda r: check_returns(r, source_ids, cfg, snap)),
         ("universe.size", corrupt_uni(uni_size), lambda r: check_universe(r)),
         ("universe.no_equities", corrupt_uni(uni_equity), lambda r: check_universe(r)),
         ("sources.count", corrupt_src(src_count), lambda r: check_sources(r)),
         ("sources.domain", corrupt_src(src_domain), lambda r: check_sources(r)),
+        ("sources.endpoint_urls", corrupt_src(src_endpoint), lambda r: check_sources(r)),
         ("sources.vendor_honesty", corrupt_src(src_vendor_honesty), lambda r: check_sources(r)),
         ("volatile_stocks.math", corrupt_vs(vs_math), lambda r: check_volatile_stocks(r, source_ids)),
         ("volatile_stocks.threshold", corrupt_vs(vs_thr), lambda r: check_volatile_stocks(r, source_ids)),
         ("volatile_stocks.source", corrupt_vs(vs_source), lambda r: check_volatile_stocks(r, source_ids)),
         ("volatile_stocks.window", corrupt_vs(vs_window), lambda r: check_volatile_stocks(r, source_ids)),
+        ("volatile_stocks.endpoint_registry", corrupt_vs(vs_endpoint),
+         lambda r: check_volatile_stocks(r, source_ids)),
+        ("config.notional", corrupt_cfg(cfg_notional), lambda r: check_config(r, source_ids)),
+        ("snapshot.leaderboard_math", corrupt_snap(snapshot_math),
+         lambda r: check_live_snapshot(r, cfg, source_ids)),
+        ("snapshot.quote_evidence", corrupt_snap(snapshot_quote),
+         lambda r: check_live_snapshot(r, cfg, source_ids)),
+        ("capacity.math", corrupt_capacity(capacity_math),
+         lambda r: check_capacity(r, cfg, snap, ml, source_ids)),
+        ("strategy.result", corrupt_models(model_result),
+         lambda r: check_strategy_models(r, cfg, source_ids)),
     ]
     # the null-multiplier flag check: strip the multiplier AND its flag from an entry
     m = copy.deepcopy(ml)
@@ -612,10 +1049,15 @@ def main() -> int:
 
     source_ids = check_sources(rep)
     check_evidence_quotes(rep)
+    cfg = check_config(rep, source_ids)
+    snap = check_live_snapshot(rep, cfg, source_ids)
     universe = check_universe(rep)
-    check_master_list(rep, universe, source_ids)
-    check_returns(rep, source_ids)
+    master = check_master_list(rep, universe, source_ids)
+    check_master_csv(rep, master)
+    check_returns(rep, source_ids, cfg, snap)
+    check_capacity(rep, cfg, snap, master, source_ids)
     check_volatile_stocks(rep, source_ids)
+    check_strategy_models(rep, cfg, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)
@@ -638,8 +1080,8 @@ def main() -> int:
             print(f"  X [{check}] {msg}")
         return 1
 
-    print("\nAll checks passed. No unsourced numbers, no arithmetic mismatches,")
-    print("no symbols outside the verified contest universe.")
+    print("\nAll configured offline provenance, schema, arithmetic, endpoint,")
+    print("strategy-state, and contest-universe checks passed.")
     return 0
 
 

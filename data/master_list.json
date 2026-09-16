@@ -44,7 +44,6 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 4607.45,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Highest-volatility asset class in the universe. NOTE: position cap of 1 contract limits exposure to 500 SOL, so per-unit volatility does not translate into absolute $ P/L.",
    "source_ids": [
     "CME-SOL-GUIDE",
     "TV-RULES-AMP-SEP2026",
@@ -52,7 +51,8 @@
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard SOL contract; the rules cap it at 1 contract, equal to 500 SOL of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-02",
@@ -75,7 +75,6 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 18429.8,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Micro-size SOL contract. Cap 5 contracts = 125 SOL total exposure.",
    "source_ids": [
     "CME-SOL-GUIDE",
     "TV-RULES-AMP-SEP2026",
@@ -83,7 +82,8 @@
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro SOL contract; the rules cap it at 5 contracts, equal to 125 SOL of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-03",
@@ -106,17 +106,15 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 46.07,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 1 contract = 50,000 XRP exposure.",
    "source_ids": [
     "CME-SPEC-XRP1!",
     "CME-XRP-PR",
     "TV-RULES-AMP-SEP2026"
    ],
    "verification_status": "fully_verified",
-   "flags": [
-    "launch_date_pending_regulatory_review_confirmation"
-   ],
-   "added_utc": "2026-09-16"
+   "flags": [],
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard XRP contract; the rules cap it at 1 contract, equal to 50,000 XRP of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-04",
@@ -139,17 +137,15 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 184.3,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 5 contracts = 12,500 XRP exposure.",
    "source_ids": [
     "CME-XRP-PR",
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-MXP1!"
    ],
    "verification_status": "fully_verified",
-   "flags": [
-    "launch_date_pending_regulatory_review_confirmation"
-   ],
-   "added_utc": "2026-09-16"
+   "flags": [],
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro XRP contract; the rules cap it at 5 contracts, equal to 12,500 XRP of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-05",
@@ -172,14 +168,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 460745.0,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 1 contract. Contract multiplier NOT verified against a CME primary source this session; left null rather than assumed.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-BTC1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard Bitcoin contract; the rules cap it at 1 contract, equal to 5 bitcoin of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-06",
@@ -202,14 +198,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 921490.0,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 25 contracts, the largest crypto cap in the universe. Multiplier unverified this session.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-MBT1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro Bitcoin contract; the rules cap it at 25 contracts, equal to 2.5 bitcoin of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-07",
@@ -232,14 +228,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 46074.5,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 1 contract. Multiplier unverified this session.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-ETH1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard Ether contract; the rules cap it at 1 contract, equal to 50 ether of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-08",
@@ -262,14 +258,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 921490.0,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 25 contracts. Multiplier unverified this session.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-MET1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro Ether contract; the rules cap it at 25 contracts, equal to 2.5 ether of underlying exposure."
   },
   {
    "entry_id": "ML-2026-09-16-09",
@@ -292,14 +288,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 9.21,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Energy complex; natural gas is the classic high-realized-volatility futures market. Cap 25 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-NG1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard Henry Hub natural-gas contract; cap and multiplier provide 250,000 MMBtu of maximum rules exposure."
   },
   {
    "entry_id": "ML-2026-09-16-10",
@@ -322,14 +318,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 230.37,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Micro-size natural gas. Cap 10 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-MNG1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro Henry Hub natural-gas contract; cap and multiplier provide 10,000 MMBtu of maximum rules exposure."
   },
   {
    "entry_id": "ML-2026-09-16-11",
@@ -352,14 +348,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 23.04,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 100 contracts. Position cap rose from 1.0 in the Jul 2026 TradeStation edition to 100.0 in this edition, making it the largest verified single-edition increase in capacity.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-CL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard WTI contract; its cap changed from 1 contract in the July 2026 rules to 100 in this edition."
   },
   {
    "entry_id": "ML-2026-09-16-12",
@@ -382,14 +378,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 460.75,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 10 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-QM1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "E-mini WTI contract; the rules cap it at 10 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-13",
@@ -412,14 +408,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 230.37,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 100 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-MCL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro WTI contract; the rules cap it at 100 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-14",
@@ -442,14 +438,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 2.19,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Refined-product crack spread exposure. Cap 25 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-RB1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard RBOB gasoline contract; the rules cap it at 25 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-15",
@@ -472,14 +468,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 2.19,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Refined-product crack spread exposure. Cap 25 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-HO1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard NY Harbor ULSD contract; the rules cap it at 25 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-16",
@@ -502,14 +498,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 18.43,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Historically the most volatile of the large precious-metals complexes. Cap 25 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-SI1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard silver contract; the rules cap it at 25 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-17",
@@ -532,14 +528,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 2303.72,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 10 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-SIC1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "100-ounce silver contract; the rules cap it at 10 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-18",
@@ -562,14 +558,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 230.37,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 10 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-SIL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Micro silver contract; the rules cap it at 10 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-19",
@@ -592,14 +588,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 1842.98,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "Cap 25 contracts.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-PL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "Standard platinum contract; the rules cap it at 25 contracts."
   },
   {
    "entry_id": "ML-2026-09-16-20",
@@ -622,14 +618,14 @@
    "underlying_price_move_needed_for_current_rank1_pnl_usd": 1151.86,
    "verified_historical_return_multiple": null,
    "verified_historical_return_multiple_note": "No historical return multiple is asserted for this instrument. A multiple is only recorded when a primary source states the start price, end price and window.",
-   "volatility_rationale": "The only equity-complex instrument in this batch. There are no single-stock equities in the live contest universe, so index futures are the sole equity-beta route.",
    "source_ids": [
     "TV-RULES-AMP-SEP2026",
     "CME-SPEC-NQ1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
-   "added_utc": "2026-09-16"
+   "added_utc": "2026-09-16",
+   "selection_rationale": "E-mini Nasdaq-100 contract selected as one of several eligible equity-index futures; no single-stock equity is eligible in this edition."
   }
  ]
 }
