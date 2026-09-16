@@ -24,7 +24,7 @@ Details and citations in [`research/`](research/) and on the site.
 | 3 | **Stocks editions produce the *smallest* winning returns** of any asset class: 1.299x and 1.1758x. Futures editions reach 53.2072x. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
 | 4 | **Position caps bind, not volatility.** `CME:SOL1!` is capped at 1 contract (500 SOL); reaching the current rank-1 profit needs a $4,607.45 per-SOL move. | Rules §08 + [CME contract specs](https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html) |
 | 5 | **≥10x is real and officially recorded** — +5,220.72% (53.2072x) in Feb 2025, and +921.49% (10.2149x) live at day 16 of 30. Both are futures. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
-| 6 | **Explosive stock returns are real, archived and recomputable.** Eight trough→peak close multiples captured from Yahoo Finance chart data — GME 124.11x, MSTR 49.45x, PLTR 34.53x, AMC 30.07x, SMCI 22.66x, TSLA 17.02x, NVDA 12.09x, COIN 10.0x — each window-bounded and re-derived by the verifier from archived endpoint values. Vendor data (not official), kept in its own module. | `data/volatile_stocks.json` + `research/evidence/VOLATILE-STOCKS-YAHOO-*.md` |
+| 6 | **Explosive stock returns are real, archived and recomputable.** Twenty trough→peak close multiples captured from Yahoo Finance chart data — ENPH 382.49x, AMD 322.73x, MARA 190.22x, CVNA 128.62x, GME 124.11x, RIOT 119.85x, SHOP 92.61x, NVAX 81.41x, APP 78.88x, PLUG 72.46x, MSTR 49.45x, NIO 47.61x, PLTR 34.53x, AMC 30.07x, SMCI 22.66x, HOOD 19.80x, TSLA 17.02x, NVDA 12.09x, COIN 10.0x, PTON 8.58x — each window-bounded and re-derived by the verifier from archived endpoint values. Vendor data (not official), kept in its own module. | `data/volatile_stocks.json` + `research/evidence/VOLATILE-STOCKS-YAHOO-*.md` |
 | 7 | **The leaderboard is ranked by absolute realized USD, not percent** — so compounding a winning balance is the direct multiplier on every future point, and only *closed* P/L counts (hourly snapshot). This is the exploitable structure; the full operational test protocol is in [`research/strategy/testing-plan.md`](research/strategy/testing-plan.md). | [Rules §06–§07](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) + live leaderboard |
 | 8 | **Automation is a documented ban risk.** Rules §08 warn that "using various scripts" and ≥60 transactions/minute trigger a 1-hour+ paper-trading ban. A "no manual input" strategy is only viable *inside* that ceiling — the test plan caps order rate at ≤12/min with human confirmation. | [Rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) → `IR-12` (critical) |
 
@@ -45,18 +45,20 @@ Across 16 sourced #1-finisher records:
 
 ### Verified threshold counts — stock price multiples (market-data vendor)
 
-Across the 8 archived trough→peak close multiples (`data/volatile_stocks.json`):
+Across the 20 archived trough→peak close multiples (`data/volatile_stocks.json`):
 
 | Target | Verified stocks |
 |---|---|
-| ≥ 5x | 8 |
-| ≥ 10x | 8 |
-| ≥ 20x | 5 |
-| ≥ 50x | 1 |
-| **≥ 100x** | **1 (GME, 124.11x close-to-close, 2020-04-03 → 2021-01-27)** |
+| ≥ 5x | 20 |
+| ≥ 10x | 19 |
+| ≥ 20x | 15 |
+| ≥ 50x | 10 |
+| **≥ 100x** | **6 (ENPH 382.49x, AMD 322.73x, MARA 190.22x, CVNA 128.62x, GME 124.11x, RIOT 119.85x)** |
 
 These are multi-year market-price moves from a commercial data vendor — evidence of what extreme
 volatility has done, not contest returns and not tradeable in the futures-only live contest.
+The fastest verified ≥100x took 336 days (RIOT, 2020-03-18 → 2021-02-17); the largest (ENPH)
+took about 4.5 years.
 
 ---
 
@@ -73,7 +75,7 @@ data/
   contest_universe.json       All 94 permitted instruments + position caps, from rules §08.
   master_list.json / .csv     20 candidate entries. Multipliers now sourced for all 20.
   verified_explosive_returns.json  16 sourced #1 net-profit records + threshold analysis.
-  volatile_stocks.json        8 verified trough→peak stock multiples (vendor-tier data).
+  volatile_stocks.json        20 verified trough→peak stock multiples (vendor-tier data).
 scripts/
   verify.py                   Line-by-line verifier with a self-test that proves each check fires.
   build_site.py               Renders index.html at the repo root from the audited JSON.

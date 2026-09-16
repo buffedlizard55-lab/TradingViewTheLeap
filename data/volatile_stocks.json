@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Verified trough\u2192peak close multiples for high-volatility stocks, archived from the Yahoo Finance v8 chart API. Every multiple is recomputable as peak.adjclose / trough.adjclose from values stored here; scripts/verify.py re-derives each one. All claims are window-bounded (extremum inside the documented fetch window), not all-time claims.",
   "vendor_notice": "Yahoo Finance is a commercial market-data vendor, NOT an official exchange, contest organiser or regulator. This module is deliberately separate from the official-source claims about the futures contest.",
-  "record_count": 8,
+  "record_count": 20,
   "generated_utc": "2026-09-16",
   "endpoint_pattern": "https://query1.finance.yahoo.com/v8/finance/chart/{SYMBOL}?period1={epoch}&period2={epoch}&interval=1d",
   "evidence_files": [
@@ -10,9 +10,201 @@
    "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
   ],
   "reverified_utc": "2026-09-16",
-  "reverification_note": "Second-pass re-verification 2026-09-16: all 16 endpoint windows (8 symbols x trough/peak) re-fetched from the Yahoo v8 chart API. All trough/peak dates and rounded multiples unchanged, except NVDA, whose archived endpoint values were re-adjusted by the vendor at the 6th decimal (trough 11.186728477478027 -> 11.186724662780762, peak 135.20559692382812 -> 135.20562744140625); the multiple still recomputes to 12.09x. See IR-13."
+  "reverification_note": "Second-pass re-verification 2026-09-16: all 16 endpoint windows (8 symbols x trough/peak) re-fetched from the Yahoo v8 chart API. All trough/peak dates and rounded multiples unchanged, except NVDA, whose archived endpoint values were re-adjusted by the vendor at the 6th decimal (trough 11.186728477478027 -> 11.186724662780762, peak 135.20559692382812 -> 135.20562744140625); the multiple still recomputes to 12.09x. See IR-13. Batch 2 (same date): 12 additional symbols captured (ENPH, AMD, MARA, CVNA, RIOT, NVAX, APP, SHOP, PLUG, NIO, PTON, HOOD) with the same window-bounded methodology: daily extremum windows plus monthly locator scans bounding neighbouring months; extremum dates were cross-checked against monthly-close anchors. CVNA's 5:1 (2026-05-08) and SHOP's 10:1 (2022-06-29) split events verified via the API's events=splits response."
  },
  "records": [
+  {
+   "record_id": "VS-ENPH",
+   "symbol": "ENPH",
+   "name": "Enphase Energy, Inc.",
+   "exchange": "NasdaqGM",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 0.699999988079071,
+    "epoch": 1495114200,
+    "date_utc": "2017-05-18"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d",
+    "period1": 1492204800,
+    "period2": 1497484800,
+    "sessions": 42,
+    "start_utc": "2017-04-15",
+    "end_utc": "2017-06-15"
+   },
+   "peak": {
+    "adjclose": 267.739990234375,
+    "epoch": 1637332200,
+    "date_utc": "2021-11-19"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1634256000&period2=1637366400&interval=1d",
+    "period1": 1634256000,
+    "period2": 1637366400,
+    "sessions": 26,
+    "start_utc": "2021-10-15",
+    "end_utc": "2021-11-20"
+   },
+   "return_multiple": 382.49,
+   "calendar_days": 1646,
+   "window_bounded": true,
+   "split_note": "close equals adjclose at both endpoints (no split or dividend adjustments inside the archived windows)",
+   "extremum_guards": {
+    "trough": "adjacent closes 0.7099999785423279 (2017-05-17) and 0.7200000286102295 (2017-05-19); intraday low 0.6499999761581421 on the trough day",
+    "peak": "adjacent closes 254.86000061035156 (2021-11-17) and 254.47999572753906 (2021-11-18); intraday high 272.0 on the peak day"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-ENPH"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-AMD",
+   "symbol": "AMD",
+   "name": "Advanced Micro Devices, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 1.7999999523162842,
+    "epoch": 1453300200,
+    "date_utc": "2016-01-20"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d",
+    "period1": 1452816000,
+    "period2": 1456790400,
+    "sessions": 30,
+    "start_utc": "2016-01-15",
+    "end_utc": "2016-03-01"
+   },
+   "peak": {
+    "adjclose": 580.9099731445312,
+    "epoch": 1782826200,
+    "date_utc": "2026-06-30"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1779235200&period2=1782864000&interval=1d",
+    "period1": 1779235200,
+    "period2": 1782864000,
+    "sessions": 28,
+    "start_utc": "2026-05-20",
+    "end_utc": "2026-07-01"
+   },
+   "return_multiple": 322.73,
+   "calendar_days": 3814,
+   "window_bounded": true,
+   "split_note": "close equals adjclose at both endpoints (AMD's post-2024 dividend is not reflected as an adjustment inside either archived window)",
+   "extremum_guards": {
+    "trough": "adjacent closes 1.8300000429153442 (2016-02-12 and 2016-02-16) and 1.840000033378601 (2016-02-10)",
+    "peak": "adjacent closes 539.489990234375 (2026-06-29) and 551.6300048828125 (2026-06-22); intraday high 584.72998046875 on the peak day equals the 52-week high in effect at fetch time"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-AMD"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-MARA",
+   "symbol": "MARA",
+   "name": "MARA Holdings, Inc.",
+   "exchange": "NasdaqCM",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 0.4000000059604645,
+    "epoch": 1584538200,
+    "date_utc": "2020-03-18"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d",
+    "period1": 1583020800,
+    "period2": 1585699200,
+    "sessions": 22,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-04-01"
+   },
+   "peak": {
+    "adjclose": 76.08999633789062,
+    "epoch": 1636468200,
+    "date_utc": "2021-11-09"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1635120000&period2=1638316800&interval=1d",
+    "period1": 1635120000,
+    "period2": 1638316800,
+    "sessions": 26,
+    "start_utc": "2021-10-25",
+    "end_utc": "2021-12-01"
+   },
+   "return_multiple": 190.22,
+   "calendar_days": 601,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 0.44999998807907104 (2020-03-23 and 2020-03-31); intraday low 0.3499999940395355 on the trough day",
+    "peak": "adjacent closes 75.30000305175781 (2021-11-08) and 75.91999816894531 (2021-11-12); intraday high 83.44999694824219 on the peak day"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-MARA"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-CVNA",
+   "symbol": "CVNA",
+   "name": "Carvana Co.",
+   "exchange": "NYSE",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 0.7440000176429749,
+    "epoch": 1672151400,
+    "date_utc": "2022-12-27"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d",
+    "period1": 1669852800,
+    "period2": 1673308800,
+    "sessions": 26,
+    "start_utc": "2022-12-01",
+    "end_utc": "2023-01-10"
+   },
+   "peak": {
+    "adjclose": 95.69000244140625,
+    "epoch": 1769092200,
+    "date_utc": "2026-01-22"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1764547200&period2=1772323200&interval=1d",
+    "period1": 1764547200,
+    "period2": 1772323200,
+    "sessions": 60,
+    "start_utc": "2025-12-01",
+    "end_utc": "2026-03-01"
+   },
+   "return_multiple": 128.62,
+   "calendar_days": 1122,
+   "window_bounded": true,
+   "split_note": "VERIFIED split event: the API events=splits response records a 5:1 forward split with date 1778247000 (2026-05-08), so pre-split adjclose values are one-fifth of contemporaneous unadjusted closes; both endpoints use the same vendor-adjusted series, so the multiple is unaffected",
+   "extremum_guards": {
+    "trough": "adjacent closes 0.765999972820282 (2022-12-07 and 2022-12-28) and 0.8100000023841858 (2022-12-23); intraday low 0.7099999785423279 (2022-12-07)",
+    "peak": "adjacent closes 94.66200256347656 (2026-01-23) and 94.74199676513672 (2026-01-26); next-highest in window 95.54399871826172 (2026-01-27); intraday high 97.37799835205078 on the peak day equals the 52-week high in effect at fetch time"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-CVNA"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
   {
    "record_id": "VS-GME",
    "symbol": "GME",
@@ -59,6 +251,246 @@
    "reverified_utc": "2026-09-16"
   },
   {
+   "record_id": "VS-RIOT",
+   "symbol": "RIOT",
+   "name": "Riot Platforms, Inc.",
+   "exchange": "NasdaqCM",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 0.6499999761581421,
+    "epoch": 1584538200,
+    "date_utc": "2020-03-18"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d",
+    "period1": 1583020800,
+    "period2": 1585699200,
+    "sessions": 22,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-04-01"
+   },
+   "peak": {
+    "adjclose": 77.9000015258789,
+    "epoch": 1613572200,
+    "date_utc": "2021-02-17"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1612137600&period2=1615766400&interval=1d",
+    "period1": 1612137600,
+    "period2": 1615766400,
+    "sessions": 29,
+    "start_utc": "2021-02-01",
+    "end_utc": "2021-03-15"
+   },
+   "return_multiple": 119.85,
+   "calendar_days": 336,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 0.6579999923706055 (2020-03-16) and 0.6690000295639038 (2020-03-23); intraday low 0.5109999775886536 on the trough day",
+    "peak": "adjacent closes 62.029998779296875 (2021-02-18) and 71.33000183105469 (2021-02-19); intraday high 79.5 on the peak day is the all-time intraday high in the scanned history"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-RIOT"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-SHOP",
+   "symbol": "SHOP",
+   "name": "Shopify Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 1.9329999685287476,
+    "epoch": 1455287400,
+    "date_utc": "2016-02-12"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d",
+    "period1": 1451606400,
+    "period2": 1455926400,
+    "sessions": 33,
+    "start_utc": "2016-01-01",
+    "end_utc": "2016-02-20"
+   },
+   "peak": {
+    "adjclose": 179.00999450683594,
+    "epoch": 1761744600,
+    "date_utc": "2025-10-29"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1759276800&period2=1762041600&interval=1d",
+    "period1": 1759276800,
+    "period2": 1762041600,
+    "sessions": 23,
+    "start_utc": "2025-10-01",
+    "end_utc": "2025-11-01"
+   },
+   "return_multiple": 92.61,
+   "calendar_days": 3547,
+   "window_bounded": true,
+   "split_note": "VERIFIED split event: the API events=splits response records a 10:1 forward split with date 1656509400 (2022-06-29), so pre-split adjclose values are one-tenth of contemporaneous unadjusted closes (the Nov-2021 interim peak adjclose 169.05999755859375 corresponds to a $1690.60 unadjusted close); both endpoints use the same vendor-adjusted series, so the multiple is unaffected",
+   "extremum_guards": {
+    "trough": "adjacent closes 1.937000036239624 (2016-02-11) and 1.9850000143051147 (2016-02-09); intraday low 1.8480000495910645 on 2016-01-20",
+    "peak": "adjacent closes 178.96000671386719 (2025-10-28) and 173.61000061035156 (2025-10-30); next-highest in window 175.05999755859375 (2025-10-27); intraday high 182.19000244140625 on the peak day equals the 52-week high in effect at fetch time"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-SHOP"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-NVAX",
+   "symbol": "NVAX",
+   "name": "Novavax, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 3.930000066757202,
+    "epoch": 1578666600,
+    "date_utc": "2020-01-10"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d",
+    "period1": 1575158400,
+    "period2": 1579046400,
+    "sessions": 30,
+    "start_utc": "2019-12-01",
+    "end_utc": "2020-01-15"
+   },
+   "peak": {
+    "adjclose": 319.92999267578125,
+    "epoch": 1612794600,
+    "date_utc": "2021-02-08"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1612137600&period2=1614556800&interval=1d",
+    "period1": 1612137600,
+    "period2": 1614556800,
+    "sessions": 19,
+    "start_utc": "2021-02-01",
+    "end_utc": "2021-02-27"
+   },
+   "return_multiple": 81.41,
+   "calendar_days": 395,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 3.950000047683716 (2020-01-13) and 3.9600000381469727 (2019-12-18); intraday low 3.6500000953674316 on the trough day",
+    "peak": "adjacent closes 315.8699951171875 (2021-02-09) and 298.3599853515625 (2021-02-10); intraday high 331.67999267578125 on 2021-02-10 is the all-time intraday high in the scanned history"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-NVAX"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-APP",
+   "symbol": "APP",
+   "name": "AppLovin Corporation",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 9.300000190734863,
+    "epoch": 1672151400,
+    "date_utc": "2022-12-27"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d",
+    "period1": 1669852800,
+    "period2": 1673740800,
+    "sessions": 30,
+    "start_utc": "2022-12-01",
+    "end_utc": "2023-01-15"
+   },
+   "peak": {
+    "adjclose": 733.5999755859375,
+    "epoch": 1766413800,
+    "date_utc": "2025-12-22"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1756684800&period2=1767225600&interval=1d",
+    "period1": 1756684800,
+    "period2": 1767225600,
+    "sessions": 86,
+    "start_utc": "2025-09-01",
+    "end_utc": "2026-01-01"
+   },
+   "return_multiple": 78.88,
+   "calendar_days": 1091,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 9.399999618530273 (2022-12-28) and 9.479999542236328 (2022-12-19); intraday low 9.140000343322754 (2022-12-28)",
+    "peak": "adjacent closes 728.4500122070312 (2025-12-23) and 727.5 (2025-12-24); next-highest in window 724.6199951171875 (2025-12-19); intraday high 745.6099853515625 (2025-09-29) equals the 52-week high in effect at fetch time; 2025-12-22 intraday high 738.010009765625"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-APP"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-PLUG",
+   "symbol": "PLUG",
+   "name": "Plug Power, Inc.",
+   "exchange": "NasdaqCM",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 1.0099999904632568,
+    "epoch": 1545316200,
+    "date_utc": "2018-12-20"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d",
+    "period1": 1543622400,
+    "period2": 1548979200,
+    "sessions": 40,
+    "start_utc": "2018-12-01",
+    "end_utc": "2019-02-01"
+   },
+   "peak": {
+    "adjclose": 73.18000030517578,
+    "epoch": 1611671400,
+    "date_utc": "2021-01-26"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1609459200&period2=1612137600&interval=1d",
+    "period1": 1609459200,
+    "period2": 1612137600,
+    "sessions": 19,
+    "start_utc": "2021-01-01",
+    "end_utc": "2021-02-01"
+   },
+   "return_multiple": 72.46,
+   "calendar_days": 768,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 1.0199999809265137 (2018-12-21 and 2018-12-24); intraday low 0.9900000095367432 on those days",
+    "peak": "adjacent closes 65.72000122070312 (2021-01-25) and 64.41999816894531 (2021-01-27); next-highest in window 69.5 (2021-01-13); intraday high 75.48999786376953 on the peak day is the all-time intraday high in the scanned history"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-PLUG"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
    "record_id": "VS-MSTR",
    "symbol": "MSTR",
    "name": "Strategy Inc",
@@ -99,6 +531,54 @@
    "source_ids": [
     "YAHOO-DAILY-MSTR",
     "YAHOO-MONTHLY-MSTR"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-NIO",
+   "symbol": "NIO",
+   "name": "NIO Inc.",
+   "exchange": "NYSE",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 1.3200000524520874,
+    "epoch": 1569936600,
+    "date_utc": "2019-10-01"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d",
+    "period1": 1569369600,
+    "period2": 1571097600,
+    "sessions": 14,
+    "start_utc": "2019-09-25",
+    "end_utc": "2019-10-15"
+   },
+   "peak": {
+    "adjclose": 62.84000015258789,
+    "epoch": 1612881000,
+    "date_utc": "2021-02-09"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1609718400&period2=1614556800&interval=1d",
+    "period1": 1609718400,
+    "period2": 1614556800,
+    "sessions": 38,
+    "start_utc": "2021-01-01",
+    "end_utc": "2021-02-26"
+   },
+   "return_multiple": 47.61,
+   "calendar_days": 497,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 1.5499999523162842 (2019-10-08) and 1.5299999713897705 (2019-10-10 and 2019-10-14); intraday low 1.190000057220459 on the trough day",
+    "peak": "adjacent closes 59.06999969482422 (2021-02-08) and 61.2599983215332 (2021-02-10); intraday high 66.98999786376953 on 2021-01-11 is the all-time intraday high in the scanned history"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-NIO"
    ],
    "accessed_utc": "2026-09-16",
    "reverified_utc": "2026-09-16"
@@ -237,6 +717,54 @@
    "reverified_utc": "2026-09-16"
   },
   {
+   "record_id": "VS-HOOD",
+   "symbol": "HOOD",
+   "name": "Robinhood Markets, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 7.699999809265137,
+    "epoch": 1672237800,
+    "date_utc": "2022-12-28"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d",
+    "period1": 1669852800,
+    "period2": 1673740800,
+    "sessions": 30,
+    "start_utc": "2022-12-01",
+    "end_utc": "2023-01-15"
+   },
+   "peak": {
+    "adjclose": 152.4600061035156,
+    "epoch": 1760016600,
+    "date_utc": "2025-10-09"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1759276800&period2=1763164800&interval=1d",
+    "period1": 1759276800,
+    "period2": 1763164800,
+    "sessions": 33,
+    "start_utc": "2025-10-01",
+    "end_utc": "2025-11-15"
+   },
+   "return_multiple": 19.8,
+   "calendar_days": 1016,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "the trough close 7.699999809265137 occurs on both 2022-12-27 (epoch 1672151400) and 2022-12-28 (epoch 1672237800); next-higher closes 8.050000190734863 (2022-12-29) and 8.079999923706055 (2023-01-03); intraday low 7.565000057220459 on the trough day",
+    "peak": "adjacent closes 150.8699951171875 (2025-10-08) and 138.9600067138672 (2025-10-10); next-highest in window 148.6699981689453 (2025-10-03); intraday high 153.86000061035156 (2025-10-06) equals the 52-week high in effect at fetch time"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-HOOD"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
+  },
+  {
    "record_id": "VS-TSLA",
    "symbol": "TSLA",
    "name": "Tesla, Inc.",
@@ -368,62 +896,157 @@
    ],
    "accessed_utc": "2026-09-16",
    "reverified_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-PTON",
+   "symbol": "PTON",
+   "name": "Peloton Interactive, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 19.510000228881836,
+    "epoch": 1584019800,
+    "date_utc": "2020-03-12"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d",
+    "period1": 1583020800,
+    "period2": 1586908800,
+    "sessions": 31,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-04-15"
+   },
+   "peak": {
+    "adjclose": 167.4199981689453,
+    "epoch": 1610634600,
+    "date_utc": "2021-01-14"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1608009600&period2=1612137600&interval=1d",
+    "period1": 1608009600,
+    "period2": 1612137600,
+    "sessions": 31,
+    "start_utc": "2020-12-15",
+    "end_utc": "2021-02-01"
+   },
+   "return_multiple": 8.58,
+   "calendar_days": 308,
+   "window_bounded": true,
+   "split_note": "close equals adjclose in both archived windows",
+   "extremum_guards": {
+    "trough": "adjacent closes 22.0 (2020-03-11) and 19.719999313354492 (2020-03-13); intraday low 17.829999923706055 (2020-03-13)",
+    "peak": "adjacent closes 156.0399932861328 (2021-01-13) and 165.25 (2021-01-15); intraday high 171.08999633789062 (2021-01-15) is the all-time intraday high in the scanned history"
+   },
+   "source_ids": [
+    "YAHOO-DAILY-PTON"
+   ],
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   }
  ],
  "thresholds": {
   "ge_5x": {
    "threshold": 5,
-   "count": 8,
+   "count": 20,
    "symbols": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
     "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
+    "MSTR",
+    "NIO",
+    "PLTR",
     "AMC",
     "SMCI",
-    "MSTR",
-    "NVDA",
+    "HOOD",
     "TSLA",
-    "PLTR",
-    "COIN"
+    "NVDA",
+    "COIN",
+    "PTON"
    ]
   },
   "ge_10x": {
    "threshold": 10,
-   "count": 8,
+   "count": 19,
    "symbols": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
     "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
+    "MSTR",
+    "NIO",
+    "PLTR",
     "AMC",
     "SMCI",
-    "MSTR",
-    "NVDA",
+    "HOOD",
     "TSLA",
-    "PLTR",
+    "NVDA",
     "COIN"
    ]
   },
   "ge_20x": {
    "threshold": 20,
-   "count": 5,
+   "count": 15,
    "symbols": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
     "GME",
-    "AMC",
-    "SMCI",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
     "MSTR",
-    "PLTR"
+    "NIO",
+    "PLTR",
+    "AMC",
+    "SMCI"
    ]
   },
   "ge_50x": {
    "threshold": 50,
-   "count": 1,
+   "count": 10,
    "symbols": [
-    "GME"
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
+    "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG"
    ]
   },
   "ge_100x": {
    "threshold": 100,
-   "count": 1,
+   "count": 6,
    "symbols": [
-    "GME"
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
+    "GME",
+    "RIOT"
    ]
   }
  },
- "contest_relevance_note": "These are equity price returns over multi-year windows. The Leap (September 2026 edition) is a futures-only contest \u2014 0 equities in the verified universe \u2014 so none of these tickers is tradeable in the contest. They document what extreme volatility looks like in real, verified market data and bound expectations: even a 124x stock move required holding ~10 months."
+ "contest_relevance_note": "These are equity price returns over multi-year windows. The Leap (September 2026 edition) is a futures-only contest \u2014 0 equities in the verified universe \u2014 so none of these tickers is tradeable in the contest. They document what extreme volatility looks like in real, verified market data and bound expectations: the largest verified multiple (382x, ENPH) took roughly 4.5 years, and the largest inside a single year was 119.85x (RIOT, 336 days)."
 }
