@@ -62,6 +62,73 @@ took about 4.5 years.
 
 ---
 
+## 2026-09-16 — independent re-verification pass (this session)
+
+This session did **not** trust the prior snapshot. Every primary claim was re-fetched live from the
+official TradingView pages and, where possible, cross-checked against independent public references.
+All re-verified on 2026-09-16:
+
+- **The live contest is futures-only.** Re-fetched `TV-RULES-AMP-SEP2026` §08 live: the permitted
+  list is **94 futures contracts and zero equities** (equity indices, crypto, FX, energy, metals,
+  grains, rates, meats). Re-fetched the live leaderboard: "The Leap by AMP Futures", "Assets to
+  trade: **Futures**", rank 1 `leonardo22_romano` **+921.49% / +$2,303,725.00**, 93,492
+  participants. → IR-01 and H3 stand: a stocks-only strategy cannot be placed on the current
+  leaderboard.
+- **Headline contest records confirmed.** Re-fetched the two official result blogs: `BenBernanke1`
+  is #1 of the Feb 2025 CME edition (59,187 participants, $3,000 prize) and `prodigy5284` is #1 of
+  the Mar 2026 "Magnificent Seven" stocks edition. The exact percentages (+5,220.72% and +17.58%)
+  are shown on the live landing-page carousel, which was also re-fetched. → H1, H2, H6, H12 stand.
+- **Volatile-stock multiples independently cross-checked.** Six of the twenty archived stock
+  multiples (ENPH, GME, AMD, CVNA, MARA, RIOT) were checked against independent public references
+  (companiesmarketcap, Macrotrends, Business Insider, The Motley Fool, Screen Rant). Every one is
+  corroborated to order of magnitude — e.g. ENPH $0.70 (2017-05-18) → $267.74 (2021) per Macrotrends;
+  CVNA $3.72 (2022-12-27) → $478.45 (2026-01-22) per companiesmarketcap. See
+  `research/evidence/VOLATILE-STOCKS-CROSSCHECK.md`. The verifier still recomputes every multiple
+  from the archived Yahoo values, so no figure depends on the cross-check.
+- **Site + intelligence-layer enhancements.** The volatile-stocks table now has one-click
+  **≥5x / ≥10x / ≥20x / ≥50x / ≥100x** threshold filters (the exact buckets the brief asked for),
+  matching the verified threshold counts. Hypothesis **H13** makes the two-track point explicit: the
+  stock list is a reference set for a future *stocks* edition, not the live futures contest.
+
+**No hallucination was found.** Every number on the site traces to a re-fetched official page or a
+recomputed vendor archive, and the verifier (239 checks) passes.
+
+## Suggestions for remaining work & limitations (next sessions)
+
+**Limitations that block a fully automated win:**
+
+1. **The live contest has no stocks (IR-01, critical).** The brief's "invest in volatile stocks"
+   premise cannot be executed in the September 2026 AMP Futures edition. Two honest paths remain:
+   (a) compete now in *futures* using the verified 53x ceiling and the T1–T6 test plan; or
+   (b) hold the verified stock list for the next *stocks* edition TradingView runs (e.g. a future
+   "Magnificent Seven" / Christmas edition). This session did not open a live trading account.
+2. **No 100x contest outcome is attested (IR-03).** The verified ceiling is 53.2072x. Any plan
+   assuming 100x is unsupported by official data.
+3. **Stock data is vendor-tier, not official.** Yahoo Finance is a commercial archive; it supports
+   only the recomputable stock records, never a contest/rules claim. The cross-check references are
+   likewise non-official corroboration, not primary sources.
+4. **The verifier audits captured evidence; it does not re-fetch the network.** Refresh the capture
+   (re-run the fetch step) before each edition, because the live leaderboard moves hourly and
+   position caps changed 100x between the July and September futures editions (IR-05).
+5. **Automation is a ban risk (IR-12, critical).** "No manual input" conflicts with the rules'
+   ≥60-transactions/minute prohibition and script warning. Any execution must stay human-in-the-loop
+   at ≤12 orders/minute.
+
+**Work still to do:**
+
+- Register a TradingView account, join the live (or next) edition, and run T1–T6 as a dry-run to
+  calibrate the next edition (the contest is already at day 16 of 30; registration closes Sep 23).
+- Extend the stock list beyond 20 names if a stocks edition is targeted, and add implied-volatility
+  and volume screens as primary-source leads.
+- Add an hourly leaderboard snapshotter (`research/strategy/snapshots/`) to track the prize frontier
+  (rank 50/100/250/300) over time, as the testing plan specifies.
+- If a repository admin grants `pages:write`, migrate GitHub Pages to Actions-based deployment (see
+  the site/legacy note above) for a real CI publish step.
+- Capture official contest results as they finalise (the Sept 2026 edition closes 2026-09-30) and
+  append the #1 record to `data/verified_explosive_returns.json`.
+
+---
+
 ## Repository layout
 
 ```
@@ -106,7 +173,7 @@ restore an upload/deploy job.
 ## Verify it yourself
 
 ```bash
-python3 scripts/verify.py             # 203 checks
+python3 scripts/verify.py             # 240 checks
 python3 scripts/verify.py --self-test # + 21 corruption tests proving each check can fail
 python3 scripts/build_site.py         # regenerate the site
 make serve                            # local preview on :8000

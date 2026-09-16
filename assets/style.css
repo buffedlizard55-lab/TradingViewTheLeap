@@ -139,6 +139,16 @@ input[type="search"] { min-width: 260px; }
 input[type="search"]:focus, select:focus { outline: 2px solid #1f4d7a; outline-offset: -1px; }
 .count { color: var(--muted); font-size: 12.5px; font-family: var(--mono); }
 
+/* ---------- threshold quick-filter buttons (stocks section) ---------- */
+.thresh { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.thresh button {
+  background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+  border-radius: 7px; padding: 7px 11px; font-size: 13px; cursor: pointer;
+  font-family: var(--mono); line-height: 1;
+}
+.thresh button:hover { background: var(--panel-2); color: var(--text); }
+.thresh button.active { background: #0f1a26; color: var(--accent); border-color: #1f4d7a; }
+
 /* ---------- quotes ---------- */
 blockquote {
   margin: 10px 0; padding: 10px 14px; border-left: 3px solid var(--border);
