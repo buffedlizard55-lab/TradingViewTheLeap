@@ -52,10 +52,28 @@ data/
   verified_explosive_returns.json  16 sourced #1 net-profit records + threshold analysis.
 scripts/
   verify.py                   Line-by-line verifier with a self-test that proves each check fires.
-  build_site.py               Renders site/index.html from the audited JSON.
-site/                         GitHub Pages output (generated; do not hand-edit index.html).
-.github/workflows/pages.yml   Verifies, fails on stale site, publishes to Pages.
+  build_site.py               Renders index.html at the repo root from the audited JSON.
+index.html                    GitHub Pages output (generated; do not hand-edit).
+assets/style.css, app.js      Site styling and table filtering.
+.github/workflows/pages.yml   Verifies data, fails on a stale site, and audits the rendered page.
 ```
+
+### Why the site lives at the repository root
+
+This repository's GitHub Pages site is configured in **legacy** mode against branch `main` at
+path `/`. Switching it to Actions-based deployment needs `pages:write`, which the available
+credential does not have:
+
+```
+PUT /repos/buffedlizard55-lab/TradingViewTheLeap/pages
+-> 403 Resource not accessible by integration
+```
+
+Because legacy Pages builds from the root of `main`, `build_site.py` writes `index.html` and
+`assets/` there, so the site publishes on merge to `main` with **no settings change and no deploy
+job**. To move to Actions-based deployment, a repository admin can run
+`gh api -X PUT repos/buffedlizard55-lab/TradingViewTheLeap/pages -f build_type=workflow` and
+restore an upload/deploy job.
 
 ---
 

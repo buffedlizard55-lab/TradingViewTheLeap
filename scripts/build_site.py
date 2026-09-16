@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Builds site/index.html from the verified data under data/ and research/.
+Builds index.html at the repository root from the verified data under data/ and research/.
 
 Nothing on the page is hand-written prose about numbers: every figure, table row, verdict and
 source link is rendered directly out of the JSON artefacts that scripts/verify.py has already
@@ -8,6 +8,11 @@ audited. Regenerate with `python3 scripts/build_site.py` after any data change.
 
 The output is a single self-contained HTML file plus assets/style.css and assets/app.js, so it
 works on GitHub Pages with no build step, no fetch calls and no CORS surface.
+
+It is written to the REPOSITORY ROOT rather than a subdirectory because this repository's GitHub
+Pages site is configured in legacy mode against branch `main` at path `/`. That configuration can
+only be changed by a repository admin (PUT /repos/{owner}/{repo}/pages returns 403 for this
+credential), so publishing at the root is what makes the site live without a settings change.
 """
 
 from __future__ import annotations
@@ -599,12 +604,15 @@ def _exch_counts(uni) -> dict:
 
 
 def main() -> int:
-    out_dir = os.path.join(ROOT, "site")
-    os.makedirs(out_dir, exist_ok=True)
+    out_dir = ROOT
+    os.makedirs(os.path.join(out_dir, "assets"), exist_ok=True)
     html_text = build()
     path = os.path.join(out_dir, "index.html")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(html_text)
+    # GitHub Pages runs Jekyll by default; .nojekyll keeps assets/ served verbatim.
+    with open(os.path.join(out_dir, ".nojekyll"), "w", encoding="utf-8") as fh:
+        fh.write("")
     kb = os.path.getsize(path) / 1024
     print(f"wrote {os.path.relpath(path, ROOT)} ({kb:.1f} KB)")
     return 0

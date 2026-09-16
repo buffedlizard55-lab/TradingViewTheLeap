@@ -1,6 +1,9 @@
-.PHONY: verify selftest site all serve clean
+.PHONY: all verify selftest site serve clean check
 
-all: verify site
+all: check
+
+# Full gate, mirroring what CI runs.
+check: verify site freshness
 
 verify:
 	python3 scripts/verify.py
@@ -8,11 +11,18 @@ verify:
 selftest:
 	python3 scripts/verify.py --self-test
 
-site: verify
+site:
 	python3 scripts/build_site.py
 
+# Fail if index.html is not in sync with the data it was rendered from.
+freshness: site
+	@git diff --quiet -- index.html || { \
+	  echo "index.html is stale. Run 'python3 scripts/build_site.py' and commit."; \
+	  git diff --stat -- index.html; exit 1; }
+	@echo "index.html is in sync with data/ and research/."
+
 serve: site
-	cd site && python3 -m http.server 8000 --bind 0.0.0.0
+	python3 -m http.server 8000 --bind 0.0.0.0
 
 clean:
-	rm -f site/index.html
+	rm -f index.html .nojekyll

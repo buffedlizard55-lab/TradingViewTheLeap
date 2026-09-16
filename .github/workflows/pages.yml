@@ -1,61 +1,92 @@
-name: Verify and publish site
+name: Verify research data
 
 on:
   push:
     branches: [main, "arena/**"]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   verify:
-    name: Verify research data
+    name: Verify research data and site freshness
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Run the research verifier
+
+      - name: Run the research verifier (with self-test)
         run: python3 scripts/verify.py --self-test
+
       - name: Rebuild the site from data
         run: python3 scripts/build_site.py
+
       - name: Fail if the committed site is stale
         run: |
-          if ! git diff --quiet -- site/index.html; then
-            echo "::error::site/index.html is out of date with data/. Run 'python3 scripts/build_site.py' and commit."
-            git diff --stat -- site/index.html
+          if ! git diff --quiet -- index.html; then
+            echo "::error::index.html is out of date with data/. Run 'python3 scripts/build_site.py' and commit the result."
+            git diff --stat -- index.html
             exit 1
           fi
-          echo "site/index.html is in sync with data/."
+          echo "index.html is in sync with data/ and research/."
 
-  publish:
-    name: Publish to GitHub Pages
-    needs: verify
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Build site
-        run: python3 scripts/build_site.py
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Confirm every rendered figure traces to data
+        run: |
+          python3 - <<'PY'
+          import json, re
+          html = open("index.html", encoding="utf-8").read()
+          uni = json.load(open("data/contest_universe.json"))
+          ml = json.load(open("data/master_list.json"))
+          er = json.load(open("data/verified_explosive_returns.json"))
+          probs = []
+          n_uni = len(re.findall(r'data-ex="', html))
+          if n_uni != len(uni["instruments"]):
+              probs.append(f"universe rows {n_uni} != {len(uni['instruments'])}")
+          n_ml = len(re.findall(r'data-class="', html))
+          if n_ml != len(ml["entries"]):
+              probs.append(f"master rows {n_ml} != {len(ml['entries'])}")
+          for sym in (x["symbol"] for x in ml["entries"]):
+              if sym not in html:
+                  probs.append(f"master symbol {sym} missing from page")
+          for r in er["records"]:
+              if f'{r["return_multiple"]}x' not in html:
+                  probs.append(f'return {r["return_multiple"]}x missing from page')
+          # Python-side leak signatures. A bare substring search for "nan"
+          # false-positives on "finance" and "BenBernanke", so match the shapes a
+          # leaked value actually takes.
+          leaked = re.findall(r">\s*(?:None|nan|NaN|Infinity|undefined)\s*<|\bnanx\b|\bnan%|\$\s*nan", html)
+          if leaked:
+              probs.append(f"a Python value leaked into the rendered page: {leaked[:5]}")
+
+          # "null" is rendered deliberately in two shapes: an explicit null pill in
+          # table cells, and <code>null</code> in the prose that explains the policy.
+          # Anything else is a leaked value.
+          bare_null = (html.count(">null<")
+                       - html.count('<span class="pill mut">null</span>')
+                       - html.count("<code>null</code>"))
+          if bare_null:
+              probs.append(f"{bare_null} bare 'null' rendered outside a pill or <code> tag")
+          if probs:
+              print("::error::" + "; ".join(probs))
+              raise SystemExit(1)
+          print(f"OK: {n_uni} universe rows, {n_ml} master rows, "
+                f"{len(er['records'])} return records all rendered from data.")
+          PY
+
+# NOTE ON PUBLISHING
+# This repository's GitHub Pages site is configured in LEGACY mode against branch `main`
+# at path `/` (GET /repos/{owner}/{repo}/pages). Switching it to Actions-based deployment
+# requires pages:write, which this credential does not have:
+#   PUT /repos/{owner}/{repo}/pages  ->  403 Resource not accessible by integration
+# Because legacy Pages builds from the root of `main`, scripts/build_site.py writes
+# index.html and assets/ at the repository root, and Pages publishes them on merge to main
+# with no deploy job and no settings change required.
+#
+# To move to Actions-based deployment instead, a repository admin should run:
+#   gh api -X PUT repos/{owner}/{repo}/pages -f build_type=workflow
+# and then restore an actions/upload-pages-artifact + actions/deploy-pages job here.
