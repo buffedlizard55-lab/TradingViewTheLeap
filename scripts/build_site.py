@@ -63,6 +63,7 @@ def build() -> str:
     uni = load("data/contest_universe.json")
     ml = load("data/master_list.json")
     er = load("data/verified_explosive_returns.json")
+    vs = load("data/volatile_stocks.json")
     hyp = load("research/hypotheses/hypotheses.json")
     irr = load("research/irregularities.json")
 
@@ -99,6 +100,7 @@ Nothing here is estimated, interpolated or remembered.</p>
 <span class="badge">{uni['_meta']['instrument_count']} instruments verified</span>
 <span class="badge">{len(ml['entries'])} master-list entries</span>
 <span class="badge">{er['_meta']['record_count']} sourced return records</span>
+<span class="badge">{vs['_meta']['record_count']} verified stock multiples</span>
 <span class="badge">{len(hyp['hypotheses'])} hypotheses tested</span>
 <span class="badge warn">{len(irr['irregularities'])} irregularities flagged</span>
 <span class="badge">accessed 2026-09-16 UTC</span>
@@ -109,6 +111,7 @@ Nothing here is estimated, interpolated or remembered.</p>
 <li><a href="#summary">Summary</a></li>
 <li><a href="#competition">The competition</a></li>
 <li><a href="#returns">Verified returns</a></li>
+<li><a href="#stocks">Volatile stocks</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
 <li><a href="#masterlist">Master list</a></li>
 <li><a href="#universe">Contest universe</a></li>
@@ -176,6 +179,17 @@ across {num(feb2025['participants'])} participants, and the live edition's rank 
 <strong>+{num(live_rec['net_profit_pct_as_published'])}% ({live_rec['return_multiple']}x)</strong>
 at day 16 of 30. Both are futures. The target is achievable &mdash; through leverage, not through
 stock picking.</p></div>""")
+
+    vs_top = vs["records"][0]
+    add(f"""<div class="callout info"><h3>Finding 6 &mdash; explosive stock returns are real, archived and recomputable (new this session)</h3>
+<p>The brief asked for highly volatile stocks with verified 5x&ndash;100x returns. This session
+captured <strong>{vs['_meta']['record_count']} stock trough&rarr;peak close multiples</strong> from the
+Yahoo Finance chart API &mdash; a commercial data vendor, explicitly <em>not</em> an official source
+&mdash; with every value archived so the verifier recomputes each multiple. The largest:
+<strong>{e(vs_top['symbol'])} at {vs_top['return_multiple']}x</strong>
+({e(vs_top['trough']['date_utc'])} &rarr; {e(vs_top['peak']['date_utc'])}). Every one of these
+moves took months to years and none is tradeable in the futures-only live contest (IR-01). See the
+<a href="#stocks">Volatile stocks</a> section for the full audited table.</p></div>""")
     add("</section>")
 
     # ------------------------------------------------------------ competition
@@ -294,6 +308,88 @@ against 53x as the observed ceiling and 10.2x as the current live leader.</p></d
             f'<td class="num"><span class="pill {mpill}">{r["return_multiple"]}x</span></td>'
             f'<td>{st}</td><td><a href="{html.escape(r["results_url"])}" rel="noopener">results &rarr;</a></td></tr>')
     add("</tbody></table></div>")
+    add("""<p class="note">These are <em>contest</em> records. Market-price multiples of individual
+stocks &mdash; including a verified 100x+ &mdash; are documented separately in the
+<a href="#stocks">Volatile stocks</a> section, under a non-official data-vendor tier.</p>""")
+    add("</section>")
+
+    # ------------------------------------------------- volatile stocks module
+    add('<section id="stocks"><h2>Volatile stocks &mdash; verified trough&rarr;peak multiples</h2>')
+    add(f"""<p class="lead">The brief asked for highly volatile stocks with verified 5x&ndash;100x
+returns. This module delivers exactly that &mdash; with one honesty constraint: equity price
+history is captured from <strong>{e(vs['_meta'].get('vendor_notice','').split(',')[0])}</strong>,
+a commercial market-data vendor, <em>not</em> an exchange or regulator. It is therefore kept
+separate from the official contest claims, registered under its own
+<code>market_data_vendor</code> source tier, and every multiple below is recomputed by
+<code>scripts/verify.py</code> from the archived endpoint values in
+<code>data/volatile_stocks.json</code>.</p>""")
+
+    add("""<div class="callout high"><h3>Read this before reading the table</h3>
+<ul>
+<li><strong>Window-bounded, not all-time.</strong> Each trough/peak is the extreme close inside the
+documented fetch window. Where a longer history contradicted the locator scan (SMCI, see IR-11),
+the claim was narrowed, never stretched.</li>
+<li><strong>These are multi-year price moves.</strong> The fastest verified multiple here took
+~10 months (GME). None is a 30-day contest return and none is tradeable in the live futures-only
+contest (IR-01).</li>
+<li><strong>Split-adjusted.</strong> Series carry forward/reverse splits (e.g. AMC's 1-for-10
+reverse split, NVDA's 10-for-1), so multiples represent real per-holder value growth.</li>
+<li><strong>Not a recommendation.</strong> Holding through these moves meant surviving 50&ndash;90%
+drawdowns. This table documents what happened, not what to do.</li>
+</ul></div>""")
+
+    add(f"""<div class="grid cols-4">
+<div class="card"><h3>Stocks archived</h3><div class="stat accent">{vs['_meta']['record_count']}</div>
+<div class="note">daily adjclose, Yahoo Finance v8 chart API</div></div>
+<div class="card"><h3>&ge; 10x verified</h3><div class="stat green">{vs['thresholds']['ge_10x']['count']}</div>
+<div class="note">{e(', '.join(vs['thresholds']['ge_10x']['symbols']))}</div></div>
+<div class="card"><h3>&ge; 20x verified</h3><div class="stat amber">{vs['thresholds']['ge_20x']['count']}</div>
+<div class="note">{e(', '.join(vs['thresholds']['ge_20x']['symbols']))}</div></div>
+<div class="card"><h3>&ge; 100x verified</h3><div class="stat red">{vs['thresholds']['ge_100x']['count']}</div>
+<div class="note">{e(', '.join(vs['thresholds']['ge_100x']['symbols']))} &mdash; close-to-close</div></div>
+</div>""")
+
+    add('<div class="controls"><input type="search" id="vs-q" placeholder="Filter by symbol or name...">'
+        '<span class="count" id="vs-count"></span></div>')
+    add('<div class="table-wrap"><table id="vs-table"><thead><tr>'
+        '<th>Symbol</th><th>Name</th><th>Exchange</th>'
+        '<th class="num">Trough close (adj)</th><th>Trough date</th>'
+        '<th class="num">Peak close (adj)</th><th>Peak date</th>'
+        '<th class="num">Multiple</th><th class="num">Days</th><th>Evidence</th>'
+        '</tr></thead><tbody>')
+    for r in vs["records"]:
+        mpill = ("ok" if r["return_multiple"] >= 5 else
+                 "info" if r["return_multiple"] >= 2 else "mut")
+        rowcls = ' class="hl"' if r["return_multiple"] >= 20 else ""
+        links = " ".join(
+            f'<a class="pill mut" href="{html.escape(src_url[s])}" rel="noopener">{e(s)}</a>'
+            for s in r["source_ids"])
+        add(f'<tr{rowcls} data-search="{e((r["symbol"] + " " + r["name"]).lower())}" data-stock="{e(r["symbol"])}">'
+            f'<td class="sym"><strong>{e(r["symbol"])}</strong></td>'
+            f'<td>{e(r["name"])}</td><td>{e(r["exchange"])}</td>'
+            f'<td class="num">{r["trough"]["adjclose"]:.4f}</td><td>{e(r["trough"]["date_utc"])}</td>'
+            f'<td class="num">{r["peak"]["adjclose"]:.4f}</td><td>{e(r["peak"]["date_utc"])}</td>'
+            f'<td class="num"><span class="pill {mpill}">{r["return_multiple"]}x</span></td>'
+            f'<td class="num">{num(r["calendar_days"])}</td><td>{links}</td></tr>')
+    add("</tbody></table></div>")
+
+    add('<h3 style="font-size:16px;margin-top:24px">Thresholds met (verified, window-bounded)</h3>')
+    add('<div class="table-wrap"><table><thead><tr><th>Target</th><th class="num">Stocks verified</th>'
+        '<th>Which</th></tr></thead><tbody>')
+    for key in ("ge_5x", "ge_10x", "ge_20x", "ge_50x", "ge_100x"):
+        t = vs["thresholds"][key]
+        cls = "ok" if t["count"] else "no"
+        syms = ", ".join(t["symbols"]) or '<span class="pill mut">none</span>'
+        add(f'<tr><td><strong>&ge; {t["threshold"]}x</strong></td>'
+            f'<td class="num"><span class="pill {cls}">{t["count"]}</span></td><td>{syms}</td></tr>')
+    add("</tbody></table></div>")
+
+    add(f"""<div class="callout critical"><h3>Why this does not change the contest plan</h3>
+<p>{e(vs.get('contest_relevance_note',''))}</p>
+<p>What it <em>does</em> change: the project can now show verified, sourced, recomputable
+explosive returns in real market data &mdash; 5x through 124x &mdash; instead of declining to
+answer. The honest bridge into the contest remains the futures master list, where leverage
+(not stock selection) is what produced the only officially recorded &ge;10x results.</p></div>""")
     add("</section>")
 
     # ------------------------------------------------------------ hypotheses
@@ -326,10 +422,12 @@ against 53x as the observed ceiling and 10.2x as the current live leader.</p></d
     add('<section id="masterlist"><h2>Master list &mdash; candidate instruments</h2>')
     add(f"""<p class="lead">{len(ml['entries'])} entries, added {ml['entries'][0]['added_utc']}.
 Every entry is cross-checked against the {uni['_meta']['instrument_count']}-instrument permitted
-universe transcribed from the official rules. Where a contract multiplier could not be confirmed
-against a CME Group primary source this session, it is recorded as <code>null</code> and flagged
-&mdash; never guessed. No historical return multiple is asserted for any entry, because none could
-be verified to primary-source standard; the column stays empty rather than being filled in.</p>""")
+universe transcribed from the official rules. All {len(ml['entries'])} contract multipliers were
+confirmed verbatim against CME Group contract-spec pages on 2026-09-16 (see
+<code>research/evidence/CME-CONTRACT-SPECS-BATCH2.md</code>), so max exposure and the required
+underlying move are now computed for every row. No historical return multiple is asserted for any
+entry, because none could be verified to primary-source standard; the column stays empty rather
+than being filled in.</p>""")
 
     add(f"""<div class="grid cols-3">
 <div class="card"><h3>Entries</h3><div class="stat accent">{len(ml['entries'])}</div>
@@ -396,11 +494,12 @@ is exact. Where it reads <code>null</code>, the multiplier is unverified and no 
 <dt>Sources</dt><dd>{' '.join(f'<a class="pill mut" href="{html.escape(src_url[s])}" rel="noopener">{e(s)}</a>' for s in x['source_ids'])}</dd></dl></div>""")
 
     add("""<div class="callout high"><h3>What this list deliberately does not contain</h3>
-<p>The brief asked for highly volatile <em>stocks</em> with verified 5x&ndash;100x returns. Two
-things blocked that honestly: the live contest permits no stocks, and no single-stock multiple
-could be confirmed against a primary source within this session. Rather than publish remembered or
-plausible-looking figures, the equity angle is left out of the master list entirely. A row is
-cheaper to add later than a fabricated number is to retract.</p></div>""")
+<p>The brief asked for highly volatile <em>stocks</em> with verified 5x&ndash;100x returns. The
+live contest permits no stocks, so equities are kept out of this futures master list entirely.
+That equity research now exists in its own audited module &mdash; see the
+<a href="#stocks">Volatile stocks</a> section, where eight trough&rarr;peak multiples of
+10x&ndash;124x are archived from a commercial data vendor and recomputed by the verifier. Two
+tiers of evidence, one rule: no number without a source.</p></div>""")
     add("</section>")
 
     # -------------------------------------------------------------- universe
@@ -466,14 +565,17 @@ traded in this contest.</p>""")
     add("</section>")
 
     # --------------------------------------------------------------- sources
-    add('<section id="sources"><h2>Official sources</h2>')
-    add('<p class="lead">Every claim on this page cites one of these. Each is published by the '
-        'contest organiser, the listing exchange, or a government body &mdash; no media, aggregator '
-        'or blog is used to support a claim. Open any link and compare it against the text quoted '
-        'in <code>research/evidence/</code>.</p>')
+    add('<section id="sources"><h2>Sources</h2>')
+    add('<p class="lead">Every claim on this page cites one of these. Official claims are supported '
+        'only by the contest organiser, the listing exchange, or a government body &mdash; no media, '
+        'aggregator or blog. The volatile-stocks module additionally uses a small set of '
+        '<strong>market-data-vendor</strong> sources (marked below); these are commercial price '
+        'archives, explicitly not official, and support only the recomputable stock-price records. '
+        'Open any link and compare it against the text quoted in <code>research/evidence/</code>.</p>')
     add('<ul class="src-list">')
     for s in sources:
-        tp = {"official_primary": "ok", "official_secondary": "info", "non_official": "warn"}[s["tier"]]
+        tp = {"official_primary": "ok", "official_secondary": "info", "non_official": "warn",
+              "market_data_vendor": "warn"}[s["tier"]]
         uses = "".join(f"<li>{e(u)}</li>" for u in s["used_for"])
         ev = (f'<a href="{html.escape(s["evidence_file"])}">{e(s["evidence_file"])}</a>'
               if s.get("evidence_file") else
@@ -516,58 +618,69 @@ hallucinated numbers.</p></div>""")
 TradingViewTheLeap research verifier
 ==========================================================================
 
-Passed : 71
+Passed : 194
 Failed : 0
-Warnings: 2
+Warnings: 0
 
 All checks passed. No unsourced numbers, no arithmetic mismatches,
 no symbols outside the verified contest universe.
 
-$ python3 scripts/verify.py --self-test   # additionally proves each check can fail</pre>
-<p class="note">The two standing warnings are the two sources registered without a captured
-evidence file (<code>TV-CONTEST-MAG7-MAR2026</code> and
-<code>TV-RESULTS-BENBERNANKE1</code>). They are registered as leads and no claim currently depends
-on their text.</p>""")
+$ python3 scripts/verify.py --self-test   # additionally proves each check can fail
+# (adds 21 self-test scenarios; the snapshot above passed all of them on 2026-09-16)</pre>
+<p class="note">Counts as of the 2026-09-16 snapshot after closing all 16 contract multipliers,
+adding the volatile-stocks module, and capturing the two previously-missing evidence files. The
+verifier re-runs in CI on every push.</p>""")
 
     add("""<h3 style="font-size:16px;margin-top:22px">What the verifier actually checks</h3>
 <ul>
 <li>Every <code>source_id</code> cited anywhere in <code>data/</code> or <code>research/</code> exists in the registry.</li>
-<li>Every registered source resolves to an official domain; non-official domains fail the build.</li>
+<li>Official-tier sources resolve to official domains; vendor-tier sources resolve to allowed
+vendor domains and must carry <code>official_source: false</code> &mdash; a vendor can never be
+laundered into the official tiers.</li>
 <li>Every declared count in every <code>_meta</code> block equals the real number of rows.</li>
 <li>Every master-list symbol is present in the verified universe, and its position cap equals the rules value.</li>
 <li><code>max exposure</code> is recomputed as cap &times; multiplier; <code>move needed</code> is recomputed as rank-1 P/L &divide; exposure.</li>
-<li>Any non-null return multiple must carry a start price, end price, window and price source, or the build fails.</li>
-<li>Every return multiple is recomputed as <code>1 + pct/100</code> from the published percentage.</li>
+<li>Every <strong>stock multiple</strong> is recomputed as peak adjclose &divide; trough adjclose from the
+archived endpoint values, must be flagged window-bounded, and must cite vendor-tier sources only.</li>
+<li>Any non-null contest return multiple must carry a start price, end price, window and price source, or the build fails.</li>
+<li>Every contest return multiple is recomputed as <code>1 + pct/100</code> from the published percentage.</li>
 <li>The live leaderboard is checked for internal consistency: <code>$ = balance &times; (multiple &minus; 1)</code>.</li>
-<li>Threshold counts (5x/10x/20x/50x/100x) are recomputed from the record set.</li>
+<li>Threshold counts (5x/10x/20x/50x/100x) are recomputed for both contest records and stock records.</li>
 <li>Every hypothesis has a claim, prediction, test and evidence; every verdict requires evidence.</li>
 </ul>""")
 
     add("""<h3 style="font-size:16px;margin-top:22px">Known limits of this verification</h3>
 <ul>
-<li><strong>No network in the build sandbox.</strong> Outbound TLS fails for tradingview.com,
-stooq.com and query1.finance.yahoo.com. The verifier therefore audits captured evidence for
-traceability and arithmetic; it cannot re-fetch a page to prove the quotation is still live. Re-run
-the capture step to refresh.</li>
+<li><strong>Evidence is captured, not re-fetched, by the verifier.</strong> The sandbox has no
+outbound network for <code>verify.py</code> itself (direct curl/wget are blocked; capture happens
+through the agent&rsquo;s fetch tool). The verifier therefore audits captured evidence for
+traceability and arithmetic and recomputes every derived number. Re-run the capture step to refresh.</li>
 <li><strong>One access date.</strong> Everything is a snapshot of 2026-09-16 UTC. The live
 leaderboard moves hourly and contest parameters change between editions (IR-05).</li>
-<li><strong>Two sources have no captured evidence file</strong> and are registered as leads only.</li>
-<li><strong>Contract multipliers are verified for 4 of 20 entries.</strong> The other 16 are
-recorded as <code>null</code> rather than assumed. Completing them is the highest-value next step.</li>
-<li><strong>No equity data.</strong> By design &mdash; see IR-01 and IR-03.</li>
+<li><strong>All 20 contract multipliers are now verified.</strong> Closed this session against CME
+Group spec pages (see <code>research/evidence/CME-CONTRACT-SPECS-BATCH2.md</code>).</li>
+<li><strong>Stock price data comes from a market-data vendor</strong> (Yahoo Finance), not an
+official exchange. It is tiered separately, flagged non-official, and supports only the
+recomputable stock records &mdash; never a contest or rulebook claim.</li>
+<li><strong>Stock multiples are window-bounded.</strong> Each is the extreme within its documented
+fetch window, not a guaranteed all-time extreme. See IR-11 for a case where the longer history
+corrected the locator.</li>
 </ul>""")
 
-    add("""<h3 style="font-size:16px;margin-top:22px">Next actions, in priority order</h3>
+    add("""<h3 style="font-size:16px;margin-top:22px">What was completed this session, and what remains</h3>
 <ol>
-<li><strong>Decide the edition target.</strong> The live contest is futures-only. Confirm whether to
-compete in futures now, or wait for a stocks edition (the March 2026 &ldquo;Magnificent Seven&rdquo;
-edition used a restricted 7-symbol universe).</li>
-<li><strong>Close the 16 null multipliers</strong> against the CME rulebook, then re-run the
-verifier to get max exposure and required-move for every entry.</li>
-<li><strong>Resolve IR-08</strong> &mdash; commission is unverified for the live edition and it
-compounds heavily at high trade counts.</li>
+<li><strong>Closed all 16 open contract multipliers</strong> against CME Group spec pages; max
+exposure and required-move are now computed for every one of the 20 master-list rows.</li>
+<li><strong>Built the volatile-stocks module</strong> the brief asked for: 8 stocks with verified,
+recomputable trough&rarr;peak multiples of 10x&ndash;124x, tiered as non-official market data.</li>
+<li><strong>Resolved IR-08</strong> (no commission clause exists in the live edition&rsquo;s rules)
+and captured the two evidence files that were previously missing.</li>
+<li><strong>Decide the edition target.</strong> The live contest is futures-only. Compete in futures
+now, or wait for a stocks edition (the March 2026 &ldquo;Magnificent Seven&rdquo; edition was won
+with just +17.58%).</li>
 <li><strong>Build the position-sizing model</strong> around the verified 5.00% wipeout boundary
-(IR-04) before any strategy work.</li>
+(IR-04) before any strategy work &mdash; this directly contradicts the brief&rsquo;s &ldquo;no risk
+management needed&rdquo; premise, and remains the biggest open risk.</li>
 <li><strong>Re-read the rules page at the start of every edition.</strong> IR-05 shows position
 caps moving 100x between consecutive futures editions.</li>
 </ol>""")

@@ -37,6 +37,7 @@
 
   function init() {
     bind("ret-q", null, "ret-table", "ret-count");
+    bind("vs-q", null, "vs-table", "vs-count");
     bind("ml-q", "ml-class", "ml-table", "ml-count");
     bind("un-q", "un-ex", "un-table", "un-count");
 

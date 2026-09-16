@@ -7,10 +7,12 @@ research/sources/sources.json. This script re-derives every computed field from 
 re-counts every declared count, re-checks every symbol against the verified contest universe,
 and fails loudly on anything unsourced, arithmetically wrong, or internally inconsistent.
 
-It does NOT reach the network. The sandbox this runs in has no outbound network access
-(verified: curl to tradingview.com, stooq.com and query1.finance.yahoo.com all fail at the
-TLS handshake). Evidence is therefore captured into research/evidence/ by the agent and
-this script audits that captured evidence for completeness, traceability and arithmetic.
+It does NOT reach the network itself. Evidence is captured into research/evidence/ by the
+agent (via the fetch_page tool, which is the sandbox's only working network path — direct
+curl/wget from the shell is blocked) and this script audits that captured evidence for
+completeness, traceability and arithmetic. Every recomputable number (contract exposure,
+required price move, stock multiples, threshold counts) is re-derived here from archived
+values; a claim survives only if it can be recomputed.
 
 Exit code 0 = all checks passed. Exit code 1 = at least one failure.
 
@@ -48,6 +50,13 @@ OFFICIAL_DOMAINS = (
     "cftc.gov",
     "ampglobal.com",
 )
+
+# Market-data vendors are NOT official sources. They are allowed only under the
+# "market_data_vendor" tier, only for the archived, recomputable price-history
+# evidence in the separate volatile-stocks module, and every such source must
+# carry "official_source": false so nobody can launder a vendor into the
+# official tiers by accident.
+MARKET_DATA_VENDOR_DOMAINS = ("yahoo.com",)
 
 SEVERITIES = ("critical", "high", "medium", "low")
 HYP_STATUSES = ("supported", "refuted", "untested", "partially_supported")
@@ -102,13 +111,26 @@ def check_sources(rep: Report) -> dict:
         if sid in ids:
             rep.fail("sources.unique", f"duplicate source_id {sid}")
         ids[sid] = s
-        if s["tier"] not in ("official_primary", "official_secondary", "non_official"):
+        if s["tier"] not in ("official_primary", "official_secondary", "non_official",
+                             "market_data_vendor"):
             rep.fail("sources.tier", f"{sid}: unknown tier {s['tier']!r}")
         host = re.sub(r"^https?://", "", s["url"]).split("/")[0]
-        if not any(host == d or host.endswith("." + d) for d in OFFICIAL_DOMAINS):
-            rep.fail("sources.domain", f"{sid}: {host} is not an official domain")
+        if s["tier"] == "market_data_vendor":
+            # Vendor tier: allowed only for known vendors, and must be explicitly
+            # labelled non-official so it can never be mistaken for a primary source.
+            if not any(host == d or host.endswith("." + d) for d in MARKET_DATA_VENDOR_DOMAINS):
+                rep.fail("sources.vendor_domain",
+                         f"{sid}: {host} is not an allowed market-data-vendor domain")
+            elif s.get("official_source") is not False:
+                rep.fail("sources.vendor_honesty",
+                         f"{sid}: market_data_vendor source must carry official_source=false")
+            else:
+                rep.ok(f"{sid}: {host} registered as market-data vendor (explicitly non-official)")
         else:
-            rep.ok(f"{sid}: {host} is an official domain")
+            if not any(host == d or host.endswith("." + d) for d in OFFICIAL_DOMAINS):
+                rep.fail("sources.domain", f"{sid}: {host} is not an official domain")
+            else:
+                rep.ok(f"{sid}: {host} is an official domain")
         if not s.get("used_for"):
             rep.fail("sources.used_for", f"{sid}: no used_for entries")
         ef = s.get("evidence_file")
@@ -365,6 +387,62 @@ def check_irregularities(rep: Report, source_ids: dict, hyp_ids: set) -> None:
     rep.ok(f"all {len(items)} irregularities well-formed and traceable")
 
 
+def check_volatile_stocks(rep: Report, source_ids: dict) -> None:
+    """Re-derive every volatile-stock multiple from its archived endpoint values.
+
+    data/volatile_stocks.json archives the exact trough and peak adjusted closes captured from the
+    Yahoo Finance chart API. A multiple may only exist if this script can recompute it, the record
+    is flagged window-bounded, and every cited source_id is registered.
+    """
+    try:
+        vs = load("data/volatile_stocks.json")
+    except FileNotFoundError:
+        rep.fail("volatile_stocks.present", "data/volatile_stocks.json missing")
+        return
+    records = vs["records"]
+    if vs["_meta"]["record_count"] != len(records):
+        rep.fail("volatile_stocks.count",
+                 f"_meta.record_count={vs['_meta']['record_count']} but {len(records)} records")
+    else:
+        rep.ok(f"volatile_stocks.json declares {len(records)} records and contains {len(records)}")
+
+    for r in records:
+        rid = r["record_id"]
+        tv, pv = r["trough"]["adjclose"], r["peak"]["adjclose"]
+        if tv <= 0 or pv <= 0:
+            rep.fail("volatile_stocks.positive", f"{rid}: non-positive archived price")
+            continue
+        if r["peak"]["epoch"] <= r["trough"]["epoch"]:
+            rep.fail("volatile_stocks.order", f"{rid}: peak not after trough")
+        exp_mult = pv / tv
+        if not approx(r["return_multiple"], exp_mult, exp_mult * 0.001):
+            rep.fail("volatile_stocks.math",
+                     f"{rid}: multiple {r['return_multiple']} != recomputed {exp_mult:.4f}")
+        else:
+            rep.ok(f"{rid}: {r['symbol']} multiple {r['return_multiple']}x recomputed from archived values")
+        if not r.get("window_bounded"):
+            rep.fail("volatile_stocks.window", f"{rid}: must be flagged window_bounded")
+        for field in ("trough_window", "peak_window"):
+            w = r.get(field)
+            if not w or not w.get("endpoint") or not w.get("sessions"):
+                rep.fail("volatile_stocks.window_meta", f"{rid}: incomplete {field}")
+        for sid in r["source_ids"]:
+            if sid not in source_ids:
+                rep.fail("volatile_stocks.source", f"{rid}: cites unregistered source {sid}")
+            elif source_ids[sid]["tier"] not in ("market_data_vendor",):
+                rep.fail("volatile_stocks.source_tier",
+                         f"{rid}: stock evidence must cite market_data_vendor sources, got {sid}")
+
+    thr = vs["thresholds"]
+    for key, t in thr.items():
+        want = sorted(r["symbol"] for r in records if r["return_multiple"] >= t["threshold"])
+        if sorted(t["symbols"]) != want or t["count"] != len(want):
+            rep.fail("volatile_stocks.threshold",
+                     f"{key}: declared {t['count']} {sorted(t['symbols'])} != recomputed {len(want)} {want}")
+        else:
+            rep.ok(f"volatile_stocks threshold {key}: {t['count']} = {', '.join(want)}")
+
+
 def check_no_unsourced_numbers(rep: Report) -> None:
     """Guard against the failure mode this project exists to prevent: a number with no source."""
     ml = load("data/master_list.json")
@@ -416,6 +494,7 @@ def self_test(rep: Report) -> None:
     uni = load("data/contest_universe.json")
     ml = load("data/master_list.json")
     er = load("data/verified_explosive_returns.json")
+    vs = load("data/volatile_stocks.json")
     source_ids = {s["source_id"]: s for s in src["sources"]}
     universe = {r["tradingview_symbol"]: r for r in uni["instruments"]}
 
@@ -439,6 +518,11 @@ def self_test(rep: Report) -> None:
         fn(s)
         return "research/sources/sources.json", s
 
+    def corrupt_vs(fn):
+        v = copy.deepcopy(vs)
+        fn(v)
+        return "data/volatile_stocks.json", v
+
     def set_cap(e): e["max_open_position_contracts"] = 999.0
     def set_exposure(e): e["max_underlying_exposure"] = 1.0
     def set_move(e): e["underlying_price_move_needed_for_current_rank1_pnl_usd"] = 1.0
@@ -459,6 +543,16 @@ def self_test(rep: Report) -> None:
     def uni_equity(u): u["instruments"][0]["exchange"] = "NASDAQ"
     def src_count(s): s["_meta"]["source_count"] = 999
     def src_domain(s): s["sources"][0]["url"] = "https://example.com/x"
+    def src_vendor_honesty(s):
+        for src_ in s["sources"]:
+            if src_["tier"] == "market_data_vendor":
+                src_["official_source"] = True
+                break
+
+    def vs_math(v): v["records"][0]["return_multiple"] = 999.0
+    def vs_thr(v): v["thresholds"]["ge_100x"]["count"] = 3
+    def vs_source(v): v["records"][0]["source_ids"] = ["FAKE-SRC"]
+    def vs_window(v): v["records"][0]["window_bounded"] = False
 
     scenarios = [
         ("master_list.cap", corrupt_ml(set_cap),
@@ -483,9 +577,19 @@ def self_test(rep: Report) -> None:
         ("universe.no_equities", corrupt_uni(uni_equity), lambda r: check_universe(r)),
         ("sources.count", corrupt_src(src_count), lambda r: check_sources(r)),
         ("sources.domain", corrupt_src(src_domain), lambda r: check_sources(r)),
+        ("sources.vendor_honesty", corrupt_src(src_vendor_honesty), lambda r: check_sources(r)),
+        ("volatile_stocks.math", corrupt_vs(vs_math), lambda r: check_volatile_stocks(r, source_ids)),
+        ("volatile_stocks.threshold", corrupt_vs(vs_thr), lambda r: check_volatile_stocks(r, source_ids)),
+        ("volatile_stocks.source", corrupt_vs(vs_source), lambda r: check_volatile_stocks(r, source_ids)),
+        ("volatile_stocks.window", corrupt_vs(vs_window), lambda r: check_volatile_stocks(r, source_ids)),
     ]
-    # the null-multiplier flag check lives on entry index 4
-    m = copy.deepcopy(ml); m["entries"][4]["flags"] = []
+    # the null-multiplier flag check: strip the multiplier AND its flag from an entry
+    m = copy.deepcopy(ml)
+    m["entries"][4]["flags"] = []
+    m["entries"][4]["contract_multiplier"] = None
+    m["entries"][4]["max_underlying_exposure"] = None
+    m["entries"][4]["underlying_price_move_needed_for_current_rank1_pnl_usd"] = None
+    m["entries"][4]["verification_status"] = "identity_verified"
     scenarios.append(("master_list.null_flag", ("data/master_list.json", m),
                       lambda r: check_master_list(r, universe, source_ids)))
 
@@ -511,6 +615,7 @@ def main() -> int:
     universe = check_universe(rep)
     check_master_list(rep, universe, source_ids)
     check_returns(rep, source_ids)
+    check_volatile_stocks(rep, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)

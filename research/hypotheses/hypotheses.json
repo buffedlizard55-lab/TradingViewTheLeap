@@ -1,154 +1,210 @@
 {
-  "_meta": {
-    "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
-    "generated_utc": "2026-09-16",
-    "hypothesis_count": 9
+ "_meta": {
+  "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
+  "generated_utc": "2026-09-16",
+  "hypothesis_count": 12
+ },
+ "hypotheses": [
+  {
+   "id": "H1",
+   "claim": "Returns of >=10x on the paper account are achievable in The Leap and have been officially recorded.",
+   "prediction": "At least one completed edition has a published #1 net profit >= 900%.",
+   "test": "Count records in data/verified_explosive_returns.json with return_multiple >= 10.",
+   "status": "supported",
+   "evidence": [
+    "Futures - February 2025, BenBernanke1, +5,220.72% (53.2072x), 59,187 participants",
+    "AMP Futures - September 2026, leonardo22_romano, +921.49% (10.2149x), in progress, 92,364 participants"
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
   },
-  "hypotheses": [
-    {
-      "id": "H1",
-      "claim": "Returns of >=10x on the paper account are achievable in The Leap and have been officially recorded.",
-      "prediction": "At least one completed edition has a published #1 net profit >= 900%.",
-      "test": "Count records in data/verified_explosive_returns.json with return_multiple >= 10.",
-      "status": "supported",
-      "evidence": [
-        "Futures - February 2025, BenBernanke1, +5,220.72% (53.2072x), 59,187 participants",
-        "AMP Futures - September 2026, leonardo22_romano, +921.49% (10.2149x), in progress, 92,364 participants"
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H2",
-      "claim": "The route to >=10x in The Leap is leveraged futures, not single stocks.",
-      "prediction": "Every verified >=10x case is a futures edition; stocks editions top out far below 2x.",
-      "test": "Group verified records by asset_class_label and compare best_multiple per class.",
-      "status": "supported",
-      "evidence": [
-        "Both verified >=10x cases are futures editions.",
-        "Stocks editions (n=2): best 1.299x (+29.90%, Dec 2025), worst 1.1758x (+17.58%, Mar 2026) - the LOWEST winning returns of any class.",
-        "Futures editions (n=6): best 53.2072x, worst 2.1192x.",
-        "Live contest rules: 'Leverage for futures: 20:1'"
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H3",
-      "claim": "The live (September 2026) contest permits trading single stocks.",
-      "prediction": "The permitted instrument list contains at least one NASDAQ/NYSE/AMEX single-stock contract.",
-      "test": "Parse data/contest_universe.json and count instruments whose exchange is an equity venue.",
-      "status": "refuted",
-      "evidence": [
-        "94 instruments in the permitted list. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2. Equity instruments: 0."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H4",
-      "claim": "The most volatile underlying is automatically the best instrument to trade for leaderboard rank.",
-      "prediction": "The instruments with the highest per-unit volatility also have the largest achievable absolute $ P/L.",
-      "test": "For instruments with a verified contract multiplier, compute max_underlying_exposure = position cap x multiplier, then the underlying price move needed to reach the current rank-1 P/L.",
-      "status": "refuted",
-      "evidence": [
-        "CME:SOL1! is capped at 1 contract = 500 SOL. Reaching the current rank-1 P/L of $2,303,725 requires a $4,607.45 per-SOL move.",
-        "CME:MSL1! is capped at 5 contracts = 125 SOL, requiring an $18,429.80 per-SOL move.",
-        "CME:XRP1! is capped at 1 contract = 50,000 XRP, requiring a $46.07 per-XRP move.",
-        "CME:MXP1! is capped at 5 contracts = 12,500 XRP, requiring a $184.30 per-XRP move.",
-        "Conclusion: position caps, not per-unit volatility, bind absolute P/L."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026",
-        "CME-SOL-GUIDE",
-        "CME-XRP-PR"
-      ]
-    },
-    {
-      "id": "H5",
-      "claim": "Ranking is by absolute realized profit in USD, so notional capacity matters more than percentage return.",
-      "prediction": "The rules define the ranking metric as realized profit/loss on closed positions, and the leaderboard publishes an absolute $ column.",
-      "test": "Read the ranking clause in the rules and the leaderboard column headers.",
-      "status": "supported",
-      "evidence": [
-        "Rules: 'A participant's place ... is determined based on the realized profit/loss on the Competition account.'",
-        "Rules: 'Realized profit/loss for the purposes of the Competition is considered to be profit/loss on closed positions.'",
-        "Leaderboard columns as served: 'Realized profit %' AND 'Realized profit $'.",
-        "Arithmetic check: rank 1 published as +921.49% and +$2,303,725.00; 250,000 x 9.2149 = 2,303,725.00, an exact match, confirming the $250,000 base."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H6",
-      "claim": "A 100x return has been verified in The Leap.",
-      "prediction": "At least one official record shows return_multiple >= 100.",
-      "test": "Count verified records with return_multiple >= 100.",
-      "status": "refuted",
-      "evidence": [
-        "0 verified cases at or above 100x across all 16 sourced records.",
-        "The single highest verified outcome is 53.2072x (Futures - February 2025)."
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H7",
-      "claim": "Contest parameters are stable across editions, so a strategy tuned once carries over.",
-      "prediction": "Balance, leverage, position caps and commission are identical between consecutive futures editions.",
-      "test": "Diff the TradeStation Jul 2026 rules against the AMP Futures Sep 2026 rules.",
-      "status": "refuted",
-      "evidence": [
-        "Balance 100,000 -> 250,000 virtual USD (2.5x).",
-        "Futures leverage 10:1 -> 20:1 (2x); max notional 1,000,000 -> 5,000,000 (5x).",
-        "NYMEX:CL1! position cap 1.0 -> 100.0 contracts (100x).",
-        "CME:MBT1! position cap 5.0 -> 25.0 contracts (5x).",
-        "Prize-paying ranks 250 -> 300."
-      ],
-      "source_ids": [
-        "TV-RULES-TS-JUL2026",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H8",
-      "claim": "A free-plan account can compete on equal terms in the live edition.",
-      "prediction": "Free-plan participants receive the same market data as paid participants.",
-      "test": "Read the real-time data clause (section 06) of the live rules.",
-      "status": "refuted",
-      "evidence": [
-        "Rules: free-plan users 'who were not previously active users of TradingView's paid services will not be provided with the Competition Real-Time Data by reason of their participation in the Competition.'",
-        "Rules: after subscribing, 'access to the Competition Real-Time Data will then be granted within twenty-four (24) hours'.",
-        "They may register and are prize-eligible, but they trade without competition real-time data unless they subscribe or trial."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H9",
-      "claim": "Maximum deployable notional in the live edition is $5,000,000.",
-      "prediction": "balance x leverage = 250,000 x 20.",
-      "test": "Arithmetic on two verified constants from the rules.",
-      "status": "supported",
-      "evidence": [
-        "'The preset balance size for the Paper Trading Competition Account is 250,000 virtual USD. Leverage for futures: 20:1.'",
-        "Computed: 250,000 x 20 = 5,000,000 USD.",
-        "Corollary (computed): an adverse move of 250,000 / 5,000,000 = 5.00% on fully deployed notional equals the entire balance. Equivalently 1/20 = 5%, the inverse of the stated leverage."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    }
-  ]
+  {
+   "id": "H2",
+   "claim": "The route to >=10x in The Leap is leveraged futures, not single stocks.",
+   "prediction": "Every verified >=10x case is a futures edition; stocks editions top out far below 2x.",
+   "test": "Group verified records by asset_class_label and compare best_multiple per class.",
+   "status": "supported",
+   "evidence": [
+    "Both verified >=10x cases are futures editions.",
+    "Stocks editions (n=2): best 1.299x (+29.90%, Dec 2025), worst 1.1758x (+17.58%, Mar 2026) - the LOWEST winning returns of any class.",
+    "Futures editions (n=6): best 53.2072x, worst 2.1192x.",
+    "Live contest rules: 'Leverage for futures: 20:1'"
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H3",
+   "claim": "The live (September 2026) contest permits trading single stocks.",
+   "prediction": "The permitted instrument list contains at least one NASDAQ/NYSE/AMEX single-stock contract.",
+   "test": "Parse data/contest_universe.json and count instruments whose exchange is an equity venue.",
+   "status": "refuted",
+   "evidence": [
+    "94 instruments in the permitted list. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2. Equity instruments: 0."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H4",
+   "claim": "The most volatile underlying is automatically the best instrument to trade for leaderboard rank.",
+   "prediction": "The instruments with the highest per-unit volatility also have the largest achievable absolute $ P/L.",
+   "test": "For instruments with a verified contract multiplier, compute max_underlying_exposure = position cap x multiplier, then the underlying price move needed to reach the current rank-1 P/L.",
+   "status": "refuted",
+   "evidence": [
+    "CME:SOL1! is capped at 1 contract = 500 SOL. Reaching the current rank-1 P/L of $2,303,725 requires a $4,607.45 per-SOL move.",
+    "CME:MSL1! is capped at 5 contracts = 125 SOL, requiring an $18,429.80 per-SOL move.",
+    "CME:XRP1! is capped at 1 contract = 50,000 XRP, requiring a $46.07 per-XRP move.",
+    "CME:MXP1! is capped at 5 contracts = 12,500 XRP, requiring a $184.30 per-XRP move.",
+    "Conclusion: position caps, not per-unit volatility, bind absolute P/L."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026",
+    "CME-SOL-GUIDE",
+    "CME-XRP-PR"
+   ]
+  },
+  {
+   "id": "H5",
+   "claim": "Ranking is by absolute realized profit in USD, so notional capacity matters more than percentage return.",
+   "prediction": "The rules define the ranking metric as realized profit/loss on closed positions, and the leaderboard publishes an absolute $ column.",
+   "test": "Read the ranking clause in the rules and the leaderboard column headers.",
+   "status": "supported",
+   "evidence": [
+    "Rules: 'A participant's place ... is determined based on the realized profit/loss on the Competition account.'",
+    "Rules: 'Realized profit/loss for the purposes of the Competition is considered to be profit/loss on closed positions.'",
+    "Leaderboard columns as served: 'Realized profit %' AND 'Realized profit $'.",
+    "Arithmetic check: rank 1 published as +921.49% and +$2,303,725.00; 250,000 x 9.2149 = 2,303,725.00, an exact match, confirming the $250,000 base."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H6",
+   "claim": "A 100x return has been verified in The Leap.",
+   "prediction": "At least one official record shows return_multiple >= 100.",
+   "test": "Count verified records with return_multiple >= 100.",
+   "status": "refuted",
+   "evidence": [
+    "0 verified cases at or above 100x across all 16 sourced records.",
+    "The single highest verified outcome is 53.2072x (Futures - February 2025)."
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H7",
+   "claim": "Contest parameters are stable across editions, so a strategy tuned once carries over.",
+   "prediction": "Balance, leverage, position caps and commission are identical between consecutive futures editions.",
+   "test": "Diff the TradeStation Jul 2026 rules against the AMP Futures Sep 2026 rules.",
+   "status": "refuted",
+   "evidence": [
+    "Balance 100,000 -> 250,000 virtual USD (2.5x).",
+    "Futures leverage 10:1 -> 20:1 (2x); max notional 1,000,000 -> 5,000,000 (5x).",
+    "NYMEX:CL1! position cap 1.0 -> 100.0 contracts (100x).",
+    "CME:MBT1! position cap 5.0 -> 25.0 contracts (5x).",
+    "Prize-paying ranks 250 -> 300."
+   ],
+   "source_ids": [
+    "TV-RULES-TS-JUL2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H8",
+   "claim": "A free-plan account can compete on equal terms in the live edition.",
+   "prediction": "Free-plan participants receive the same market data as paid participants.",
+   "test": "Read the real-time data clause (section 06) of the live rules.",
+   "status": "refuted",
+   "evidence": [
+    "Rules: free-plan users 'who were not previously active users of TradingView's paid services will not be provided with the Competition Real-Time Data by reason of their participation in the Competition.'",
+    "Rules: after subscribing, 'access to the Competition Real-Time Data will then be granted within twenty-four (24) hours'.",
+    "They may register and are prize-eligible, but they trade without competition real-time data unless they subscribe or trial."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H9",
+   "claim": "Maximum deployable notional in the live edition is $5,000,000.",
+   "prediction": "balance x leverage = 250,000 x 20.",
+   "test": "Arithmetic on two verified constants from the rules.",
+   "status": "supported",
+   "evidence": [
+    "'The preset balance size for the Paper Trading Competition Account is 250,000 virtual USD. Leverage for futures: 20:1.'",
+    "Computed: 250,000 x 20 = 5,000,000 USD.",
+    "Corollary (computed): an adverse move of 250,000 / 5,000,000 = 5.00% on fully deployed notional equals the entire balance. Equivalently 1/20 = 5%, the inverse of the stated leverage."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H10",
+   "claim": "Mid-contest prize-tier entry thresholds of the live edition are far below rank 1: roughly +441% for the top 50, +352% for the top 100 and +228% for the top 250 (day ~16 snapshot).",
+   "prediction": "If rank thresholds scale smoothly, the top-50 boundary should be near half the rank-1 return and the top-250 boundary near a quarter.",
+   "test": "Read the verified deep-leaderboard snapshot rows: rank 50 (last $400 tier), rank 100, rank 250 (last displayed row).",
+   "status": "supported",
+   "evidence": [
+    "Rank 50 nikhilln143 +441.44% +$1,103,610.00 (last row of the $400 prize tier; rank 51 NOESIS_CAPITAL +437.39%).",
+    "Rank 100 NQHawk +352.11% +$880,267.50.",
+    "Rank 250 Dip_Dey +228.14% +$570,345.80 (last displayed row of the public leaderboard).",
+    "Boundary rows: rank 25 ashutoshrajan6 +537.91% is the last $550 tier; rank 26 RogueTrader84 +537.20% the first $400 tier.",
+    "All figures are a day ~16 snapshot of a 30-day contest; final thresholds will differ (see H12 and past-edition records)."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H11",
+   "claim": "The leaderboard's displayed $ profit equals 250,000 x (displayed %)/100 up to the rounding of the percentage to two decimals \u2014 the % and $ columns are one number, not two.",
+   "prediction": "Every displayed $ should lie within $12.50 of 250,000 x pct/100 (max rounding error of a 2-decimal % on a $250,000 base).",
+   "test": "Recompute for all captured rows with both columns: rank 1, 2, 50, 100, 250.",
+   "status": "supported",
+   "evidence": [
+    "Rank 1: 250,000 x 9.2149 = 2,303,725.00 \u2014 matches displayed +$2,303,725.00 exactly.",
+    "Rank 2: 250,000 x 7.5036 = 1,875,900.00 vs displayed +$1,875,905.00 (diff $5.00).",
+    "Rank 50: 250,000 x 4.4144 = 1,103,600.00 vs displayed +$1,103,610.00 (diff $10.00).",
+    "Rank 100: 250,000 x 3.5211 = 880,275.00 vs displayed +$880,267.50 (diff $7.50).",
+    "Rank 250: 250,000 x 2.2814 = 570,350.00 vs displayed +$570,345.80 (diff $4.20).",
+    "All diffs <= $12.50 = 250,000 x 0.005%, the exact bound implied by 2-decimal % rounding."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H12",
+   "claim": "Winning thresholds are edition-specific, not universal: futures editions demand ~10x+ at the top while stocks editions have been won with under 1.2x, so asset class determines the required return more than any fixed 'win number'.",
+   "prediction": "A completed stocks edition should show a #1 return an order of magnitude below futures editions.",
+   "test": "Compare the verified #1 records across editions: CME futures edition 53.2072x (BenBernanke1, official blog + landing page), live futures edition day ~16 rank 1 10.2149x, stocks 'Magnificent Seven' March 2026 final #1 +17.58% (1.1758x).",
+   "status": "supported",
+   "evidence": [
+    "Magnificent Seven (stocks, March 2026, COMPLETED): 1st place prodigy5284 +17.58% +$17,576.05 \u2014 41,301 participants, 19 days.",
+    "The Leap by CME (futures, ended March 2025): winner BenBernanke1, official blog announcement, with the 53.2072x net-profit record displayed on the landing page.",
+    "AMP Futures September 2026 (futures, live): rank 1 leonardo22_romano +921.49% (10.2149x) at day ~16 of 30.",
+    "Ratio of best futures #1 to best stocks #1: 53.2072x / 1.1758x \u2248 45x."
+   ],
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-RESULTS-BENBERNANKE1",
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  }
+ ]
 }
