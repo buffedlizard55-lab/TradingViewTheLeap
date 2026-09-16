@@ -387,7 +387,7 @@ drawdowns. This table documents what happened, not what to do.</li>
     add(f"""<div class="callout critical"><h3>Why this does not change the contest plan</h3>
 <p>{e(vs.get('contest_relevance_note',''))}</p>
 <p>What it <em>does</em> change: the project can now show verified, sourced, recomputable
-explosive returns in real market data &mdash; 5x through 124x &mdash; instead of declining to
+explosive returns in real market data &mdash; 5x through 382x &mdash; instead of declining to
 answer. The honest bridge into the contest remains the futures master list, where leverage
 (not stock selection) is what produced the only officially recorded &ge;10x results.</p></div>""")
     add("</section>")
@@ -497,8 +497,8 @@ is exact. Where it reads <code>null</code>, the multiplier is unverified and no 
 <p>The brief asked for highly volatile <em>stocks</em> with verified 5x&ndash;100x returns. The
 live contest permits no stocks, so equities are kept out of this futures master list entirely.
 That equity research now exists in its own audited module &mdash; see the
-<a href="#stocks">Volatile stocks</a> section, where eight trough&rarr;peak multiples of
-10x&ndash;124x are archived from a commercial data vendor and recomputed by the verifier. Two
+<a href="#stocks">Volatile stocks</a> section, where twenty trough&rarr;peak multiples of
+8.6x&ndash;382x are archived from a commercial data vendor and recomputed by the verifier. Two
 tiers of evidence, one rule: no number without a source.</p></div>""")
     add("</section>")
 
@@ -674,6 +674,10 @@ corrected the locator.</li>
 exposure and required-move are now computed for every one of the 20 master-list rows.</li>
 <li><strong>Built the volatile-stocks module</strong> the brief asked for: 8 stocks with verified,
 recomputable trough&rarr;peak multiples of 10x&ndash;124x, tiered as non-official market data.</li>
+<li><strong>Expanded the volatile-stocks module to 20 records</strong> (second batch): ENPH 382x,
+AMD 323x, MARA 190x, CVNA 129x, RIOT 120x, SHOP 93x, NVAX 81x, APP 79x, PLUG 72x, NIO 48x,
+HOOD 20x and PTON 8.6x added with the same window-bounded methodology; six records now clear
+100x and ten clear 50x.</li>
 <li><strong>Resolved IR-08</strong> (no commission clause exists in the live edition&rsquo;s rules)
 and captured the two evidence files that were previously missing.</li>
 <li><strong>Decide the edition target.</strong> The live contest is futures-only. Compete in futures
