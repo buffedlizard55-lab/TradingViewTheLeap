@@ -1,124 +1,505 @@
 {
-  "_meta": {
-    "description": "Registry of every source used anywhere in this project. A claim in data/ or research/ may only cite a source_id that exists here.",
-    "tier_definitions": {
-      "official_primary": "Published by the contest organiser, the listing exchange, or a government/regulatory body. Authoritative for what it states.",
-      "official_secondary": "Published by an official body but describing another body's product, or an official press release restating a rulebook.",
-      "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking."
-    },
-    "source_count": 8
+ "_meta": {
+  "description": "Registry of every source used anywhere in this project. A claim in data/ or research/ may only cite a source_id that exists here.",
+  "tier_definitions": {
+   "official_primary": "Published by the contest organiser, the listing exchange, or a government/regulatory body. Authoritative for what it states.",
+   "official_secondary": "Published by an official body but describing another body's product, or an official press release restating a rulebook.",
+   "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
+   "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "sources": [
-    {
-      "source_id": "TV-THELEAP-LANDING",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap — Paper Trading Competition by TradingView",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "The Leap is a paper trading (virtual money) competition with real-money prizes",
-        "Identity, dates, sponsor, prize pool and participant count of the live contest",
-        "Verified net-profit records of past #1 finishers"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING.md"
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures — September, 2026",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Prize ladder for the live contest",
-        "Starting balance of 250,000 virtual USD",
-        "5-day minimum trading activity",
-        "Live leaderboard: realized profit % and $ per rank"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026.md"
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures — Terms and Conditions (Official Competition Rules)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Ranking metric: realized profit/loss on closed positions",
-        "Balance 250,000 virtual USD; leverage for futures 20:1",
-        "Complete 94-instrument permitted universe and per-instrument position limits",
-        "Competition period, registration window, eligibility, prize ladder, total cash ARV",
-        "Transaction rate limit and auto-close of open positions"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026.md"
-    },
-    {
-      "source_id": "TV-RULES-TS-JUL2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap with TradeStation — Terms and Conditions",
-      "url": "https://www.tradingview.com/the-leap/tradestation-july-2026/rules/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Prior-edition baseline: 100,000 balance, 10:1 futures leverage, $0.85/contract commission",
-        "Confirmation that leaderboard refreshes no more than once an hour",
-        "Confirmation that contest mechanics change per edition (regime risk)"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-TS-JUL2026.md"
-    },
-    {
-      "source_id": "TV-CONTEST-MAG7-MAR2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by TradingView — March, 2026 (Magnificent Seven)",
-      "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Evidence that a STOCKS edition exists and uses a restricted symbol universe",
-        "Same realized-profit/loss ranking metric across editions"
-      ],
-      "evidence_file": null
-    },
-    {
-      "source_id": "CME-SOL-GUIDE",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "The essential guide to Solana futures (contract specifications)",
-      "url": "https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "SOL1! contract size 500 SOL; MSL1! contract size 25 SOL",
-        "CME 439 / CME 440 rulebook chapters; Globex codes SOL / MSL",
-        "Minimum price fluctuation and cash settlement reference rate"
-      ],
-      "evidence_file": "research/evidence/CME-SOL-GUIDE.md"
-    },
-    {
-      "source_id": "CME-XRP-PR",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "CME Group to Expand Crypto Derivatives Suite with Launch of XRP Futures (press release, 24 Apr 2025)",
-      "url": "https://www.cmegroup.com/media-room/press-releases/2025/4/24/cme_group_to_expandcryptoderivativessuitewithlaunchofxrpfutures.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "XRP1! contract size 50,000 XRP; MXP1! contract size 2,500 XRP",
-        "Launch date 19 May 2025; cash-settled to the CME CF XRP-Dollar Reference Rate"
-      ],
-      "evidence_file": "research/evidence/CME-XRP-PR.md"
-    },
-    {
-      "source_id": "TV-RESULTS-BENBERNANKE1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "Leap by CME — winners announced (blog)",
-      "url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Official results page for the edition in which the highest recorded net profit (+5,220.72%) was posted"
-      ],
-      "evidence_file": null
-    }
-  ]
+  "source_count": 36
+ },
+ "sources": [
+  {
+   "source_id": "TV-THELEAP-LANDING",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap \u2014 Paper Trading Competition by TradingView",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "The Leap is a paper trading (virtual money) competition with real-money prizes",
+    "Identity, dates, sponsor, prize pool and participant count of the live contest",
+    "Verified net-profit records of past #1 finishers"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING.md"
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures \u2014 September, 2026",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Prize ladder for the live contest",
+    "Starting balance of 250,000 virtual USD",
+    "5-day minimum trading activity",
+    "Live leaderboard: realized profit % and $ per rank"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026.md"
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures \u2014 Terms and Conditions (Official Competition Rules)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Ranking metric: realized profit/loss on closed positions",
+    "Balance 250,000 virtual USD; leverage for futures 20:1",
+    "Complete 94-instrument permitted universe and per-instrument position limits",
+    "Competition period, registration window, eligibility, prize ladder, total cash ARV",
+    "Transaction rate limit and auto-close of open positions"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026.md"
+  },
+  {
+   "source_id": "TV-RULES-TS-JUL2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap with TradeStation \u2014 Terms and Conditions",
+   "url": "https://www.tradingview.com/the-leap/tradestation-july-2026/rules/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Prior-edition baseline: 100,000 balance, 10:1 futures leverage, $0.85/contract commission",
+    "Confirmation that leaderboard refreshes no more than once an hour",
+    "Confirmation that contest mechanics change per edition (regime risk)"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-TS-JUL2026.md"
+  },
+  {
+   "source_id": "TV-CONTEST-MAG7-MAR2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by TradingView \u2014 March, 2026 (Magnificent Seven)",
+   "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Stocks-edition Leap (March 2026): final #1 return of +17.58% (1.1758x), the smallest winning return of any edition",
+    "Edition facts: 19 days duration, 41,301 participants, prizes = 500 subscriptions, assets = Stocks"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-MAG7-MAR2026.md"
+  },
+  {
+   "source_id": "CME-SOL-GUIDE",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "The essential guide to Solana futures (contract specifications)",
+   "url": "https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "SOL1! contract size 500 SOL; MSL1! contract size 25 SOL",
+    "CME 439 / CME 440 rulebook chapters; Globex codes SOL / MSL",
+    "Minimum price fluctuation and cash settlement reference rate"
+   ],
+   "evidence_file": "research/evidence/CME-SOL-GUIDE.md"
+  },
+  {
+   "source_id": "CME-XRP-PR",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "CME Group to Expand Crypto Derivatives Suite with Launch of XRP Futures (press release, 24 Apr 2025)",
+   "url": "https://www.cmegroup.com/media-room/press-releases/2025/4/24/cme_group_to_expandcryptoderivativessuitewithlaunchofxrpfutures.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "XRP1! contract size 50,000 XRP; MXP1! contract size 2,500 XRP",
+    "Launch date 19 May 2025; cash-settled to the CME CF XRP-Dollar Reference Rate"
+   ],
+   "evidence_file": "research/evidence/CME-XRP-PR.md"
+  },
+  {
+   "source_id": "TV-RESULTS-BENBERNANKE1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "Leap by CME \u2014 winners announced (blog)",
+   "url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Official confirmation that BenBernanke1 won The Leap by CME (1st place, $3,000)",
+    "CME-edition facts: 59,187 participants, over 3 million trades, announced 2025-03-06",
+    "CME-edition prize ladder: $3,000/$1,500/$1,200/$1,000/$800 + 20x$500 + 25x$300 + 200x 6-month subscriptions"
+   ],
+   "evidence_file": "research/evidence/TV-RESULTS-BENBERNANKE1.md"
+  },
+  {
+   "source_id": "CME-SPEC-BTC1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Bitcoin futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of BTC1!: 5 bitcoin (rule CME 350)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MBT1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Bitcoin futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MBT1!: 0.10 bitcoin"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-ETH1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Ether futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of ETH1!: 50 ether (rule CME 349)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MET1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Ether futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MET1!: 0.1 ether"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-NG1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Henry Hub Natural Gas futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of NG1!: 10,000 mmBtu (rule NYMEX 220)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MNG1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Henry Hub Natural Gas futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MNG1!: 1,000 mmBtu (rule NYMEX 440)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-CL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Crude Oil (Light Sweet) futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of CL1!: 1,000 barrels (rule NYMEX 200)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MCL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro WTI Crude Oil futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MCL1!: 100 barrels (rule NYMEX 309)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-QM1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "E-mini Crude Oil futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of QM1!: 500 barrels (rule NYMEX 401)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-RB1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "RBOB Gasoline futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of RB1!: 42,000 gallons (rule NYMEX 191)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-HO1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "NY Harbor ULSD (Heating Oil) futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of HO1!: 42,000 gallons (rule NYMEX 150)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SI1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Silver futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SI1!: 5,000 troy ounces (rule COMEX 112)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SIC1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "100-Ounce Silver futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SIC1!: 100 troy ounces (rule COMEX 130)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SIL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Silver (1000-oz) futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SIL1!: 1,000 troy ounces"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-PL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Platinum futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of PL1!: 50 troy ounces"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-NQ1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "E-mini Nasdaq-100 futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of NQ1!: $20 x Nasdaq-100 Index (rule CME 359)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-GME",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "GME",
+   "title": "GME daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.699999988079071 on 2020-04-03 (window 2020-03-01\u21922020-05-01)",
+    "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01\u21922021-02-01, separate fetch)",
+    "Recomputable multiple 124.11x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-AMC",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "AMC",
+   "title": "AMC daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 20.799999237060547 on 2020-04-13 (window 2020-03-01\u21922020-05-01)",
+    "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15\u21922021-06-15, separate fetch)",
+    "Recomputable multiple 30.07x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-SMCI",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "SMCI",
+   "title": "SMCI daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 5.242000102996826 on 2022-10-12 (window 2022-10-01\u21922022-12-01)",
+    "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15\u21922024-04-01, separate fetch)",
+    "Recomputable multiple 22.66x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-MSTR",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "MSTR",
+   "title": "MSTR daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 9.220000267028809 on 2020-03-18 (window 2020-03-01\u21922020-04-15)",
+    "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15\u21922025-08-01, plus confirmation window 2025-07-16\u21922025-12-01)",
+    "Recomputable multiple 49.45x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-NVDA",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "NVDA",
+   "title": "NVDA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 11.186728477478027 on 2022-10-14 (window 2022-10-01\u21922022-11-15)",
+    "Verified peak adjclose 135.20559692382812 on 2024-06-18 (window 2024-06-01\u21922024-07-01, separate fetch)",
+    "Recomputable multiple 12.09x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-TSLA",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "TSLA",
+   "title": "TSLA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 24.08133316040039 on 2020-03-18 (window 2020-03-01\u21922020-04-15)",
+    "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15\u21922021-11-15, separate fetch)",
+    "Recomputable multiple 17.02x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-PLTR",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "PLTR",
+   "title": "PLTR daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 6.0 on 2022-12-27 (window 2022-12-01\u21922023-01-15)",
+    "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15\u21922025-12-15, separate fetch)",
+    "Recomputable multiple 34.53x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-COIN",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "COIN",
+   "title": "COIN daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 32.529998779296875 on 2022-12-28 (window 2022-12-01\u21922023-01-15)",
+    "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01\u21922024-12-01, separate fetch)",
+    "Recomputable multiple 10.00x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-MSTR",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "MSTR",
+   "title": "MSTR monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1514764800&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Monthly locator scan 2018\u21922026: trough monthly close 11.81 (2020-03), peak monthly close 404.23 (2025-06)",
+    "Selection of the daily trough/peak windows for MSTR"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-GME",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "GME",
+   "title": "GME monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1009843200&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Full-history monthly scan: all monthly lows 2002\u20132019 \u2265 1.1775, below which the 2020-04-03 daily trough 0.70 sits",
+    "Confirms the April-2020 trough is the global adjusted low of the fetched history up to that point"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-SMCI",
+   "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "SMCI",
+   "title": "SMCI monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1167609600&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Full-history monthly scan: monthly lows \u2248 0.44\u20130.51 in 2008\u20132009, disproving the 2022 trough as all-time",
+    "Basis for keeping the SMCI multiple window-bounded (22.66x) rather than asserting an all-time multiple"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "CME-SPEC-XRP1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "XRP futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of XRP1!: 50,000 XRP (rule CME 435), confirmed on the live spec page",
+    "Proof the XRP futures product is listed and trading (XRPU6, volume 174 on 2026-09-15), closing IR-10"
+   ],
+   "evidence_file": "research/evidence/CME-SPEC-XRP.md"
+  }
+ ]
 }

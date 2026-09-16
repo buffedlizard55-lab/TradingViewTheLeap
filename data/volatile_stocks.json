@@ -1,0 +1,418 @@
+{
+ "_meta": {
+  "description": "Verified trough\u2192peak close multiples for high-volatility stocks, archived from the Yahoo Finance v8 chart API. Every multiple is recomputable as peak.adjclose / trough.adjclose from values stored here; scripts/verify.py re-derives each one. All claims are window-bounded (extremum inside the documented fetch window), not all-time claims.",
+  "vendor_notice": "Yahoo Finance is a commercial market-data vendor, NOT an official exchange, contest organiser or regulator. This module is deliberately separate from the official-source claims about the futures contest.",
+  "record_count": 8,
+  "generated_utc": "2026-09-16",
+  "endpoint_pattern": "https://query1.finance.yahoo.com/v8/finance/chart/{SYMBOL}?period1={epoch}&period2={epoch}&interval=1d",
+  "evidence_files": [
+   "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  ]
+ },
+ "records": [
+  {
+   "record_id": "VS-GME",
+   "symbol": "GME",
+   "name": "GameStop Corp.",
+   "exchange": "NYSE",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 0.699999988079071,
+    "epoch": 1585920600,
+    "date_utc": "2020-04-03"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d",
+    "period1": 1583020800,
+    "period2": 1588291200,
+    "sessions": 43,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-05-01"
+   },
+   "peak": {
+    "adjclose": 86.87750244140625,
+    "epoch": 1611757800,
+    "date_utc": "2021-01-27"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1609459200&period2=1612137600&interval=1d",
+    "period1": 1609459200,
+    "period2": 1612137600,
+    "sessions": 19,
+    "start_utc": "2021-01-01",
+    "end_utc": "2021-02-01"
+   },
+   "return_multiple": 124.11,
+   "calendar_days": 299,
+   "window_bounded": true,
+   "split_note": "adjclose carries the June-2024 4-for-1 split (raw 2021-01-27 close $347.51 / 4 = $86.8775)",
+   "source_ids": [
+    "YAHOO-DAILY-GME",
+    "YAHOO-MONTHLY-GME"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-MSTR",
+   "symbol": "MSTR",
+   "name": "Strategy Inc",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 9.220000267028809,
+    "epoch": 1584538200,
+    "date_utc": "2020-03-18"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d",
+    "period1": 1583020800,
+    "period2": 1586908800,
+    "sessions": 31,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-04-15"
+   },
+   "peak": {
+    "adjclose": 455.8999938964844,
+    "epoch": 1752672600,
+    "date_utc": "2025-07-16"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1749945600&period2=1753920000&interval=1d",
+    "period1": 1749945600,
+    "period2": 1753920000,
+    "sessions": 31,
+    "start_utc": "2025-06-15",
+    "end_utc": "2025-07-31"
+   },
+   "return_multiple": 49.45,
+   "calendar_days": 1946,
+   "window_bounded": true,
+   "split_note": "adjclose carries the August-2024 10-for-1 split; peak confirmed by follow-up window 2025-07-16\u21922025-12-01 (no later close above 455.9)",
+   "source_ids": [
+    "YAHOO-DAILY-MSTR",
+    "YAHOO-MONTHLY-MSTR"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-PLTR",
+   "symbol": "PLTR",
+   "name": "Palantir Technologies Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 6.0,
+    "epoch": 1672151400,
+    "date_utc": "2022-12-27"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d",
+    "period1": 1669852800,
+    "period2": 1673740800,
+    "sessions": 30,
+    "start_utc": "2022-12-01",
+    "end_utc": "2023-01-15"
+   },
+   "peak": {
+    "adjclose": 207.17999267578125,
+    "epoch": 1762180200,
+    "date_utc": "2025-11-03"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1760486400&period2=1765756800&interval=1d",
+    "period1": 1760486400,
+    "period2": 1765756800,
+    "sessions": 42,
+    "start_utc": "2025-10-15",
+    "end_utc": "2025-12-15"
+   },
+   "return_multiple": 34.53,
+   "calendar_days": 1042,
+   "window_bounded": true,
+   "split_note": "no stock splits since IPO; adjclose equals raw close",
+   "source_ids": [
+    "YAHOO-DAILY-PLTR"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-AMC",
+   "symbol": "AMC",
+   "name": "AMC Entertainment Holdings, Inc.",
+   "exchange": "NYSE",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 20.799999237060547,
+    "epoch": 1586784600,
+    "date_utc": "2020-04-13"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d",
+    "period1": 1583020800,
+    "period2": 1588291200,
+    "sessions": 43,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-05-01"
+   },
+   "peak": {
+    "adjclose": 625.5,
+    "epoch": 1622640600,
+    "date_utc": "2021-06-02"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1621036800&period2=1623715200&interval=1d",
+    "period1": 1621036800,
+    "period2": 1623715200,
+    "sessions": 20,
+    "start_utc": "2021-05-15",
+    "end_utc": "2021-06-15"
+   },
+   "return_multiple": 30.07,
+   "calendar_days": 415,
+   "window_bounded": true,
+   "split_note": "adjclose carries the August-2025 1-for-10 reverse split",
+   "source_ids": [
+    "YAHOO-DAILY-AMC"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-SMCI",
+   "symbol": "SMCI",
+   "name": "Super Micro Computer, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 5.242000102996826,
+    "epoch": 1665581400,
+    "date_utc": "2022-10-12"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d",
+    "period1": 1664582400,
+    "period2": 1669852800,
+    "sessions": 42,
+    "start_utc": "2022-10-01",
+    "end_utc": "2022-12-01"
+   },
+   "peak": {
+    "adjclose": 118.80699920654297,
+    "epoch": 1710336600,
+    "date_utc": "2024-03-13"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1707955200&period2=1711929600&interval=1d",
+    "period1": 1707955200,
+    "period2": 1711929600,
+    "sessions": 30,
+    "start_utc": "2024-02-15",
+    "end_utc": "2024-04-01"
+   },
+   "return_multiple": 22.66,
+   "calendar_days": 518,
+   "window_bounded": true,
+   "split_note": "adjclose carries the October-2024 10-for-1 split (raw peak close $1,188.07 / 10)",
+   "source_ids": [
+    "YAHOO-DAILY-SMCI",
+    "YAHOO-MONTHLY-SMCI"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-TSLA",
+   "symbol": "TSLA",
+   "name": "Tesla, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 24.08133316040039,
+    "epoch": 1584538200,
+    "date_utc": "2020-03-18"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d",
+    "period1": 1583020800,
+    "period2": 1586908800,
+    "sessions": 31,
+    "start_utc": "2020-03-01",
+    "end_utc": "2020-04-15"
+   },
+   "peak": {
+    "adjclose": 409.9700012207031,
+    "epoch": 1636032600,
+    "date_utc": "2021-11-04"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1634256000&period2=1636934400&interval=1d",
+    "period1": 1634256000,
+    "period2": 1636934400,
+    "sessions": 21,
+    "start_utc": "2021-10-15",
+    "end_utc": "2021-11-15"
+   },
+   "return_multiple": 17.02,
+   "calendar_days": 596,
+   "window_bounded": true,
+   "split_note": "adjclose carries the Aug-2020 5-for-1 and Aug-2022 3-for-1 splits",
+   "source_ids": [
+    "YAHOO-DAILY-TSLA"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-NVDA",
+   "symbol": "NVDA",
+   "name": "NVIDIA Corporation",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 11.186728477478027,
+    "epoch": 1665754200,
+    "date_utc": "2022-10-14"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
+    "period1": 1664582400,
+    "period2": 1668470400,
+    "sessions": 31,
+    "start_utc": "2022-10-01",
+    "end_utc": "2022-11-15"
+   },
+   "peak": {
+    "adjclose": 135.20559692382812,
+    "epoch": 1718717400,
+    "date_utc": "2024-06-18"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1717200000&period2=1719792000&interval=1d",
+    "period1": 1717200000,
+    "period2": 1719792000,
+    "sessions": 19,
+    "start_utc": "2024-06-01",
+    "end_utc": "2024-07-01"
+   },
+   "return_multiple": 12.09,
+   "calendar_days": 613,
+   "window_bounded": true,
+   "split_note": "adjclose carries the June-2024 10-for-1 split (raw peak close $1,352.06 / 10)",
+   "source_ids": [
+    "YAHOO-DAILY-NVDA"
+   ],
+   "accessed_utc": "2026-09-16"
+  },
+  {
+   "record_id": "VS-COIN",
+   "symbol": "COIN",
+   "name": "Coinbase Global, Inc.",
+   "exchange": "NasdaqGS",
+   "asset_class": "equity",
+   "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
+   "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+   "trough": {
+    "adjclose": 32.529998779296875,
+    "epoch": 1672237800,
+    "date_utc": "2022-12-28"
+   },
+   "trough_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d",
+    "period1": 1669852800,
+    "period2": 1673740800,
+    "sessions": 30,
+    "start_utc": "2022-12-01",
+    "end_utc": "2023-01-15"
+   },
+   "peak": {
+    "adjclose": 325.4100036621094,
+    "epoch": 1731940200,
+    "date_utc": "2024-11-18"
+   },
+   "peak_window": {
+    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1730419200&period2=1733011200&interval=1d",
+    "period1": 1730419200,
+    "period2": 1733011200,
+    "sessions": 20,
+    "start_utc": "2024-11-01",
+    "end_utc": "2024-12-01"
+   },
+   "return_multiple": 10.0,
+   "calendar_days": 691,
+   "window_bounded": true,
+   "split_note": "no stock splits since IPO; adjclose equals raw close",
+   "source_ids": [
+    "YAHOO-DAILY-COIN"
+   ],
+   "accessed_utc": "2026-09-16"
+  }
+ ],
+ "thresholds": {
+  "ge_5x": {
+   "threshold": 5,
+   "count": 8,
+   "symbols": [
+    "GME",
+    "AMC",
+    "SMCI",
+    "MSTR",
+    "NVDA",
+    "TSLA",
+    "PLTR",
+    "COIN"
+   ]
+  },
+  "ge_10x": {
+   "threshold": 10,
+   "count": 8,
+   "symbols": [
+    "GME",
+    "AMC",
+    "SMCI",
+    "MSTR",
+    "NVDA",
+    "TSLA",
+    "PLTR",
+    "COIN"
+   ]
+  },
+  "ge_20x": {
+   "threshold": 20,
+   "count": 5,
+   "symbols": [
+    "GME",
+    "AMC",
+    "SMCI",
+    "MSTR",
+    "PLTR"
+   ]
+  },
+  "ge_50x": {
+   "threshold": 50,
+   "count": 1,
+   "symbols": [
+    "GME"
+   ]
+  },
+  "ge_100x": {
+   "threshold": 100,
+   "count": 1,
+   "symbols": [
+    "GME"
+   ]
+  }
+ },
+ "contest_relevance_note": "These are equity price returns over multi-year windows. The Leap (September 2026 edition) is a futures-only contest \u2014 0 equities in the verified universe \u2014 so none of these tickers is tradeable in the contest. They document what extreme volatility looks like in real, verified market data and bound expectations: even a 124x stock move required holding ~10 months."
+}

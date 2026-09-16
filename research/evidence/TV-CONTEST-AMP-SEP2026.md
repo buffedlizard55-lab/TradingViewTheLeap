@@ -66,3 +66,26 @@ mistaken for one.
 These figures are the raw, unrounded values as served. They are inputs to
 `data/verified_explosive_returns.json` and are re-checked for arithmetic self-consistency by
 `scripts/verify.py`.
+
+## Second snapshot — deep leaderboard rows (same URL, later fetch on 2026-09-16, day ~16)
+
+The page header of this snapshot read "This is the top 250 out of ‪92,381‬ participants."
+
+Rows captured verbatim from deeper paginated chunks of the same leaderboard
+(dollar amounts listed only where captured):
+
+| Rank | Trader | Realized profit % | Realized profit $ |
+|-----:|--------|------------------:|------------------:|
+| 25 | ashutoshrajan6 | +537.91% | (not captured — last row of the $550 prize tier) |
+| 26 | RogueTrader84 | +537.20% | (not captured — first row of the $400 prize tier) |
+| 49 | pvoilphuyen1 | +447.24% | +$1,118,099.00 |
+| 50 | nikhilln143 | +441.44% | +$1,103,610.00 (last row of the $400 prize tier) |
+| 51 | NOESIS_CAPITAL | +437.39% | (not captured) |
+| 100 | NQHawk | +352.11% | +$880,267.50 |
+| 249 | bikerunicorn2 | +228.64% | (not captured) |
+| 250 | Dip_Dey | +228.14% | +$570,345.80 (last displayed row) |
+
+Prize-tier boundary facts derived from these rows + the §07 prize ladder in the rules:
+rank 25 is the last $550 subscription tier, rank 26 the first $400 tier, rank 50 the last $400
+tier, rank 51 the first of the 51–300 3-month-subscription tier. Participant count drifted
+92,364 → 92,381 between snapshots (live counter; see IR-09).

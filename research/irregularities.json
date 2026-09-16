@@ -1,120 +1,172 @@
 {
-  "_meta": {
-    "description": "Everything found during line-by-line verification that a human must review. An irregularity is raised whenever observed data contradicts the project brief, contradicts another official source, or cannot be traced to a primary source at all.",
-    "generated_utc": "2026-09-16",
-    "severity_scale": ["critical", "high", "medium", "low"],
-    "count": 10
+ "_meta": {
+  "description": "Everything found during line-by-line verification that a human must review. An irregularity is raised whenever observed data contradicts the project brief, contradicts another official source, or cannot be traced to a primary source at all.",
+  "generated_utc": "2026-09-16",
+  "severity_scale": [
+   "critical",
+   "high",
+   "medium",
+   "low"
+  ],
+  "count": 11
+ },
+ "irregularities": [
+  {
+   "id": "IR-01",
+   "severity": "critical",
+   "title": "The live contest contains no stocks, but the brief asks to invest in highly volatile stocks",
+   "detail": "The permitted instrument list for The Leap by AMP Futures (September 2026) contains 94 instruments, every one of them a futures contract. There are zero NASDAQ, NYSE or AMEX single-stock contracts. A stocks-only strategy cannot be executed in the currently live edition.",
+   "observed": "94 futures / 0 equities. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2.",
+   "expected_by_brief": "A tradeable universe of highly volatile stocks.",
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Either target a future stocks edition (the 'Magnificent Seven' stocks edition of March 2026 completed with a winning return of only +17.58% \u2014 see TV-CONTEST-MAG7-MAR2026), or translate the volatility research into the futures universe. This session built data/volatile_stocks.json as the evidence base for what extreme stock volatility actually delivers, and the futures master list for what the live contest actually allows.",
+   "linked_hypothesis": "H3"
   },
-  "irregularities": [
-    {
-      "id": "IR-01",
-      "severity": "critical",
-      "title": "The live contest contains no stocks, but the brief asks to invest in highly volatile stocks",
-      "detail": "The permitted instrument list for The Leap by AMP Futures (September 2026) contains 94 instruments, every one of them a futures contract. There are zero NASDAQ, NYSE or AMEX single-stock contracts. A stocks-only strategy cannot be executed in the currently live edition.",
-      "observed": "94 futures / 0 equities. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2.",
-      "expected_by_brief": "A tradeable universe of highly volatile stocks.",
-      "source_ids": ["TV-RULES-AMP-SEP2026"],
-      "resolution": "Either target a future stocks edition (one ran March 2026 as 'Magnificent Seven', a restricted 7-symbol universe), or trade equity-index futures, or accept the futures universe. Decision required from the owner.",
-      "linked_hypothesis": "H3"
-    },
-    {
-      "id": "IR-02",
-      "severity": "high",
-      "title": "Stocks editions produce the smallest winning returns of any asset class",
-      "detail": "Across the 16 sourced records, the two stocks editions have the lowest #1 net profits of any class: +29.90% (1.299x) and +17.58% (1.1758x). Futures editions reach 53.2072x. The brief's premise that volatile stocks are the route to explosive contest returns is contradicted by TradingView's own published results.",
-      "observed": "stocks best 1.299x (n=2); futures best 53.2072x (n=6); multi-asset best 4.0807x (n=5); crypto best 3.7178x (n=2); forex 1.9187x (n=1).",
-      "expected_by_brief": "Stocks deliver 5x-100x.",
-      "source_ids": ["TV-THELEAP-LANDING"],
-      "resolution": "Re-target the strategy at leveraged futures. Note the stocks editions also appear to use a restricted symbol universe, which mechanically caps dispersion.",
-      "linked_hypothesis": "H2"
-    },
-    {
-      "id": "IR-03",
-      "severity": "high",
-      "title": "No 100x outcome is attested by any official source",
-      "detail": "The brief sets a target of 100x. Across all 16 sourced records the maximum verified outcome is 53.2072x (+5,220.72%). Zero records at or above 100x. No equity 5x-100x return could be verified to primary-source standard within this session, so no such figure has been written into the master list.",
-      "observed": ">=5x: 2 cases. >=10x: 2 cases. >=20x: 1 case. >=50x: 1 case. >=100x: 0 cases.",
-      "expected_by_brief": "Verified 100x returns available.",
-      "source_ids": ["TV-THELEAP-LANDING", "TV-CONTEST-AMP-SEP2026"],
-      "resolution": "Treat 100x as unattested. Plan against the verified ceiling (53x) and the verified live leader (10.2x at day 16 of 30).",
-      "linked_hypothesis": "H6"
-    },
-    {
-      "id": "IR-04",
-      "severity": "critical",
-      "title": "'Risk management is not necessary' is arithmetically false under the live contest parameters",
-      "detail": "At the stated 20:1 leverage on a $250,000 balance, maximum deployable notional is $5,000,000. An adverse move of 250,000 / 5,000,000 = exactly 5.00% on fully deployed notional equals the entire balance. The rules also state the account 'cannot be reset to its initial state', so a wipeout is terminal for the edition. Discretionary risk management is not optional here; it is the difference between surviving 30 days and being eliminated on day one.",
-      "observed": "balance 250,000; leverage 20:1; max notional 5,000,000; breakeven-to-zero adverse move 5.00%; account reset prohibited.",
-      "expected_by_brief": "Risk management unnecessary.",
-      "source_ids": ["TV-RULES-AMP-SEP2026"],
-      "resolution": "Position sizing is mandatory. Recommend a hard per-trade notional cap and a daily stop well inside the 5% wipeout boundary.",
-      "linked_hypothesis": "H9"
-    },
-    {
-      "id": "IR-05",
-      "severity": "medium",
-      "title": "Position limits change drastically between editions",
-      "detail": "NYMEX:CL1! was capped at 1.0 contract in the TradeStation July 2026 edition and 100.0 contracts in the AMP Futures September 2026 edition - a 100x change in capacity for the same instrument. CME:MBT1! moved 5.0 -> 25.0. Balance moved 100,000 -> 250,000 and leverage 10:1 -> 20:1.",
-      "observed": "CL1! cap 1.0 -> 100.0; MBT1! cap 5.0 -> 25.0; balance 100k -> 250k; leverage 10:1 -> 20:1.",
-      "expected_by_brief": "Stable parameters.",
-      "source_ids": ["TV-RULES-TS-JUL2026", "TV-RULES-AMP-SEP2026"],
-      "resolution": "Re-read the live rules page before every edition. scripts/verify.py should be re-run against a freshly captured universe each time.",
-      "linked_hypothesis": "H7"
-    },
-    {
-      "id": "IR-06",
-      "severity": "medium",
-      "title": "Prize cut-off (300) is not visible on the public leaderboard (250 rows)",
-      "detail": "The rules award prizes to the first 300 participants, but the contest page states 'This is the top 250 out of 92,364 participants.' A participant in ranks 251-300 cannot see their standing on the public leaderboard, so the qualification boundary for the 3-month subscription prize is not observable in real time.",
-      "observed": "leaderboard displays 250 rows; rules award 300.",
-      "expected_by_brief": "Observable prize boundary.",
-      "source_ids": ["TV-CONTEST-AMP-SEP2026", "TV-RULES-AMP-SEP2026"],
-      "resolution": "Treat rank 250 as the last observable position and hold margin above it.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-07",
-      "severity": "medium",
-      "title": "Rules reference prize categories that the prize ladder does not define",
-      "detail": "The Prize Limitation clause reads 'In the event an Entrant qualifies for more than one (1) prize (i.e. the Top Trader Prize, MPT Prize or Flawless Run Prize)...', but the PRIZE DISTRIBUTIONS section for this edition defines only Top Trader Prizes. 'MPT Prize' and 'Flawless Run Prize' are undefined in this edition's rules, which suggests boilerplate carried over from another edition.",
-      "observed": "Two prize names referenced but not defined in this edition.",
-      "expected_by_brief": "Internally consistent rules.",
-      "source_ids": ["TV-RULES-AMP-SEP2026"],
-      "resolution": "Do not plan around MPT or Flawless Run prizes for this edition. Query TradingView support if these matter.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-08",
-      "severity": "medium",
-      "title": "Commission is not stated in the captured section of the live edition's rules",
-      "detail": "The TradeStation July 2026 rules state 'The commission is $0.85 per contract (futures & options).' The captured sections of the AMP Futures September 2026 rules state balance and leverage but no commission line. Commission is therefore UNVERIFIED for the live edition and is recorded as null rather than assumed.",
-      "observed": "commission null for Sep 2026; $0.85/contract verified for Jul 2026.",
-      "expected_by_brief": "Known transaction cost.",
-      "source_ids": ["TV-RULES-AMP-SEP2026", "TV-RULES-TS-JUL2026"],
-      "resolution": "Read section 08 of the live rules page in full, or test empirically with a single round trip in the paper account.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-09",
-      "severity": "low",
-      "title": "Participant count differs by one between two TradingView pages",
-      "detail": "The landing page states 'Take part with 92,365 traders'; the contest page states 'the top 250 out of 92,364 participants'. This is consistent with a live counter sampled at two moments, not a data error. Recorded so the difference is not later mistaken for a contradiction.",
-      "observed": "92,365 vs 92,364.",
-      "expected_by_brief": "n/a",
-      "source_ids": ["TV-THELEAP-LANDING", "TV-CONTEST-AMP-SEP2026"],
-      "resolution": "No action. Treated as live-counter drift.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-10",
-      "severity": "low",
-      "title": "CME XRP futures launch was announced 'pending regulatory review'",
-      "detail": "The CME press release of 24 Apr 2025 states plans to launch XRP futures on 19 May 'pending regulatory review'. This session captured no primary confirmation that trading actually commenced on that date. The two affected master-list rows therefore carry verification_status 'identity_verified' rather than 'fully_verified'.",
-      "observed": "Launch intention documented; commencement not independently confirmed in this session.",
-      "expected_by_brief": "Fully verified instruments.",
-      "source_ids": ["CME-XRP-PR"],
-      "resolution": "Confirm against the CME rulebook or the contract's first-trade date before relying on XRP1!/MXP1!.",
-      "linked_hypothesis": null
-    }
-  ]
+  {
+   "id": "IR-02",
+   "severity": "high",
+   "title": "Stocks editions produce the smallest winning returns of any asset class",
+   "detail": "Across the 16 sourced records, the two stocks editions have the lowest #1 net profits of any class: +29.90% (1.299x) and +17.58% (1.1758x). Futures editions reach 53.2072x. The brief's premise that volatile stocks are the route to explosive contest returns is contradicted by TradingView's own published results.",
+   "observed": "stocks best 1.299x (n=2); futures best 53.2072x (n=6); multi-asset best 4.0807x (n=5); crypto best 3.7178x (n=2); forex 1.9187x (n=1).",
+   "expected_by_brief": "Stocks deliver 5x-100x.",
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-THELEAP-LANDING"
+   ],
+   "resolution": "Re-target the strategy at leveraged futures. Note the stocks editions also appear to use a restricted symbol universe, which mechanically caps dispersion.",
+   "linked_hypothesis": "H2"
+  },
+  {
+   "id": "IR-03",
+   "severity": "high",
+   "title": "No 100x outcome is attested by any official source",
+   "detail": "The brief sets a target of 100x. Across all 16 sourced records the maximum verified outcome is 53.2072x (+5,220.72%). Zero records at or above 100x. No equity 5x-100x return could be verified to primary-source standard within this session, so no such figure has been written into the master list.",
+   "observed": ">=5x: 2 cases. >=10x: 2 cases. >=20x: 1 case. >=50x: 1 case. >=100x: 0 cases.",
+   "expected_by_brief": "Verified 100x returns available.",
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ],
+   "resolution": "Treat 100x as unattested. Plan against the verified ceiling (53x) and the verified live leader (10.2x at day 16 of 30).",
+   "linked_hypothesis": "H6"
+  },
+  {
+   "id": "IR-04",
+   "severity": "critical",
+   "title": "'Risk management is not necessary' is arithmetically false under the live contest parameters",
+   "detail": "At the stated 20:1 leverage on a $250,000 balance, maximum deployable notional is $5,000,000. An adverse move of 250,000 / 5,000,000 = exactly 5.00% on fully deployed notional equals the entire balance. The rules also state the account 'cannot be reset to its initial state', so a wipeout is terminal for the edition. Discretionary risk management is not optional here; it is the difference between surviving 30 days and being eliminated on day one.",
+   "observed": "balance 250,000; leverage 20:1; max notional 5,000,000; breakeven-to-zero adverse move 5.00%; account reset prohibited.",
+   "expected_by_brief": "Risk management unnecessary.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Position sizing is mandatory. Recommend a hard per-trade notional cap and a daily stop well inside the 5% wipeout boundary.",
+   "linked_hypothesis": "H9"
+  },
+  {
+   "id": "IR-05",
+   "severity": "medium",
+   "title": "Position limits change drastically between editions",
+   "detail": "NYMEX:CL1! was capped at 1.0 contract in the TradeStation July 2026 edition and 100.0 contracts in the AMP Futures September 2026 edition - a 100x change in capacity for the same instrument. CME:MBT1! moved 5.0 -> 25.0. Balance moved 100,000 -> 250,000 and leverage 10:1 -> 20:1.",
+   "observed": "CL1! cap 1.0 -> 100.0; MBT1! cap 5.0 -> 25.0; balance 100k -> 250k; leverage 10:1 -> 20:1.",
+   "expected_by_brief": "Stable parameters.",
+   "source_ids": [
+    "TV-RULES-TS-JUL2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Re-read the live rules page before every edition. scripts/verify.py should be re-run against a freshly captured universe each time.",
+   "linked_hypothesis": "H7"
+  },
+  {
+   "id": "IR-06",
+   "severity": "medium",
+   "title": "Prize cut-off (300) is not visible on the public leaderboard (250 rows)",
+   "detail": "The rules award prizes to the first 300 participants, but the contest page states 'This is the top 250 out of 92,364 participants.' A participant in ranks 251-300 cannot see their standing on the public leaderboard, so the qualification boundary for the 3-month subscription prize is not observable in real time.",
+   "observed": "leaderboard displays 250 rows; rules award 300 prize ranks. Re-verified on the day ~16 snapshot: header still reads 'This is the top 250 out of 92,381 participants.'",
+   "expected_by_brief": "Observable prize boundary.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Treat rank 250 as the last observable position and hold margin above it.",
+   "linked_hypothesis": null,
+   "status": "confirmed"
+  },
+  {
+   "id": "IR-07",
+   "severity": "medium",
+   "title": "Rules reference prize categories that the prize ladder does not define",
+   "detail": "The Prize Limitation clause reads 'In the event an Entrant qualifies for more than one (1) prize (i.e. the Top Trader Prize, MPT Prize or Flawless Run Prize)...', but the PRIZE DISTRIBUTIONS section for this edition defines only Top Trader Prizes. 'MPT Prize' and 'Flawless Run Prize' are undefined in this edition's rules, which suggests boilerplate carried over from another edition.",
+   "observed": "Two prize names referenced but not defined in this edition.",
+   "expected_by_brief": "Internally consistent rules.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Do not plan around MPT or Flawless Run prizes for this edition. Query TradingView support if these matter.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-08",
+   "severity": "medium",
+   "title": "Commission is not stated in the captured section of the live edition's rules",
+   "detail": "The TradeStation July 2026 rules state 'The commission is $0.85 per contract (futures & options).' The captured sections of the AMP Futures September 2026 rules state balance and leverage but no commission line. Commission is therefore UNVERIFIED for the live edition and is recorded as null rather than assumed.",
+   "observed": "commission null for Sep 2026; $0.85/contract verified for Jul 2026.",
+   "expected_by_brief": "Known transaction cost.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-RULES-TS-JUL2026"
+   ],
+   "resolution": "RESOLVED 2026-09-16: the September 2026 rules page was read in full; it contains no commission clause at all (paper contest, AMP Futures edition). The $0.85/contract line belonged to the TradeStation July 2026 edition only. Commission is therefore n/a for the live edition, not unverified.",
+   "linked_hypothesis": null,
+   "status": "resolved"
+  },
+  {
+   "id": "IR-09",
+   "severity": "low",
+   "title": "Participant count differs by one between two TradingView pages",
+   "detail": "The landing page states 'Take part with 92,365 traders'; the contest page states 'the top 250 out of 92,364 participants'. This is consistent with a live counter sampled at two moments, not a data error. Recorded so the difference is not later mistaken for a contradiction.",
+   "observed": "92,365 (landing page) vs 92,364 (contest page, first snapshot) vs 92,381 (contest page, day ~16 snapshot). Three samples, monotonically increasing.",
+   "expected_by_brief": "n/a",
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ],
+   "resolution": "Confirmed as live-counter drift across three snapshots on 2026-09-16. No data error; counts are point-in-time samples of a running registration counter.",
+   "linked_hypothesis": null,
+   "status": "confirmed_harmless"
+  },
+  {
+   "id": "IR-10",
+   "severity": "low",
+   "title": "CME XRP futures launch was announced 'pending regulatory review'",
+   "detail": "The CME press release of 24 Apr 2025 states plans to launch XRP futures on 19 May 'pending regulatory review'. This session captured no primary confirmation that trading actually commenced on that date. The two affected master-list rows therefore carry verification_status 'identity_verified' rather than 'fully_verified'.",
+   "observed": "CME spec page (accessed 2026-09-16) shows XRP futures live: front month XRPU6, last 1.2985, volume 174, 'Last Updated 15 Sep 2026 09:47:00 PM CT'.",
+   "expected_by_brief": "Fully verified instruments.",
+   "source_ids": [
+    "CME-XRP-PR",
+    "CME-SPEC-XRP1!"
+   ],
+   "resolution": "RESOLVED 2026-09-16: the 'pending regulatory review' status from the April 2025 press release is superseded \u2014 the product is listed and trading, and its spec page confirms the 50,000 XRP contract unit (rule CME 435). See research/evidence/CME-SPEC-XRP.md.",
+   "linked_hypothesis": null,
+   "status": "resolved"
+  },
+  {
+   "id": "IR-11",
+   "severity": "medium",
+   "status": "resolved_by_correction",
+   "title": "Partial locator scan initially misidentified SMCI's 2022 trough as the all-time low",
+   "detail": "A 2018-onward monthly locator scan suggested SMCI's October 2022 close (adjclose ~5.03 monthly low / 5.242 daily close on 2022-10-12) was the all-time trough. A full-history monthly scan (2007 IPO onward) disproved it: monthly lows ran \u2248 0.44\u20130.51 (adjusted) in the 2008\u20132009 financial crisis. No all-time multiple was ever published from the partial scan; the verified SMCI record (22.66x) is explicitly window-bounded to the fetched 2022 trough window and 2024 peak window.",
+   "observed": "full-history monthly lows \u2248 0.44\u20130.51 (2008\u20132009) < 5.242 (2022-10-12).",
+   "expected_by_brief": "All-time extremes must come from all-time data.",
+   "source_ids": [
+    "YAHOO-MONTHLY-SMCI",
+    "YAHOO-DAILY-SMCI"
+   ],
+   "resolution": "Corrected in research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md; data/volatile_stocks.json keeps only window-bounded claims and scripts/verify.py recomputes each multiple from archived endpoint values.",
+   "linked_hypothesis": null
+  }
+ ]
 }

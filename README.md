@@ -4,11 +4,12 @@ An evidence-first research layer for [TradingView's *The Leap*](https://www.trad
 paper trading competition. Every number in this repository traces to an official source that you can
 open and check. Nothing is estimated, interpolated, or written from memory.
 
-**Live site:** see GitHub Pages for this repository (built from `site/`).
+**Live site:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/ — GitHub Pages in legacy
+mode, published from the repository root of `main` (regenerate with `python3 scripts/build_site.py`).
 
 ---
 
-## Start here: the five findings
+## Start here: the findings
 
 Verified against official sources on **2026-09-16 UTC**. Details and citations in
 [`research/`](research/) and on the site.
@@ -20,10 +21,11 @@ Verified against official sources on **2026-09-16 UTC**. Details and citations i
 | 3 | **Stocks editions produce the *smallest* winning returns** of any asset class: 1.299x and 1.1758x. Futures editions reach 53.2072x. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
 | 4 | **Position caps bind, not volatility.** `CME:SOL1!` is capped at 1 contract (500 SOL); reaching the current rank-1 profit needs a $4,607.45 per-SOL move. | Rules §08 + [CME contract specs](https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html) |
 | 5 | **≥10x is real and officially recorded** — +5,220.72% (53.2072x) in Feb 2025, and +921.49% (10.2149x) live at day 16 of 30. Both are futures. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
+| 6 | **Explosive stock returns are real, archived and recomputable.** Eight trough→peak close multiples captured from Yahoo Finance chart data — GME 124.11x, MSTR 49.45x, PLTR 34.53x, AMC 30.07x, SMCI 22.66x, TSLA 17.02x, NVDA 12.09x, COIN 10.0x — each window-bounded and re-derived by the verifier from archived endpoint values. Vendor data (not official), kept in its own module. | `data/volatile_stocks.json` + `research/evidence/VOLATILE-STOCKS-YAHOO-*.md` |
 
-### Verified threshold counts
+### Verified threshold counts — contest records (official)
 
-Across 16 sourced records:
+Across 16 sourced #1-finisher records:
 
 | Target | Verified cases |
 |---|---|
@@ -33,8 +35,23 @@ Across 16 sourced records:
 | ≥ 50x | 1 |
 | **≥ 100x** | **0** |
 
-**No 100x outcome is attested by any official source.** The verified ceiling is 53.2072x. See
-`IR-03`.
+**No 100x *contest* outcome is attested by any official source.** The verified ceiling is
+53.2072x. See `IR-03`.
+
+### Verified threshold counts — stock price multiples (market-data vendor)
+
+Across the 8 archived trough→peak close multiples (`data/volatile_stocks.json`):
+
+| Target | Verified stocks |
+|---|---|
+| ≥ 5x | 8 |
+| ≥ 10x | 8 |
+| ≥ 20x | 5 |
+| ≥ 50x | 1 |
+| **≥ 100x** | **1 (GME, 124.11x close-to-close, 2020-04-03 → 2021-01-27)** |
+
+These are multi-year market-price moves from a commercial data vendor — evidence of what extreme
+volatility has done, not contest returns and not tradeable in the futures-only live contest.
 
 ---
 
@@ -44,12 +61,13 @@ Across 16 sourced records:
 research/
   sources/sources.json        Source registry. A claim may only cite an id registered here.
   evidence/*.md               Verbatim quotations per source, with URL, access date and tier.
-  hypotheses/hypotheses.json  9 hypotheses: claim, prediction, test executed, evidence, verdict.
-  irregularities.json         10 flagged items for human review, severity-ranked.
+  hypotheses/hypotheses.json  12 hypotheses: claim, prediction, test executed, evidence, verdict.
+  irregularities.json         11 flagged items for human review, severity-ranked.
 data/
   contest_universe.json       All 94 permitted instruments + position caps, from rules §08.
-  master_list.json / .csv     20 candidate entries. Sourced or explicitly null — never guessed.
+  master_list.json / .csv     20 candidate entries. Multipliers now sourced for all 20.
   verified_explosive_returns.json  16 sourced #1 net-profit records + threshold analysis.
+  volatile_stocks.json        8 verified trough→peak stock multiples (vendor-tier data).
 scripts/
   verify.py                   Line-by-line verifier with a self-test that proves each check fires.
   build_site.py               Renders index.html at the repo root from the audited JSON.
@@ -80,55 +98,69 @@ restore an upload/deploy job.
 ## Verify it yourself
 
 ```bash
-python3 scripts/verify.py             # 71 checks
-python3 scripts/verify.py --self-test # + 16 corruption tests proving each check can fail
+python3 scripts/verify.py             # 194 checks
+python3 scripts/verify.py --self-test # + 21 corruption tests proving each check can fail
 python3 scripts/build_site.py         # regenerate the site
 make serve                            # local preview on :8000
 ```
 
 The verifier enforces:
 
-- every cited `source_id` exists in the registry, and every registered source is on an official domain
+- every cited `source_id` exists in the registry
+- official-tier sources resolve to official domains; vendor-tier sources resolve to allowed
+  vendor domains and must carry `official_source: false` (a vendor can never be laundered official)
 - every declared count in every `_meta` block equals the real row count
 - every master-list symbol is in the verified universe, with a cap matching the rules value
 - `max exposure` recomputes as `cap × multiplier`; `move needed` recomputes as `rank-1 P/L ÷ exposure`
-- **any non-null return multiple must carry a start price, end price, window and price source, or the build fails**
-- every return multiple recomputes as `1 + pct/100`
+- **every stock multiple recomputes as `peak adjclose ÷ trough adjclose` from archived endpoint
+  values**, is flagged window-bounded, and cites vendor-tier sources only
+- **any non-null contest return multiple must carry a start price, end price, window and price source, or the build fails**
+- every contest return multiple recomputes as `1 + pct/100`
 - the live leaderboard is internally consistent: `$ = balance × (multiple − 1)`
 - every hypothesis and irregularity is traceable to registered sources
 
 Negative control confirmed: corrupting `max_underlying_exposure` on `ML-2026-09-16-01` makes the
-verifier exit 1 and name the row.
+verifier exit 1 and name the row. The `--self-test` run additionally corrupts one field at a time
+(including a stock multiple and a vendor source's honesty flag) and asserts each check fires.
 
 ---
 
 ## Honesty policy
 
-The brief asked for highly volatile **stocks** with verified 5x–100x returns. Two things made that
-impossible to deliver honestly, so it was not delivered:
+The brief asked for highly volatile **stocks** with verified 5x–100x returns. This was delivered,
+with two honesty constraints made explicit rather than hidden:
 
-1. The live contest permits **no stocks** (`IR-01`).
-2. **No single-stock multiple could be confirmed against a primary source** in this session, so no
-   such figure was written down. The `verified_historical_return_multiple` column is null for all 20
-   entries, and the verifier fails the build if it is ever populated without full price provenance.
+1. **The live contest permits no stocks** (`IR-01`), so the stock research is a separate module —
+   it informs the brief but cannot be executed in the running futures-only edition.
+2. **Stock price history comes from a market-data vendor (Yahoo Finance), not an exchange or
+   regulator.** Every stock multiple is therefore registered under a `market_data_vendor` tier,
+   flagged `official_source: false`, and kept out of any contest or rulebook claim. The verifier
+   recomputes each multiple as `peak adjclose ÷ trough adjclose` from the archived endpoint values
+   in `data/volatile_stocks.json`, so no figure is trusted that cannot be re-derived.
 
-A row is cheaper to add later than a fabricated number is to retract.
+Each stock multiple is **window-bounded** — the extreme inside a documented fetch window, not a
+guaranteed all-time extreme. Where a longer history contradicted a locator (`IR-11`, SMCI), the
+claim was narrowed, never stretched. A row is cheaper to add later than a fabricated number is to
+retract.
 
-Contract multipliers are verified for 4 of 20 entries (`SOL1!`, `MSL1!`, `XRP1!`, `MXP1!`), against
-CME Group primary sources. The other 16 are `null` and flagged. Closing those is the highest-value
-next step.
+**Contract multipliers are now verified for all 20 of 20 entries** against CME Group primary
+sources (spec pages + the Solana/XRP guides). `max exposure` and the required underlying move are
+computed for every row. See `research/evidence/CME-CONTRACT-SPECS-BATCH2.md`.
 
 ---
 
 ## Known limits
 
-- **No network in the build sandbox.** Outbound TLS fails for `tradingview.com`, `stooq.com` and
-  `query1.finance.yahoo.com` (verified by direct `curl`). The verifier audits captured evidence for
-  traceability and arithmetic; it cannot re-fetch a page to prove a quotation is still live.
+- **`verify.py` itself does not touch the network.** The sandbox blocks direct `curl`/`wget`, so
+  evidence is captured through the agent's fetch tool and written to `research/evidence/`. The
+  verifier audits that captured evidence for traceability and recomputes every derived number;
+  it cannot re-fetch a page to prove a quotation is still live. Re-run the capture step to refresh.
 - **Single snapshot:** 2026-09-16 UTC. The live leaderboard moves hourly; contest parameters change
   between editions (`IR-05` shows a position cap moving 100x between consecutive futures editions).
-- **Two sources are registered without a captured evidence file** and are leads only. The verifier
-  reports these as standing warnings.
+- **Stock price data is vendor-tier.** Yahoo Finance is a commercial data vendor, not an exchange.
+  It supports only the recomputable stock records, never a contest or rulebook claim.
+- **Stock multiples are window-bounded**, not guaranteed all-time extremes. `IR-11` documents a case
+  (SMCI) where the longer history corrected the locator and the claim was narrowed accordingly.
 
 ---
 
