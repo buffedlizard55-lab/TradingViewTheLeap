@@ -1,0 +1,302 @@
+{
+  "_meta": {
+    "description": "Every explosive-return figure in this project that is sourced rather than computed. All rows are net-profit percentages TradingView itself publishes for the #1 finisher of a completed edition, plus rank 1 of the live edition.",
+    "generated_utc": "2026-09-16",
+    "record_count": 16,
+    "source_ids": [
+      "TV-THELEAP-LANDING",
+      "TV-CONTEST-AMP-SEP2026"
+    ],
+    "derivation": "return_multiple = 1 + net_profit_pct_as_published / 100. This is the only transformation applied; it is arithmetic on a published figure.",
+    "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session."
+  },
+  "records": [
+    {
+      "status": "final",
+      "edition_label": "Futures - July 2026",
+      "asset_class_label": "futures",
+      "winner": "Me-tis",
+      "participants": 107677,
+      "net_profit_pct_as_published": 155.95,
+      "return_multiple": 2.5595,
+      "profitable_trades_pct_as_published": 65,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-tradestation-july-2026-60266/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Forex - June 2026",
+      "asset_class_label": "forex",
+      "winner": "Minitrader91",
+      "participants": 60141,
+      "net_profit_pct_as_published": 91.87,
+      "return_multiple": 1.9187,
+      "profitable_trades_pct_as_published": 71,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-forex-edition-59492/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Crypto - May 2026",
+      "asset_class_label": "crypto",
+      "winner": "Manishh_jain92",
+      "participants": 39363,
+      "net_profit_pct_as_published": 271.78,
+      "return_multiple": 3.7178,
+      "profitable_trades_pct_as_published": 77,
+      "results_url": "https://www.tradingview.com/blog/en/winners-of-the-leap-crypto-series-58603/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Stocks - March 2026",
+      "asset_class_label": "stocks",
+      "winner": "prodigy5284",
+      "participants": 41301,
+      "net_profit_pct_as_published": 17.58,
+      "return_multiple": 1.1758,
+      "profitable_trades_pct_as_published": 95,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-magnificent-seven-results-57868/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Crypto - February 2026",
+      "asset_class_label": "crypto",
+      "winner": "vasu_adiraju",
+      "participants": 49466,
+      "net_profit_pct_as_published": 114.61,
+      "return_multiple": 2.1461,
+      "profitable_trades_pct_as_published": 71,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-crypto-edition-results-57323/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Futures - February 2026",
+      "asset_class_label": "futures",
+      "winner": "JoshTrades_ICT",
+      "participants": 55871,
+      "net_profit_pct_as_published": 124.24,
+      "return_multiple": 2.2424,
+      "profitable_trades_pct_as_published": 62,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-by-eurex-has-come-to-a-close-56951/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Stocks - December 2025",
+      "asset_class_label": "stocks",
+      "winner": "kgougakis",
+      "participants": 71342,
+      "net_profit_pct_as_published": 29.9,
+      "return_multiple": 1.299,
+      "profitable_trades_pct_as_published": 70,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-christmas-edition-is-over-55806/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Futures - November 2025",
+      "asset_class_label": "futures",
+      "winner": "apsudnay",
+      "participants": 82042,
+      "net_profit_pct_as_published": 148.51,
+      "return_multiple": 2.4851,
+      "profitable_trades_pct_as_published": 44,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-co-marketed-with-tradestation-comes-to-an-end-55603/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Futures - June 2025",
+      "asset_class_label": "futures",
+      "winner": "BitK77",
+      "participants": 54870,
+      "net_profit_pct_as_published": 111.92,
+      "return_multiple": 2.1192,
+      "profitable_trades_pct_as_published": 89,
+      "results_url": "https://www.tradingview.com/blog/en/tradingview-leap-by-tradestation-results-52831/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Multi-asset - April 2025",
+      "asset_class_label": "multi-asset",
+      "winner": "ICT_Hispanohablantes",
+      "participants": 36965,
+      "net_profit_pct_as_published": 308.07,
+      "return_multiple": 4.0807,
+      "profitable_trades_pct_as_published": 52,
+      "results_url": "https://www.tradingview.com/blog/en/tradingview-leap-by-pepperstone-winners-52062/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Futures - February 2025",
+      "asset_class_label": "futures",
+      "winner": "BenBernanke1",
+      "participants": 59187,
+      "net_profit_pct_as_published": 5220.72,
+      "return_multiple": 53.2072,
+      "profitable_trades_pct_as_published": 94,
+      "results_url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Multi-asset - November 2024",
+      "asset_class_label": "multi-asset",
+      "winner": "hoy8886",
+      "participants": 59127,
+      "net_profit_pct_as_published": 8.36,
+      "return_multiple": 1.0836,
+      "profitable_trades_pct_as_published": 81,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-4-winners-48745/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Multi-asset - August 2024",
+      "asset_class_label": "multi-asset",
+      "winner": "Investox_Solutions",
+      "participants": 59105,
+      "net_profit_pct_as_published": 10.01,
+      "return_multiple": 1.1001,
+      "profitable_trades_pct_as_published": 58,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-3-paper-trading-competition-results-46445/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Multi-asset - May 2024",
+      "asset_class_label": "multi-asset",
+      "winner": "Melissa2018",
+      "participants": 78243,
+      "net_profit_pct_as_published": 11.11,
+      "return_multiple": 1.1111,
+      "profitable_trades_pct_as_published": 57,
+      "results_url": "https://www.tradingview.com/blog/en/the-leap-2-paper-trading-competition-results-44828/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "final",
+      "edition_label": "Multi-asset - March 2024",
+      "asset_class_label": "multi-asset",
+      "winner": "StihlBtChainSaw",
+      "participants": 92045,
+      "net_profit_pct_as_published": 87.25,
+      "return_multiple": 1.8725,
+      "profitable_trades_pct_as_published": 83,
+      "results_url": "https://www.tradingview.com/blog/en/leap-paper-trading-competition-results-43788/",
+      "source_id": "TV-THELEAP-LANDING"
+    },
+    {
+      "status": "in_progress",
+      "edition_label": "AMP Futures - September 2026",
+      "asset_class_label": "futures",
+      "winner": "leonardo22_romano",
+      "participants": 92364,
+      "net_profit_pct_as_published": 921.49,
+      "return_multiple": 10.2149,
+      "realized_profit_usd_as_published": 2303725.0,
+      "profitable_trades_pct_as_published": null,
+      "results_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+      "source_id": "TV-CONTEST-AMP-SEP2026"
+    }
+  ],
+  "threshold_analysis": {
+    "ge_5x": {
+      "count": 2,
+      "cases": [
+        {
+          "edition": "Futures - February 2025",
+          "winner": "BenBernanke1",
+          "return_multiple": 53.2072,
+          "status": "final"
+        },
+        {
+          "edition": "AMP Futures - September 2026",
+          "winner": "leonardo22_romano",
+          "return_multiple": 10.2149,
+          "status": "in_progress"
+        }
+      ]
+    },
+    "ge_10x": {
+      "count": 2,
+      "cases": [
+        {
+          "edition": "Futures - February 2025",
+          "winner": "BenBernanke1",
+          "return_multiple": 53.2072,
+          "status": "final"
+        },
+        {
+          "edition": "AMP Futures - September 2026",
+          "winner": "leonardo22_romano",
+          "return_multiple": 10.2149,
+          "status": "in_progress"
+        }
+      ]
+    },
+    "ge_20x": {
+      "count": 1,
+      "cases": [
+        {
+          "edition": "Futures - February 2025",
+          "winner": "BenBernanke1",
+          "return_multiple": 53.2072,
+          "status": "final"
+        }
+      ]
+    },
+    "ge_50x": {
+      "count": 1,
+      "cases": [
+        {
+          "edition": "Futures - February 2025",
+          "winner": "BenBernanke1",
+          "return_multiple": 53.2072,
+          "status": "final"
+        }
+      ]
+    },
+    "ge_100x": {
+      "count": 0,
+      "cases": []
+    }
+  },
+  "by_asset_class": {
+    "crypto": {
+      "editions": 2,
+      "best_multiple": 3.7178,
+      "worst_multiple": 2.1461,
+      "median_multiple": 2.932
+    },
+    "forex": {
+      "editions": 1,
+      "best_multiple": 1.9187,
+      "worst_multiple": 1.9187,
+      "median_multiple": 1.9187
+    },
+    "futures": {
+      "editions": 6,
+      "best_multiple": 53.2072,
+      "worst_multiple": 2.1192,
+      "median_multiple": 2.5223
+    },
+    "multi-asset": {
+      "editions": 5,
+      "best_multiple": 4.0807,
+      "worst_multiple": 1.0836,
+      "median_multiple": 1.1111
+    },
+    "stocks": {
+      "editions": 2,
+      "best_multiple": 1.299,
+      "worst_multiple": 1.1758,
+      "median_multiple": 1.2374
+    }
+  }
+}
