@@ -618,7 +618,7 @@ hallucinated numbers.</p></div>""")
 TradingViewTheLeap research verifier
 ==========================================================================
 
-Passed : 194
+Passed : 203
 Failed : 0
 Warnings: 0
 
@@ -627,9 +627,10 @@ no symbols outside the verified contest universe.
 
 $ python3 scripts/verify.py --self-test   # additionally proves each check can fail
 # (adds 21 self-test scenarios; the snapshot above passed all of them on 2026-09-16)</pre>
-<p class="note">Counts as of the 2026-09-16 snapshot after closing all 16 contract multipliers,
-adding the volatile-stocks module, and capturing the two previously-missing evidence files. The
-verifier re-runs in CI on every push.</p>""")
+<p class="note">Counts as of the 2026-09-16 snapshot after the second verification pass re-fetched
+every source live (203 checks; the first pass, at 194 checks, closed all 16 open contract
+multipliers, added the volatile-stocks module, and captured the two previously-missing evidence
+files). The verifier re-runs in CI on every push.</p>""")
 
     add("""<h3 style="font-size:16px;margin-top:22px">What the verifier actually checks</h3>
 <ul>
@@ -678,9 +679,11 @@ and captured the two evidence files that were previously missing.</li>
 <li><strong>Decide the edition target.</strong> The live contest is futures-only. Compete in futures
 now, or wait for a stocks edition (the March 2026 &ldquo;Magnificent Seven&rdquo; edition was won
 with just +17.58%).</li>
-<li><strong>Build the position-sizing model</strong> around the verified 5.00% wipeout boundary
-(IR-04) before any strategy work &mdash; this directly contradicts the brief&rsquo;s &ldquo;no risk
-management needed&rdquo; premise, and remains the biggest open risk.</li>
+<li><strong>Execute the operational testing plan</strong>
+(<code>research/strategy/testing-plan.md</code>): T1&ndash;T6 protocols for placing on the live
+leaderboard, built only on verified rule text. Its guardrails respect the verified 5.00% wipeout
+boundary (IR-04) and the scripts/HF ban warning (IR-12) &mdash; both of which constrain the
+brief&rsquo;s &ldquo;no manual input&rdquo; premise.</li>
 <li><strong>Re-read the rules page at the start of every edition.</strong> IR-05 shows position
 caps moving 100x between consecutive futures editions.</li>
 </ol>""")
