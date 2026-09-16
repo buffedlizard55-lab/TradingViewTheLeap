@@ -41,3 +41,10 @@ risk for any strategy carried across editions.
 The CL1! cap moving from 1 contract to 100 contracts between two consecutive futures editions is
 the clearest available evidence that position limits are not stable and must be re-read from the
 live rules page before every contest. See `research/irregularities.json` IR-02.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16 (chunk 1). Unchanged: 13 instruments; 100,000 virtual USD; 10:1
+max leverage; $0.85 commission/position; caps including CL1! = 1.0 and MBT1! = 5.0. Confirms the
+IR-05 regime change (balance and caps differ materially from the live AMP edition).

@@ -8,7 +8,9 @@
   "evidence_files": [
    "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
    "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
-  ]
+  ],
+  "reverified_utc": "2026-09-16",
+  "reverification_note": "Second-pass re-verification 2026-09-16: all 16 endpoint windows (8 symbols x trough/peak) re-fetched from the Yahoo v8 chart API. All trough/peak dates and rounded multiples unchanged, except NVDA, whose archived endpoint values were re-adjusted by the vendor at the 6th decimal (trough 11.186728477478027 -> 11.186724662780762, peak 135.20559692382812 -> 135.20562744140625); the multiple still recomputes to 12.09x. See IR-13."
  },
  "records": [
   {
@@ -53,7 +55,8 @@
     "YAHOO-DAILY-GME",
     "YAHOO-MONTHLY-GME"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-MSTR",
@@ -97,7 +100,8 @@
     "YAHOO-DAILY-MSTR",
     "YAHOO-MONTHLY-MSTR"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-PLTR",
@@ -140,7 +144,8 @@
    "source_ids": [
     "YAHOO-DAILY-PLTR"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-AMC",
@@ -183,7 +188,8 @@
    "source_ids": [
     "YAHOO-DAILY-AMC"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-SMCI",
@@ -227,7 +233,8 @@
     "YAHOO-DAILY-SMCI",
     "YAHOO-MONTHLY-SMCI"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-TSLA",
@@ -270,7 +277,8 @@
    "source_ids": [
     "YAHOO-DAILY-TSLA"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   },
   {
    "record_id": "VS-NVDA",
@@ -281,7 +289,7 @@
    "series": "daily adjusted close (adjclose), split- and dividend-adjusted",
    "data_vendor": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
    "trough": {
-    "adjclose": 11.186728477478027,
+    "adjclose": 11.186724662780762,
     "epoch": 1665754200,
     "date_utc": "2022-10-14"
    },
@@ -294,7 +302,7 @@
     "end_utc": "2022-11-15"
    },
    "peak": {
-    "adjclose": 135.20559692382812,
+    "adjclose": 135.20562744140625,
     "epoch": 1718717400,
     "date_utc": "2024-06-18"
    },
@@ -313,7 +321,9 @@
    "source_ids": [
     "YAHOO-DAILY-NVDA"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16",
+   "reverification_note": "Re-fetched 2026-09-16: Yahoo re-adjusted historical adjclose; endpoint values updated to the currently-served values. Dates (trough 2022-10-14, peak 2024-06-18) and 12.09x unchanged."
   },
   {
    "record_id": "VS-COIN",
@@ -356,7 +366,8 @@
    "source_ids": [
     "YAHOO-DAILY-COIN"
    ],
-   "accessed_utc": "2026-09-16"
+   "accessed_utc": "2026-09-16",
+   "reverified_utc": "2026-09-16"
   }
  ],
  "thresholds": {

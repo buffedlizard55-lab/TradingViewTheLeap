@@ -120,3 +120,18 @@ symbols** (no NASDAQ / NYSE / AMEX single-stock contracts).
 
 > The Competition accounts will be automatically deleted after 30 days from the date of the end
 > of the Competition, without notifying the participants.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+All 5 chunks of this page were re-fetched live on 2026-09-16 (~17:50–18:05 UTC) and compared
+line by line with the original capture above:
+
+- Sections 01–21 text unchanged; no rule edits since the original capture.
+- §08 instrument table: 94/94 symbols and all per-instrument caps identical (mechanical diff
+  against /tmp/live_rules_list.txt: 0 missing, 0 extra, 0 cap changes).
+- Confirmed again: 250,000 virtual USD (04); 20:1 max leverage (04); registration open through
+  Sep 23 08:00 UTC (03); 5-trading-day activity requirement (08); hourly leaderboard update
+  (06); "No commission" clause absent (IR-08); scripts/HF warning present (IR-12).
+- Live context at re-fetch: leaderboard showed 93,152 participants; rank 1 leonardo22_romano
+  +921.49% / +$2,303,725.00 (unchanged from the first pass).

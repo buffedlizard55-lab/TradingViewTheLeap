@@ -2,7 +2,9 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 12
+  "hypothesis_count": 12,
+  "reverified_utc": "2026-09-16",
+  "reverification_note": "2026-09-16 second pass: every source_id cited by the register was re-fetched live; no verdict changed. H4/H5 rank-1 anchor ($2,303,725 at +921.49%) confirmed unchanged on the live leaderboard."
  },
  "hypotheses": [
   {

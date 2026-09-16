@@ -89,3 +89,18 @@ Prize-tier boundary facts derived from these rows + the §07 prize ladder in the
 rank 25 is the last $550 subscription tier, rank 26 the first $400 tier, rank 50 the last $400
 tier, rank 51 the first of the 51–300 3-month-subscription tier. Participant count drifted
 92,364 → 92,381 between snapshots (live counter; see IR-09).
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16 (~17:55–18:00 UTC). Leaderboard snapshot (top 250 of 93,152):
+
+- Rank 1 unchanged: leonardo22_romano +921.49% / +$2,303,725.00.
+- Ranks 2–23 captured this pass (chunk 0), consistent with the earlier deep snapshot:
+  2 AbdullahBajwa0 +750.36% / +$1,875,905.00 (H11 rounding check still holds:
+  1,875,905 / 1,875,904.975 = 1.0000000133), 3 AlphaTradersHub +736.96%, 4 Sergione777 +731.32%,
+  5 youcanttrickme +673.09%, 6 huliusalecsander +664.03%, 7 S_P_I_D_E_Y +661.17%,
+  8 Omnifree +658.44%, 9 accurateDogabdd0 +646.48%, 10 style000 +643.85%.
+- Rank 50/100/250 rows come from the first-pass deep snapshot (same day, a few hours earlier):
+  +441.00%, +352.71%, +228.85% (H10).
+- Participant counter 93,152 (vs 92,364/92,381 first pass — see IR-09).

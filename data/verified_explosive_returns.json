@@ -8,7 +8,9 @@
       "TV-CONTEST-AMP-SEP2026"
     ],
     "derivation": "return_multiple = 1 + net_profit_pct_as_published / 100. This is the only transformation applied; it is arithmetic on a published figure.",
-    "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session."
+    "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session.",
+    "reverified_utc": "2026-09-16",
+    "reverification_note": "2026-09-16 second pass: all 16 records re-checked against the live landing page (15 final records identical) and the live contest leaderboard (rank 1 +921.49% / +$2,303,725.00 unchanged at the day-16 snapshot time)."
   },
   "records": [
     {

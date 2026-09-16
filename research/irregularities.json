@@ -8,7 +8,8 @@
    "medium",
    "low"
   ],
-  "count": 11
+  "count": 13,
+  "reverified_utc": "2026-09-16"
  },
  "irregularities": [
   {
@@ -128,7 +129,7 @@
    "severity": "low",
    "title": "Participant count differs by one between two TradingView pages",
    "detail": "The landing page states 'Take part with 92,365 traders'; the contest page states 'the top 250 out of 92,364 participants'. This is consistent with a live counter sampled at two moments, not a data error. Recorded so the difference is not later mistaken for a contradiction.",
-   "observed": "92,365 (landing page) vs 92,364 (contest page, first snapshot) vs 92,381 (contest page, day ~16 snapshot). Three samples, monotonically increasing.",
+   "observed": "92,365 (landing) vs 92,364 (contest, first snapshot) vs 92,381 (contest, day ~16 first pass) vs 93,154 (landing, day-16 second pass) vs 93,152 (contest, day-16 second pass). Five samples, monotonically increasing across two snapshot passes on 2026-09-16.",
    "expected_by_brief": "n/a",
    "source_ids": [
     "TV-THELEAP-LANDING",
@@ -166,6 +167,33 @@
     "YAHOO-DAILY-SMCI"
    ],
    "resolution": "Corrected in research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md; data/volatile_stocks.json keeps only window-bounded claims and scripts/verify.py recomputes each multiple from archived endpoint values.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-12",
+   "severity": "critical",
+   "title": "Official rules warn against scripted / high-frequency activity \u2014 conflicts with the brief's 'no manual input' requirement",
+   "detail": "Rules \u00a708 (live edition, re-fetched 2026-09-16): 'TradingView warns that excessively high activity of transactions in Paper Trading, including using various scripts, will lead to a ban on access to Paper Trading for one hour or longer. Access to Paper Trading is prohibited if 60 or more transactions with orders and positions are performed per minute.' The identical clause appears in the TradeStation July 2026 rules. A fully automated ('no manual input') trading loop therefore risks a 1-hour-or-longer ban \u2014 and repeated bans threaten disqualification under \u00a712/\u00a716 ('acting in violation of these Official Rules ... acting in bad faith, an unsportsmanlike or disruptive manner'). Automation is possible only within the 60-transactions/minute ceiling and at a human-like frequency.",
+   "observed": "Rules \u00a708 script/HF warning, present in both the live (AMP Sep 2026) and prior (TradeStation Jul 2026) editions.",
+   "expected_by_brief": "Fully automated operation with no manual input.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-RULES-TS-JUL2026"
+   ],
+   "resolution": "Design the strategy as human-in-the-loop: order-rate cap well below 60/min (e.g. <= 1 order per 5 seconds), position entry/exit driven by the tested plan in research/strategy/testing-plan.md, with a human confirming batched orders. Flag to the user before any automation is run.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-13",
+   "severity": "low",
+   "title": "Yahoo Finance re-adjusted NVDA historical adjusted closes between capture passes (vendor data drift)",
+   "detail": "Between the original capture and the 2026-09-16 second pass, the Yahoo v8 chart API re-adjusted NVDA's historical adjclose: trough 2022-10-14 moved from 11.186728477478027 to 11.186724662780762 and peak 2024-06-18 from 135.20559692382812 to 135.20562744140625. Both generations recompute the same rounded multiple (12.09x). The archive in data/volatile_stocks.json was updated to the currently-served values. Vendor-tier data can drift between fetches; all other 7 symbols were bit-identical on re-fetch.",
+   "observed": "6th-decimal adjclose change on 2 of 16 NVDA endpoint values; 0 changes on the other 14 endpoints.",
+   "expected_by_brief": "Stable archived values.",
+   "source_ids": [
+    "YAHOO-DAILY-NVDA"
+   ],
+   "resolution": "Rounded claims unaffected; archive now matches the live endpoint. No action beyond this record.",
    "linked_hypothesis": null
   }
  ]

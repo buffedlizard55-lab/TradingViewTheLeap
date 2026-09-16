@@ -34,3 +34,10 @@ The product header on the spec page shows an active front-month contract:
 - Confirms `contract_multiplier` for `CME:XRP1!` = 50,000 XRP from the CME spec page itself
   (independent of, and consistent with, the April 2025 press release in CME-XRP-PR).
 - Resolves IR-10: the product is no longer "pending regulatory review"; it is listed and trading.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16. Contract Unit unchanged: "50,000 XRP, as defined by the CME CF
+XRP-Dollar Reference Rate (XRPUSD_RR)". XRPU6 last 1.2585, volume 1,037, last updated
+2026-09-16 12:51:08 PM CT (was 14,998 @ 11:45 AM CT on the first pass).
