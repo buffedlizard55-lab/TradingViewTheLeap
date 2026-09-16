@@ -7,9 +7,9 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 51,
+  "source_count": 76,
   "reverified_utc": "2026-09-16",
-  "reverification_note": "Second-pass re-verification 2026-09-16: every official primary source was re-fetched live (rules, contest pages, landing page, Mag7 page, BenBernanke blog, TradeStation rules, all 20 CME contract spec pages) and every market-data-vendor endpoint window was re-fetched and re-derived. Results recorded per source in research/evidence/."
+  "reverification_note": "Reverified 2026-09-16. Official contest/rules/specification sources and vendor windows were refreshed; official TradingView strategy, margin, P/L, quote pages and CME continuous-series documentation were added. Vendor stock sources now expose both exact endpoint windows."
  },
  "sources": [
   {
@@ -331,7 +331,17 @@
     "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01\u21922021-02-01, separate fetch)",
     "Recomputable multiple 124.11x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1609459200&period2=1612137600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-AMC",
@@ -347,7 +357,17 @@
     "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15\u21922021-06-15, separate fetch)",
     "Recomputable multiple 30.07x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1621036800&period2=1623715200&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-SMCI",
@@ -363,7 +383,17 @@
     "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15\u21922024-04-01, separate fetch)",
     "Recomputable multiple 22.66x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1707955200&period2=1711929600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-MSTR",
@@ -379,7 +409,17 @@
     "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15\u21922025-08-01, plus confirmation window 2025-07-16\u21922025-12-01)",
     "Recomputable multiple 49.45x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1749945600&period2=1753920000&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-NVDA",
@@ -396,7 +436,17 @@
     "Recomputable multiple 12.09x (both endpoint generations)"
    ],
    "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-   "reverified_utc": "2026-09-16"
+   "reverified_utc": "2026-09-16",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1717200000&period2=1719792000&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-TSLA",
@@ -412,7 +462,17 @@
     "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15\u21922021-11-15, separate fetch)",
     "Recomputable multiple 17.02x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1634256000&period2=1636934400&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-PLTR",
@@ -428,7 +488,17 @@
     "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15\u21922025-12-15, separate fetch)",
     "Recomputable multiple 34.53x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1760486400&period2=1765756800&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-COIN",
@@ -444,7 +514,17 @@
     "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01\u21922024-12-01, separate fetch)",
     "Recomputable multiple 10.00x"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1730419200&period2=1733011200&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-MONTHLY-MSTR",
@@ -557,7 +637,17 @@
     "Bounding fetch (1mo): monthly locator 2017-01-01 to 2018-06-01: lowest monthly close 0.76 (May 2017), monthly low 0.65 (May 2017)",
     "Bounding fetch (1mo): monthly scan Jan-Oct 2021: highest monthly high 229.04 (Feb 2021) < 267.74, so no 2021 close exceeds the archived peak"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1634256000&period2=1637366400&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-AMD",
@@ -575,7 +665,17 @@
     "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Jun 2026 is the highest monthly close (580.9099731445312) and highest monthly high (584.72998046875); Jul-Sep 2026 highs stay below 575",
     "Bounding fetch (1d): peak sub-window 2026-06-23 to 2026-07-01 (second fetch, pins the 2026-06-30 close)"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1779235200&period2=1782864000&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-MARA",
@@ -594,7 +694,17 @@
     "Bounding fetch (1mo): monthly locator Aug 2019 to May 2020: lowest monthly close 0.44999998807907104 (Mar 2020), monthly low 0.3499999940395355",
     "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Nov 2021 has an intraday high below 76.09, and the Nov 2021 daily window pins the max close at 76.08999633789062"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1635120000&period2=1638316800&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-CVNA",
@@ -614,7 +724,17 @@
     "Bounding fetch (1mo): monthly locator Jun 2023 to Sep 2026: highest monthly close before Dec 2025 is 78.03 (Aug 2025); Dec 2025 close 84.40; Jan 2026 high 97.37799835205078 is the 2026-01-22 intraday peak captured in the daily window; Feb-Aug 2026 highs stay below 84",
     "Bounding fetch (1mo): events=splits fetch 2022-12-01 to 2026-09-14: \"events\":{\"splits\":{\"1777608000\":{\"date\":1778247000,\"numerator\":5.0,\"denominator\":1.0,\"splitRatio\":\"5:1\"}}}"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1764547200&period2=1772323200&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-RIOT",
@@ -632,7 +752,17 @@
     "Bounding fetch (1mo): monthly locator Jan 2019 to May 2020: lowest monthly close 0.8330000042915344 (Mar 2020), monthly low 0.5109999775886536",
     "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Feb 2021 has an intraday high below 77.90; Mar 2021 high 67.85 and Apr 2021 high 61.55 bound all later closes below the archived peak; the 2021-02-26 close 43.7400016784668 matches the February monthly-close anchor"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1612137600&period2=1615766400&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-NVAX",
@@ -651,7 +781,17 @@
     "Bounding fetch (1mo): monthly scan Jan-Jun 2020: lowest monthly low 3.6500000953674316 (Jan 2020); Feb 2020 low 6.26 excludes a lower close after the archived trough",
     "Bounding fetch (1mo): monthly scan Jul 2020 to Nov 2021: every month except Feb 2021 has an intraday high below 319.93 (max Aug 2021 high 260.0), so no other month can contain a higher close; the 2021-02-26 close 231.22999572753906 matches the February monthly-close anchor"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1612137600&period2=1614556800&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-APP",
@@ -669,7 +809,17 @@
     "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: highest monthly close before the daily window is 718.5399780273438 (Sep 2025); Jan-Aug 2026 highs stay below 684, bounding all later closes below the archived peak",
     "Bounding fetch (1mo): monthly scan Apr-Nov 2022: lowest monthly low 13.0 (Nov 2022), above the archived Dec 2022 trough"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1756684800&period2=1767225600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-SHOP",
@@ -689,7 +839,17 @@
     "Bounding fetch (1d): interim peak window Nov 2021: max close 169.05999755859375 on 2021-11-19 (last session of the window)",
     "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Oct 2025 is the highest-close month (173.86000061035156, matching the 2025-10-31 daily close anchor); Dec 2025 high 178.375 and all later monthly highs stay below the archived peak close"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1759276800&period2=1762041600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-PLUG",
@@ -708,7 +868,17 @@
     "Bounding fetch (1mo): monthly scan Jun-Dec 2018: lowest monthly low outside Dec 2018 is 1.7100000381469727 (Nov 2018); Dec 2018 monthly low 0.9900000095367432 is inside the daily trough window",
     "Bounding fetch (1d): alternate 2020 COVID trough window: min close 2.759999990463257 (2020-03-16), superseded by the deeper 2018-12-20 trough"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1609459200&period2=1612137600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-NIO",
@@ -727,7 +897,17 @@
     "Bounding fetch (1mo): monthly locator Sep 2018 to Jan 2021: only the Oct 2019 bar has a monthly low (1.190000057220459) below 1.32; the Oct 2019 daily window pins the min close at 1.3200000524520874",
     "Bounding fetch (1mo): monthly scan 2021: Jan 2021 high 66.99 and Feb 2021 high 64.60 are the only months above 62.85; both are covered by the daily peak windows; Mar-Dec 2021 highs stay below 55.14; the 2021-02-26 close 45.779998779296875 matches the February monthly-close anchor"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1609718400&period2=1614556800&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-PTON",
@@ -745,7 +925,17 @@
     "Bounding fetch (1mo): monthly scan Jan 2020 to Jan 2021: every month before Dec 2020 has an intraday high below 139.76, and the Dec 2020 high 167.3699951171875 is below the archived peak close",
     "Bounding fetch (1mo): monthly scan 2021: Feb-Dec 2021 highs stay below 157.84, bounding all later closes below the archived peak; the 2020-12-31 close 151.72000122070312 and 2021-01-29 close 146.1300048828125 match the December and January monthly-close anchors"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1608009600&period2=1612137600&interval=1d"
+    }
+   ]
   },
   {
    "source_id": "YAHOO-DAILY-HOOD",
@@ -763,7 +953,366 @@
     "Bounding fetch (1d): trough guard window 2022-11-15 to 2022-11-30: min close 8.850000381469727 (2022-11-21), above the archived trough",
     "Bounding fetch (1mo): monthly locator Jan 2025 to Sep 2026: Oct 2025 is the highest-close month (146.77999877929688, matching the 2025-10-31 daily close anchor); Nov 2025 high 149.41 is below the archived peak close; Dec 2025 onward monthly highs stay below 139.76"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1759276800&period2=1763164800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "TV-QUOTE-SOL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:SOL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-SOL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 98.35 USD",
+    "Capacity-model price input for CME:SOL1!",
+    "Source-reported time: 2026-09-16 17:21 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MSL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MSL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MSL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 97.95 USD",
+    "Capacity-model price input for CME:MSL1!",
+    "Source-reported time: 2026-09-16 16:57 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-XRP1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:XRP1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-XRP1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1.303 USD",
+    "Capacity-model price input for CME:XRP1!",
+    "Source-reported time: 2026-09-16 16:49 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MXP1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MXP1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MXP1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1.2955 USD",
+    "Capacity-model price input for CME:MXP1!",
+    "Source-reported time: 2026-09-16 17:22 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-BTC1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:BTC1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-BTC1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 76085.0 USD",
+    "Capacity-model price input for CME:BTC1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MBT1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MBT1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MBT1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 76025.0 USD",
+    "Capacity-model price input for CME:MBT1!",
+    "Source-reported time: 2026-09-16 17:23 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-ETH1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:ETH1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-ETH1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2409.5 USD",
+    "Capacity-model price input for CME:ETH1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MET1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MET1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MET1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2392.5 USD",
+    "Capacity-model price input for CME:MET1!",
+    "Source-reported time: 2026-09-16 17:29 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-NG1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:NG1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-NG1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2.891 USD",
+    "Capacity-model price input for NYMEX:NG1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MNG1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:MNG1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-MNG1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2.891 USD",
+    "Capacity-model price input for NYMEX:MNG1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-CL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:CL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-CL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.43 USD",
+    "Capacity-model price input for NYMEX:CL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-QM1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX_MINI:QM1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX_MINI-QM1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.425 USD",
+    "Capacity-model price input for NYMEX_MINI:QM1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MCL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:MCL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-MCL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.43 USD",
+    "Capacity-model price input for NYMEX:MCL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-RB1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:RB1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-RB1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 3.2332 USD",
+    "Capacity-model price input for NYMEX:RB1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-HO1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:HO1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-HO1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 5.0003 USD",
+    "Capacity-model price input for NYMEX:HO1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SI1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX:SI1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX-SI1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 64.92 USD",
+    "Capacity-model price input for COMEX:SI1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SIC1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX:SIC1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX-SIC1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 63.2 USD",
+    "Capacity-model price input for COMEX:SIC1!",
+    "Source-reported time: 2026-09-16 17:29 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SIL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX_MINI:SIL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX_MINI-SIL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 64.92 USD",
+    "Capacity-model price input for COMEX_MINI:SIL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-PL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:PL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-PL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1785.9 USD",
+    "Capacity-model price input for NYMEX:PL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-NQ1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME_MINI:NQ1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME_MINI-NQ1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 29256.75 USD",
+    "Capacity-model price input for CME_MINI:NQ1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-PINE-STRATEGIES",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "Pine Script strategies \u2014 concepts and Strategy Report",
+   "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Pine strategies simulate trades on historical and realtime bars",
+    "Strategy Report and Deep Backtesting capabilities",
+    "Broker-emulator and fill-model limitations"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PINE-AUTOTRADE",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How to autotrade using Pine Script strategies",
+   "url": "https://www.tradingview.com/support/solutions/43000481026-how-to-autotrade-using-pine-script-strategies/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Automated Pine strategy trading with a TradingView brokerage account is not available",
+    "Pine Strategy Report is not competition-account execution"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PINE-LEVERAGE",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How to simulate trading with leverage in Pine Script",
+   "url": "https://www.tradingview.com/support/solutions/43000717375-how-to-simulate-trading-with-leverage-in-pine-script/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "5% margin models 20:1 leverage",
+    "MarginRequired formula used by the capacity model",
+    "Margin-call limitations of Pine strategy simulation"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PAPER-PNL",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How position profit and loss is calculated in Paper Trading",
+   "url": "https://www.tradingview.com/support/solutions/43000719857-how-is-position-profit-and-loss-in-paper-trading-calculated/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Bid/ask execution mechanics in Paper Trading",
+    "Long-futures P/L formula",
+    "Documentation inconsistency in the short-futures formula (IR-14)"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "CME-CONTINUOUS-SERIES",
+   "publisher": "CME Group",
+   "tier": "official_primary",
+   "title": "CME Group Continuous Price Series",
+   "url": "https://www.cmegroup.com/market-data/cme-group-continuous-price-series.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Official settlement-based active/front continuous-series methodology",
+    "Licensed historical series option for futures backtesting",
+    "Volume and open-interest capacity data option"
+   ],
+   "evidence_file": "research/evidence/CME-CONTINUOUS-SERIES.md"
   }
  ]
 }

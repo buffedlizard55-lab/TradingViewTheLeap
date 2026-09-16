@@ -85,8 +85,8 @@ Rows captured verbatim from deeper paginated chunks of the same leaderboard
 | 249 | bikerunicorn2 | +228.64% | (not captured) |
 | 250 | Dip_Dey | +228.14% | +$570,345.80 (last displayed row) |
 
-Prize-tier boundary facts derived from these rows + the §07 prize ladder in the rules:
-rank 25 is the last $550 subscription tier, rank 26 the first $400 tier, rank 50 the last $400
+Prize-tier boundary facts derived from these rows + the §09 prize ladder in the rules:
+rank 25 is the last $550 cash tier, rank 26 the first $400 tier, rank 50 the last $400
 tier, rank 51 the first of the 51–300 3-month-subscription tier. Participant count drifted
 92,364 → 92,381 between snapshots (live counter; see IR-09).
 
@@ -104,3 +104,25 @@ Re-fetched live on 2026-09-16 (~17:55–18:00 UTC). Leaderboard snapshot (top 25
 - Rank 50/100/250 rows come from the first-pass deep snapshot (same day, a few hours earlier):
   +441.00%, +352.71%, +228.85% (H10).
 - Participant counter 93,152 (vs 92,364/92,381 first pass — see IR-09).
+
+
+## Latest captured snapshot — 2026-09-16T21:39:34Z
+
+> This is the top 250 out of 93,527 participants.
+> Rank 1: leonardo22_romano +921.49% / +$2,303,725.00 realized profit.
+
+Selected public rows used by `data/live_contest_snapshot.json`:
+
+| Rank | Trader | Realized profit % | Realized profit $ |
+|-----:|--------|------------------:|------------------:|
+| 1 | leonardo22_romano | +921.49% | +$2,303,725.00 |
+| 25 | k_contact | +578.89% | +$1,447,232.50 |
+| 26 | leongoat | +569.30% | +$1,423,240.00 |
+| 50 | chandu0342 | +457.64% | +$1,144,096.25 |
+| 51 | Danaos | +454.33% | +$1,135,837.50 |
+| 100 | yeyuliuguang | +384.08% | +$960,203.50 |
+| 250 | luaguiar | +249.48% | +$623,689.00 |
+
+The page exposes ranks 1–250. The rules award prizes through rank 300, but this public page does
+not expose the rank-300 row; the repository therefore does not invent a rank-300 threshold. All
+rows above are moving in-contest values, not final prize cutoffs.

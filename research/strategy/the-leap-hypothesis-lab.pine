@@ -1,0 +1,105 @@
+//@version=6
+strategy(
+     "The Leap Hypothesis Lab",
+     overlay = true,
+     initial_capital = 250000,
+     currency = currency.USD,
+     default_qty_type = strategy.fixed,
+     default_qty_value = 1,
+     pyramiding = 0,
+     margin_long = 5,
+     margin_short = 5,
+     commission_type = strategy.commission.cash_per_contract,
+     commission_value = 0,
+     slippage = 0,
+     use_bar_magnifier = true,
+     calc_on_every_tick = false,
+     calc_on_order_fills = false)
+
+// Research artifact only. This strategy uses TradingView's broker emulator; it does not and
+// cannot submit orders to The Leap Paper Trading competition account. Set quantity no higher
+// than the edition-specific rules cap. Model realistic commission and slippage in Properties.
+
+string model = input.string(
+     "Donchian breakout",
+     "Candidate model",
+     options = ["Donchian breakout", "EMA impulse", "Squeeze release"])
+int quantity = input.int(1, "Whole contracts", minval = 1)
+int startTime = input.time(timestamp("UTC", 2022, 1, 1, 0, 0), "Test start")
+int endTime = input.time(timestamp("UTC", 2026, 12, 31, 23, 59), "Test end")
+
+int fastLength = input.int(20, "Fast EMA", minval = 2)
+int slowLength = input.int(50, "Slow EMA", minval = 3)
+int channelLength = input.int(20, "Donchian length", minval = 2)
+int atrLength = input.int(14, "ATR length", minval = 2)
+int atrBaselineLength = input.int(50, "ATR baseline length", minval = 3)
+float atrExpansion = input.float(1.05, "ATR expansion factor", minval = 0.1, step = 0.05)
+int bandLength = input.int(20, "Band length", minval = 2)
+float bandDeviation = input.float(2.0, "Band deviations", minval = 0.1, step = 0.1)
+int squeezeLookback = input.int(50, "Squeeze lookback", minval = 3)
+bool useBracket = input.bool(false, "Use ATR stop and target")
+float stopAtr = input.float(2.0, "Stop ATR", minval = 0.1, step = 0.1)
+float targetAtr = input.float(6.0, "Target ATR", minval = 0.1, step = 0.1)
+
+bool inWindow = time >= startTime and time <= endTime
+float fastEma = ta.ema(close, fastLength)
+float slowEma = ta.ema(close, slowLength)
+float atr = ta.atr(atrLength)
+float atrBase = ta.sma(atr, atrBaselineLength)
+bool expandingAtr = atr > atrBase * atrExpansion
+
+float priorChannelHigh = ta.highest(high, channelLength)[1]
+float priorChannelLow = ta.lowest(low, channelLength)[1]
+bool donchianLong = close > priorChannelHigh and fastEma > slowEma and expandingAtr
+bool donchianShort = close < priorChannelLow and fastEma < slowEma and expandingAtr
+
+bool impulseLong = ta.crossover(fastEma, slowEma) and expandingAtr
+bool impulseShort = ta.crossunder(fastEma, slowEma) and expandingAtr
+
+float basis = ta.sma(close, bandLength)
+float deviation = ta.stdev(close, bandLength) * bandDeviation
+float upperBand = basis + deviation
+float lowerBand = basis - deviation
+float bandwidth = basis != 0 ? (upperBand - lowerBand) / math.abs(basis) : na
+float priorBandwidthFloor = ta.lowest(bandwidth, squeezeLookback)[1]
+bool wasCompressed = bandwidth[1] <= priorBandwidthFloor * 1.05
+bool bandwidthExpanding = bandwidth > bandwidth[1]
+bool squeezeLong = wasCompressed and bandwidthExpanding and close > upperBand
+bool squeezeShort = wasCompressed and bandwidthExpanding and close < lowerBand
+
+bool longSignal = switch model
+    "Donchian breakout" => donchianLong
+    "EMA impulse" => impulseLong
+    => squeezeLong
+bool shortSignal = switch model
+    "Donchian breakout" => donchianShort
+    "EMA impulse" => impulseShort
+    => squeezeShort
+
+if inWindow and longSignal and strategy.position_size <= 0
+    strategy.entry("Long", strategy.long, qty = quantity)
+if inWindow and shortSignal and strategy.position_size >= 0
+    strategy.entry("Short", strategy.short, qty = quantity)
+
+if useBracket and strategy.position_size > 0
+    strategy.exit(
+         "Long bracket",
+         "Long",
+         stop = strategy.position_avg_price - atr * stopAtr,
+         limit = strategy.position_avg_price + atr * targetAtr)
+if useBracket and strategy.position_size < 0
+    strategy.exit(
+         "Short bracket",
+         "Short",
+         stop = strategy.position_avg_price + atr * stopAtr,
+         limit = strategy.position_avg_price - atr * targetAtr)
+
+if time > endTime and strategy.position_size != 0
+    strategy.close_all(comment = "Test window ended")
+
+plot(fastEma, "Fast EMA", color = color.aqua)
+plot(slowEma, "Slow EMA", color = color.orange)
+plot(model == "Squeeze release" ? upperBand : na, "Upper band", color = color.new(color.blue, 35))
+plot(model == "Squeeze release" ? lowerBand : na, "Lower band", color = color.new(color.blue, 35))
+plotshape(longSignal and inWindow, "Long signal", shape.triangleup, location.belowbar, color.lime, size = size.tiny)
+plotshape(shortSignal and inWindow, "Short signal", shape.triangledown, location.abovebar, color.fuchsia, size = size.tiny)

@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "description": "Point-in-time public leaderboard and TradingView continuous-futures quote snapshot. This file is not a live feed. Values can change after capture.",
+    "captured_at_utc": "2026-09-16T21:39:34Z",
+    "leaderboard_source_id": "TV-CONTEST-AMP-SEP2026",
+    "leaderboard_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+    "quote_method": "Values displayed on each official TradingView continuous-contract overview page. Source-reported times are not perfectly synchronized, so cross-symbol comparisons are approximate snapshots rather than simultaneous executable quotes.",
+    "starting_balance_virtual_usd": 250000.0,
+    "public_rows_captured": 7,
+    "quote_rows_captured": 20
+  },
+  "participants_displayed": 93527,
+  "leaderboard": [
+    {"rank": 1, "trader": "leonardo22_romano", "realized_profit_pct": 921.49, "realized_profit_usd": 2303725.0},
+    {"rank": 25, "trader": "k_contact", "realized_profit_pct": 578.89, "realized_profit_usd": 1447232.5},
+    {"rank": 26, "trader": "leongoat", "realized_profit_pct": 569.3, "realized_profit_usd": 1423240.0},
+    {"rank": 50, "trader": "chandu0342", "realized_profit_pct": 457.64, "realized_profit_usd": 1144096.25},
+    {"rank": 51, "trader": "Danaos", "realized_profit_pct": 454.33, "realized_profit_usd": 1135837.5},
+    {"rank": 100, "trader": "yeyuliuguang", "realized_profit_pct": 384.08, "realized_profit_usd": 960203.5},
+    {"rank": 250, "trader": "luaguiar", "realized_profit_pct": 249.48, "realized_profit_usd": 623689.0}
+  ],
+  "quotes": [
+    {"symbol": "CME:SOL1!", "price": 98.35, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 17:21 GMT-4", "source_id": "TV-QUOTE-SOL1"},
+    {"symbol": "CME:MSL1!", "price": 97.95, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 16:57 GMT-4", "source_id": "TV-QUOTE-MSL1"},
+    {"symbol": "CME:XRP1!", "price": 1.303, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 16:49 GMT-4", "source_id": "TV-QUOTE-XRP1"},
+    {"symbol": "CME:MXP1!", "price": 1.2955, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 17:22 GMT-4", "source_id": "TV-QUOTE-MXP1"},
+    {"symbol": "CME:BTC1!", "price": 76085.0, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-BTC1"},
+    {"symbol": "CME:MBT1!", "price": 76025.0, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 17:23 GMT-4", "source_id": "TV-QUOTE-MBT1"},
+    {"symbol": "CME:ETH1!", "price": 2409.5, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-ETH1"},
+    {"symbol": "CME:MET1!", "price": 2392.5, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 17:29 GMT-4", "source_id": "TV-QUOTE-MET1"},
+    {"symbol": "NYMEX:NG1!", "price": 2.891, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-NG1"},
+    {"symbol": "NYMEX:MNG1!", "price": 2.891, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-MNG1"},
+    {"symbol": "NYMEX:CL1!", "price": 102.43, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-CL1"},
+    {"symbol": "NYMEX_MINI:QM1!", "price": 102.425, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-QM1"},
+    {"symbol": "NYMEX:MCL1!", "price": 102.43, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-MCL1"},
+    {"symbol": "NYMEX:RB1!", "price": 3.2332, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-RB1"},
+    {"symbol": "NYMEX:HO1!", "price": 5.0003, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-HO1"},
+    {"symbol": "COMEX:SI1!", "price": 64.92, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-SI1"},
+    {"symbol": "COMEX:SIC1!", "price": 63.2, "currency": "USD", "market_state": "open", "source_reported_as_of": "2026-09-16 17:29 GMT-4", "source_id": "TV-QUOTE-SIC1"},
+    {"symbol": "COMEX_MINI:SIL1!", "price": 64.92, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-SIL1"},
+    {"symbol": "NYMEX:PL1!", "price": 1785.9, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-PL1"},
+    {"symbol": "CME_MINI:NQ1!", "price": 29256.75, "currency": "USD", "market_state": "closed", "source_reported_as_of": "2026-09-16 16:59 GMT-4", "source_id": "TV-QUOTE-NQ1"}
+  ],
+  "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-QUOTE-SOL1", "TV-QUOTE-MSL1", "TV-QUOTE-XRP1", "TV-QUOTE-MXP1",
+    "TV-QUOTE-BTC1", "TV-QUOTE-MBT1", "TV-QUOTE-ETH1", "TV-QUOTE-MET1",
+    "TV-QUOTE-NG1", "TV-QUOTE-MNG1", "TV-QUOTE-CL1", "TV-QUOTE-QM1",
+    "TV-QUOTE-MCL1", "TV-QUOTE-RB1", "TV-QUOTE-HO1", "TV-QUOTE-SI1",
+    "TV-QUOTE-SIC1", "TV-QUOTE-SIL1", "TV-QUOTE-PL1", "TV-QUOTE-NQ1"
+  ]
+}

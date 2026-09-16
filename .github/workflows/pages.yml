@@ -35,14 +35,21 @@ jobs:
           fi
           echo "index.html is in sync with data/ and research/."
 
-      - name: Confirm every rendered figure traces to data
+      - name: Confirm key datasets render completely
         run: |
           python3 - <<'PY'
+          import html as html_lib
           import json, re
           html = open("index.html", encoding="utf-8").read()
+          cfg = json.load(open("data/contest_config.json"))
+          snapshot = json.load(open("data/live_contest_snapshot.json"))
+          capacity = json.load(open("data/initial_capacity.json"))
           uni = json.load(open("data/contest_universe.json"))
           ml = json.load(open("data/master_list.json"))
           er = json.load(open("data/verified_explosive_returns.json"))
+          stocks = json.load(open("data/volatile_stocks.json"))
+          models = json.load(open("research/strategy/models.json"))
+          sources = json.load(open("research/sources/sources.json"))
           probs = []
           n_uni = len(re.findall(r'data-ex="', html))
           if n_uni != len(uni["instruments"]):
@@ -50,12 +57,32 @@ jobs:
           n_ml = len(re.findall(r'data-class="', html))
           if n_ml != len(ml["entries"]):
               probs.append(f"master rows {n_ml} != {len(ml['entries'])}")
+          n_capacity = len(re.findall(r'data-group="', html))
+          if n_capacity != len(capacity["entries"]):
+              probs.append(f"capacity rows {n_capacity} != {len(capacity['entries'])}")
+          n_stocks = len(re.findall(r'data-mult="', html))
+          if n_stocks != len(stocks["records"]):
+              probs.append(f"stock rows {n_stocks} != {len(stocks['records'])}")
+          n_models = html.count('<article class="card strategy-card">')
+          if n_models != len(models["models"]):
+              probs.append(f"strategy cards {n_models} != {len(models['models'])}")
+          for required in (cfg["edition_label"], snapshot["_meta"]["captured_at_utc"]):
+              if required not in html:
+                  probs.append(f"required live-edition value {required!r} missing")
           for sym in (x["symbol"] for x in ml["entries"]):
               if sym not in html:
                   probs.append(f"master symbol {sym} missing from page")
           for r in er["records"]:
               if f'{r["return_multiple"]}x' not in html:
                   probs.append(f'return {r["return_multiple"]}x missing from page')
+          for record in stocks["records"]:
+              for window in ("trough_window", "peak_window"):
+                  endpoint = html_lib.escape(record[window]["endpoint"], quote=True)
+                  if endpoint not in html:
+                      probs.append(f'{record["symbol"]} {window} endpoint missing')
+          for source in sources["sources"]:
+              if source["source_id"] not in html:
+                  probs.append(f'source {source["source_id"]} missing from page')
           # Python-side leak signatures. A bare substring search for "nan"
           # false-positives on "finance" and "BenBernanke", so match the shapes a
           # leaked value actually takes.
@@ -74,8 +101,9 @@ jobs:
           if probs:
               print("::error::" + "; ".join(probs))
               raise SystemExit(1)
-          print(f"OK: {n_uni} universe rows, {n_ml} master rows, "
-                f"{len(er['records'])} return records all rendered from data.")
+          print(f"OK: {n_uni} universe, {n_ml} selected, {n_capacity} capacity, "
+                f"{len(er['records'])} contest-return, {n_stocks} stock, "
+                f"{n_models} strategy, and {len(sources['sources'])} source records rendered.")
           PY
 
 # NOTE ON PUBLISHING

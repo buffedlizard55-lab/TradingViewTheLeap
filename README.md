@@ -1,256 +1,166 @@
-# TradingView The Leap — Verified Research & Instrument Intelligence
+# TradingView The Leap — evidence-first research lab
 
-An evidence-first research layer for [TradingView's *The Leap*](https://www.tradingview.com/the-leap/)
-paper trading competition. Every number in this repository traces to an official source that you can
-open and check. Nothing is estimated, interpolated, or written from memory.
+A reproducible research layer for TradingView's **The Leap** paper-trading competition. The project
+separates official contest facts, historical champion outcomes, vendor-sourced stock market moves,
+capacity arithmetic, and untested strategy hypotheses. It does not present a backtest as a fact or
+mix real historical stock returns with simulated competition returns.
 
-**Live site:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/ — GitHub Pages in legacy
-mode, published from the repository root of `main` (regenerate with `python3 scripts/build_site.py`).
+**GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
----
+## Live-edition facts
 
-## Start here: the findings
+Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Futures — September
+2026**.
 
-Verified against official sources on **2026-09-16 UTC — two independent passes on the same day**:
-the original capture, then a full line-by-line re-fetch of every source (all TradingView contest
-pages, all 20 CME contract spec pages, all 16 Yahoo endpoint windows) with zero substantive
-changes and two recorded vendor drifts (`IR-09` participant counter, `IR-13` NVDA re-adjustment).
-Details and citations in [`research/`](research/) and on the site.
+| Fact | Verified value | Manual review |
+|---|---:|---|
+| Competition | Sep 1 08:00 UTC → Sep 30 12:00 UTC | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Registration closes | Sep 23 08:00 UTC | [Official rules](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Starting balance | 250,000 virtual USD | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Futures leverage | 20:1 | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Eligible instruments | 94 futures; 0 single-stock equities | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Ranking | Realized P/L on closed positions; end-of-contest auto-close counts | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
+| Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-| # | Finding | Evidence |
-|---|---|---|
-| 1 | **The live contest contains no stocks.** The permitted instrument list is 94 futures contracts and zero equities. A stocks-only strategy cannot be executed in the running edition. | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
-| 2 | **"Risk management is not necessary" is arithmetically false.** At 20:1 leverage on $250,000, max notional is $5,000,000. A 5.00% adverse move equals the entire balance — and the rules forbid resetting the account. | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
-| 3 | **Stocks editions produce the *smallest* winning returns** of any asset class: 1.299x and 1.1758x. Futures editions reach 53.2072x. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
-| 4 | **Position caps bind, not volatility.** `CME:SOL1!` is capped at 1 contract (500 SOL); reaching the current rank-1 profit needs a $4,607.45 per-SOL move. | Rules §08 + [CME contract specs](https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html) |
-| 5 | **≥10x is real and officially recorded** — +5,220.72% (53.2072x) in Feb 2025, and +921.49% (10.2149x) live at day 16 of 30. Both are futures. | [The Leap landing page](https://www.tradingview.com/the-leap/) |
-| 6 | **Explosive stock returns are real, archived and recomputable.** Twenty trough→peak close multiples captured from Yahoo Finance chart data — ENPH 382.49x, AMD 322.73x, MARA 190.22x, CVNA 128.62x, GME 124.11x, RIOT 119.85x, SHOP 92.61x, NVAX 81.41x, APP 78.88x, PLUG 72.46x, MSTR 49.45x, NIO 47.61x, PLTR 34.53x, AMC 30.07x, SMCI 22.66x, HOOD 19.80x, TSLA 17.02x, NVDA 12.09x, COIN 10.0x, PTON 8.58x — each window-bounded and re-derived by the verifier from archived endpoint values. Vendor data (not official), kept in its own module. | `data/volatile_stocks.json` + `research/evidence/VOLATILE-STOCKS-YAHOO-*.md` |
-| 7 | **The leaderboard is ranked by absolute realized USD, not percent** — so compounding a winning balance is the direct multiplier on every future point, and only *closed* P/L counts (hourly snapshot). This is the exploitable structure; the full operational test protocol is in [`research/strategy/testing-plan.md`](research/strategy/testing-plan.md). | [Rules §06–§07](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) + live leaderboard |
-| 8 | **Automation is a documented ban risk.** Rules §08 warn that "using various scripts" and ≥60 transactions/minute trigger a 1-hour+ paper-trading ban. A "no manual input" strategy is only viable *inside* that ceiling — the test plan caps order rate at ≤12/min with human confirmation. | [Rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) → `IR-12` (critical) |
+The live page displayed **93,527 participants**. Captured public frontiers were rank 1
+**+$2,303,725.00 (+921.49%)**, rank 50 **+$1,144,096.25 (+457.64%)**, rank 100
+**+$960,203.50 (+384.08%)**, and rank 250 **+$623,689.00 (+249.48%)**. These are moving snapshots,
+not final thresholds and not prize guarantees. See [`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
 
-### Verified threshold counts — contest records (official)
+## What the evidence says
 
-Across 16 sourced #1-finisher records:
+1. **Explosive simulated outcomes have occurred.** The captured official completed-champion sample
+   includes a maximum of **53.2072x** and at least one completed futures outcome above 10x.
+2. **No captured official contest result reaches 100x.** This means 100x is unattested in this
+   sample, not impossible and not beyond a proven ceiling.
+3. **The live edition has no single stocks.** The 20-stock module is historical reference for a
+   future stock edition, not a live tradable list.
+4. **Volatility alone cannot rank instruments.** Dollar P/L also depends on price, multiplier,
+   contracts, the rules cap, and buying power. The repository does not claim that caps or any one
+   market are the binding cause of winning returns.
+5. **Realizing a position does not create profit.** It moves open P/L into the realized ranking
+   metric. The official rules automatically close remaining positions at the end.
+6. **Edition parameters are not stable.** Balance, leverage, symbols, caps, and prize ranks differ
+   between captured editions; every strategy must be revalidated against the current rules.
 
-| Target | Verified cases |
+All verdicts and evidence lines are in
+[`research/hypotheses/hypotheses.json`](research/hypotheses/hypotheses.json).
+
+## Strategy research
+
+Three long/short candidate models are pre-registered and implemented in Pine Script:
+
+- Donchian trend breakout with EMA direction and ATR expansion;
+- EMA impulse continuation with ATR expansion;
+- Bollinger squeeze release.
+
+Files:
+
+- [`research/strategy/models.json`](research/strategy/models.json) — exact hypotheses and
+  falsification rules.
+- [`research/strategy/the-leap-hypothesis-lab.pine`](research/strategy/the-leap-hypothesis-lab.pine)
+  — Pine Script v6 implementation.
+- [`research/strategy/testing-plan.md`](research/strategy/testing-plan.md) — walk-forward,
+  cost/fill sensitivity, holdout, and forward-test protocol.
+- [`data/initial_capacity.json`](data/initial_capacity.json) — verified cap × multiplier × price ×
+  buying-power arithmetic for the 20 selected live futures.
+
+**No strategy result is claimed.** This repository environment has no authenticated TradingView
+chart, Pine compiler, realtime entitlement, Strategy Report export, or competition account. Official
+TradingView documentation also states that Pine strategies cannot directly place orders in the
+built-in Paper Trading account. Publishing invented returns would violate the project's evidence
+standard.
+
+The capacity screen is not alpha. At the captured values, CL, SI, HO, and NQ had the lowest modeled
+favorable percentage moves needed to equal the displayed rank-250 P/L among the 20 selected rows.
+That comparison assumes whole contracts, initial 20:1 buying power, and no spread, slippage,
+commission, liquidity effect, rejection, or margin-call path. It does not predict direction or
+volatility.
+
+## Return datasets: keep these separate
+
+### Simulated contest-account returns
+
+[`data/verified_explosive_returns.json`](data/verified_explosive_returns.json) contains 15 completed
+#1 records from TradingView's official landing page plus one timestamped in-progress row. The
+multiple is recomputed as:
+
+```text
+competition return multiple = 1 + published net-profit percentage / 100
+```
+
+### Historical stock market moves
+
+[`data/volatile_stocks.json`](data/volatile_stocks.json) contains 20 trough-to-later-peak
+**adjusted-close** ratios from exact Yahoo Finance API windows. Yahoo is a commercial market-data
+vendor, not an exchange, regulator, or contest organiser. Every record is explicitly
+window-bounded, and the verifier recomputes:
+
+```text
+historical market multiple = archived peak adjusted close / archived trough adjusted close
+```
+
+Both exact trough and peak endpoint URLs are available in each data row, the source registry, and
+the Pages table. The data does not claim all-time extrema or a realizable strategy return.
+
+## Repository map
+
+| Path | Purpose |
 |---|---|
-| ≥ 5x | 2 |
-| ≥ 10x | 2 |
-| ≥ 20x | 1 |
-| ≥ 50x | 1 |
-| **≥ 100x** | **0** |
+| `data/contest_config.json` | Central rulebook transcription: dates, balance, leverage, ranking, limits, prizes |
+| `data/contest_universe.json` | All 94 permitted symbols and position caps |
+| `data/live_contest_snapshot.json` | Timestamped leaderboard rows and official TradingView display-price inputs |
+| `data/initial_capacity.json` | Derived initial-balance capacity screen |
+| `data/master_list.json` / `.csv` | 20 selected futures with official multipliers and rule caps |
+| `data/verified_explosive_returns.json` | Official historical champion results plus one live snapshot |
+| `data/volatile_stocks.json` | Vendor-tier, recomputable, window-bounded stock moves |
+| `research/hypotheses/hypotheses.json` | Falsifiable research claims, tests, verdicts, and evidence |
+| `research/strategy/` | Candidate models, Pine implementation, and test protocol |
+| `research/irregularities.json` | Open, confirmed, and resolved source/data issues |
+| `research/sources/sources.json` | Source registry with allowed uses and manual-review links |
+| `research/evidence/` | Captured quotations and endpoint records |
+| `scripts/verify.py` | Offline provenance, arithmetic, endpoint, strategy-state, and mutation checks |
+| `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
 
-**No 100x *contest* outcome is attested by any official source.** The verified ceiling is
-53.2072x. See `IR-03`.
-
-### Verified threshold counts — stock price multiples (market-data vendor)
-
-Across the 20 archived trough→peak close multiples (`data/volatile_stocks.json`):
-
-| Target | Verified stocks |
-|---|---|
-| ≥ 5x | 20 |
-| ≥ 10x | 19 |
-| ≥ 20x | 15 |
-| ≥ 50x | 10 |
-| **≥ 100x** | **6 (ENPH 382.49x, AMD 322.73x, MARA 190.22x, CVNA 128.62x, GME 124.11x, RIOT 119.85x)** |
-
-These are multi-year market-price moves from a commercial data vendor — evidence of what extreme
-volatility has done, not contest returns and not tradeable in the futures-only live contest.
-The fastest verified ≥100x took 336 days (RIOT, 2020-03-18 → 2021-02-17); the largest (ENPH)
-took about 4.5 years.
-
----
-
-## 2026-09-16 — independent re-verification pass (this session)
-
-This session did **not** trust the prior snapshot. Every primary claim was re-fetched live from the
-official TradingView pages and, where possible, cross-checked against independent public references.
-All re-verified on 2026-09-16:
-
-- **The live contest is futures-only.** Re-fetched `TV-RULES-AMP-SEP2026` §08 live: the permitted
-  list is **94 futures contracts and zero equities** (equity indices, crypto, FX, energy, metals,
-  grains, rates, meats). Re-fetched the live leaderboard: "The Leap by AMP Futures", "Assets to
-  trade: **Futures**", rank 1 `leonardo22_romano` **+921.49% / +$2,303,725.00**, 93,492
-  participants. → IR-01 and H3 stand: a stocks-only strategy cannot be placed on the current
-  leaderboard.
-- **Headline contest records confirmed.** Re-fetched the two official result blogs: `BenBernanke1`
-  is #1 of the Feb 2025 CME edition (59,187 participants, $3,000 prize) and `prodigy5284` is #1 of
-  the Mar 2026 "Magnificent Seven" stocks edition. The exact percentages (+5,220.72% and +17.58%)
-  are shown on the live landing-page carousel, which was also re-fetched. → H1, H2, H6, H12 stand.
-- **Volatile-stock multiples independently cross-checked.** Six of the twenty archived stock
-  multiples (ENPH, GME, AMD, CVNA, MARA, RIOT) were checked against independent public references
-  (companiesmarketcap, Macrotrends, Business Insider, The Motley Fool, Screen Rant). Every one is
-  corroborated to order of magnitude — e.g. ENPH $0.70 (2017-05-18) → $267.74 (2021) per Macrotrends;
-  CVNA $3.72 (2022-12-27) → $478.45 (2026-01-22) per companiesmarketcap. See
-  `research/evidence/VOLATILE-STOCKS-CROSSCHECK.md`. The verifier still recomputes every multiple
-  from the archived Yahoo values, so no figure depends on the cross-check.
-- **Site + intelligence-layer enhancements.** The volatile-stocks table now has one-click
-  **≥5x / ≥10x / ≥20x / ≥50x / ≥100x** threshold filters (the exact buckets the brief asked for),
-  matching the verified threshold counts. Hypothesis **H13** makes the two-track point explicit: the
-  stock list is a reference set for a future *stocks* edition, not the live futures contest.
-
-**No hallucination was found.** Every number on the site traces to a re-fetched official page or a
-recomputed vendor archive, and the verifier (239 checks) passes.
-
-## Suggestions for remaining work & limitations (next sessions)
-
-**Limitations that block a fully automated win:**
-
-1. **The live contest has no stocks (IR-01, critical).** The brief's "invest in volatile stocks"
-   premise cannot be executed in the September 2026 AMP Futures edition. Two honest paths remain:
-   (a) compete now in *futures* using the verified 53x ceiling and the T1–T6 test plan; or
-   (b) hold the verified stock list for the next *stocks* edition TradingView runs (e.g. a future
-   "Magnificent Seven" / Christmas edition). This session did not open a live trading account.
-2. **No 100x contest outcome is attested (IR-03).** The verified ceiling is 53.2072x. Any plan
-   assuming 100x is unsupported by official data.
-3. **Stock data is vendor-tier, not official.** Yahoo Finance is a commercial archive; it supports
-   only the recomputable stock records, never a contest/rules claim. The cross-check references are
-   likewise non-official corroboration, not primary sources.
-4. **The verifier audits captured evidence; it does not re-fetch the network.** Refresh the capture
-   (re-run the fetch step) before each edition, because the live leaderboard moves hourly and
-   position caps changed 100x between the July and September futures editions (IR-05).
-5. **Automation is a ban risk (IR-12, critical).** "No manual input" conflicts with the rules'
-   ≥60-transactions/minute prohibition and script warning. Any execution must stay human-in-the-loop
-   at ≤12 orders/minute.
-
-**Work still to do:**
-
-- Register a TradingView account, join the live (or next) edition, and run T1–T6 as a dry-run to
-  calibrate the next edition (the contest is already at day 16 of 30; registration closes Sep 23).
-- Extend the stock list beyond 20 names if a stocks edition is targeted, and add implied-volatility
-  and volume screens as primary-source leads.
-- Add an hourly leaderboard snapshotter (`research/strategy/snapshots/`) to track the prize frontier
-  (rank 50/100/250/300) over time, as the testing plan specifies.
-- If a repository admin grants `pages:write`, migrate GitHub Pages to Actions-based deployment (see
-  the site/legacy note above) for a real CI publish step.
-- Capture official contest results as they finalise (the Sept 2026 edition closes 2026-09-30) and
-  append the #1 record to `data/verified_explosive_returns.json`.
-
----
-
-## Repository layout
-
-```
-research/
-  sources/sources.json        Source registry (39 sources). A claim may only cite an id registered here.
-  evidence/*.md               Verbatim quotations per source, with URL, access date and tier.
-  hypotheses/hypotheses.json  12 hypotheses: claim, prediction, test executed, evidence, verdict.
-  strategy/testing-plan.md    Operational test protocol: how to place on the live leaderboard.
-  irregularities.json         13 flagged items for human review, severity-ranked.
-data/
-  contest_universe.json       All 94 permitted instruments + position caps, from rules §08.
-  master_list.json / .csv     20 candidate entries. Multipliers now sourced for all 20.
-  verified_explosive_returns.json  16 sourced #1 net-profit records + threshold analysis.
-  volatile_stocks.json        20 verified trough→peak stock multiples (vendor-tier data).
-scripts/
-  verify.py                   Line-by-line verifier with a self-test that proves each check fires.
-  build_site.py               Renders index.html at the repo root from the audited JSON.
-index.html                    GitHub Pages output (generated; do not hand-edit).
-assets/style.css, app.js      Site styling and table filtering.
-.github/workflows/pages.yml   Verifies data, fails on a stale site, and audits the rendered page.
-```
-
-### Why the site lives at the repository root
-
-This repository's GitHub Pages site is configured in **legacy** mode against branch `main` at
-path `/`. Switching it to Actions-based deployment needs `pages:write`, which the available
-credential does not have:
-
-```
-PUT /repos/buffedlizard55-lab/TradingViewTheLeap/pages
--> 403 Resource not accessible by integration
-```
-
-Because legacy Pages builds from the root of `main`, `build_site.py` writes `index.html` and
-`assets/` there, so the site publishes on merge to `main` with **no settings change and no deploy
-job**. To move to Actions-based deployment, a repository admin can run
-`gh api -X PUT repos/buffedlizard55-lab/TradingViewTheLeap/pages -f build_type=workflow` and
-restore an upload/deploy job.
-
----
-
-## Verify it yourself
+## Verify and build
 
 ```bash
-python3 scripts/verify.py             # 240 checks
-python3 scripts/verify.py --self-test # + 21 corruption tests proving each check can fail
-python3 scripts/build_site.py         # regenerate the site
-make serve                            # local preview on :8000
+python3 scripts/verify.py
+python3 scripts/verify.py --self-test
+python3 scripts/build_site.py
+python3 -m py_compile scripts/verify.py scripts/build_site.py
 ```
 
-The verifier enforces:
+Current audit result:
 
-- every cited `source_id` exists in the registry
-- official-tier sources resolve to official domains; vendor-tier sources resolve to allowed
-  vendor domains and must carry `official_source: false` (a vendor can never be laundered official)
-- every declared count in every `_meta` block equals the real row count
-- every master-list symbol is in the verified universe, with a cap matching the rules value
-- `max exposure` recomputes as `cap × multiplier`; `move needed` recomputes as `rank-1 P/L ÷ exposure`
-- **every stock multiple recomputes as `peak adjclose ÷ trough adjclose` from archived endpoint
-  values**, is flagged window-bounded, and cites vendor-tier sources only
-- **any non-null contest return multiple must carry a start price, end price, window and price source, or the build fails**
-- every contest return multiple recomputes as `1 + pct/100`
-- the live leaderboard is internally consistent: `$ = balance × (multiple − 1)`
-- every hypothesis and irregularity is traceable to registered sources
+```text
+verify:    302 passed, 0 failed, 0 warnings
+self-test: 331 passed, 0 failed, 0 warnings
+```
 
-Negative control confirmed: corrupting `max_underlying_exposure` on `ML-2026-09-16-01` makes the
-verifier exit 1 and name the row. The `--self-test` run additionally corrupts one field at a time
-(including a stock multiple and a vendor source's honesty flag) and asserts each check fires.
+The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard
+arithmetic, capacity math, strategy result state, multipliers, return ratios, counts, or stock
+windows are corrupted. CI rebuilds the site and fails if committed `index.html` is stale.
 
----
+## Important limitations and remaining work
 
-## Honesty policy
+- The verifier is offline. Public pages were captured through the research environment and can
+  change later; rerun the source-capture process for a new snapshot.
+- Live leaderboard and quote values are asynchronous point-in-time displays, not executable prices.
+- The public page does not show ranks 251–300, so the actual last-prize frontier is unavailable.
+- Champion summaries contain no trade history; they cannot reveal a winning strategy.
+- No consistent licensed intraday history for all 94 eligible futures is stored here. CME's official
+  settlement-based continuous series is a licensed option for part of the universe.
+- Continuous contracts can introduce roll effects. Strategy tests must record contract/roll settings.
+- TradingView Paper Trading and Pine's broker emulator are distinct simulations with different fill
+  mechanics. No Pine result should be labeled a competition-account result.
+- The live rules do not state a commission schedule. Backtests must test declared zero and nonzero
+  cost scenarios rather than assume.
+- The official Paper Trading help page's displayed short-futures formula omits point value even
+  though its worked example uses it; this is flagged as `IR-14`.
+- Strategy candidates remain untested until authenticated TradingView Strategy Report and forward
+  test artifacts are captured.
 
-The brief asked for highly volatile **stocks** with verified 5x–100x returns. This was delivered,
-with two honesty constraints made explicit rather than hidden:
-
-1. **The live contest permits no stocks** (`IR-01`), so the stock research is a separate module —
-   it informs the brief but cannot be executed in the running futures-only edition.
-2. **Stock price history comes from a market-data vendor (Yahoo Finance), not an exchange or
-   regulator.** Every stock multiple is therefore registered under a `market_data_vendor` tier,
-   flagged `official_source: false`, and kept out of any contest or rulebook claim. The verifier
-   recomputes each multiple as `peak adjclose ÷ trough adjclose` from the archived endpoint values
-   in `data/volatile_stocks.json`, so no figure is trusted that cannot be re-derived.
-3. **The official rules warn against scripted activity** (`IR-12`, critical). The brief asked for
-   no manual input; the rules say unattended high-frequency scripting risks a 1-hour+ ban and
-   disqualification. Both statements are true at the same time — the test plan resolves this by
-   capping the order rate at ≤12 transactions/minute (83% under the 60/min threshold) and keeping
-   a human confirmation step on batched orders.
-
-Each stock multiple is **window-bounded** — the extreme inside a documented fetch window, not a
-guaranteed all-time extreme. Where a longer history contradicted a locator (`IR-11`, SMCI), the
-claim was narrowed, never stretched. A row is cheaper to add later than a fabricated number is to
-retract.
-
-**Contract multipliers are now verified for all 20 of 20 entries** against CME Group primary
-sources (spec pages + the Solana/XRP guides). `max exposure` and the required underlying move are
-computed for every row. See `research/evidence/CME-CONTRACT-SPECS-BATCH2.md`.
-
----
-
-## Known limits
-
-- **`verify.py` itself does not touch the network.** The sandbox blocks direct `curl`/`wget`, so
-  evidence is captured through the agent's fetch tool and written to `research/evidence/`. The
-  verifier audits that captured evidence for traceability and recomputes every derived number;
-  it cannot re-fetch a page to prove a quotation is still live. Re-run the capture step to refresh.
-- **Single snapshot:** 2026-09-16 UTC. The live leaderboard moves hourly; contest parameters change
-  between editions (`IR-05` shows a position cap moving 100x between consecutive futures editions).
-- **Stock price data is vendor-tier.** Yahoo Finance is a commercial data vendor, not an exchange.
-  It supports only the recomputable stock records, never a contest or rulebook claim.
-- **Stock multiples are window-bounded**, not guaranteed all-time extremes. `IR-11` documents a case
-  (SMCI) where the longer history corrected the locator and the claim was narrowed accordingly.
-
----
-
-## Disclaimer
-
-This is a research and verification layer for a paper-trading competition run with virtual money.
-Every figure is a published historical competition result, a value read from official rules, or
-arithmetic on those values. **Nothing here is investment advice or a return forecast.** Historical
-results in a simulated environment say nothing about future results, and the documented 20:1
-leverage can eliminate the entire account on a 5% adverse move.
-
-TradingView is not affiliated with this repository; it is named only because it organises the
-competition.
+This project concerns virtual competition money. It is not investment advice or a forecast, and
+historical market moves or simulated contest results do not imply future performance.

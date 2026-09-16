@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "description": "Machine-readable facts transcribed from section 08 and section 09 of the official rules for the live AMP Futures September 2026 edition.",
+    "source_id": "TV-RULES-AMP-SEP2026",
+    "source_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+    "accessed_utc": "2026-09-16",
+    "reverified_utc": "2026-09-16"
+  },
+  "edition_id": "amp-futures-september-2026",
+  "edition_label": "The Leap by AMP Futures — September 2026",
+  "status": "live",
+  "asset_class": "futures",
+  "competition_start_utc": "2026-09-01T08:00:00Z",
+  "competition_end_utc": "2026-09-30T12:00:00Z",
+  "registration_close_utc": "2026-09-23T08:00:00Z",
+  "starting_balance_virtual_usd": 250000.0,
+  "futures_leverage_ratio": 20.0,
+  "maximum_initial_notional_usd": 5000000.0,
+  "minimum_active_days": 5,
+  "active_day_definition": "At least one action that results in opening or closing a position between 00:00:00 and 23:59:59 UTC.",
+  "ranking_metric": "realized_profit_loss_usd_on_closed_positions",
+  "leaderboard_update_frequency": "no_more_than_once_per_hour",
+  "public_leaderboard_last_visible_rank": 250,
+  "maximum_prize_recipients": 300,
+  "end_of_competition_auto_close": true,
+  "results_announcement_within_working_days": 5,
+  "account_reset_allowed": false,
+  "account_deleted_days_after_end": 30,
+  "transaction_rate_prohibited_at_or_above_per_minute": 60,
+  "script_warning": "The rules warn that excessively high Paper Trading transaction activity, including using various scripts, can lead to a ban of one hour or longer.",
+  "real_time_data": {
+    "paid_and_trial_users_receive_competition_data": true,
+    "eligible_free_users_may_trade_with_delay": true,
+    "upgrade_activation_within_hours": 24
+  },
+  "prize_tiers": [
+    {"from_rank": 1, "to_rank": 1, "cash_usd_each": 10000.0, "plan_months_each": null},
+    {"from_rank": 2, "to_rank": 2, "cash_usd_each": 7000.0, "plan_months_each": null},
+    {"from_rank": 3, "to_rank": 3, "cash_usd_each": 6000.0, "plan_months_each": null},
+    {"from_rank": 4, "to_rank": 4, "cash_usd_each": 3500.0, "plan_months_each": null},
+    {"from_rank": 5, "to_rank": 5, "cash_usd_each": 2500.0, "plan_months_each": null},
+    {"from_rank": 6, "to_rank": 25, "cash_usd_each": 550.0, "plan_months_each": null},
+    {"from_rank": 26, "to_rank": 50, "cash_usd_each": 400.0, "plan_months_each": null},
+    {"from_rank": 51, "to_rank": 300, "cash_usd_each": null, "plan_months_each": 3}
+  ],
+  "cash_prize_total_arv_usd": 50000.0,
+  "cash_payment_method_threshold_usd": 1000.0,
+  "cash_payment_methods": {
+    "at_or_above_1000_usd": ["wire", "PayPal"],
+    "below_1000_usd": ["PayPal"]
+  },
+  "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026"
+  ]
+}
