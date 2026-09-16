@@ -95,3 +95,29 @@ its own per-page source_id registered in `research/sources/sources.json`
 (CME-SPEC-BTC1! … CME-SPEC-NQ1!). `scripts/verify.py` recomputes
 `max_underlying_exposure = cap × multiplier` and the required underlying move for the current
 rank-1 P/L ($2,303,725.00) and fails on any mismatch.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+All 18 spec pages in this batch were re-fetched live on 2026-09-16 (~18:00–18:15 UTC); every
+contract unit matches the original capture above. Live spot levels at re-fetch (context only,
+10-min delayed quotes): BTC 75,370 (BTCU6) / 75,375 (MBTU6); ETH 2,372.00 (ETHU6) / 2,377.00
+(METU6); NG 2.888 (NGV6, vol 108,702); MNG 2.885 (MNGV6); CL 102.43 (CLV6, vol 236,128);
+MCL 102.43; QM 102.400 (QMV6, vol 5,230); RB 3.4621 (RBV6, vol 36,631); HO 5.2279 (HOV6, vol
+27,448); SI 64.840 (SIZ6, vol 31,852); SIC 64.85 (SICZ6); SIL 64.840 (SILZ6, vol 39,564);
+PL 1,784.50 (PLV6); NQ 29,431.00 (NQZ6, vol 329,027); MCL 102.43 (vol 174,336).
+
+Three spec pages were captured for the first time on this pass and registered in
+research/sources/sources.json:
+
+- CME-SPEC-SOL1! — /markets/cryptocurrencies/solana/solana/specs — Contract Unit "500 SOL, as
+  defined by the CME CF Solana-Dollar Reference Rate (SOLUSD_RR)"; rule CME 439; SOLU6 last 96.05,
+  volume 1,405.
+- CME-SPEC-MSL1! — /markets/cryptocurrencies/solana/micro-solana/specs — Contract Unit "25 SOL,
+  as defined by the CME CF Solana-Dollar Reference Rate (SOLUSD_RR)"; rule CME 440; MSLU6 last
+  96.10, volume 1,028.
+- CME-SPEC-MXP1! — /markets/cryptocurrencies/xrp/micro-xrp/specs — Contract Unit "2,500 XRP, as
+  defined by the CME CF XRP-Dollar Reference Rate (XRPUSD_RR)"; rule CME 436; MXPU6 last 1.2520,
+  volume 5,280.
+
+Result: all 20 master-list rows now cite a CME contract-spec page verified live on 2026-09-16.

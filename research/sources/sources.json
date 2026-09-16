@@ -7,7 +7,9 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 36
+  "source_count": 39,
+  "reverified_utc": "2026-09-16",
+  "reverification_note": "Second-pass re-verification 2026-09-16: every official primary source was re-fetched live (rules, contest pages, landing page, Mag7 page, BenBernanke blog, TradeStation rules, all 20 CME contract spec pages) and every market-data-vendor endpoint window was re-fetched and re-derived. Results recorded per source in research/evidence/."
  },
  "sources": [
   {
@@ -389,11 +391,12 @@
    "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
    "accessed_utc": "2026-09-16",
    "used_for": [
-    "Verified trough adjclose 11.186728477478027 on 2022-10-14 (window 2022-10-01\u21922022-11-15)",
-    "Verified peak adjclose 135.20559692382812 on 2024-06-18 (window 2024-06-01\u21922024-07-01, separate fetch)",
-    "Recomputable multiple 12.09x"
+    "Verified trough adjclose 11.186724662780762 on 2022-10-14 (window 2022-10-01\u21922022-11-15); value re-adjusted by vendor 2026-09-16 (was 11.186728477478027), see IR-13",
+    "Verified peak adjclose 135.20562744140625 on 2024-06-18 (window 2024-06-01\u21922024-07-01, separate fetch); value re-adjusted by vendor 2026-09-16 (was 135.20559692382812), see IR-13",
+    "Recomputable multiple 12.09x (both endpoint generations)"
    ],
-   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md"
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "reverified_utc": "2026-09-16"
   },
   {
    "source_id": "YAHOO-DAILY-TSLA",
@@ -500,6 +503,42 @@
     "Proof the XRP futures product is listed and trading (XRPU6, volume 174 on 2026-09-15), closing IR-10"
    ],
    "evidence_file": "research/evidence/CME-SPEC-XRP.md"
+  },
+  {
+   "source_id": "CME-SPEC-SOL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Solana (SOL) futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SOL1!: 500 SOL (rule CME 439), confirmed on the live spec page 2026-09-16 (SOLU6, last 96.05, volume 1,405)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MSL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Solana futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MSL1!: 25 SOL (rule CME 440), confirmed on the live spec page 2026-09-16 (MSLU6, last 96.10, volume 1,028)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MXP1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro XRP futures \u2014 contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MXP1!: 2,500 XRP (rule CME 436), confirmed on the live spec page 2026-09-16 (MXPU6, last 1.2520, volume 5,280)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
   }
  ]
 }

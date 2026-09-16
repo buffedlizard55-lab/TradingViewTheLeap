@@ -40,3 +40,10 @@ Top of the final leaderboard (rank | trader | realized profit % | realized profi
   than futures editions (compare 53.2072x futures best and 10.2149x live futures rank 1).
 - 41,301 participants; 19 days duration; prizes = 500 subscriptions (no cash prizes listed on the
   page header).
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16. Final leaderboard unchanged: #1 prodigy5284 +17.58% / +$17,576.05;
+top-250 table out of 41,301 participants; 500 subscriptions at stake. Supports IR-02 (stock-edition
+#1 returns are the lowest of all recorded editions).

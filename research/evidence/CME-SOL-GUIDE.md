@@ -42,3 +42,10 @@ TradingView symbols `CME:SOL1!` and `CME:MSL1!` both appear in the live contest'
 instrument list (`data/contest_universe.json`), and the Globex codes published here are `SOL` and
 `MSL` respectively. That code match is the basis for treating these CME specifications as
 authoritative for those two contest instruments.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+The guide article was not re-fetched this pass; instead the underlying contract spec pages were
+captured directly and registered as CME-SPEC-SOL1! (500 SOL, rule CME 439) and CME-SPEC-MSL1!
+(25 SOL, rule CME 440), both confirmed live 2026-09-16 (see CME-CONTRACT-SPECS-BATCH2.md).

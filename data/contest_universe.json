@@ -8,7 +8,9 @@
     "asset_classes_present": [
       "futures"
     ],
-    "equity_instruments_present": 0
+    "equity_instruments_present": 0,
+    "reverified_utc": "2026-09-16",
+    "reverification_note": "2026-09-16 second pass: all 94 instruments and all per-instrument caps re-read from the live rules page \u00a708 and diffed mechanically: 0 missing, 0 extra, 0 cap changes."
   },
   "instruments": [
     {

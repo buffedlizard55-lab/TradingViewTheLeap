@@ -29,3 +29,9 @@
   trades executed, announced 2025-03-06.
 - Prize structure of that edition: $3,000/$1,500/$1,200/$1,000/$800 for ranks 1–5, plus 20 × $500,
   25 × $300, and 200 × six-month subscription extensions.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16. Content unchanged: 1st BenBernanke1 $3,000; 2nd $2,000;
+3rd $1,000; 4th–20th $500; 21st–500th $250; 59,187 traders; ≈$1B aggregate virtual profit.

@@ -54,3 +54,10 @@ edition winner; "out of N" is the published participant count.
 
 This table is the single most important verified dataset in the project. It is transcribed into
 `data/verified_explosive_returns.json` and is the empirical basis for hypothesis H1.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+Re-fetched live on 2026-09-16 (all 3 chunks). All 16 historical #1 records identical to the
+original capture (15 final + 1 in-progress AMP record). Live AMP listing now shows 93,154
+participants (vs 92,365 first pass — live counter drift, IR-09; contest page itself shows 93,152).

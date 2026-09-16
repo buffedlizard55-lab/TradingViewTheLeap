@@ -155,3 +155,16 @@ recomputable from the archived endpoint values. They are deliberately kept in a 
    recommends.
 4. Yahoo Finance data may differ from exchange official prints in edge cases; the endpoint values
    above are archived verbatim in `data/volatile_stocks.json` for re-computation.
+
+
+## Re-verification pass — 2026-09-16 (second pass)
+
+All 16 endpoint windows (8 symbols × trough/peak) were re-fetched from the Yahoo v8 chart API on
+2026-09-16 and re-derived:
+
+- GME, MSTR, PLTR, AMC, SMCI, TSLA, COIN: endpoint values bit-identical to the original capture;
+  dates and rounded multiples unchanged.
+- NVDA: Yahoo re-adjusted historical adjclose. Currently served: trough 2022-10-14 =
+  11.186724662780762 (was 11.186728477478027); peak 2024-06-18 = 135.20562744140625 (was
+  135.20559692382812). Both generations recompute 12.09x. The archive in
+  data/volatile_stocks.json was updated to the currently-served values (IR-13).

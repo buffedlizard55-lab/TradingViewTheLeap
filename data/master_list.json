@@ -18,7 +18,9 @@
    "verified_historical_return_multiple": "always null in this batch. Populated only with an explicit start price, end price, window and source.",
    "max_underlying_exposure": "computed = max_open_position_contracts * contract_multiplier. Computed, not sourced.",
    "underlying_price_move_needed_for_current_rank1_pnl_usd": "computed = current rank-1 realized P/L / max_underlying_exposure. Computed, not sourced. Requires no price input."
-  }
+  },
+  "reverified_utc": "2026-09-16",
+  "reverification_note": "2026-09-16 second pass: all 20 contract multipliers re-verified live against CME spec pages (see CME-CONTRACT-SPECS-BATCH2.md); all 20 position caps re-verified live against rules \u00a708 (0 mismatches); rank-1 P/L $2,303,725.00 (+921.49%) unchanged on the live leaderboard, so all computed moves-needed values are unchanged."
  },
  "entries": [
   {
@@ -45,7 +47,8 @@
    "volatility_rationale": "Highest-volatility asset class in the universe. NOTE: position cap of 1 contract limits exposure to 500 SOL, so per-unit volatility does not translate into absolute $ P/L.",
    "source_ids": [
     "CME-SOL-GUIDE",
-    "TV-RULES-AMP-SEP2026"
+    "TV-RULES-AMP-SEP2026",
+    "CME-SPEC-SOL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
@@ -75,7 +78,8 @@
    "volatility_rationale": "Micro-size SOL contract. Cap 5 contracts = 125 SOL total exposure.",
    "source_ids": [
     "CME-SOL-GUIDE",
-    "TV-RULES-AMP-SEP2026"
+    "TV-RULES-AMP-SEP2026",
+    "CME-SPEC-MSL1!"
    ],
    "verification_status": "fully_verified",
    "flags": [],
@@ -138,7 +142,8 @@
    "volatility_rationale": "Cap 5 contracts = 12,500 XRP exposure.",
    "source_ids": [
     "CME-XRP-PR",
-    "TV-RULES-AMP-SEP2026"
+    "TV-RULES-AMP-SEP2026",
+    "CME-SPEC-MXP1!"
    ],
    "verification_status": "fully_verified",
    "flags": [
