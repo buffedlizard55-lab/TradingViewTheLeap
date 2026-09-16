@@ -1,0 +1,61 @@
+name: Verify and publish site
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify research data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run the research verifier
+        run: python3 scripts/verify.py --self-test
+      - name: Rebuild the site from data
+        run: python3 scripts/build_site.py
+      - name: Fail if the committed site is stale
+        run: |
+          if ! git diff --quiet -- site/index.html; then
+            echo "::error::site/index.html is out of date with data/. Run 'python3 scripts/build_site.py' and commit."
+            git diff --stat -- site/index.html
+            exit 1
+          fi
+          echo "site/index.html is in sync with data/."
+
+  publish:
+    name: Publish to GitHub Pages
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build site
+        run: python3 scripts/build_site.py
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

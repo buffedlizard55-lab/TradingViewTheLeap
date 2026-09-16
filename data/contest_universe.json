@@ -1,0 +1,673 @@
+{
+  "_meta": {
+    "description": "Complete instrument universe permitted in the live The Leap contest, transcribed verbatim from section 08 of the official competition rules.",
+    "source_id": "TV-RULES-AMP-SEP2026",
+    "source_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+    "accessed_utc": "2026-09-16",
+    "instrument_count": 94,
+    "asset_classes_present": [
+      "futures"
+    ],
+    "equity_instruments_present": 0
+  },
+  "instruments": [
+    {
+      "tradingview_symbol": "CME_MINI:MES1!",
+      "exchange": "CME_MINI",
+      "root_code": "MES",
+      "max_open_position_contracts": 500.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:MNQ1!",
+      "exchange": "CME_MINI",
+      "root_code": "MNQ",
+      "max_open_position_contracts": 500.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MYM1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MYM",
+      "max_open_position_contracts": 500.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:M2K1!",
+      "exchange": "CME_MINI",
+      "root_code": "M2K",
+      "max_open_position_contracts": 500.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:ES1!",
+      "exchange": "CME_MINI",
+      "root_code": "ES",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:NQ1!",
+      "exchange": "CME_MINI",
+      "root_code": "NQ",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:YM1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "YM",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:RTY1!",
+      "exchange": "CME_MINI",
+      "root_code": "RTY",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:EMD1!",
+      "exchange": "CME_MINI",
+      "root_code": "EMD",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:MNK1!",
+      "exchange": "CME",
+      "root_code": "MNK",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:NKD1!",
+      "exchange": "CME",
+      "root_code": "NKD",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:BTC1!",
+      "exchange": "CME",
+      "root_code": "BTC",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:MBT1!",
+      "exchange": "CME",
+      "root_code": "MBT",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:ETH1!",
+      "exchange": "CME",
+      "root_code": "ETH",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:MET1!",
+      "exchange": "CME",
+      "root_code": "MET",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:SOL1!",
+      "exchange": "CME",
+      "root_code": "SOL",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:MSL1!",
+      "exchange": "CME",
+      "root_code": "MSL",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:XRP1!",
+      "exchange": "CME",
+      "root_code": "XRP",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:MXP1!",
+      "exchange": "CME",
+      "root_code": "MXP",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6A1!",
+      "exchange": "CME",
+      "root_code": "6A",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6B1!",
+      "exchange": "CME",
+      "root_code": "6B",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6C1!",
+      "exchange": "CME",
+      "root_code": "6C",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6E1!",
+      "exchange": "CME",
+      "root_code": "6E",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6J1!",
+      "exchange": "CME",
+      "root_code": "6J",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6N1!",
+      "exchange": "CME",
+      "root_code": "6N",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:6S1!",
+      "exchange": "CME",
+      "root_code": "6S",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:NES1!",
+      "exchange": "CME_MINI",
+      "root_code": "NES",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:NNQ1!",
+      "exchange": "CME_MINI",
+      "root_code": "NNQ",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:N2K1!",
+      "exchange": "CME_MINI",
+      "root_code": "N2K",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:NDOW1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "NDOW",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:E71!",
+      "exchange": "CME_MINI",
+      "root_code": "E7",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:J71!",
+      "exchange": "CME_MINI",
+      "root_code": "J7",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:M6A1!",
+      "exchange": "CME_MINI",
+      "root_code": "M6A",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:M6B1!",
+      "exchange": "CME_MINI",
+      "root_code": "M6B",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:MCD1!",
+      "exchange": "CME_MINI",
+      "root_code": "MCD",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:M6E1!",
+      "exchange": "CME_MINI",
+      "root_code": "M6E",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:MJY1!",
+      "exchange": "CME_MINI",
+      "root_code": "MJY",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME_MINI:MSF1!",
+      "exchange": "CME_MINI",
+      "root_code": "MSF",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:CL1!",
+      "exchange": "NYMEX",
+      "root_code": "CL",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX_MINI:QM1!",
+      "exchange": "NYMEX_MINI",
+      "root_code": "QM",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:MCL1!",
+      "exchange": "NYMEX",
+      "root_code": "MCL",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:NG1!",
+      "exchange": "NYMEX",
+      "root_code": "NG",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX_MINI:QG1!",
+      "exchange": "NYMEX_MINI",
+      "root_code": "QG",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:MNG1!",
+      "exchange": "NYMEX",
+      "root_code": "MNG",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:RB1!",
+      "exchange": "NYMEX",
+      "root_code": "RB",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:HO1!",
+      "exchange": "NYMEX",
+      "root_code": "HO",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX:GC1!",
+      "exchange": "COMEX",
+      "root_code": "GC",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:QO1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "QO",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:MGC1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "MGC",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX:1OZ1!",
+      "exchange": "COMEX",
+      "root_code": "1OZ",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX:HG1!",
+      "exchange": "COMEX",
+      "root_code": "HG",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:QC1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "QC",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:MHG1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "MHG",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX:SI1!",
+      "exchange": "COMEX",
+      "root_code": "SI",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:QI1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "QI",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX_MINI:SIL1!",
+      "exchange": "COMEX_MINI",
+      "root_code": "SIL",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "COMEX:SIC1!",
+      "exchange": "COMEX",
+      "root_code": "SIC",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "NYMEX:PL1!",
+      "exchange": "NYMEX",
+      "root_code": "PL",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:UB1!",
+      "exchange": "CBOT",
+      "root_code": "UB",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:MWN1!",
+      "exchange": "CBOT",
+      "root_code": "MWN",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:TN1!",
+      "exchange": "CBOT",
+      "root_code": "TN",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:MTN1!",
+      "exchange": "CBOT",
+      "root_code": "MTN",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:Z3N1!",
+      "exchange": "CBOT",
+      "root_code": "Z3N",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZB1!",
+      "exchange": "CBOT",
+      "root_code": "ZB",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:30Y1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "30Y",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZF1!",
+      "exchange": "CBOT",
+      "root_code": "ZF",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:5YY1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "5YY",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZN1!",
+      "exchange": "CBOT",
+      "root_code": "ZN",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:10Y1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "10Y",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZQ1!",
+      "exchange": "CBOT",
+      "root_code": "ZQ",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZT1!",
+      "exchange": "CBOT",
+      "root_code": "ZT",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:2YY1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "2YY",
+      "max_open_position_contracts": 1.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:SR11!",
+      "exchange": "CME",
+      "root_code": "SR1",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:SR31!",
+      "exchange": "CME",
+      "root_code": "SR3",
+      "max_open_position_contracts": 100.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZC1!",
+      "exchange": "CBOT",
+      "root_code": "ZC",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:XC1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "XC",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MZC1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MZC",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZW1!",
+      "exchange": "CBOT",
+      "root_code": "ZW",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:XW1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "XW",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MZW1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MZW",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZS1!",
+      "exchange": "CBOT",
+      "root_code": "ZS",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:XK1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "XK",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MZS1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MZS",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZL1!",
+      "exchange": "CBOT",
+      "root_code": "ZL",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MZL1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MZL",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZM1!",
+      "exchange": "CBOT",
+      "root_code": "ZM",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT_MINI:MZM1!",
+      "exchange": "CBOT_MINI",
+      "root_code": "MZM",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZO1!",
+      "exchange": "CBOT",
+      "root_code": "ZO",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CBOT:ZR1!",
+      "exchange": "CBOT",
+      "root_code": "ZR",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:DC1!",
+      "exchange": "CME",
+      "root_code": "DC",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:LBR1!",
+      "exchange": "CME",
+      "root_code": "LBR",
+      "max_open_position_contracts": 5.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:GF1!",
+      "exchange": "CME",
+      "root_code": "GF",
+      "max_open_position_contracts": 10.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:HE1!",
+      "exchange": "CME",
+      "root_code": "HE",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    },
+    {
+      "tradingview_symbol": "CME:LE1!",
+      "exchange": "CME",
+      "root_code": "LE",
+      "max_open_position_contracts": 25.0,
+      "in_live_contest_universe": true
+    }
+  ]
+}
