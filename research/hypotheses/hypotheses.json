@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 12,
+  "hypothesis_count": 13,
   "reverified_utc": "2026-09-16",
   "reverification_note": "2026-09-16 second pass: every source_id cited by the register was re-fetched live; no verdict changed. H4/H5 rank-1 anchor ($2,303,725 at +921.49%) confirmed unchanged on the live leaderboard."
  },
@@ -202,11 +202,28 @@
     "Ratio of best futures #1 to best stocks #1: 53.2072x / 1.1758x \u2248 45x."
    ],
    "source_ids": [
-    "TV-CONTEST-MAG7-MAR2026",
-    "TV-RESULTS-BENBERNANKE1",
-    "TV-THELEAP-LANDING",
-    "TV-CONTEST-AMP-SEP2026"
+        "TV-CONTEST-MAG7-MAR2026",
+        "TV-RESULTS-BENBERNANKE1",
+        "TV-THELEAP-LANDING",
+        "TV-CONTEST-AMP-SEP2026"
+      ]
+    },
+  {
+   "id": "H13",
+   "claim": "The brief's verified volatile-stock list (5x-100x) is a reference set for a future STOCKS edition of The Leap, not an actionable instrument set in the live (futures) contest.",
+   "prediction": "Every one of the 20 stock records cites market_data_vendor sources only, and none of those 20 symbols appears in the 94-instrument permitted universe of the live September 2026 edition.",
+   "test": "Inspect the source tier of every record in data/volatile_stocks.json and intersect its symbols against data/contest_universe.json.",
+   "status": "supported",
+   "evidence": [
+    "All 20 volatile_stocks.json records cite YAHOO-* market_data_vendor source_ids; scripts/verify.py forbids any non-vendor source for stock evidence (check_volatile_stocks.source_tier).",
+    "None of the 20 stock symbols (ENPH, AMD, MARA, CVNA, GME, RIOT, SHOP, NVAX, APP, PLUG, MSTR, NIO, PLTR, AMC, SMCI, HOOD, TSLA, NVDA, COIN, PTON) appears in contest_universe.json (94 futures instruments, 0 equities).",
+    "TradingView has run dedicated stocks editions where single stocks ARE permitted (the 'Magnificent Seven' Stocks contest, March 2026; the Christmas Stocks edition, December 2025) - that is the contest where this list is executable.",
+    "Independently cross-checked 2026-09-16 against public references: ENPH $0.70->$267.74, GME ~$2.57->$483 (Jan 2021), AMD ~$1.61 (2015)->$584 (2026), CVNA $3.72 (Dec 2022)->$478 (Jan 2026), MARA ~1,220% Oct 2020-Mar 2021 - all corroborate the order-of-magnitude 100x+ moves (research/evidence/VOLATILE-STOCKS-CROSSCHECK.md)."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-MAG7-MAR2026"
    ]
   }
- ]
+  ]
 }

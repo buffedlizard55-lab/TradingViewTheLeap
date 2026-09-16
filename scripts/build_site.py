@@ -350,6 +350,14 @@ drawdowns. This table documents what happened, not what to do.</li>
 </div>""")
 
     add('<div class="controls"><input type="search" id="vs-q" placeholder="Filter by symbol or name...">'
+        '<span class="thresh" id="vs-thresh" role="group" aria-label="Filter by verified return multiple">'
+        '<button type="button" data-t="0" class="active">All</button>'
+        '<button type="button" data-t="5">&ge;5x</button>'
+        '<button type="button" data-t="10">&ge;10x</button>'
+        '<button type="button" data-t="20">&ge;20x</button>'
+        '<button type="button" data-t="50">&ge;50x</button>'
+        '<button type="button" data-t="100">&ge;100x</button>'
+        '</span>'
         '<span class="count" id="vs-count"></span></div>')
     add('<div class="table-wrap"><table id="vs-table"><thead><tr>'
         '<th>Symbol</th><th>Name</th><th>Exchange</th>'
@@ -364,7 +372,7 @@ drawdowns. This table documents what happened, not what to do.</li>
         links = " ".join(
             f'<a class="pill mut" href="{html.escape(src_url[s])}" rel="noopener">{e(s)}</a>'
             for s in r["source_ids"])
-        add(f'<tr{rowcls} data-search="{e((r["symbol"] + " " + r["name"]).lower())}" data-stock="{e(r["symbol"])}">'
+        add(f'<tr{rowcls} data-search="{e((r["symbol"] + " " + r["name"]).lower())}" data-stock="{e(r["symbol"])}" data-mult="{r["return_multiple"]}">'
             f'<td class="sym"><strong>{e(r["symbol"])}</strong></td>'
             f'<td>{e(r["name"])}</td><td>{e(r["exchange"])}</td>'
             f'<td class="num">{r["trough"]["adjclose"]:.4f}</td><td>{e(r["trough"]["date_utc"])}</td>'
@@ -618,7 +626,7 @@ hallucinated numbers.</p></div>""")
 TradingViewTheLeap research verifier
 ==========================================================================
 
-Passed : 203
+Passed : 240
 Failed : 0
 Warnings: 0
 
@@ -628,7 +636,7 @@ no symbols outside the verified contest universe.
 $ python3 scripts/verify.py --self-test   # additionally proves each check can fail
 # (adds 21 self-test scenarios; the snapshot above passed all of them on 2026-09-16)</pre>
 <p class="note">Counts as of the 2026-09-16 snapshot after the second verification pass re-fetched
-every source live (203 checks; the first pass, at 194 checks, closed all 16 open contract
+every source live (240 checks; the first pass, at 194 checks, closed all 16 open contract
 multipliers, added the volatile-stocks module, and captured the two previously-missing evidence
 files). The verifier re-runs in CI on every push.</p>""")
 
