@@ -252,9 +252,9 @@ def build() -> dict:
                 "data/volatility_intelligence.json",
             ],
             "source_ids": [
-                "TV-RULES-AMP-SEP2026-R6",
-                "TV-CONTEST-AMP-SEP2026-R6",
-                "TV-THELEAP-LANDING-R6",
+                "TV-RULES-AMP-SEP2026-R7",
+                "TV-CONTEST-AMP-SEP2026-R7",
+                "TV-THELEAP-LANDING-R7",
             ],
             "assumptions": [
                 "A balance multiple means ending balance / 250,000 starting balance; 5x means +400% net profit, "

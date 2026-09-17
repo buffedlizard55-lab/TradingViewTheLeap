@@ -290,6 +290,57 @@ ranks advance, so this list is a set of point-in-time displays, not thresholds.<
 {esc(placement['deadline']['competition_end_utc'])} deadline; registration stays open for
 {number(latest_cap['registration_days_left'], 2)} more days. The winning-days column assumes an unbroken run of all-in wins at
 a +1% underlying move per day; an adverse day of the same size removes the same equity instead.</p>
+
+<div class="card" style="margin: 20px 0; border: 1px solid var(--accent); background: #111a28;">
+<div class="model-head">
+<h3>Interactive Target & Placement Calculator</h3>
+<span class="pill info">live model</span>
+</div>
+<p class="note" style="margin-bottom: 14px;">Simulate required compounding rates, underlying moves, and ruin thresholds for any target return multiple over the remaining competition window.</p>
+<div class="grid cols-3" style="margin-bottom: 12px;">
+<div>
+<label for="calc-slider" style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase;">Quick Presets &amp; Slider</label>
+<div class="thresh" id="calc-presets" style="margin-bottom: 8px;">
+<button type="button" data-m="5">5×</button>
+<button type="button" class="active" data-m="10">10×</button>
+<button type="button" data-m="20">20×</button>
+<button type="button" data-m="50">50×</button>
+<button type="button" data-m="100">100×</button>
+</div>
+<input type="range" id="calc-slider" min="2" max="100" value="10" step="1" style="width: 100%;">
+</div>
+<div>
+<label for="calc-target-input" style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase;">Target Multiple (× Balance)</label>
+<input type="number" id="calc-target-input" min="2" max="500" value="10" style="width: 100%; font-family: var(--mono); font-size: 15px; font-weight: bold; background: var(--panel); border: 1px solid var(--border); color: var(--accent); padding: 7px 10px; border-radius: 6px;">
+</div>
+<div>
+<label for="calc-days" style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase;">Days Remaining</label>
+<input type="number" id="calc-days" min="0.5" max="30" value="{latest_cap['remaining_days_to_deadline']}" step="0.01" style="width: 100%; font-family: var(--mono); font-size: 15px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 7px 10px; border-radius: 6px;">
+</div>
+</div>
+<div class="grid cols-4" style="margin-top: 10px;">
+<div class="card" style="background: var(--panel);">
+<h3>Ending Equity</h3>
+<div class="stat accent" id="calc-out-equity">$2,500,000</div>
+<div class="note" id="calc-out-profit">+$2,250,000 net profit</div>
+</div>
+<div class="card" style="background: var(--panel);">
+<h3>Required Compounding</h3>
+<div class="stat amber" id="calc-out-compound">+20.18%/day</div>
+<div class="note">unbroken daily growth</div>
+</div>
+<div class="card" style="background: var(--panel);">
+<h3>Underlying at 20:1</h3>
+<div class="stat green" id="calc-out-underlying">1.01%/day</div>
+<div class="note">linear full exposure</div>
+</div>
+<div class="card" style="background: var(--panel);">
+<h3>Winning Days (+1%)</h3>
+<div class="stat small" id="calc-out-days">13 days</div>
+<div class="note">consecutive unbroken</div>
+</div>
+</div>
+</div>
 <div class="callout high"><h3>What the cash-prize level means across the official champion sample</h3>
 <p>{cs['completed_champions_strictly_below_capture5_rank50']} of {cs['completed_records']} completed-edition champions finished
 <em>below</em> the {cs['capture5_rank50_multiple']}× that rank 50 displayed at the latest capture; only the {cs['maximum_completed_multiple']}×
@@ -321,10 +372,10 @@ means the vendor history contained a move that large <em>once</em>; it is not a 
 <div class="note">rank-50 P/L above rank-100 P/L at the latest capture</div></div>
 </div>
 <p><a href="data/leaderboard_lab.json" download>Download placement arithmetic (JSON)</a> ·
-{link(source_url['TV-CONTEST-AMP-SEP2026-R6'], 'Latest leaderboard capture ↗')} ·
-{link(source_url['TV-RULES-AMP-SEP2026-R6'], 'Rules re-verified ↗')} ·
-{link(source_url['TV-THELEAP-LANDING-R6'], 'Champion sample re-verified ↗')} ·
-<a href="research/evidence/AUDIT-2026-09-17-PASS5.md">Fifth-pass audit &amp; next-session plan</a></p>
+{link(source_url['TV-CONTEST-AMP-SEP2026-R7'], 'Latest leaderboard capture ↗')} ·
+{link(source_url['TV-RULES-AMP-SEP2026-R7'], 'Rules re-verified ↗')} ·
+{link(source_url['TV-THELEAP-LANDING-R7'], 'Champion sample re-verified ↗')} ·
+<a href="research/evidence/AUDIT-2026-09-17-PASS7.md">Seventh-pass audit &amp; next-session plan</a></p>
 <div class="callout critical"><h3>Read this before acting on any number here</h3>
 <p>Cash prizes end at rank 50; ranks 51–300 receive a subscription. Every frontier value is a moving
 point-in-time display that the organiser can correct, and the arithmetic above shows what the level costs —
@@ -668,12 +719,22 @@ stored in the repository. Claims are limited to the documented windows; no all-t
     # Hypotheses
     add(f"""<section id="hypotheses"><h2>Research hypothesis register</h2>
 <p class="lead">Falsifiable claims about rules and observed outcomes. “Supported” and “refuted”
-apply only to the stated test and captured evidence—not to a trading forecast.</p>""")
+apply only to the stated test and captured evidence—not to a trading forecast.</p>
+<div class="controls">
+<input id="hyp-q" type="search" placeholder="Filter hypotheses by keyword, ID, status…" aria-label="Filter hypotheses">
+<div id="hyp-thresh" class="thresh">
+<button type="button" class="active" data-status="">All ({len(hypotheses['hypotheses'])})</button>
+<button type="button" data-status="supported">Supported ({sum(1 for h in hypotheses['hypotheses'] if h['status'] == 'supported')})</button>
+<button type="button" data-status="refuted">Refuted ({sum(1 for h in hypotheses['hypotheses'] if h['status'] == 'refuted')})</button>
+</div>
+<span id="hyp-count" class="count"></span>
+</div>""")
     for item in hypotheses["hypotheses"]:
         pill = STATUS_PILL[item["status"]]
         evidence_html = "".join(f"<li>{esc(line)}</li>" for line in item["evidence"])
         refs = " · ".join(link(source_url[sid], sid) for sid in item["source_ids"])
-        add(f"""<article class="hyp"><div class="top"><span class="id">{esc(item['id'])}</span><span class="pill {pill}">{esc(item['status'])}</span><span class="claim">{esc(item['claim'])}</span></div>
+        search_text = f"{item['id']} {item['status']} {item['claim']} {item['prediction']} {item['test']}".lower()
+        add(f"""<article class="hyp" data-status="{esc(item['status'])}" data-search="{esc(search_text)}"><div class="top"><span class="id">{esc(item['id'])}</span><span class="pill {pill}">{esc(item['status'])}</span><span class="claim">{esc(item['claim'])}</span></div>
 <dl><dt>Prediction</dt><dd>{esc(item['prediction'])}</dd><dt>Test</dt><dd>{esc(item['test'])}</dd>
 <dt>Evidence</dt><dd><ul>{evidence_html}</ul></dd><dt>Sources</dt><dd>{refs}</dd></dl></article>""")
     add("</section>")
@@ -718,12 +779,24 @@ live rules. Exchange counts: {esc(', '.join(f'{k} {v}' for k, v in sorted(exchan
     # Irregularities
     add(f"""<section id="irregularities"><h2>Irregularity register</h2>
 <p class="lead">Contradictions, missing fields, stale assumptions, and source limitations are kept
-visible even after resolution.</p>""")
+visible even after resolution.</p>
+<div class="controls">
+<input id="irr-q" type="search" placeholder="Filter irregularities by ID, severity, title…" aria-label="Filter irregularities">
+<div id="irr-thresh" class="thresh">
+<button type="button" class="active" data-sev="">All ({len(irregularities['irregularities'])})</button>
+<button type="button" data-sev="critical">Critical ({sum(1 for i in irregularities['irregularities'] if i['severity'] == 'critical')})</button>
+<button type="button" data-sev="high">High ({sum(1 for i in irregularities['irregularities'] if i['severity'] == 'high')})</button>
+<button type="button" data-sev="medium">Medium ({sum(1 for i in irregularities['irregularities'] if i['severity'] == 'medium')})</button>
+<button type="button" data-sev="low">Low ({sum(1 for i in irregularities['irregularities'] if i['severity'] == 'low')})</button>
+</div>
+<span id="irr-count" class="count"></span>
+</div>""")
     for item in irregularities["irregularities"]:
         pill = SEVERITY_PILL[item["severity"]]
         status = item.get("status", "open")
         refs = " · ".join(link(source_url[sid], sid) for sid in item["source_ids"])
-        add(f"""<article class="hyp"><div class="top"><span class="id">{esc(item['id'])}</span><span class="pill {pill}">{esc(item['severity'])}</span><span class="pill mut">{esc(status)}</span><span class="claim">{esc(item['title'])}</span></div>
+        search_text = f"{item['id']} {item['severity']} {item['title']} {item['detail']} {item['observed']}".lower()
+        add(f"""<article class="hyp" data-severity="{esc(item['severity'])}" data-search="{esc(search_text)}"><div class="top"><span class="id">{esc(item['id'])}</span><span class="pill {pill}">{esc(item['severity'])}</span><span class="pill mut">{esc(status)}</span><span class="claim">{esc(item['title'])}</span></div>
 <dl><dt>Detail</dt><dd>{esc(item['detail'])}</dd><dt>Observed</dt><dd>{esc(item['observed'])}</dd>
 <dt>Resolution</dt><dd>{esc(item.get('resolution', 'Open'))}</dd><dt>Sources</dt><dd>{refs}</dd></dl></article>""")
     add("</section>")
@@ -732,7 +805,17 @@ visible even after resolution.</p>""")
     add(f"""<section id="sources"><h2>Source registry and manual review</h2>
 <p class="lead">All {source_registry['_meta']['source_count']} registered sources, their evidence
 tier, allowed use, captured evidence file, and exact URL. Vendor stock sources also expose both
-endpoint windows independently.</p><div class="source-grid">""")
+endpoint windows independently.</p>
+<div class="controls">
+<input id="src-q" type="search" placeholder="Filter sources by ID, title, publisher, URL…" aria-label="Filter sources">
+<div id="src-thresh" class="thresh">
+<button type="button" class="active" data-tier="">All ({len(sources)})</button>
+<button type="button" data-tier="official_primary">Official Primary ({sum(1 for s in sources if s['tier'] == 'official_primary')})</button>
+<button type="button" data-tier="market_data_vendor">Market Data Vendor ({sum(1 for s in sources if s['tier'] == 'market_data_vendor')})</button>
+</div>
+<span id="src-count" class="count"></span>
+</div>
+<div class="source-grid" id="src-grid">""")
     for source in sources:
         pill = TIER_PILL[source["tier"]]
         uses = "".join(f"<li>{esc(use)}</li>" for use in source["used_for"])
@@ -743,7 +826,8 @@ endpoint windows independently.</p><div class="source-grid">""")
                 link(item["url"], f"{item['label']} ↗") for item in source["endpoint_urls"]
             ) + "</div>"
         evidence_link = f'<a href="{esc(evidence)}">captured evidence</a>' if evidence else "no local evidence file"
-        add(f"""<details class="source-item"><summary><span class="pill {pill}">{esc(source['tier'].replace('_', ' '))}</span>
+        search_text = f"{source['source_id']} {source['tier']} {source['title']} {source['publisher']} {source['url']}".lower()
+        add(f"""<details class="source-item" data-tier="{esc(source['tier'])}" data-search="{esc(search_text)}"><summary><span class="pill {pill}">{esc(source['tier'].replace('_', ' '))}</span>
 <strong>{esc(source['source_id'])}</strong> · {esc(source['title'])}</summary>
 <p>{link(source['url'], source['url'])}</p>{endpoint_links}
 <p class="note">{esc(source['publisher'])} · accessed {esc(source['accessed_utc'])} · {evidence_link}</p>
