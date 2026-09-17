@@ -8,6 +8,35 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 fourth pass: board-correction finding + fourth frontier capture
+
+On 2026-09-17 (~19:04 UTC) all three official pages were fetched again (~2.1 hours after the
+16:56 UTC pass) and verified line by line ([evidence: contest](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md) ·
+[rules](research/evidence/TV-RULES-AMP-SEP2026-R4.md) · [landing](research/evidence/TV-THELEAP-LANDING-R4.md)):
+
+- **The displayed frontier can fall.** Rank 50 moved from +$1,247,897.00 (16:56 UTC) to
+  **+$1,244,313.50** (~19:04 UTC), while the exact capture-3 rank-50 row re-appeared verbatim at
+  rank 49 and ranks 100/250 rose ($12,309.65 / $2,235.50). Realized P/L on closed positions cannot
+  shrink for a still-registered account; the net effect is exactly one fewer row ahead of the
+  tracked row, and the most parsimonious reading is one removal among rows ranked 1–48
+  (disqualification or correction — the rules reserve at-any-time disqualification rights at
+  §05/§09/§16 and the official pages publish no board-change log). Recorded as **IR-23** and
+  tested as hypothesis **H20**
+  (supported). Practical consequence: no captured frontier value is a ratchet floor, in either
+  direction.
+- **New hypothesis H21 (supported):** full-window frontier accumulation rates are quantified —
+  $141,857.07/day (rank 1), $75,591.10/day (rank 50), $61,490.53/day (rank 100) and
+  $39,930.78/day (rank 250) over the 16.4611 elapsed days. Constant-rate end-of-contest scenarios
+  are pure arithmetic, **not forecasts** (e.g. rank 250 ≈ $1,164,647.74 at the 2026-09-30 12:00
+  UTC deadline if its average rate persisted, which H18/H20 show it will not do smoothly).
+- **Rules re-verified for the fourth time, zero changes:** all rule constants and the 94-symbol
+  universe re-diffed programmatically — 94/94 symbols, caps and listing order identical,
+  0 equities.
+- **Champions re-verified for the fourth time:** the 15 completed-edition records are unchanged;
+  maximum completed outcome remains 53.2072x, no completed edition at/above 100x.
+- Participants displayed: 95,709 → **96,095** (the landing counter read 96,089 at the same
+  minute; asynchronous counters, IR-09).
+
 ## September 17 second pass: full official re-verification + third frontier capture
 
 On 2026-09-17 (~16:55 UTC) all three official pages were re-fetched and verified line by line:
@@ -74,32 +103,35 @@ Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Fu
 | Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
 | Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-The live page displayed **95,709 participants** at the 2026-09-17 ~16:56 UTC capture (third).
+The live page displayed **96,095 participants** at the 2026-09-17 ~19:04 UTC capture (fourth).
 Captured public frontiers at that capture: rank 1 **+$2,335,125.00 (+934.05%)**, rank 50
-**+$1,247,897.00 (+499.16%)**, rank 100 **+$999,892.85 (+399.96%)**, rank 250
-**+$655,069.50 (+262.03%)**. These are moving snapshots, not final thresholds and not prize
+**+$1,244,313.50 (+497.73%)**, rank 100 **+$1,012,202.50 (+404.88%)**, rank 250
+**+$657,305.00 (+262.92%)**. These are moving snapshots, not final thresholds and not prize
 guarantees. The first (2026-09-16) capture is the point-in-time record in
 [`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
 
 ### Frontier tracker
 
-Three official captures are stored with their official URLs in
+Four official captures are stored with their official URLs in
 [`data/frontier_history.json`](data/frontier_history.json); the verifier re-derives all deltas and
 percentage arithmetic and requires each capture's values to be internally consistent
-(`frontier.*` checks). The raw leaderboard HTML of each capture is archived under
-`artifact_pages/` for manual review.
+(`frontier.*` checks). The raw leaderboard HTML of the first capture is archived under
+`artifact_pages/` for manual review; captures 2–4 are preserved as verbatim quotations in their
+evidence files.
 
-| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) |
-|---|---|---|---|
-| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) |
-| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) |
-| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) |
-| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) |
-| Participants | 93,527 | 93,702 | 95,709 |
+| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) |
+|---|---|---|---|---|
+| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) |
+| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) | **+$1,244,313.50 (+497.73%) ↓** |
+| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) | +$1,012,202.50 (+404.88%) |
+| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) | +$657,305.00 (+262.92%) |
+| Participants | 93,527 | 93,702 | 95,709 | 96,095 |
 
 The 3-hour window between captures 1 and 2 froze rank 1 and 250 while the mid-board moved; during
 the US trading day before capture 3 **all four frontiers rose** and ranks 50/100/250 changed
-holders (H18, supported). The P/L needed to hold a public rank is a rising moving target.
+holders (H18, supported). The P/L needed to hold a public rank is a rising moving target — but
+capture 4 proved it is not a one-way ratchet: the rank-50 frontier **fell** $3,583.50 in just over
+two hours while the former rank-50 row survived intact one place higher at rank 49 (H20, IR-23).
 
 ## What the evidence says
 
@@ -260,8 +292,8 @@ python3 scripts/refresh_artifacts.py   # re-run backtests, sync models.json, reb
 Current audit result:
 
 ```text
-verify:    321 passed, 0 failed, 1 warning
-self-test: 357 passed, 0 failed, 1 warning
+verify:    330 passed, 0 failed, 1 warning
+self-test: 366 passed, 0 failed, 1 warning
 ```
 
 The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly
@@ -288,7 +320,12 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 - The verifier is offline. Public pages were captured through the research environment and can
   change later; rerun the source-capture process for a new snapshot.
 - Live leaderboard and quote values are asynchronous point-in-time displays, not executable prices;
-  rank 1/250 were frozen between the two captures while the mid-board moved (IR-20).
+  rank 1/250 were frozen between the two captures while the mid-board moved (IR-20). Board
+  membership itself is corrected over time — the displayed rank-50 frontier fell $3,583.50 between
+  captures 3 and 4 with no public change log (IR-23), so no captured frontier is a floor in either
+  direction.
+- The constant-rate scenario values in H21 (e.g. rank 250 ≈ $1.16M at the deadline) are arithmetic
+  extrapolations of captured displays, **not forecasts**; H18/H20 show the true path is irregular.
 - The public page does not show ranks 251–300, so the actual last-prize frontier is unavailable.
 - Champion summaries contain no trade history; they cannot reveal a winning strategy.
 - Continuous front-month vendor series are unadjusted for rolls; roll gaps can create artificial

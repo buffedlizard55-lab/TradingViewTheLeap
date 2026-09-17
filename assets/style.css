@@ -104,6 +104,8 @@ section > .lead { color: var(--muted); margin: 10px 0 20px; max-width: 900px; }
 .stat.amber { color: var(--amber); }
 .stat.accent { color: var(--accent); }
 .note { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+ul.notes { margin: 4px 0 0; padding-left: 18px; }
+ul.notes li { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
 
 /* ---------- tables ---------- */
 .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); margin: 16px 0; }

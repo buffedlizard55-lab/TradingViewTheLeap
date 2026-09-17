@@ -2,9 +2,9 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 19,
+  "hypothesis_count": 21,
   "reverified_utc": "2026-09-17",
-  "reverification_note": "2026-09-17: H14-H17 re-run on 11 symbols / 231 windows after the automated capture pass added CME:BTC1! (504 sessions; the four relay failures documented in IR-21 resolved for BTC=F on the fourth pass). All three strategy verdicts remain refuted. New hypotheses H18 (frontier non-stationarity, three captures) and H19 (cash-frontier vs public-frontier gap) added and supported."
+  "reverification_note": "2026-09-17: H14-H17 re-run on 11 symbols / 231 windows after the automated capture pass added CME:BTC1! (504 sessions; IR-21 resolved for BTC=F on the fourth pass). All three strategy verdicts remain refuted. H18 (frontier non-stationarity, three captures) and H19 (cash-frontier vs public-frontier gap) added on the 16:56Z pass. Fourth pass (~19:04Z): H20 (leaderboard is corrected, not append-only; displayed rank-50 frontier fell $3,583.50 while ranks 100/250 rose) and H21 (full-window frontier accumulation rates quantified; constant-rate end-of-contest scenarios are arithmetic, not forecasts) added and supported."
  },
  "hypotheses": [
   {
@@ -323,6 +323,41 @@
     "TV-CONTEST-AMP-SEP2026-R3",
     "TV-RULES-AMP-SEP2026",
     "TV-RULES-AMP-SEP2026-R3"
+   ]
+  },
+  {
+   "id": "H20",
+   "claim": "The public live leaderboard is corrected over time, not append-only: between capture 3 (2026-09-17T16:56:00Z) and capture 4 (2026-09-17T19:04:00Z) the displayed rank-50 frontier DECREASED from +$1,247,897.00 to +$1,244,313.50 while ranks 100 and 250 rose and rank 1 was unchanged; the exact row value previously displayed at rank 50 (rajgaurav009 +$1,247,897.00) re-appeared at rank 49.",
+   "prediction": "Capture 4 rank-50 realized P/L is strictly lower than capture 3 rank-50 realized P/L, and the capture-3 rank-50 row value appears verbatim (same trader, same percentage, same dollars) at rank 49 in capture 4.",
+   "test": "Row-by-row comparison of captures 3 and 4 in data/frontier_history.json plus the full-board rows 45-116 re-read verbatim from the official contest page (TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md).",
+   "status": "supported",
+   "evidence": [
+    "Rank 50: +$1,247,897.00 (+499.16%) -> +$1,244,313.50 (+497.73%): -$3,583.50 (-1.4334 pp); holder changed from rajgaurav009 (now at rank 49 with the identical value pair) to Nikola_Ng.",
+    "Realized P/L on closed positions cannot shrink for a still-registered account; the net effect is exactly one fewer row ahead of the tracked row, and the most parsimonious explanation is one removal from the board ranked 1-48 at capture 3 (disqualification or board correction; official rules sections 05, 09 and especially 16 reserve at-any-time disqualification rights and the official pages publish no board-change log).",
+    "Control rows behaved normally over the same 2.1-hour window: rank 1 unchanged ($2,335,125.00, same holder), rank 100 +$12,309.65 (new holder JeremyTradezzz; capture-3 holder wowlass63 slid to rank 103), rank 250 +$2,235.50 (new holder NxSChadha).",
+    "Consequence for strategy: a captured frontier value is not a ratchet floor; the P/L needed for any rank at contest end cannot be read off as 'minimum observed so far' in either direction."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R3",
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4"
+   ]
+  },
+  {
+   "id": "H21",
+   "claim": "Every tracked public frontier's average realized-P/L accumulation rate since the competition start is positive and quantified, so a static lead decays: from 2026-09-01T08:00:00Z to capture 4 (2026-09-17T19:04:00Z, 16.4611 days) the displayed frontiers averaged $141,857.07/day (rank 1), $75,591.10/day (rank 50), $61,490.53/day (rank 100) and $39,930.78/day (rank 250).",
+   "prediction": "Each of the four capture-4 frontier values divided by the 16.4611 elapsed days is positive, and the rank-50 average rate exceeds the rank-250 average rate.",
+   "test": "Division of capture-4 realized P/L in data/frontier_history.json by elapsed days computed from data/contest_config.json dates; constant-rate scenario = value x (29.1667 total contest days / 16.4611 elapsed days); scenario arithmetic only, not a forecast.",
+   "status": "supported",
+   "evidence": [
+    "Average rates over 16.4611 elapsed days: rank 1 $141,857.07/day; rank 50 $75,591.10/day; rank 100 $61,490.53/day; rank 250 $39,930.78/day. All positive; mid-board rates sit far above the board edge, so the gap between cash ranks and the public edge is structural (H19).",
+    "Time remaining at capture 4: 12.7056 days to the 2026-09-30 12:00 UTC deadline; registration stays open for 5.5389 more days (until 2026-09-23 08:00 UTC), about 43.6% of the remaining window, so newly joining participants can still push the board upward during that part of it.",
+    "Constant-rate scenario values at contest end (arithmetic equalities, NOT forecasts): rank 1 ~$4,137,497.89; rank 50 ~$2,204,740.42; rank 100 ~$1,793,473.89; rank 250 ~$1,164,647.74. H18/H20 show the true path is non-stationary and even correctable downward, so these scenario numbers bound nothing.",
+    "Practical reading for a leaderboard-placement attempt: the entry threshold keeps rising on average, so deferring entry raises the required final P/L; the 5 active UTC days qualification can be satisfied any time before the deadline."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4"
    ]
   }
  ]
