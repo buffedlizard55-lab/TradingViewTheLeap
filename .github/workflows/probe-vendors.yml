@@ -1,8 +1,7 @@
 name: Probe data vendors
 
-# One-off diagnostics: which futures symbols return daily history from Stooq's
-# public CSV endpoint when fetched from a GitHub Actions runner? Results are
-# emitted as step annotations (readable without log access). Never fails.
+# Diagnostics: which transports can a GitHub Actions runner use to reach the
+# Yahoo Finance chart endpoint? Results are emitted as annotations. Never fails.
 
 on:
   workflow_dispatch:
@@ -16,15 +15,35 @@ permissions:
 
 jobs:
   probe:
-    name: Probe stooq futures coverage
+    name: Probe yahoo transports
     runs-on: ubuntu-latest
     steps:
-      - name: Probe symbols
+      - name: Probe transports against the chart endpoint
         run: |
-          for sym in cl.f ng.f rb.f ho.f si.f pl.f nq.f qm.f mcl.f mng.f sic.f sil.f mbt.f met.f msl.f mxp.f sol.f xrp.f btc.f eth.f; do
-            out=$(curl -sS --max-time 30 "https://stooq.com/q/d/l/?s=${sym}&i=d&d1=20210101&d2=20260917" || echo "CURL-ERROR")
+          YAHOO_SMALL="https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?range=5d&interval=1d"
+          YAHOO_1Y="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1758067200&period2=1789689600&interval=1d"
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+          probe () {
+            name="$1"; url="$2"; target="$3"
+            out=$(curl -sS -L --max-time 60 -H "User-Agent: ${UA}" "$url" 2>/dev/null || echo "CURL-ERROR")
             n=$(printf '%s' "$out" | wc -c)
-            first=$(printf '%s' "$out" | head -2 | tail -1 | cut -c1-60)
-            echo "::notice::stooq ${sym} bytes=${n} sample=${first}"
-            sleep 1
-          done
+            head=$(printf '%s' "$out" | head -c 80 | tr '\n' ' ')
+            ok=$(printf '%s' "$out" | grep -c '"chart"')
+            echo "::notice::${name} target=${target} bytes=${n} has_chart_json=${ok} head=${head}"
+          }
+          ENC_SMALL=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" "$YAHOO_SMALL")
+          ENC_1Y=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" "$YAHOO_1Y")
+          probe "direct-small" "$YAHOO_SMALL" "direct"
+          probe "direct-1y" "$YAHOO_1Y" "direct"
+          probe "allorigins-raw-small" "https://api.allorigins.win/raw?url=${ENC_SMALL}" "proxy"
+          probe "allorigins-raw-1y" "https://api.allorigins.win/raw?url=${ENC_1Y}" "proxy"
+          probe "corsproxy-io-small" "https://corsproxy.io/?url=${ENC_SMALL}" "proxy"
+          probe "corsproxy-io-1y" "https://corsproxy.io/?url=${ENC_1Y}" "proxy"
+          probe "codetabs-small" "https://api.codetabs.com/v1/proxy?quest=${ENC_SMALL}" "proxy"
+          probe "codetabs-1y" "https://api.codetabs.com/v1/proxy?quest=${ENC_1Y}" "proxy"
+          probe "jina-small" "https://r.jina.ai/${YAHOO_SMALL}" "proxy"
+          probe "jina-1y" "https://r.jina.ai/${YAHOO_1Y}" "proxy"
+          probe "isomorphic-git-small" "https://cors.isomorphic-git.org/${YAHOO_SMALL}" "proxy"
+          probe "whateverorigin-small" "https://www.whateverorigin.org/get?url=${ENC_SMALL}" "proxy"
+          probe "corsbox-small" "https://cors.eu.org/${YAHOO_SMALL}" "proxy"
+          probe "thingproxy-small" "https://thingproxy.freeboard.io/fetch/${YAHOO_SMALL}" "proxy"
