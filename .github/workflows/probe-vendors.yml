@@ -1,0 +1,30 @@
+name: Probe data vendors
+
+# One-off diagnostics: which futures symbols return daily history from Stooq's
+# public CSV endpoint when fetched from a GitHub Actions runner? Results are
+# emitted as step annotations (readable without log access). Never fails.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - ".github/workflows/probe-vendors.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe stooq futures coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe symbols
+        run: |
+          for sym in cl.f ng.f rb.f ho.f si.f pl.f nq.f qm.f mcl.f mng.f sic.f sil.f mbt.f met.f msl.f mxp.f sol.f xrp.f btc.f eth.f; do
+            out=$(curl -sS --max-time 30 "https://stooq.com/q/d/l/?s=${sym}&i=d&d1=20210101&d2=20260917" || echo "CURL-ERROR")
+            n=$(printf '%s' "$out" | wc -c)
+            first=$(printf '%s' "$out" | head -2 | tail -1 | cut -c1-60)
+            echo "::notice::stooq ${sym} bytes=${n} sample=${first}"
+            sleep 1
+          done
