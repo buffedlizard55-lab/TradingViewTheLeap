@@ -8,9 +8,10 @@
    "medium",
    "low"
   ],
-  "count": 19,
+  "count": 21,
   "reverified_utc": "2026-09-16",
-  "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14."
+  "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14.",
+  "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9)."
  },
  "irregularities": [
   {
@@ -216,6 +217,34 @@
   {
    "id": "IR-15",
    "severity": "medium",
+   "status": "confirmed",
+   "title": "Cash-prize target differs from the last publicly visible rank",
+   "detail": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "observed": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-16",
+   "severity": "medium",
+   "status": "confirmed",
+   "title": "No-manual-input research does not imply unattended prize collection",
+   "detail": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "observed": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-17",
+   "severity": "medium",
    "title": "Market-data vendors block automated capture from datacenter IP ranges",
    "detail": "Yahoo Finance returns HTTP 429 to every chart-API request made from the GitHub Actions runner range (both query1 and query2 hosts, confirmed by probe on 2026-09-17 with a browser User-Agent). Stooq returns a 795-byte JavaScript anti-bot challenge instead of CSV data. The capture pipeline therefore retries the identical vendor URLs through the public allorigins relay, a byte transport. Every relayed payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures; the transport used is recorded per symbol in data/market_history_index.json.",
    "observed": "20/20 symbols HTTP 429 direct from runner; stooq cl.f..eth.f all returned the identical 795-byte JS challenge; allorigins relay returned the full 27,505-byte CL=F 1-year JSON with valid chart structure.",
@@ -226,9 +255,9 @@
    "resolution": "Open. The relay works but is a third-party dependency; a licensed feed (e.g. CME settlement-based continuous series) or a residential-IP capture remains the clean fix. Workflow probe annotations document the failure mode."
   },
   {
-   "id": "IR-16",
+   "id": "IR-18",
    "severity": "low",
-   "title": "Four selected crypto futures have under five days of vendor history",
+   "title": "Several selected micro/crypto futures have only one day of vendor history",
    "detail": "SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to ['1d','5d']), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.",
    "observed": "Vendor listing gaps: CME:SOL1!, CME:MSL1!, COMEX:SIC1!, CME:MBT1!, CME:MET1!, NYMEX:MNG1!, NYMEX:MCL1! and CME:XRP1! returned exactly 1 daily bar for the 2-year window (newly listed on the vendor), so they cannot be backtested; 8 of 20 selected symbols are excluded from the simulation for insufficient history.",
    "expected_by_brief": "Testable history for every selected instrument.",
@@ -238,7 +267,7 @@
    "resolution": "Open. These tickers will accumulate history over time; re-run the capture pipeline in later sessions. Their capacity arithmetic (rules cap x multiplier x price) is already verified from official sources and does not depend on vendor history."
   },
   {
-   "id": "IR-17",
+   "id": "IR-19",
    "severity": "low",
    "title": "Yahoo front-month close differs from the TradingView continuous quote by 3.32% for crude oil",
    "detail": "For 2026-09-16, the captured Yahoo CL=F series closed at 105.83 while the TradingView CL1! overview page displayed 102.43. The Yahoo front contract is 'Crude Oil Oct 26' while the TradingView continuous series and the intraday capture time (16:49-17:23 GMT-4) differ. All other cross-checked symbols landed within 2%. The verifier warns above 2% and hard-fails above 15% to catch genuine ticker mix-ups.",
@@ -251,7 +280,7 @@
    "resolution": "Open, informational. Documented caveat for cross-source price comparisons; not treated as a mapping error."
   },
   {
-   "id": "IR-18",
+   "id": "IR-20",
    "severity": "low",
    "title": "Leaderboard frontier partially static across two captures while the mid-board moved",
    "detail": "Between the 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z captures (~3 hours, US after-hours), rank 1 (leonardo22_romano, +$2,303,725.00) and rank 250 (luaguiar, +$623,689.00) were byte-identical, while rank 50 changed holder and rose $28,139.75 and rank 100 rose $11,027.50. Realized P/L only changes when positions close, so a static frontier is possible; the combination (edges frozen, middle moving) is recorded for pattern observation across future captures.",
@@ -264,8 +293,8 @@
    "resolution": "Open. Continue capturing the frontier; if edge ranks stay frozen while participants join, the effective last-prize threshold may be stickier than the mid-board suggests."
   },
   {
-   "id": "IR-19",
-   "title": "Relay transport persistently fails for three vendor tickers (BTC=F, XRP=F, MXP=F)",
+   "id": "IR-21",
+   "title": "Relay transport persistently fails for two vendor tickers (BTC=F, MXP=F)",
    "detail": "The allorigins relay returns HTTP 522/500 for exactly BTC=F and MXP=F across every capture pass attempted (four passes on 2026-09-17), while succeeding for the other 18 symbols. XRP=F also failed the first three passes before succeeding on the fourth, so per-ticker relay failures are persistent but not always permanent. CME:BTC1! and CME:MXP1! therefore have no committed vendor history.",
    "observed": "2 of 20 selected symbols remain uncaptured after four automated passes; data/market_history_index.json records their error strings. BTC1! is the highest-visibility contest instrument, so this gap matters for representativeness (micro-bitcoin MBT=F's single session price 76,070 is consistent with BTC=F's regularMarketPrice ~76,460 from the in-session spot check, but is not a substitute for history).",
    "severity": "medium",

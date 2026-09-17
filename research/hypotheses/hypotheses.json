@@ -273,7 +273,7 @@
   },
   {
    "id": "H17",
-   "claim": "Within the capturable universe, the instruments whose historical 30-day moves most exceed the move needed to reach the rank-250 frontier are the full-size energy and metals contracts (CL1!, HO1!, RB1!, SI1!, PL1!), because their modeled initial notional hits the leverage cap, while micro contracts and ETH1! are structurally priced out.",
+   "claim": "Within the capturable universe, the instruments whose historical 30-day moves most exceed the move needed to match the last publicly visible leaderboard rank (rank 250; cash prizes end at rank 50) are the full-size energy and metals contracts (CL1!, HO1!, RB1!, SI1!, PL1!), because their modeled initial notional hits the leverage cap, while micro contracts and ETH1! are structurally priced out.",
    "prediction": "Ranking captured symbols by (best 30-day up move) / (favorable move needed to reach the $623,689 rank-250 target from the modeled initial notional) puts full-size CL/HO/RB/SI/PL at the top, NG1! near the middle despite the highest volatility, and QM1!/ETH1! at the bottom.",
    "test": "data/volatility_intelligence.json (written by scripts/run_backtests.py alongside the backtests) computed annualized volatility, ATR(14), best 30-day up/down moves and the rank-250 requirement per symbol from the same vendor daily bars.",
    "status": "supported",

@@ -16,8 +16,10 @@ capture:
 
 selftest:
 	python3 scripts/verify.py --self-test
+	python3 -m unittest discover -s scripts -p "test_*.py" -v
 
 site:
+	python3 scripts/target_lab.py
 	python3 scripts/build_site.py
 
 # Fail if index.html is not in sync with the data it was rendered from.

@@ -8,6 +8,29 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 review and return-target lab
+
+Fresh official rules and champion-page review: [claim-by-claim audit, source quotations,
+limitations and prioritized next-session work](research/evidence/AUDIT-2026-09-17.md).
+This review does **not** refresh the September 16 leaderboard or price inputs below.
+
+- **Cash prizes end at rank 50**; ranks 51–300 receive subscriptions. Rank 250 is not a cash frontier.
+- New [target dataset](data/target_lab.json): 5×, 10×, 20×, 50× and 100× balance targets,
+  official completed-champion occurrence counts, and 100 fixed-exposure arithmetic scenarios.
+- A 5× balance means +400% net profit, not +500%. A 100× balance means +9,900%.
+- These are numerical requirements, **not backtests or evidence of achievable future returns**.
+- No complete officially verified explosive-stock opportunity list satisfies this futures-only edition.
+  The 20 historical stocks remain vendor-tier reference; 74 of 94 futures lack full capacity coverage.
+- Prize eligibility and possible identity/payment paperwork cannot be resolved by research automation.
+
+Reproduce the new experiment and tests:
+
+```bash
+python3 scripts/target_lab.py
+python3 scripts/build_site.py
+python3 -m unittest discover -s scripts -p 'test_*.py' -v
+```
+
 ## Live-edition facts
 
 Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Futures — September
@@ -71,12 +94,12 @@ into reproducible, verifiable artifacts. Nothing is trusted until `scripts/verif
 
 `scripts/fetch_market_data.py` (run in GitHub Actions, `.github/workflows/capture-market-data.yml`)
 fetches 2 years of daily bars (2024-09-17 → 2026-09-18) for the 20 selected futures from the Yahoo
-Finance chart endpoint, with a relay-transport fallback for datacenter-IP blocks (IR-15). It writes
+Finance chart endpoint, with a relay-transport fallback for datacenter-IP blocks (IR-17). It writes
 raw vendor bytes per symbol plus [`data/market_history_index.json`](data/market_history_index.json)
 (SHA-256, endpoint, transport, session counts per record). Captured 2026-09-17 over four automated
 passes: **10 symbols with 503 sessions** (CL1!, QM1!, RB1!, HO1!, NG1!, SI1!, SIL1!, PL1!, NQ1!,
-ETH1!), **8 newly listed single-session symbols** (excluded, IR-16), and **2 persistent relay
-failures** (BTC1!, MXP1!, IR-19). Captures are `market_data_vendor` tier, spot-verified in-session and
+ETH1!), **8 newly listed single-session symbols** (excluded, IR-20), and **2 persistent relay
+failures** (BTC1!, MXP1!, IR-21). Captures are `market_data_vendor` tier, spot-verified in-session and
 cross-checked against the official TradingView quote snapshot (warn >2%, fail >15%); see
 [`research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md`](research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md).
 
@@ -105,7 +128,8 @@ has no authenticated TradingView chart session or Pine compiler.
 
 `data/volatility_intelligence.json` ranks each captured symbol by annualized volatility, ATR(14),
 best 30-day up/down moves, largest overnight gap, and — the key ratio — the favorable move needed
-to reach the captured rank-250 frontier ($623,689) from each symbol's modeled initial notional,
+to reach the captured rank-250 P/L ($623,689; the last publicly visible leaderboard rank — cash
+prizes end at rank 50, see the target lab above) from each symbol's modeled initial notional,
 versus the best 30-day move actually delivered in the 2-year window. Full-size CL1!/HO1!/SI1!
 needed only ~12.7–12.9% and delivered 58–78%; NG1! (87.5% annualized, best 30-day +140.4%) needed
 86.3% because its margin-limited notional is small; QM1! and ETH1! are structurally priced out
@@ -150,6 +174,7 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `data/market_history/` + `data/market_history_index.json` | Raw vendor daily-bar captures (SHA-256 indexed, relay transport documented) |
 | `data/backtest_results.json` | Independent walk-forward simulation results for S1/S2/S3 (verdicts, costs, sensitivity, bootstrap) |
 | `data/volatility_intelligence.json` | Per-symbol volatility and rank-250 requirement screen |
+| `data/target_lab.json` | Balance-multiple targets (5x–100x), champion occurrence counts, fixed-exposure scenarios |
 | `data/verified_explosive_returns.json` | Official historical champion results plus one live snapshot |
 | `data/volatile_stocks.json` | Vendor-tier, recomputable, window-bounded stock moves |
 | `intel/` | Pure-stdlib simulation engine: data loading, Pine-faithful indicators, strategy signals, backtest, walk-forward |
@@ -170,18 +195,20 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 python3 scripts/verify.py
 python3 scripts/verify.py --self-test
 python3 scripts/build_site.py
+python3 scripts/target_lab.py
+python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/run_backtests.py
 ```
 
 Current audit result:
 
 ```text
-verify:    311 passed, 0 failed, 2 warnings
-self-test: 347 passed, 0 failed, 0 warnings
+verify:    312 passed, 0 failed, 2 warnings
+self-test: 348 passed, 0 failed, 0 warnings
 ```
 
 The two verify warnings are recorded for review: a 2.09% vendor-vs-quote delta on the newly listed
-COMEX:SIC1!, and the three symbols excluded by persistent relay failures (IR-19).
+COMEX:SIC1!, and the two symbols excluded by persistent relay failures (IR-21).
 
 The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard
 arithmetic, capacity math, strategy result state, multipliers, return ratios, counts, stock
@@ -196,13 +223,13 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
   session this environment does not have.
 - **S1/S2/S3 are refuted on daily bars only.** Intraday bars could change signal frequency
   (S3 in particular fires too rarely on daily bars); no licensed intraday history is stored here.
-- **BTC1! and MXP1! have no captured history** (persistent relay failures across four passes, IR-19); the panel is
+- **BTC1! and MXP1! have no captured history** (persistent relay failures across four passes, IR-21); the panel is
   10 of 20 selected symbols. Eight more symbols are newly listed on the vendor with a single
-  session (IR-16).
+  session (IR-20).
 - The verifier is offline. Public pages were captured through the research environment and can
   change later; rerun the source-capture process for a new snapshot.
 - Live leaderboard and quote values are asynchronous point-in-time displays, not executable prices;
-  rank 1/250 were frozen between the two captures while the mid-board moved (IR-18).
+  rank 1/250 were frozen between the two captures while the mid-board moved (IR-20).
 - The public page does not show ranks 251–300, so the actual last-prize frontier is unavailable.
 - Champion summaries contain no trade history; they cannot reveal a winning strategy.
 - Continuous front-month vendor series are unadjusted for rolls; roll gaps can create artificial

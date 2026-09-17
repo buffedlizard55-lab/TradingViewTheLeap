@@ -60,6 +60,7 @@ TIER_PILL = {
 
 
 def build() -> str:
+    lab = load("data/target_lab.json")
     cfg = load("data/contest_config.json")
     snapshot = load("data/live_contest_snapshot.json")
     capacity = load("data/initial_capacity.json")
@@ -102,6 +103,7 @@ def build() -> str:
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<a class="skip-link" href="#overview">Skip to research</a>
 <header class="site"><div class="wrap"><div class="hero-grid"><div>
 <div class="eyebrow">Evidence-first · virtual-money competition</div>
 <h1>The Leap Research Lab</h1>
@@ -130,6 +132,7 @@ are labeled separately.</p>
 </div></div></header>
 <nav class="toc"><div class="wrap"><ul>
 <li><a href="#overview">Overview</a></li>
+<li><a href="#targets">Return targets</a></li>
 <li><a href="#rules">Rules</a></li>
 <li><a href="#frontier">Live frontier</a></li>
 <li><a href="#capacity">Capacity</a></li>
@@ -179,6 +182,46 @@ no published performance result because no authenticated Strategy Report run was
 <li>The public page does not reveal rank {cfg['maximum_prize_recipients']}.</li>
 <li>No captured official contest record verifies 100x.</li>
 </ul></div></div></section>""")
+
+    # Target arithmetic is deliberately separate from market performance.
+    add(f"""<section id="targets"><h2>Return-target lab</h2>
+<p class="lead">What would 5× to 100× actually require? Reproducible arithmetic, not a backtest or a prediction.</p>
+<div class="callout high"><h3>Fresh rules review · 17 September 2026</h3>
+<p>Cash prizes end at rank 50; ranks 51–300 receive subscriptions. The leaderboard and quote inputs
+on this site remain the <strong>{esc(snapshot_at)}</strong> snapshot, not live prices.</p>
+<p>{link(source_url['TV-RULES-AMP-SEP2026'], 'Official rules §§05, 08–09 ↗')} ·
+<a href="research/evidence/AUDIT-2026-09-17.md">Claim-by-claim review &amp; next-session plan</a></p>
+<p>Eligibility and potential identity/prize paperwork cannot be completed from this repository.
+No competition trades have been placed.</p></div>
+<div class="table-wrap"><table><caption>Balance multiples, not profit multiples. Historical counts exclude the in-progress edition.</caption>
+<thead><tr><th>Target balance</th><th class="num">Net profit</th><th class="num">Required virtual P/L</th>
+<th class="num">Ideal fixed 20:1 move</th><th class="num">Completed champions strictly above</th></tr></thead><tbody>""")
+    for row in lab['targets']:
+        add(f"<tr><td>{row['balance_multiple']}×</td><td class=\"num\">+{number(row['net_profit_pct'])}%</td>"
+            f"<td class=\"num\">{money(row['required_net_profit_usd'], 0)}</td>"
+            f"<td class=\"num\">{number(row['ideal_initial_20x_fixed_exposure_move_pct'])}%</td>"
+            f"<td class=\"num\">{row['completed_sample_strictly_above']} / {lab['_meta']['completed_sample_size']}</td></tr>")
+    add("""</tbody></table></div><p class="note">Required P/L = starting balance × (multiple − 1).
+Ideal favorable move = required P/L ÷ initial notional. Equality reaches the target; going strictly
+above requires more profit. Champion counts are not win probabilities.</p>
+<details><summary>Inspect all 100 fixed-exposure scenarios</summary>
+<p>20 selected futures × 5 targets. Fixed initial whole contracts, no compounding, costs, fill or
+margin path. Extreme linear moves are not asserted to be achievable, particularly on shorts.
+Quote and contract evidence remain in the capacity and source tables.</p>
+<div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Target</th><th class="num">Initial contracts</th>
+<th class="num">Favorable move to equal target</th></tr></thead><tbody>""")
+    for row in lab['scenarios']:
+        add(f"<tr><td>{esc(row['symbol'])}</td><td>{row['balance_multiple']}×</td>"
+            f"<td class=\"num\">{row['initial_contracts']}</td>"
+            f"<td class=\"num\">{number(row['favorable_move_pct_to_equal_target'], 2)}%</td></tr>")
+    add("""</tbody></table></div></details>
+<p><a href="data/target_lab.json" download>Download target data (JSON)</a> ·
+<a href="data/master_list.csv" download>Download selected futures (CSV)</a> ·
+<a href="data/contest_universe.json" download>Download full eligible universe (JSON)</a></p>
+<div class="callout critical"><h3>No qualifying stock list for this edition</h3>
+<p>Individual stocks are not permitted. The historical stock table is vendor-tier research, not
+an official-primary verified opportunity list. No instrument or strategy here is proven to produce
+5×, 10×, 20×, 50× or 100× in the remaining competition window.</p></div></section>""")
 
     # Rulebook
     add(f"""<section id="rules"><h2>Live rulebook, structured</h2>

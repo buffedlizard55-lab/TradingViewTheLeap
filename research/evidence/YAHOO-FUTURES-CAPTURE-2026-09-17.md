@@ -36,7 +36,7 @@ The offline verifier compares each captured symbol's last close against the Trad
 ## Per-symbol capture table
 
 Captured 2026-09-17 in automated passes (GitHub Actions runs on this branch; the latest run URL is in `data/market_history_index.json` `_meta.workflow_run_url`). Later passes used `--only-failed`, so each full-history record's bytes and digest are frozen at its first successful pass.
-The 10 full-history symbols are the backtest panel; the 8 single-session symbols are newly listed on the vendor and are excluded (IR-16). CME:BTC1! and CME:MXP1! failed every relay pass attempted (IR-19).
+The 10 full-history symbols are the backtest panel; the 8 single-session symbols are newly listed on the vendor and are excluded (IR-18). CME:BTC1! and CME:MXP1! failed every relay pass attempted (IR-21).
 
 | Symbol | Vendor ticker | Sessions | Window | Transport | SHA-256 (prefix) |
 |---|---|---|---|---|---|
