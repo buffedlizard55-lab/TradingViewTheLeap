@@ -73,11 +73,13 @@ jobs:
             echo "::notice::leaderboard page archive empty"
           fi
 
-      - name: Commit captures to the triggering branch
+      - name: Commit captures + re-derived artifacts to the triggering branch
         run: |
           git config user.name "github-actions[capture]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/market_history data/market_history_index.json
+          git add data/backtest_results.json data/volatility_intelligence.json
+          git add research/strategy/models.json index.html
           [ -d artifact_pages ] && git add artifact_pages || true
           if git diff --cached --quiet; then
             echo "::notice::nothing to commit (captures unchanged)"
