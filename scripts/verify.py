@@ -469,6 +469,176 @@ def check_frontier(rep: Report, cfg: dict, source_ids: dict) -> None:
     rep.ok(f"all {len(captures)} frontier captures re-derived, cross-checked against the live snapshot")
 
 
+def check_leaderboard_lab(rep: Report, cfg: dict, source_ids: dict) -> None:
+    """Re-derive the leaderboard/prize arithmetic lab and cross-check every input join.
+
+    The lab is pure arithmetic on committed, independently verified sources, so it must be
+    byte-reproducible: the strongest available check is to re-run its builder in-process and
+    require the committed document to be identical, then re-test the arithmetic joins that the
+    builder depends on (frontier captures, prize tiers, champion sample, capacity, volatility).
+    """
+    lab = _load_or_fail(rep, "data/leaderboard_lab.json", "leaderboard_lab.present")
+    if lab is None:
+        return
+
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "leaderboard_lab", os.path.join(ROOT, "scripts", "leaderboard_lab.py"))
+    lab_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(lab_mod)
+    fresh = lab_mod.build()
+    if fresh != lab:
+        rep.fail("leaderboard_lab.determinism",
+                 "committed artifact differs from a deterministic re-derivation of its inputs")
+    else:
+        rep.ok("leaderboard_lab.json is exactly reproducible from contest config and captures")
+
+    # --- prize ladder ---------------------------------------------------------
+    ladder = lab["prize_ladder"]
+    if not approx(ladder["summed_cash_from_tiers_usd"], ladder["declared_cash_arv_usd"], 0.01):
+        rep.fail("leaderboard_lab.prize_arv",
+                 "summed cash tiers differ from the declared cash ARV")
+    if ladder["declared_cash_arv_usd"] != cfg["cash_prize_total_arv_usd"]:
+        rep.fail("leaderboard_lab.prize_arv", "declared ARV differs from contest_config")
+    tiers_lab = [(t["from_rank"], t["to_rank"], t["cash_usd_each"], t["plan_months_each"])
+                 for t in ladder["tiers"]]
+    tiers_cfg = [(t["from_rank"], t["to_rank"], t["cash_usd_each"], t["plan_months_each"])
+                 for t in cfg["prize_tiers"]]
+    if tiers_lab != tiers_cfg:
+        rep.fail("leaderboard_lab.prize_tiers", "prize tiers differ from the official transcription")
+    if ladder["prize_recipients_total"] != cfg["maximum_prize_recipients"]:
+        rep.fail("leaderboard_lab.prize_tiers", "recipient total differs from the rules' 300")
+    if ladder["cash_recipients"] != 50 or ladder["last_cash_rank"] != 50:
+        rep.fail("leaderboard_lab.prize_tiers", "cash recipients must be ranks 1-50 only")
+
+    # --- capture window and per-row arithmetic --------------------------------
+    start = parse_utc(cfg["competition_start_utc"])
+    end = parse_utc(cfg["competition_end_utc"])
+    fh = load("data/frontier_history.json")
+    if len(lab["captures"]) != len(fh["captures"]):
+        rep.fail("leaderboard_lab.capture_count", "capture count differs from frontier_history")
+    else:
+        for lab_cap, fh_cap in zip(lab["captures"], fh["captures"]):
+            if lab_cap["captured_at_utc"] != fh_cap["captured_at_utc"]:
+                rep.fail("leaderboard_lab.capture_link", "capture timestamps differ from frontier_history")
+                continue
+            if lab_cap["source_id"] != fh_cap["source_id"]:
+                rep.fail("leaderboard_lab.capture_link",
+                         f"{lab_cap['captured_at_utc']}: source id differs from frontier_history")
+            if lab_cap["participants_displayed"] != fh_cap["participants_displayed"]:
+                rep.fail("leaderboard_lab.capture_link",
+                         f"{lab_cap['captured_at_utc']}: participants differ from frontier_history")
+            for rank, row in lab_cap["rows"].items():
+                src_row = fh_cap["rows"].get(str(rank))
+                if src_row is None or not approx(src_row["realized_profit_usd"],
+                                                 row["realized_profit_usd"], 0.005) or \
+                        not approx(src_row["realized_profit_pct"], row["realized_profit_pct"], 1e-9):
+                    rep.fail("leaderboard_lab.capture_link",
+                             f"{lab_cap['captured_at_utc']} rank {rank}: row differs from frontier_history")
+    for cap in lab["captures"]:
+        at = parse_utc(cap["captured_at_utc"])
+        if not start < at < end:
+            rep.fail("leaderboard_lab.window", f"{cap['captured_at_utc']}: capture outside the contest window")
+            continue
+        elapsed = (at - start).total_seconds() / 86400.0
+        remaining = (end - at).total_seconds() / 86400.0
+        if not approx(cap["elapsed_days_since_start"], elapsed, 1e-4) or \
+                not approx(cap["remaining_days_to_deadline"], remaining, 1e-4):
+            rep.fail("leaderboard_lab.window", f"{cap['captured_at_utc']}: elapsed/remaining days are wrong")
+        for rank, row in cap["rows"].items():
+            multiple = 1.0 + row["realized_profit_pct"] / 100.0
+            if not approx(row["balance_multiple"], multiple, 1e-6):
+                rep.fail("leaderboard_lab.multiple", f"{cap['captured_at_utc']} rank {rank}: multiple is wrong")
+            if not approx(row["average_usd_per_day_since_start"],
+                          row["realized_profit_usd"] / elapsed, 1e-3):
+                rep.fail("leaderboard_lab.rate", f"{cap['captured_at_utc']} rank {rank}: $/day is wrong")
+            daily = 100.0 * (multiple ** (1.0 / remaining) - 1.0)
+            if not approx(row["fresh_account_required_daily_compound_pct"], daily, 1e-4) or \
+                    not approx(row["fresh_account_required_underlying_pct_per_day_at_20x"],
+                               daily / LEVERAGE, 1e-4):
+                rep.fail("leaderboard_lab.fresh_account",
+                         f"{cap['captured_at_utc']} rank {rank}: required daily compounding is wrong")
+        if set(cap["rows"]) != {"1", "50", "100", "250"}:
+            rep.fail("leaderboard_lab.ranks", f"{cap['captured_at_utc']}: must carry ranks 1/50/100/250")
+
+    # --- targets --------------------------------------------------------------
+    remaining = lab["captures"][-1]["remaining_days_to_deadline"]
+    for t in lab["targets"]:
+        required = BALANCE * (t["balance_multiple"] - 1)
+        if not approx(t["required_net_profit_usd"], required, 0.01) or \
+                not approx(t["required_net_profit_pct"], 100 * (t["balance_multiple"] - 1), 1e-9):
+            rep.fail("leaderboard_lab.target_profit",
+                     f"{t['balance_multiple']}x: required net profit is wrong")
+        daily = 100.0 * (t["balance_multiple"] ** (1.0 / remaining) - 1.0)
+        if not approx(t["required_daily_compound_pct_over_remaining_window"], daily, 1e-4) or \
+                not approx(t["required_underlying_pct_per_day_at_20x"], daily / LEVERAGE, 1e-4):
+            rep.fail("leaderboard_lab.target_rate",
+                     f"{t['balance_multiple']}x: required daily compounding is wrong")
+    tl = load("data/target_lab.json")
+    tl_counts = {x["balance_multiple"]: x["completed_sample_at_or_above"] for x in tl["targets"]}
+    for t in lab["targets"]:
+        if tl_counts.get(t["balance_multiple"]) != t["completed_champion_sample_at_or_above"]:
+            rep.fail("leaderboard_lab.target_champions",
+                     f"{t['balance_multiple']}x: champion count disagrees with target_lab.json")
+
+    # --- leverage arithmetic --------------------------------------------------
+    lm = lab["leverage_math"]
+    if lm["maximum_initial_notional_usd"] != MAX_NOTIONAL or \
+            not approx(lm["usd_per_1pct_underlying_move_at_max_notional"], MAX_NOTIONAL * 0.01, 0.01) or \
+            not approx(lm["adverse_underlying_move_pct_to_erase_the_whole_balance"], 100.0 / LEVERAGE, 1e-9) or \
+            not approx(lm["adverse_underlying_move_pct_to_erase_half_the_balance"], 50.0 / LEVERAGE, 1e-9):
+        rep.fail("leaderboard_lab.leverage_math", "leverage/exposure arithmetic is wrong")
+    if lm["account_reset_allowed"] != cfg["account_reset_allowed"]:
+        rep.fail("leaderboard_lab.leverage_math", "account-reset flag differs from the rules")
+
+    # --- champion sample ------------------------------------------------------
+    completed = [r for r in load("data/verified_explosive_returns.json")["records"]
+                 if r["status"] == "final"]
+    multiples = sorted(float(r["return_multiple"]) for r in completed)
+    cs = lab["champion_sample"]
+    if cs["completed_records"] != len(completed) or \
+            not approx(cs["maximum_completed_multiple"], max(multiples), 1e-9) or \
+            not approx(cs["minimum_completed_multiple"], min(multiples), 1e-9):
+        rep.fail("leaderboard_lab.champion_sample", "champion sample statistics are wrong")
+    rank50_multiple = lab["captures"][-1]["rows"]["50"]["balance_multiple"]
+    if cs["capture5_rank50_multiple"] != rank50_multiple or \
+            cs["completed_champions_strictly_below_capture5_rank50"] != sum(m < rank50_multiple for m in multiples) or \
+            cs["completed_champions_at_or_above_capture5_rank50"] != sum(m >= rank50_multiple for m in multiples):
+        rep.fail("leaderboard_lab.champion_sample", "champion-vs-frontier comparison is wrong")
+
+    # --- instrument join ------------------------------------------------------
+    capacity = {e["symbol"]: e for e in load("data/initial_capacity.json")["entries"]}
+    vol = {r["symbol"]: r for r in load("data/volatility_intelligence.json")["records"]}
+    rank50_usd = lab["captures"][-1]["rows"]["50"]["realized_profit_usd"]
+    for row in lab["cash_frontier_instrument_requirements"]:
+        symbol = row["symbol"]
+        cap = capacity.get(symbol)
+        if cap is None:
+            rep.fail("leaderboard_lab.instrument_join", f"{symbol}: not in initial_capacity.json")
+            continue
+        if not approx(row["modeled_initial_notional_usd"], cap["modeled_initial_notional_usd"], 0.01) or \
+                row["max_whole_contracts_at_initial_balance"] != cap["max_whole_contracts_at_initial_balance"]:
+            rep.fail("leaderboard_lab.instrument_join", f"{symbol}: capacity fields differ from the source")
+        needed = 100.0 * rank50_usd / row["modeled_initial_notional_usd"]
+        if not approx(row["favorable_move_pct_needed_for_capture5_rank50_level"], needed, 1e-4):
+            rep.fail("leaderboard_lab.instrument_join", f"{symbol}: required move is wrong")
+        source_vol = vol.get(symbol)
+        if source_vol is None:
+            if row["vendor_history_sessions"] is not None or \
+                    row["best_30d_up_move_pct_in_vendor_history"] is not None:
+                rep.fail("leaderboard_lab.instrument_join", f"{symbol}: history fields without a vendor record")
+            continue
+        if row["vendor_history_sessions"] != source_vol["sessions"] or \
+                not approx(row["best_30d_up_move_pct_in_vendor_history"],
+                           source_vol["best_30d_up_move_pct"], 1e-9):
+            rep.fail("leaderboard_lab.instrument_join", f"{symbol}: history fields differ from the source")
+        if row["history_contains_a_30d_window_as_large_as_that_requirement"] != \
+                (source_vol["best_30d_up_move_pct"] >= needed):
+            rep.fail("leaderboard_lab.instrument_join", f"{symbol}: envelope flag is wrong")
+    rep.ok("leaderboard_lab.json re-derived: prize ladder, frontier pace, targets, leverage and "
+           "instrument joins all recomputable")
+
+
 def check_market_history(rep: Report, source_ids: dict, snap: dict, master: dict) -> dict:
     """Audit the raw vendor captures and their provenance index."""
     import hashlib
@@ -789,6 +959,37 @@ def check_universe(rep: Report) -> dict:
             rep.fail("universe.symbol_format", f"malformed symbol {r['tradingview_symbol']}")
     rep.ok("every instrument has a positive position limit and a well-formed symbol")
     return {r["tradingview_symbol"]: r for r in rows}
+
+
+def check_universe_transcription(rep: Report, text_override: str | None = None) -> None:
+    """The §08 transcription in the evidence file must match the committed universe exactly.
+
+    The rules page is captured by the agent (the sandbox has no direct network path), so the
+    transcription is the one place where a transcription error could enter. This check removes that
+    risk: it parses the quoted `- for SYMBOL maximum amount for an open position is N` lines and
+    requires the same order, the same count and identical values as `data/contest_universe.json`.
+    `text_override` exists so the mutation self-test can feed a corrupted transcription.
+    """
+    evidence_rel = "research/evidence/TV-RULES-AMP-SEP2026-R5.md"
+    pattern = re.compile(r"^> - for (\S+) maximum amount for an open position is ([\d.]+)\s*$", re.M)
+    universe_doc = load("data/contest_universe.json")
+    stored = [(e["tradingview_symbol"], float(e["max_open_position_contracts"]))
+              for e in universe_doc["instruments"]]
+    text = text_override if text_override is not None else read(evidence_rel)
+    rows = [(m.group(1), float(m.group(2))) for m in pattern.finditer(text)]
+    if not rows:
+        rep.fail("universe.transcription", f"{evidence_rel}: no §08 transcription lines found")
+        return
+    if len(rows) != len(stored):
+        rep.fail("universe.transcription",
+                 f"{evidence_rel}: {len(rows)} transcribed instruments vs {len(stored)} stored")
+        return
+    mismatches = [(a, b) for a, b in zip(rows, stored) if a != b]
+    if mismatches:
+        rep.fail("universe.transcription",
+                 f"{evidence_rel}: {len(mismatches)} mismatch(es), first {mismatches[0]}")
+        return
+    rep.ok(f"{evidence_rel}: all {len(rows)} transcribed instruments and caps match the committed universe")
 
 
 def check_master_list(rep: Report, universe: dict, source_ids: dict) -> dict:
@@ -1276,6 +1477,16 @@ def self_test(rep: Report) -> None:
     def capacity_math(v): v["entries"][0]["modeled_initial_notional_usd"] += 1_000.0
     def model_result(v): v["models"][0]["result"] = {"net_profit": 1}
 
+    def transcription_case():
+        text = read("research/evidence/TV-RULES-AMP-SEP2026-R5.md")
+        return text.replace("CME_MINI:MES1! maximum amount for an open position is 500.0",
+                            "CME_MINI:MES1! maximum amount for an open position is 499.0")
+
+    def corrupt_lab(fn):
+        v = copy.deepcopy(load("data/leaderboard_lab.json"))
+        fn(v)
+        return ("data/leaderboard_lab.json", v)
+
     def corrupt_frontier(fn):
         f = copy.deepcopy(frontier)
         fn(f)
@@ -1305,6 +1516,13 @@ def self_test(rep: Report) -> None:
         }
 
     def frontier_math(f): f["captures"][1]["rows"]["50"]["realized_profit_usd"] += 100.0
+    def lab_tier(v): v["prize_ladder"]["tiers"][5]["cash_usd_each"] = 999.0
+    def lab_target(v): v["targets"][1]["required_daily_compound_pct_over_remaining_window"] += 1.0
+    def lab_fresh(v): v["captures"][-1]["rows"]["50"]["fresh_account_required_daily_compound_pct"] += 1.0
+    def lab_leverage(v): v["leverage_math"]["adverse_underlying_move_pct_to_erase_the_whole_balance"] = 1.0
+    def lab_champion(v): v["champion_sample"]["completed_champions_at_or_above_capture5_rank50"] = 9
+    def lab_instrument(v): v["cash_frontier_instrument_requirements"][0]["favorable_move_pct_needed_for_capture5_rank50_level"] += 1.0
+    def lab_capture_link(v): v["captures"][-1]["participants_displayed"] += 1
     def mh_sha(m):
         cap = next(c for c in m["captures"] if c.get("status") == "captured")
         cap["sha256"] = "0" * 64
@@ -1363,6 +1581,22 @@ def self_test(rep: Report) -> None:
          lambda r: check_strategy_models(r, cfg, source_ids)),
         ("frontier.math", corrupt_frontier(frontier_math),
          lambda r: check_frontier(r, cfg, source_ids)),
+        ("universe.transcription", ("unused", None),
+         lambda r: check_universe_transcription(r, transcription_case())),
+        ("leaderboard_lab.prize_tiers", corrupt_lab(lab_tier),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.target_rate", corrupt_lab(lab_target),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.fresh_account", corrupt_lab(lab_fresh),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.leverage_math", corrupt_lab(lab_leverage),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.champion_sample", corrupt_lab(lab_champion),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.instrument_join", corrupt_lab(lab_instrument),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
+        ("leaderboard_lab.capture_link", corrupt_lab(lab_capture_link),
+         lambda r: check_leaderboard_lab(r, cfg, source_ids)),
         ("market_history.sha256", corrupt_market_idx(mh_sha),
          lambda r: check_market_history(r, source_ids, snap, ml)),
         ("market_history.sessions", corrupt_market_idx(mh_sessions),
@@ -1408,11 +1642,13 @@ def main() -> int:
     cfg = check_config(rep, source_ids)
     snap = check_live_snapshot(rep, cfg, source_ids)
     universe = check_universe(rep)
+    check_universe_transcription(rep)
     master = check_master_list(rep, universe, source_ids)
     check_master_csv(rep, master)
     check_returns(rep, source_ids, cfg, snap)
     check_capacity(rep, cfg, snap, master, source_ids)
     check_frontier(rep, cfg, source_ids)
+    check_leaderboard_lab(rep, cfg, source_ids)
     check_market_history(rep, source_ids, snap, master)
     check_volatile_stocks(rep, source_ids)
     check_backtests(rep, cfg, snap, master, source_ids)

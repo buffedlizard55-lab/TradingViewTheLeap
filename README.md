@@ -8,6 +8,46 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 fifth pass: placement arithmetic + fifth frontier capture
+
+On 2026-09-17 (~20:58 UTC) all three official pages were fetched again and verified line by line
+([evidence: contest](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R5.md) ·
+[rules](research/evidence/TV-RULES-AMP-SEP2026-R5.md) ·
+[landing](research/evidence/TV-THELEAP-LANDING-R5.md)):
+
+- **New artifact: `data/leaderboard_lab.json`** (built by `scripts/leaderboard_lab.py`, re-derived
+  and mutation-tested by the verifier) answers the placement question with arithmetic only: the
+  prize ladder reconciles to the official $50,000 cash ARV; the last cash rank (50) displayed
+  **5.9773x** the starting balance at capture 5 ($1,244,313.50, an average of $75,229/day since the
+  opening bell); a brand-new 250,000 account would need **+15.21%/day compounded, unbroken, for the
+  12.63 days that remain** to reach it — only 0.76%/day of underlying move at the rules' 20:1
+  leverage, but with no losing day allowed, because a 5% adverse move at maximum exposure erases the
+  entire balance and the rules forbid resetting the account.
+- **Targets restated in the same units:** over the remaining window 5x needs +13.59%/day (0.68%
+  underlying/day), 10x +20.00%/day, 20x +26.78%/day, 50x +36.32%/day and 100x +44.01%/day
+  (2.20% underlying/day); at an illustrative +1% underlying day with full reinvestment, 5x equals 9
+  unbroken winning days and 100x equals 26. These are arithmetic requirements, **not forecasts**,
+  and no tested strategy in this repository has produced even a positive daily compounding rate.
+- **New hypotheses H22 (supported) and H23 (supported):** frontier drift is rank-heterogeneous
+  inside one interval (ranks 1 and 50 byte-identical between captures 4 and 5 while rank 100 rose
+  $2,747.50 and rank 250 $3,454.50; the old rank-100 row re-appeared at rank 101 and capture-3's
+  rank-100 row at rank 105), and the cash-prize level is reachable only at a strictly positive
+  compounded daily rate (H23 above).
+- **Rules re-verified for the fifth time, zero changes:** the whole §08 universe was transcribed in
+  this pass and machine-diffed against `data/contest_universe.json` — 94/94 symbols, all 94 caps
+  and the listing order identical, 0 equity instruments; the §09 prize ladder, $50,000 ARV, wire
+  threshold and 14-day claim window are unchanged.
+- **Champions re-verified for the fifth time:** all 15 completed-edition records unchanged in name,
+  percentage and participant count; maximum completed outcome remains 53.2072x, none at or above
+  100x. The current rank-50 level (5.9773x) is above 14 of those 15 records (cross-edition context
+  only).
+- **New irregularity IR-24 (low):** the board's percentage and dollar columns do not always
+  reconcile to the cent within a row (capture 5: rank 50 off by $11.50, rank 250 by $9.50, both
+  inside the ±$12.50 two-decimal rounding bound the verifier enforces). Recorded so displayed
+  values are never silently "fixed".
+- Participants displayed: 96,095 → **96,236** (the landing counter read 96,230 at the same minute;
+  asynchronous counters, IR-09).
+
 ## September 17 fourth pass: board-correction finding + fourth frontier capture
 
 On 2026-09-17 (~19:04 UTC) all three official pages were fetched again (~2.1 hours after the
@@ -103,35 +143,39 @@ Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Fu
 | Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
 | Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-The live page displayed **96,095 participants** at the 2026-09-17 ~19:04 UTC capture (fourth).
+The live page displayed **96,236 participants** at the 2026-09-17 ~20:58 UTC capture (fifth).
 Captured public frontiers at that capture: rank 1 **+$2,335,125.00 (+934.05%)**, rank 50
-**+$1,244,313.50 (+497.73%)**, rank 100 **+$1,012,202.50 (+404.88%)**, rank 250
-**+$657,305.00 (+262.92%)**. These are moving snapshots, not final thresholds and not prize
+**+$1,244,313.50 (+497.73%)**, rank 100 **+$1,014,950.00 (+405.98%)**, rank 250
+**+$660,759.50 (+264.30%)**. These are moving snapshots, not final thresholds and not prize
 guarantees. The first (2026-09-16) capture is the point-in-time record in
 [`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
 
 ### Frontier tracker
 
-Four official captures are stored with their official URLs in
+Five official captures are stored with their official URLs in
 [`data/frontier_history.json`](data/frontier_history.json); the verifier re-derives all deltas and
 percentage arithmetic and requires each capture's values to be internally consistent
 (`frontier.*` checks). The raw leaderboard HTML of the first capture is archived under
-`artifact_pages/` for manual review; captures 2–4 are preserved as verbatim quotations in their
+`artifact_pages/` for manual review; captures 2–5 are preserved as verbatim quotations in their
 evidence files.
 
-| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) |
-|---|---|---|---|---|
-| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) |
-| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) | **+$1,244,313.50 (+497.73%) ↓** |
-| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) | +$1,012,202.50 (+404.88%) |
-| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) | +$657,305.00 (+262.92%) |
-| Participants | 93,527 | 93,702 | 95,709 | 96,095 |
+| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) | Capture 5 (09-17 20:58) |
+|---|---|---|---|---|---|
+| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) |
+| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) | **+$1,244,313.50 (+497.73%) ↓** | +$1,244,313.50 (+497.73%) = |
+| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) | +$1,012,202.50 (+404.88%) | +$1,014,950.00 (+405.98%) |
+| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) | +$657,305.00 (+262.92%) | +$660,759.50 (+264.30%) |
+| Participants | 93,527 | 93,702 | 95,709 | 96,095 | 96,236 |
 
 The 3-hour window between captures 1 and 2 froze rank 1 and 250 while the mid-board moved; during
 the US trading day before capture 3 **all four frontiers rose** and ranks 50/100/250 changed
 holders (H18, supported). The P/L needed to hold a public rank is a rising moving target — but
 capture 4 proved it is not a one-way ratchet: the rank-50 frontier **fell** $3,583.50 in just over
 two hours while the former rank-50 row survived intact one place higher at rank 49 (H20, IR-23).
+Capture 5 then showed the opposite extreme: ranks 1 and 50 unchanged to the cent for the next
+1.90 hours while rank 100 rose $2,747.50 and rank 250 $3,454.50, with one new row entering between
+rank 50 and rank 100 (H22). A static edge is therefore not evidence that entry is still cheap, and
+a moving edge is not evidence that it will keep rising.
 
 ## What the evidence says
 
@@ -256,6 +300,7 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `data/backtest_results.json` | Independent walk-forward simulation results for S1/S2/S3 (verdicts, costs, sensitivity, bootstrap) |
 | `data/volatility_intelligence.json` | Per-symbol volatility and rank-250 requirement screen |
 | `data/target_lab.json` | Balance-multiple targets (5x–100x), champion occurrence counts, fixed-exposure scenarios |
+| `data/leaderboard_lab.json` | Placement arithmetic: prize-ladder reconciliation, frontier pace, fresh-account daily-compounding requirements, leverage/ruin math, instrument move requirements |
 | `data/verified_explosive_returns.json` | Official historical champion results plus one live snapshot |
 | `data/volatile_stocks.json` | Vendor-tier, recomputable, window-bounded stock moves |
 | `intel/` | Pure-stdlib simulation engine: data loading, Pine-faithful indicators, strategy signals, backtest, walk-forward |
@@ -269,6 +314,7 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `scripts/run_backtests.py` | Deterministic backtest/volatility orchestrator (`--stamp` for byte reproducibility) |
 | `scripts/refresh_artifacts.py` | One-step post-capture refresh: re-run backtests, sync `models.json`, rebuild the site (used by the CI capture workflow) |
 | `scripts/fetch_market_data.py` | CI-side vendor capture with integrity checks and relay fallback |
+| `scripts/leaderboard_lab.py` | Deterministic placement/prize arithmetic from contest config + captures (no market data) |
 | `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
 
 ## Verify and build
@@ -276,8 +322,9 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 ```bash
 python3 scripts/verify.py
 python3 scripts/verify.py --self-test
-python3 scripts/build_site.py
 python3 scripts/target_lab.py
+python3 scripts/leaderboard_lab.py
+python3 scripts/build_site.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/run_backtests.py
 ```
@@ -286,22 +333,23 @@ After the raw captures change (CI or manual `scripts/fetch_market_data.py`), re-
 downstream artifacts in one step:
 
 ```bash
-python3 scripts/refresh_artifacts.py   # re-run backtests, sync models.json, rebuild site
+python3 scripts/refresh_artifacts.py   # re-run backtests, placement lab, models.json, rebuild site
 ```
 
 Current audit result:
 
 ```text
-verify:    330 passed, 0 failed, 1 warning
-self-test: 366 passed, 0 failed, 1 warning
+verify:    341 passed, 0 failed, 1 warning
+self-test: 384 passed, 0 failed, 1 warning
 ```
 
 The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly
 listed COMEX:SIC1! (front-contract month and capture time may differ; tracked as IR-22).
 
 The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard
-arithmetic, capacity math, strategy result state, multipliers, return ratios, counts, stock
-windows, capture digests, backtest constants, verdict/status sync, or determinism are corrupted.
+arithmetic, prize tiers, the placement lab's pace/leverage arithmetic, capacity math, strategy
+result state, multipliers, return ratios, counts, stock windows, capture digests, backtest
+constants, verdict/status sync, or determinism are corrupted.
 The verifier also re-runs the backtest orchestrator with a pinned stamp and requires byte-identical
 artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 
@@ -335,6 +383,17 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
   though its worked example uses it; this is flagged as `IR-14`.
 - Forward-test window before contest end (2026-09-30 12:00 UTC) is unused; registration closes
   2026-09-23 08:00 UTC and qualification needs 5 active UTC days.
+- **Placement arithmetic is a requirement, not a route.** `data/leaderboard_lab.json` shows what the
+  cash-prize level costs (+15.21%/day compounded at capture 5, with no losing day at full exposure);
+  it contains no strategy that produces it, and the three tested models have a $0.0 pooled median.
+- **No intraday evidence.** Every capture is a daily bar; the contest is decided by hour-level
+  realized P/L, and no licensed intraday history is stored.
+- **Capacity coverage is partial.** 20 of the 94 eligible futures carry verified multipliers, prices
+  and caps, and only 11 of those have usable vendor history; the other 74 are transcribed (rules and
+  caps) but not modelled.
+- **The public board hides ranks 251–300 and all participant detail.** Ranks below 250, trade
+  histories and instrument attribution are unavailable, so no winning strategy can be
+  reverse-engineered from published data.
 
 This project concerns virtual competition money. It is not investment advice or a forecast, and
 historical market moves or simulated contest results do not imply future performance.

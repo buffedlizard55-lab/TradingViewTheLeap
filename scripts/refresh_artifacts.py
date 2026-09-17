@@ -9,7 +9,9 @@ This is the single command that keeps the repository internally consistent after
    (the capture index's ``fetched_at_utc``), regenerating
    ``data/backtest_results.json`` and ``data/volatility_intelligence.json``.
 2. Sync ``research/strategy/models.json`` result stamps/summaries to the new artifact.
-3. Rebuild the GitHub Pages document (``scripts/build_site.py`` -> root ``index.html``).
+3. Re-derive the leaderboard/prize arithmetic lab (``scripts/leaderboard_lab.py`` ->
+   ``data/leaderboard_lab.json``).
+4. Rebuild the GitHub Pages document (``scripts/build_site.py`` -> root ``index.html``).
 
 The offline verifier (``scripts/verify.py``) re-runs step 1 with the committed stamp and requires
 byte-identical artifacts, so after this script runs the repository is back to a green state with
@@ -73,6 +75,19 @@ def sync_models() -> None:
     print(f"models.json synced to run stamp {stamp}")
 
 
+def run_placement_lab() -> None:
+    proc = subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "leaderboard_lab.py")],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    sys.stdout.write(proc.stdout)
+    if proc.returncode != 0:
+        sys.stderr.write(proc.stderr)
+        raise SystemExit(f"leaderboard_lab.py failed with exit code {proc.returncode}")
+
+
 def build_site() -> None:
     proc = subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", "build_site.py")],
@@ -91,7 +106,9 @@ def main() -> int:
     run_backtests()
     print("=== step 2: sync models.json ===")
     sync_models()
-    print("=== step 3: rebuild index.html ===")
+    print("=== step 3: re-derive the placement arithmetic ===")
+    run_placement_lab()
+    print("=== step 4: rebuild index.html ===")
     build_site()
     print("done. Run 'python3 scripts/verify.py' to confirm the repository is green.")
     return 0

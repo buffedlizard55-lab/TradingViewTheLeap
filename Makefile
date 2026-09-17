@@ -1,4 +1,4 @@
-.PHONY: all verify selftest site serve clean check backtest capture refresh
+.PHONY: all verify selftest site serve clean check backtest capture refresh placement
 
 all: check
 
@@ -23,8 +23,13 @@ selftest:
 	python3 scripts/verify.py --self-test
 	python3 -m unittest discover -s scripts -p "test_*.py" -v
 
+# Re-derive the placement/prize arithmetic from contest config + captures.
+placement:
+	python3 scripts/leaderboard_lab.py
+
 site:
 	python3 scripts/target_lab.py
+	python3 scripts/leaderboard_lab.py
 	python3 scripts/build_site.py
 
 # Fail if index.html is not in sync with the data it was rendered from.
