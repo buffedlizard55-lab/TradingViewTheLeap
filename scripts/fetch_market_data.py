@@ -96,7 +96,13 @@ def raw_filename(tv_symbol: str) -> str:
     return tv_symbol.replace(":", "_").replace("!", "") + ".json"
 
 
-def fetch_bytes(url: str, attempts: int = 3, timeout: int = 45) -> bytes:
+def fetch_bytes(url: str, attempts: int = 3, timeout: int = 60) -> tuple[bytes, str]:
+    """Fetch a URL directly; on failure retry through the public relay.
+
+    Returns (payload, transport) where transport records how the bytes arrived.
+    """
+    import urllib.parse
+
     last_error: Exception | None = None
     for attempt in range(1, attempts + 1):
         request = urllib.request.Request(
@@ -104,12 +110,24 @@ def fetch_bytes(url: str, attempts: int = 3, timeout: int = 45) -> bytes:
         )
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
-                return response.read()
+                return response.read(), "direct"
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
             last_error = exc
-            print(f"    attempt {attempt}/{attempts} on {url.split('/')[2]} failed: {exc}", flush=True)
-            time.sleep(3 * attempt)
-    raise RuntimeError(f"GET failed after {attempts} attempts: {url} ({last_error})")
+            print(f"    direct attempt {attempt}/{attempts} failed: {exc}", flush=True)
+            time.sleep(2 * attempt)
+    relay_url = PROXY_TEMPLATE.format(encoded=urllib.parse.quote(url, safe=""))
+    for attempt in range(1, attempts + 1):
+        request = urllib.request.Request(
+            relay_url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return response.read(), "allorigins-relay"
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+            last_error = exc
+            print(f"    relay attempt {attempt}/{attempts} failed: {exc}", flush=True)
+            time.sleep(4 * attempt)
+    raise RuntimeError(f"GET failed after {attempts} attempts on both transports: {url} ({last_error})")
 
 
 def summarize(payload: bytes, tv_symbol: str, yahoo_ticker: str, url: str) -> dict:
@@ -123,6 +141,10 @@ def summarize(payload: bytes, tv_symbol: str, yahoo_ticker: str, url: str) -> di
         raise RuntimeError(f"{tv_symbol}: expected exactly one chart result, got {len(results)}")
     result = results[0]
     meta = result.get("meta") or {}
+    if meta.get("symbol") != yahoo_ticker:
+        raise RuntimeError(
+            f"{tv_symbol}: vendor returned symbol {meta.get('symbol')!r}, expected {yahoo_ticker!r}"
+        )
     timestamps = result.get("timestamp") or []
     quote = ((result.get("indicators") or {}).get("quote") or [{}])[0]
 
