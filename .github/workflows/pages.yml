@@ -23,6 +23,11 @@ jobs:
       - name: Run the research verifier (with self-test)
         run: python3 scripts/verify.py --self-test
 
+      - name: Rebuild target arithmetic
+        run: |
+          python3 scripts/target_lab.py
+          git diff --exit-code -- data/target_lab.json
+
       - name: Rebuild the site from data
         run: python3 scripts/build_site.py
 
@@ -34,6 +39,9 @@ jobs:
             exit 1
           fi
           echo "index.html is in sync with data/ and research/."
+
+      - name: Test return-target lab
+        run: python3 -m unittest discover -s scripts -p "test_*.py" -v
 
       - name: Confirm key datasets render completely
         run: |
