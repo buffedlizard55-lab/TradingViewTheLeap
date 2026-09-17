@@ -8,6 +8,33 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 seventh pass: seventh frontier capture (board surge), dynamic placement arithmetic + live UI lab
+
+On 2026-09-17 (~23:08 UTC) all three official pages were fetched again and verified line by line
+([evidence: contest](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md) ·
+[rules](research/evidence/TV-RULES-AMP-SEP2026-R7.md) ·
+[landing](research/evidence/TV-THELEAP-LANDING-R7.md)):
+
+- **Seventh frontier capture (23:08 UTC, 96,344 participants, landing hero 96,336 — IR-09 async +8): major leaderboard threshold expansion following the capture 5→6 plateau.** Rank 1 remains steady at **$2,335,125.00 (+934.05%)**, but Ranks 50, 100, and 250 experienced sharp upward threshold acceleration:
+  - **Rank 50 (cash prize boundary): surged +$111,303.63 (+44.52%)** from $1,244,313.50 (+497.73%) to **$1,355,617.13 (+542.25%)**, held by new holder `Greed027`.
+  - **Rank 100: surged +$76,695.00 (+30.68%)** from $1,014,950.00 (+405.98%) to **$1,091,645.00 (+436.66%)**, held by `DeepakGupta80`.
+  - **Rank 250 (last visible rank): surged +$38,065.50 (+15.23%)** from $660,759.50 (+264.30%) to **$698,825.00 (+279.53%)**, held by `Hamppy1224`.
+  - Participants increased to **96,344 (+76)**.
+- **Updated Placement Arithmetic (`data/leaderboard_lab.json`):**
+  - Remaining competition window at Capture 7: **12.536 days** (deadline: 2026-09-30 12:00 UTC).
+  - To match the current Rank 50 level from a fresh $250,000 account requires **+15.99%/day compounded, unbroken** (0.80%/day underlying move at 20:1 max leverage).
+  - Compounding rates for target multiples: **5×** needs +13.69%/day (0.68% underlying/day); **10×** needs +20.18%/day (1.01% underlying/day); **20×** needs +27.03%/day; **50×** needs +36.70%/day; **100×** needs +44.52%/day (2.23% underlying/day).
+  - Ruin constraint remains absolute: a 5% adverse move at 20:1 erases the entire $250,000 balance with zero reset allowed (§08).
+- **New Hypotheses H25–H27 & Irregularity IR-25:**
+  - **H25 (supported):** Leaderboard cutoff velocity exhibits non-linear burst expansion during active market wraps (IR-25).
+  - **H26 (supported):** Only `HO1!`, `CL1!`, `SI1!`, `RB1!` possess the combined dollar capacity ($3.4M–$5.0M) and historical 30-day velocity (58%–78%) to cover the surging Rank 50 hurdle (+27.1% to +39.7% required moves at maximum position).
+  - **H27 (supported):** S4–S6 intraday multi-entry pyramiding is mathematically required to target 10x–100x outcomes because daily-bar trend systems produce $0.00 median net profit.
+- **Enhanced GitHub Pages Site & UI Lab:**
+  - **Interactive Target & Placement Calculator:** Live slider and custom inputs to calculate required compounding rates, underlying moves, ending equity, and unbroken winning days for any target return.
+  - **Interactive Filter Bars:** Instant client-side filtering on Hypotheses (All, Supported, Refuted), Irregularities (All, Critical, High, Medium, Low), Sources (Official Primary, Vendor), and Universe/Stocks.
+  - Full transparency: all 93 sources registered and auditable with direct official URLs.
+- **Verifier Green:** `362 passed / 0 failed / 1 warning` (`python3 scripts/verify.py`).
+
 ## September 17 sixth pass: explosive futures playbook + sixth frontier capture (board frozen)
 
 On 2026-09-17 (~21:27 UTC) all three official pages were fetched again and verified line by line

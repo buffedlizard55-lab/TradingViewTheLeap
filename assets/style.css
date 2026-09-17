@@ -272,6 +272,40 @@ summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
+/* Range sliders, inputs and calculator styling */
+input[type="range"] {
+  accent-color: var(--accent);
+  background: var(--panel-2);
+  cursor: pointer;
+}
+input[type="number"] {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-family: inherit;
+}
+input[type="number"]:focus {
+  outline: 2px solid #1f4d7a;
+  outline-offset: -1px;
+}
+.calc-preset {
+  cursor: pointer;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.calc-preset:hover {
+  color: var(--text);
+  background: var(--panel-2);
+}
+.calc-preset.active {
+  color: #fff;
+  background: #1f6feb;
+  border-color: #388bfd;
+}
+
 /* Delta indicators (frontier drift, cross-source deltas, per-symbol backtest medians) */
 .up { color: var(--green, #3fb950); }
 .down { color: var(--red, #f85149); }
