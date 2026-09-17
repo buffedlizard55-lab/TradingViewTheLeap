@@ -1,0 +1,51 @@
+name: Capture market data
+
+# Intelligence-layer ingestion pipeline. Fetches daily-bar market history for the
+# selected contest futures from the Yahoo Finance chart endpoint and uploads the
+# raw captures as a workflow artifact. A human/agent session then downloads the
+# artifact, verifies it against independent captures, and commits it; this
+# workflow deliberately does NOT push to any branch.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: Fetch daily history for selected futures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch market history (fails loudly on any vendor error)
+        env:
+          CAPTURE_ENV: github-actions
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 -m py_compile scripts/fetch_market_data.py
+          python3 scripts/fetch_market_data.py \
+            --out-dir artifact/market_history \
+            --index artifact/market_history_index.json
+
+      - name: Archive raw contest leaderboard page (best effort, for frontier parsing)
+        continue-on-error: true
+        run: |
+          mkdir -p artifact/pages
+          curl -sS -L --max-time 60 \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" \
+            "https://www.tradingview.com/the-leap/amp-futures-september-2026/" \
+            -o artifact/pages/the-leap-amp-futures-september-2026.html || echo "page capture failed (non-fatal)"
+
+      - name: Upload captures as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: market-history
+          path: artifact/
+          retention-days: 30
+          if-no-files-found: error
