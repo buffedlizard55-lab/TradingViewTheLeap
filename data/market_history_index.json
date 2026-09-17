@@ -6,12 +6,12 @@
   "capture_window_start_utc": "2024-09-17T00:00:00Z",
   "capture_window_end_utc": "2026-09-18T00:00:00Z",
   "interval": "1d",
-  "fetched_at_utc": "2026-09-17T02:44:53+00:00",
+  "fetched_at_utc": "2026-09-17T03:15:40+00:00",
   "capture_environment": "github-actions",
-  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35175573073",
+  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35177491162",
   "symbol_count": 20,
-  "captured_count": 18,
-  "failed_count": 2,
+  "captured_count": 20,
+  "failed_count": 0,
   "provenance_note": "Each record's endpoint reproduces the exact request; sha256 covers the stored bytes. Bytes arrive either directly from the vendor host or through the public allorigins relay (recorded per record as 'transport'); the relay is a transport only and every payload is validated against the expected vendor symbol and OHLC invariants. Re-run scripts/fetch_market_data.py in a networked environment to refresh; the offline verifier audits these files without network access. Records with status 'failed' carry the error text and must be retried."
  },
  "captures": [
@@ -396,14 +396,44 @@
   {
    "tradingview_symbol": "CME:MXP1!",
    "yahoo_ticker": "MXP=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 500: Internal Server Error)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro XRP Futures,Sep-2026",
+   "vendor_reported_exchange": "CME",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 1,
+   "sessions_valid": 1,
+   "first_session_utc": "2026-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 1.3020000457763672,
+   "last_close": 1.3020000457763672,
+   "file": "data/market_history/CME_MXP1.json",
+   "sha256": "5bf01ed99a65b2d83f4c7bda10c9ee840c3c89400eb208dc4ae1bb31768d5707",
+   "bytes": 1218,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T03:15:40+00:00"
   },
   {
    "tradingview_symbol": "CME:BTC1!",
    "yahoo_ticker": "BTC=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Bitcoin Futures,Sep-2026",
+   "vendor_reported_exchange": "CME",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 506,
+   "sessions_valid": 504,
+   "first_session_utc": "2024-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 60105.0,
+   "last_close": 76480.0,
+   "file": "data/market_history/CME_BTC1.json",
+   "sha256": "c0d114ab0c1b909931637057e8157a0b71c033c8fd29b303c2984b2aa6c0b3aa",
+   "bytes": 30521,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T03:15:40+00:00"
   }
  ]
 }
