@@ -1,0 +1,380 @@
+{
+ "_meta": {
+  "description": "Realized-volatility and explosive-move metrics recomputed from the committed vendor captures. Rolling 30-day windows overlap (one window per bar). The 'if best move recurred' fields are arithmetic illustrations at the modeled initial notional - an upper envelope of what history offered, NOT a forecast and NOT a backtest.",
+  "engine": "intel-1",
+  "generated_utc": "2026-09-17T01:15:57+00:00",
+  "data_source": "data/market_history_index.json",
+  "rank250_target_usd": 623689.0,
+  "rank250_target_snapshot_utc": "2026-09-16T21:39:34Z",
+  "symbol_count": 8,
+  "metric_definitions": {
+   "ann_vol_pct": "stddev of daily log returns x sqrt(252) x 100",
+   "atr14_pct": "ATR(14) / close x 100",
+   "best_30d_up_move_pct": "max over overlapping 30-calendar-day windows of (max close in window / first close - 1) x 100",
+   "best_30d_down_move_pct": "mirror of best_30d_up_move_pct using the window minimum",
+   "largest_abs_overnight_gap_pct": "max |open/prev close - 1| x 100 (roll-gap proxy)"
+  }
+ },
+ "records": [
+  {
+   "symbol": "NYMEX:NG1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 2.8970000743865967,
+   "ann_vol_full_pct": 87.47,
+   "ann_vol_last_1y_pct": 100.92,
+   "mean_atr14_pct": 6.6,
+   "max_atr14_pct": 29.196,
+   "largest_abs_overnight_gap_pct": 49.84,
+   "largest_gap_date": "2026-01-29",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-01-29",
+     "abs_move_pct": 47.48,
+     "direction": "down"
+    },
+    {
+     "date": "2026-01-26",
+     "abs_move_pct": 28.91,
+     "direction": "up"
+    },
+    {
+     "date": "2026-01-20",
+     "abs_move_pct": 25.91,
+     "direction": "up"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 254,
+   "windows_30d_ge_25pct_up": 74,
+   "windows_30d_ge_50pct_up": 19,
+   "windows_30d_ge_10pct_down": 215,
+   "windows_30d_ge_25pct_down": 27,
+   "windows_30d_ge_50pct_down": 3,
+   "best_30d_up_move_pct": 140.41,
+   "best_30d_up_start_date": "2026-01-16",
+   "best_30d_down_move_pct": 62.1,
+   "best_30d_down_start_date": "2026-01-28",
+   "modeled_initial_notional_usd": 722750.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 86.293878,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 1014813.27,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "NYMEX:HO1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 4.9822998046875,
+   "ann_vol_full_pct": 46.17,
+   "ann_vol_last_1y_pct": 57.74,
+   "mean_atr14_pct": 3.938,
+   "max_atr14_pct": 10.894,
+   "largest_abs_overnight_gap_pct": 8.06,
+   "largest_gap_date": "2026-02-02",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-04-08",
+     "abs_move_pct": 14.94,
+     "direction": "down"
+    },
+    {
+     "date": "2026-02-02",
+     "abs_move_pct": 13.74,
+     "direction": "down"
+    },
+    {
+     "date": "2026-03-23",
+     "abs_move_pct": 11.99,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 179,
+   "windows_30d_ge_25pct_up": 50,
+   "windows_30d_ge_50pct_up": 16,
+   "windows_30d_ge_10pct_down": 84,
+   "windows_30d_ge_25pct_down": 1,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 78.22,
+   "best_30d_up_start_date": "2026-02-20",
+   "best_30d_down_move_pct": 26.28,
+   "best_30d_down_start_date": "2026-03-20",
+   "modeled_initial_notional_usd": 4830289.8,
+   "favorable_move_pct_needed_for_rank250_snapshot": 12.912041,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 3778252.68,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "CME:ETH1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 2422.0,
+   "ann_vol_full_pct": 70.18,
+   "ann_vol_last_1y_pct": 65.13,
+   "mean_atr14_pct": 6.373,
+   "max_atr14_pct": 12.112,
+   "largest_abs_overnight_gap_pct": 15.48,
+   "largest_gap_date": "2025-03-03",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2025-02-03",
+     "abs_move_pct": 19.64,
+     "direction": "down"
+    },
+    {
+     "date": "2025-05-08",
+     "abs_move_pct": 18.02,
+     "direction": "up"
+    },
+    {
+     "date": "2026-02-02",
+     "abs_move_pct": 14.77,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 236,
+   "windows_30d_ge_25pct_up": 106,
+   "windows_30d_ge_50pct_up": 24,
+   "windows_30d_ge_10pct_down": 208,
+   "windows_30d_ge_25pct_down": 67,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 71.81,
+   "best_30d_up_start_date": "2025-04-21",
+   "best_30d_down_move_pct": 44.96,
+   "best_30d_down_start_date": "2026-01-14",
+   "modeled_initial_notional_usd": 120475.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 517.691637,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 86513.1,
+   "note_if_best_move_exceeds_rank250_requirement": false
+  },
+  {
+   "symbol": "NYMEX:RB1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 3.238800048828125,
+   "ann_vol_full_pct": 38.7,
+   "ann_vol_last_1y_pct": 45.49,
+   "mean_atr14_pct": 3.296,
+   "max_atr14_pct": 6.952,
+   "largest_abs_overnight_gap_pct": 19.54,
+   "largest_gap_date": "2026-03-02",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-03-02",
+     "abs_move_pct": 14.09,
+     "direction": "up"
+    },
+    {
+     "date": "2025-03-03",
+     "abs_move_pct": 11.04,
+     "direction": "up"
+    },
+    {
+     "date": "2026-03-23",
+     "abs_move_pct": 9.47,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 124,
+   "windows_30d_ge_25pct_up": 27,
+   "windows_30d_ge_50pct_up": 11,
+   "windows_30d_ge_10pct_down": 68,
+   "windows_30d_ge_25pct_down": 0,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 66.69,
+   "best_30d_up_start_date": "2026-02-24",
+   "best_30d_down_move_pct": 23.41,
+   "best_30d_down_start_date": "2026-05-18",
+   "modeled_initial_notional_usd": 3394860.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 18.371568,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 2264032.13,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "COMEX:SI1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 64.52999877929688,
+   "ann_vol_full_pct": 52.97,
+   "ann_vol_last_1y_pct": 69.49,
+   "mean_atr14_pct": 3.183,
+   "max_atr14_pct": 13.042,
+   "largest_abs_overnight_gap_pct": 9.28,
+   "largest_gap_date": "2026-01-27",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-01-30",
+     "abs_move_pct": 31.35,
+     "direction": "down"
+    },
+    {
+     "date": "2026-01-26",
+     "abs_move_pct": 14.03,
+     "direction": "up"
+    },
+    {
+     "date": "2025-12-30",
+     "abs_move_pct": 10.76,
+     "direction": "up"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 207,
+   "windows_30d_ge_25pct_up": 46,
+   "windows_30d_ge_50pct_up": 5,
+   "windows_30d_ge_10pct_down": 96,
+   "windows_30d_ge_25pct_down": 8,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 64.74,
+   "best_30d_up_start_date": "2025-12-29",
+   "best_30d_down_move_pct": 36.18,
+   "best_30d_down_start_date": "2026-01-26",
+   "modeled_initial_notional_usd": 4869000.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 12.809386,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 3152190.6,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "NYMEX:CL1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 102.19000244140625,
+   "ann_vol_full_pct": 45.72,
+   "ann_vol_last_1y_pct": 55.46,
+   "mean_atr14_pct": 4.031,
+   "max_atr14_pct": 10.443,
+   "largest_abs_overnight_gap_pct": 11.91,
+   "largest_gap_date": "2026-03-02",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-04-08",
+     "abs_move_pct": 16.41,
+     "direction": "down"
+    },
+    {
+     "date": "2026-03-06",
+     "abs_move_pct": 12.21,
+     "direction": "up"
+    },
+    {
+     "date": "2026-03-10",
+     "abs_move_pct": 11.94,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 157,
+   "windows_30d_ge_25pct_up": 43,
+   "windows_30d_ge_50pct_up": 7,
+   "windows_30d_ge_10pct_down": 93,
+   "windows_30d_ge_25pct_down": 8,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 58.37,
+   "best_30d_up_start_date": "2026-02-17",
+   "best_30d_down_move_pct": 30.01,
+   "best_30d_down_start_date": "2026-05-18",
+   "modeled_initial_notional_usd": 4916640.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 12.685269,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 2869842.77,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "NYMEX_MINI:QM1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 102.17500305175781,
+   "ann_vol_full_pct": 45.41,
+   "ann_vol_last_1y_pct": 55.23,
+   "mean_atr14_pct": 4.01,
+   "max_atr14_pct": 10.348,
+   "largest_abs_overnight_gap_pct": 11.91,
+   "largest_gap_date": "2026-03-02",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-04-08",
+     "abs_move_pct": 16.41,
+     "direction": "down"
+    },
+    {
+     "date": "2026-03-06",
+     "abs_move_pct": 12.21,
+     "direction": "up"
+    },
+    {
+     "date": "2026-03-10",
+     "abs_move_pct": 11.94,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 156,
+   "windows_30d_ge_25pct_up": 43,
+   "windows_30d_ge_50pct_up": 7,
+   "windows_30d_ge_10pct_down": 93,
+   "windows_30d_ge_25pct_down": 8,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 58.37,
+   "best_30d_up_start_date": "2026-02-17",
+   "best_30d_down_move_pct": 30.01,
+   "best_30d_down_start_date": "2026-05-18",
+   "modeled_initial_notional_usd": 512125.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 121.784525,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 298927.36,
+   "note_if_best_move_exceeds_rank250_requirement": false
+  },
+  {
+   "symbol": "NYMEX:PL1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 1789.4000244140625,
+   "ann_vol_full_pct": 45.32,
+   "ann_vol_last_1y_pct": 56.8,
+   "mean_atr14_pct": 2.253,
+   "max_atr14_pct": 6.451,
+   "largest_abs_overnight_gap_pct": 14.71,
+   "largest_gap_date": "2025-12-29",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-01-30",
+     "abs_move_pct": 19.04,
+     "direction": "down"
+    },
+    {
+     "date": "2025-12-29",
+     "abs_move_pct": 14.71,
+     "direction": "down"
+    },
+    {
+     "date": "2026-01-27",
+     "abs_move_pct": 11.89,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 168,
+   "windows_30d_ge_25pct_up": 43,
+   "windows_30d_ge_50pct_up": 2,
+   "windows_30d_ge_10pct_down": 79,
+   "windows_30d_ge_25pct_down": 2,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 50.3,
+   "best_30d_up_start_date": "2025-12-10",
+   "best_30d_down_move_pct": 29.45,
+   "best_30d_down_start_date": "2026-01-26",
+   "modeled_initial_notional_usd": 2232375.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 27.938362,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 1122884.62,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  }
+ ]
+}
