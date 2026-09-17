@@ -7,6 +7,29 @@ mix real historical stock returns with simulated competition returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 review and return-target lab
+
+Fresh official rules and champion-page review: [claim-by-claim audit, source quotations,
+limitations and prioritized next-session work](research/evidence/AUDIT-2026-09-17.md).
+This review does **not** refresh the September 16 leaderboard or price inputs below.
+
+- **Cash prizes end at rank 50**; ranks 51–300 receive subscriptions. Rank 250 is not a cash frontier.
+- New [target dataset](data/target_lab.json): 5×, 10×, 20×, 50× and 100× balance targets,
+  official completed-champion occurrence counts, and 100 fixed-exposure arithmetic scenarios.
+- A 5× balance means +400% net profit, not +500%. A 100× balance means +9,900%.
+- These are numerical requirements, **not backtests or evidence of achievable future returns**.
+- No complete officially verified explosive-stock opportunity list satisfies this futures-only edition.
+  The 20 historical stocks remain vendor-tier reference; 74 of 94 futures lack full capacity coverage.
+- Prize eligibility and possible identity/payment paperwork cannot be resolved by research automation.
+
+Reproduce the new experiment and tests:
+
+```bash
+python3 scripts/target_lab.py
+python3 scripts/build_site.py
+python3 -m unittest discover -s scripts -p 'test_*.py' -v
+```
+
 ## Live-edition facts
 
 Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Futures — September
@@ -135,8 +158,8 @@ python3 -m py_compile scripts/verify.py scripts/build_site.py
 Current audit result:
 
 ```text
-verify:    302 passed, 0 failed, 0 warnings
-self-test: 331 passed, 0 failed, 0 warnings
+verify:    303 passed, 0 failed, 0 warnings
+self-test: 332 passed, 0 failed, 0 warnings
 ```
 
 The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard

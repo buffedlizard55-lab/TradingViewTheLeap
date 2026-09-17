@@ -8,7 +8,7 @@
    "medium",
    "low"
   ],
-  "count": 14,
+  "count": 16,
   "reverified_utc": "2026-09-16",
   "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14."
  },
@@ -212,6 +212,34 @@
    "resolution": "Flag for manual review. The capacity model uses the contract multiplier symmetrically for directional point moves and does not quote the malformed short formula as complete.",
    "linked_hypothesis": null,
    "status": "confirmed"
+  },
+  {
+   "id": "IR-15",
+   "severity": "medium",
+   "status": "confirmed",
+   "title": "Cash-prize target differs from the last publicly visible rank",
+   "detail": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "observed": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-16",
+   "severity": "medium",
+   "status": "confirmed",
+   "title": "No-manual-input research does not imply unattended prize collection",
+   "detail": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "observed": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
   }
  ]
 }

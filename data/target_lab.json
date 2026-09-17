@@ -1,0 +1,870 @@
+{
+  "_meta": {
+    "kind": "deterministic_arithmetic_not_backtest",
+    "input_snapshot_utc": "2026-09-16T21:39:34Z",
+    "completed_sample_size": 15,
+    "coverage": "20 selected futures only; not a volatility-ranked or exhaustive opportunity list",
+    "source_files": [
+      "data/contest_config.json",
+      "data/initial_capacity.json",
+      "data/verified_explosive_returns.json"
+    ],
+    "assumptions": [
+      "Multiple means ending balance divided by starting balance, not profit divided by balance.",
+      "Fixed initial whole-contract exposure; no compounding or resizing.",
+      "Linear favorable price move; no costs, fills, intraday margin path, roll effects or execution modeled.",
+      "Equality reaches a target; strictly over requires additional net profit.",
+      "Historical champion-only counts are evidence of occurrence, not estimated success probabilities.",
+      "No strategy performance or future returns are measured by this experiment."
+    ]
+  },
+  "targets": [
+    {
+      "balance_multiple": 5,
+      "net_profit_pct": 400,
+      "required_net_profit_usd": 1000000.0,
+      "ending_balance_usd": 1250000.0,
+      "completed_sample_strictly_above": 1,
+      "completed_sample_at_or_above": 1,
+      "ideal_initial_20x_fixed_exposure_move_pct": 20.0
+    },
+    {
+      "balance_multiple": 10,
+      "net_profit_pct": 900,
+      "required_net_profit_usd": 2250000.0,
+      "ending_balance_usd": 2500000.0,
+      "completed_sample_strictly_above": 1,
+      "completed_sample_at_or_above": 1,
+      "ideal_initial_20x_fixed_exposure_move_pct": 45.0
+    },
+    {
+      "balance_multiple": 20,
+      "net_profit_pct": 1900,
+      "required_net_profit_usd": 4750000.0,
+      "ending_balance_usd": 5000000.0,
+      "completed_sample_strictly_above": 1,
+      "completed_sample_at_or_above": 1,
+      "ideal_initial_20x_fixed_exposure_move_pct": 95.0
+    },
+    {
+      "balance_multiple": 50,
+      "net_profit_pct": 4900,
+      "required_net_profit_usd": 12250000.0,
+      "ending_balance_usd": 12500000.0,
+      "completed_sample_strictly_above": 1,
+      "completed_sample_at_or_above": 1,
+      "ideal_initial_20x_fixed_exposure_move_pct": 245.0
+    },
+    {
+      "balance_multiple": 100,
+      "net_profit_pct": 9900,
+      "required_net_profit_usd": 24750000.0,
+      "ending_balance_usd": 25000000.0,
+      "completed_sample_strictly_above": 0,
+      "completed_sample_at_or_above": 0,
+      "ideal_initial_20x_fixed_exposure_move_pct": 495.0
+    }
+  ],
+  "scenarios": [
+    {
+      "symbol": "NYMEX:CL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 48,
+      "initial_notional_usd": 4916640.0,
+      "favorable_move_pct_to_equal_target": 20.339093,
+      "quote_source_id": "TV-QUOTE-CL1"
+    },
+    {
+      "symbol": "NYMEX:CL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 48,
+      "initial_notional_usd": 4916640.0,
+      "favorable_move_pct_to_equal_target": 45.76296,
+      "quote_source_id": "TV-QUOTE-CL1"
+    },
+    {
+      "symbol": "NYMEX:CL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 48,
+      "initial_notional_usd": 4916640.0,
+      "favorable_move_pct_to_equal_target": 96.610693,
+      "quote_source_id": "TV-QUOTE-CL1"
+    },
+    {
+      "symbol": "NYMEX:CL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 48,
+      "initial_notional_usd": 4916640.0,
+      "favorable_move_pct_to_equal_target": 249.153894,
+      "quote_source_id": "TV-QUOTE-CL1"
+    },
+    {
+      "symbol": "NYMEX:CL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 48,
+      "initial_notional_usd": 4916640.0,
+      "favorable_move_pct_to_equal_target": 503.392561,
+      "quote_source_id": "TV-QUOTE-CL1"
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "balance_multiple": 5,
+      "initial_contracts": 15,
+      "initial_notional_usd": 4869000.0,
+      "favorable_move_pct_to_equal_target": 20.538098,
+      "quote_source_id": "TV-QUOTE-SI1"
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "balance_multiple": 10,
+      "initial_contracts": 15,
+      "initial_notional_usd": 4869000.0,
+      "favorable_move_pct_to_equal_target": 46.210721,
+      "quote_source_id": "TV-QUOTE-SI1"
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "balance_multiple": 20,
+      "initial_contracts": 15,
+      "initial_notional_usd": 4869000.0,
+      "favorable_move_pct_to_equal_target": 97.555966,
+      "quote_source_id": "TV-QUOTE-SI1"
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "balance_multiple": 50,
+      "initial_contracts": 15,
+      "initial_notional_usd": 4869000.0,
+      "favorable_move_pct_to_equal_target": 251.591703,
+      "quote_source_id": "TV-QUOTE-SI1"
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "balance_multiple": 100,
+      "initial_contracts": 15,
+      "initial_notional_usd": 4869000.0,
+      "favorable_move_pct_to_equal_target": 508.31793,
+      "quote_source_id": "TV-QUOTE-SI1"
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "balance_multiple": 5,
+      "initial_contracts": 23,
+      "initial_notional_usd": 4830289.8,
+      "favorable_move_pct_to_equal_target": 20.702692,
+      "quote_source_id": "TV-QUOTE-HO1"
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "balance_multiple": 10,
+      "initial_contracts": 23,
+      "initial_notional_usd": 4830289.8,
+      "favorable_move_pct_to_equal_target": 46.581056,
+      "quote_source_id": "TV-QUOTE-HO1"
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "balance_multiple": 20,
+      "initial_contracts": 23,
+      "initial_notional_usd": 4830289.8,
+      "favorable_move_pct_to_equal_target": 98.337785,
+      "quote_source_id": "TV-QUOTE-HO1"
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "balance_multiple": 50,
+      "initial_contracts": 23,
+      "initial_notional_usd": 4830289.8,
+      "favorable_move_pct_to_equal_target": 253.607972,
+      "quote_source_id": "TV-QUOTE-HO1"
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "balance_multiple": 100,
+      "initial_contracts": 23,
+      "initial_notional_usd": 4830289.8,
+      "favorable_move_pct_to_equal_target": 512.391617,
+      "quote_source_id": "TV-QUOTE-HO1"
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "balance_multiple": 5,
+      "initial_contracts": 8,
+      "initial_notional_usd": 4681080.0,
+      "favorable_move_pct_to_equal_target": 21.362592,
+      "quote_source_id": "TV-QUOTE-NQ1"
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "balance_multiple": 10,
+      "initial_contracts": 8,
+      "initial_notional_usd": 4681080.0,
+      "favorable_move_pct_to_equal_target": 48.065831,
+      "quote_source_id": "TV-QUOTE-NQ1"
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "balance_multiple": 20,
+      "initial_contracts": 8,
+      "initial_notional_usd": 4681080.0,
+      "favorable_move_pct_to_equal_target": 101.47231,
+      "quote_source_id": "TV-QUOTE-NQ1"
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "balance_multiple": 50,
+      "initial_contracts": 8,
+      "initial_notional_usd": 4681080.0,
+      "favorable_move_pct_to_equal_target": 261.691746,
+      "quote_source_id": "TV-QUOTE-NQ1"
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "balance_multiple": 100,
+      "initial_contracts": 8,
+      "initial_notional_usd": 4681080.0,
+      "favorable_move_pct_to_equal_target": 528.724141,
+      "quote_source_id": "TV-QUOTE-NQ1"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "balance_multiple": 5,
+      "initial_contracts": 25,
+      "initial_notional_usd": 3394860.0,
+      "favorable_move_pct_to_equal_target": 29.456296,
+      "quote_source_id": "TV-QUOTE-RB1"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "balance_multiple": 10,
+      "initial_contracts": 25,
+      "initial_notional_usd": 3394860.0,
+      "favorable_move_pct_to_equal_target": 66.276665,
+      "quote_source_id": "TV-QUOTE-RB1"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "balance_multiple": 20,
+      "initial_contracts": 25,
+      "initial_notional_usd": 3394860.0,
+      "favorable_move_pct_to_equal_target": 139.917405,
+      "quote_source_id": "TV-QUOTE-RB1"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "balance_multiple": 50,
+      "initial_contracts": 25,
+      "initial_notional_usd": 3394860.0,
+      "favorable_move_pct_to_equal_target": 360.839622,
+      "quote_source_id": "TV-QUOTE-RB1"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "balance_multiple": 100,
+      "initial_contracts": 25,
+      "initial_notional_usd": 3394860.0,
+      "favorable_move_pct_to_equal_target": 729.043318,
+      "quote_source_id": "TV-QUOTE-RB1"
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 25,
+      "initial_notional_usd": 2232375.0,
+      "favorable_move_pct_to_equal_target": 44.795341,
+      "quote_source_id": "TV-QUOTE-PL1"
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 25,
+      "initial_notional_usd": 2232375.0,
+      "favorable_move_pct_to_equal_target": 100.789518,
+      "quote_source_id": "TV-QUOTE-PL1"
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 25,
+      "initial_notional_usd": 2232375.0,
+      "favorable_move_pct_to_equal_target": 212.777871,
+      "quote_source_id": "TV-QUOTE-PL1"
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 25,
+      "initial_notional_usd": 2232375.0,
+      "favorable_move_pct_to_equal_target": 548.742931,
+      "quote_source_id": "TV-QUOTE-PL1"
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 25,
+      "initial_notional_usd": 2232375.0,
+      "favorable_move_pct_to_equal_target": 1108.684697,
+      "quote_source_id": "TV-QUOTE-PL1"
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 100,
+      "initial_notional_usd": 1024300.0,
+      "favorable_move_pct_to_equal_target": 97.627648,
+      "quote_source_id": "TV-QUOTE-MCL1"
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 100,
+      "initial_notional_usd": 1024300.0,
+      "favorable_move_pct_to_equal_target": 219.662208,
+      "quote_source_id": "TV-QUOTE-MCL1"
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 100,
+      "initial_notional_usd": 1024300.0,
+      "favorable_move_pct_to_equal_target": 463.731329,
+      "quote_source_id": "TV-QUOTE-MCL1"
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 100,
+      "initial_notional_usd": 1024300.0,
+      "favorable_move_pct_to_equal_target": 1195.93869,
+      "quote_source_id": "TV-QUOTE-MCL1"
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 100,
+      "initial_notional_usd": 1024300.0,
+      "favorable_move_pct_to_equal_target": 2416.284292,
+      "quote_source_id": "TV-QUOTE-MCL1"
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "balance_multiple": 5,
+      "initial_contracts": 25,
+      "initial_notional_usd": 722750.0,
+      "favorable_move_pct_to_equal_target": 138.360429,
+      "quote_source_id": "TV-QUOTE-NG1"
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "balance_multiple": 10,
+      "initial_contracts": 25,
+      "initial_notional_usd": 722750.0,
+      "favorable_move_pct_to_equal_target": 311.310965,
+      "quote_source_id": "TV-QUOTE-NG1"
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "balance_multiple": 20,
+      "initial_contracts": 25,
+      "initial_notional_usd": 722750.0,
+      "favorable_move_pct_to_equal_target": 657.212037,
+      "quote_source_id": "TV-QUOTE-NG1"
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "balance_multiple": 50,
+      "initial_contracts": 25,
+      "initial_notional_usd": 722750.0,
+      "favorable_move_pct_to_equal_target": 1694.915254,
+      "quote_source_id": "TV-QUOTE-NG1"
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "balance_multiple": 100,
+      "initial_contracts": 25,
+      "initial_notional_usd": 722750.0,
+      "favorable_move_pct_to_equal_target": 3424.420616,
+      "quote_source_id": "TV-QUOTE-NG1"
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 10,
+      "initial_notional_usd": 649200.0,
+      "favorable_move_pct_to_equal_target": 154.035736,
+      "quote_source_id": "TV-QUOTE-SIL1"
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 10,
+      "initial_notional_usd": 649200.0,
+      "favorable_move_pct_to_equal_target": 346.580407,
+      "quote_source_id": "TV-QUOTE-SIL1"
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 10,
+      "initial_notional_usd": 649200.0,
+      "favorable_move_pct_to_equal_target": 731.669747,
+      "quote_source_id": "TV-QUOTE-SIL1"
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 10,
+      "initial_notional_usd": 649200.0,
+      "favorable_move_pct_to_equal_target": 1886.93777,
+      "quote_source_id": "TV-QUOTE-SIL1"
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 10,
+      "initial_notional_usd": 649200.0,
+      "favorable_move_pct_to_equal_target": 3812.384473,
+      "quote_source_id": "TV-QUOTE-SIL1"
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "balance_multiple": 5,
+      "initial_contracts": 10,
+      "initial_notional_usd": 512125.0,
+      "favorable_move_pct_to_equal_target": 195.264828,
+      "quote_source_id": "TV-QUOTE-QM1"
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "balance_multiple": 10,
+      "initial_contracts": 10,
+      "initial_notional_usd": 512125.0,
+      "favorable_move_pct_to_equal_target": 439.345863,
+      "quote_source_id": "TV-QUOTE-QM1"
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "balance_multiple": 20,
+      "initial_contracts": 10,
+      "initial_notional_usd": 512125.0,
+      "favorable_move_pct_to_equal_target": 927.507933,
+      "quote_source_id": "TV-QUOTE-QM1"
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "balance_multiple": 50,
+      "initial_contracts": 10,
+      "initial_notional_usd": 512125.0,
+      "favorable_move_pct_to_equal_target": 2391.994142,
+      "quote_source_id": "TV-QUOTE-QM1"
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "balance_multiple": 100,
+      "initial_contracts": 10,
+      "initial_notional_usd": 512125.0,
+      "favorable_move_pct_to_equal_target": 4832.804491,
+      "quote_source_id": "TV-QUOTE-QM1"
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "balance_multiple": 5,
+      "initial_contracts": 1,
+      "initial_notional_usd": 380425.0,
+      "favorable_move_pct_to_equal_target": 262.863902,
+      "quote_source_id": "TV-QUOTE-BTC1"
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "balance_multiple": 10,
+      "initial_contracts": 1,
+      "initial_notional_usd": 380425.0,
+      "favorable_move_pct_to_equal_target": 591.44378,
+      "quote_source_id": "TV-QUOTE-BTC1"
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "balance_multiple": 20,
+      "initial_contracts": 1,
+      "initial_notional_usd": 380425.0,
+      "favorable_move_pct_to_equal_target": 1248.603536,
+      "quote_source_id": "TV-QUOTE-BTC1"
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "balance_multiple": 50,
+      "initial_contracts": 1,
+      "initial_notional_usd": 380425.0,
+      "favorable_move_pct_to_equal_target": 3220.082802,
+      "quote_source_id": "TV-QUOTE-BTC1"
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "balance_multiple": 100,
+      "initial_contracts": 1,
+      "initial_notional_usd": 380425.0,
+      "favorable_move_pct_to_equal_target": 6505.88158,
+      "quote_source_id": "TV-QUOTE-BTC1"
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "balance_multiple": 5,
+      "initial_contracts": 25,
+      "initial_notional_usd": 190062.5,
+      "favorable_move_pct_to_equal_target": 526.142716,
+      "quote_source_id": "TV-QUOTE-MBT1"
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "balance_multiple": 10,
+      "initial_contracts": 25,
+      "initial_notional_usd": 190062.5,
+      "favorable_move_pct_to_equal_target": 1183.821111,
+      "quote_source_id": "TV-QUOTE-MBT1"
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "balance_multiple": 20,
+      "initial_contracts": 25,
+      "initial_notional_usd": 190062.5,
+      "favorable_move_pct_to_equal_target": 2499.177902,
+      "quote_source_id": "TV-QUOTE-MBT1"
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "balance_multiple": 50,
+      "initial_contracts": 25,
+      "initial_notional_usd": 190062.5,
+      "favorable_move_pct_to_equal_target": 6445.248274,
+      "quote_source_id": "TV-QUOTE-MBT1"
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "balance_multiple": 100,
+      "initial_contracts": 25,
+      "initial_notional_usd": 190062.5,
+      "favorable_move_pct_to_equal_target": 13022.032226,
+      "quote_source_id": "TV-QUOTE-MBT1"
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "balance_multiple": 5,
+      "initial_contracts": 1,
+      "initial_notional_usd": 120475.0,
+      "favorable_move_pct_to_equal_target": 830.047728,
+      "quote_source_id": "TV-QUOTE-ETH1"
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "balance_multiple": 10,
+      "initial_contracts": 1,
+      "initial_notional_usd": 120475.0,
+      "favorable_move_pct_to_equal_target": 1867.607387,
+      "quote_source_id": "TV-QUOTE-ETH1"
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "balance_multiple": 20,
+      "initial_contracts": 1,
+      "initial_notional_usd": 120475.0,
+      "favorable_move_pct_to_equal_target": 3942.726707,
+      "quote_source_id": "TV-QUOTE-ETH1"
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "balance_multiple": 50,
+      "initial_contracts": 1,
+      "initial_notional_usd": 120475.0,
+      "favorable_move_pct_to_equal_target": 10168.084665,
+      "quote_source_id": "TV-QUOTE-ETH1"
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "balance_multiple": 100,
+      "initial_contracts": 1,
+      "initial_notional_usd": 120475.0,
+      "favorable_move_pct_to_equal_target": 20543.681262,
+      "quote_source_id": "TV-QUOTE-ETH1"
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "balance_multiple": 5,
+      "initial_contracts": 1,
+      "initial_notional_usd": 65150.0,
+      "favorable_move_pct_to_equal_target": 1534.919417,
+      "quote_source_id": "TV-QUOTE-XRP1"
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "balance_multiple": 10,
+      "initial_contracts": 1,
+      "initial_notional_usd": 65150.0,
+      "favorable_move_pct_to_equal_target": 3453.568688,
+      "quote_source_id": "TV-QUOTE-XRP1"
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "balance_multiple": 20,
+      "initial_contracts": 1,
+      "initial_notional_usd": 65150.0,
+      "favorable_move_pct_to_equal_target": 7290.867229,
+      "quote_source_id": "TV-QUOTE-XRP1"
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "balance_multiple": 50,
+      "initial_contracts": 1,
+      "initial_notional_usd": 65150.0,
+      "favorable_move_pct_to_equal_target": 18802.762855,
+      "quote_source_id": "TV-QUOTE-XRP1"
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "balance_multiple": 100,
+      "initial_contracts": 1,
+      "initial_notional_usd": 65150.0,
+      "favorable_move_pct_to_equal_target": 37989.255564,
+      "quote_source_id": "TV-QUOTE-XRP1"
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "balance_multiple": 5,
+      "initial_contracts": 10,
+      "initial_notional_usd": 63200.0,
+      "favorable_move_pct_to_equal_target": 1582.278481,
+      "quote_source_id": "TV-QUOTE-SIC1"
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "balance_multiple": 10,
+      "initial_contracts": 10,
+      "initial_notional_usd": 63200.0,
+      "favorable_move_pct_to_equal_target": 3560.126582,
+      "quote_source_id": "TV-QUOTE-SIC1"
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "balance_multiple": 20,
+      "initial_contracts": 10,
+      "initial_notional_usd": 63200.0,
+      "favorable_move_pct_to_equal_target": 7515.822785,
+      "quote_source_id": "TV-QUOTE-SIC1"
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "balance_multiple": 50,
+      "initial_contracts": 10,
+      "initial_notional_usd": 63200.0,
+      "favorable_move_pct_to_equal_target": 19382.911392,
+      "quote_source_id": "TV-QUOTE-SIC1"
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "balance_multiple": 100,
+      "initial_contracts": 10,
+      "initial_notional_usd": 63200.0,
+      "favorable_move_pct_to_equal_target": 39161.392405,
+      "quote_source_id": "TV-QUOTE-SIC1"
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 1,
+      "initial_notional_usd": 49175.0,
+      "favorable_move_pct_to_equal_target": 2033.553635,
+      "quote_source_id": "TV-QUOTE-SOL1"
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 1,
+      "initial_notional_usd": 49175.0,
+      "favorable_move_pct_to_equal_target": 4575.495679,
+      "quote_source_id": "TV-QUOTE-SOL1"
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 1,
+      "initial_notional_usd": 49175.0,
+      "favorable_move_pct_to_equal_target": 9659.379766,
+      "quote_source_id": "TV-QUOTE-SOL1"
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 1,
+      "initial_notional_usd": 49175.0,
+      "favorable_move_pct_to_equal_target": 24911.032028,
+      "quote_source_id": "TV-QUOTE-SOL1"
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 1,
+      "initial_notional_usd": 49175.0,
+      "favorable_move_pct_to_equal_target": 50330.452466,
+      "quote_source_id": "TV-QUOTE-SOL1"
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "balance_multiple": 5,
+      "initial_contracts": 10,
+      "initial_notional_usd": 28910.0,
+      "favorable_move_pct_to_equal_target": 3459.010723,
+      "quote_source_id": "TV-QUOTE-MNG1"
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "balance_multiple": 10,
+      "initial_contracts": 10,
+      "initial_notional_usd": 28910.0,
+      "favorable_move_pct_to_equal_target": 7782.774127,
+      "quote_source_id": "TV-QUOTE-MNG1"
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "balance_multiple": 20,
+      "initial_contracts": 10,
+      "initial_notional_usd": 28910.0,
+      "favorable_move_pct_to_equal_target": 16430.300934,
+      "quote_source_id": "TV-QUOTE-MNG1"
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "balance_multiple": 50,
+      "initial_contracts": 10,
+      "initial_notional_usd": 28910.0,
+      "favorable_move_pct_to_equal_target": 42372.881356,
+      "quote_source_id": "TV-QUOTE-MNG1"
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "balance_multiple": 100,
+      "initial_contracts": 10,
+      "initial_notional_usd": 28910.0,
+      "favorable_move_pct_to_equal_target": 85610.515393,
+      "quote_source_id": "TV-QUOTE-MNG1"
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "balance_multiple": 5,
+      "initial_contracts": 5,
+      "initial_notional_usd": 16193.75,
+      "favorable_move_pct_to_equal_target": 6175.221922,
+      "quote_source_id": "TV-QUOTE-MXP1"
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "balance_multiple": 10,
+      "initial_contracts": 5,
+      "initial_notional_usd": 16193.75,
+      "favorable_move_pct_to_equal_target": 13894.249325,
+      "quote_source_id": "TV-QUOTE-MXP1"
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "balance_multiple": 20,
+      "initial_contracts": 5,
+      "initial_notional_usd": 16193.75,
+      "favorable_move_pct_to_equal_target": 29332.30413,
+      "quote_source_id": "TV-QUOTE-MXP1"
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "balance_multiple": 50,
+      "initial_contracts": 5,
+      "initial_notional_usd": 16193.75,
+      "favorable_move_pct_to_equal_target": 75646.468545,
+      "quote_source_id": "TV-QUOTE-MXP1"
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "balance_multiple": 100,
+      "initial_contracts": 5,
+      "initial_notional_usd": 16193.75,
+      "favorable_move_pct_to_equal_target": 152836.74257,
+      "quote_source_id": "TV-QUOTE-MXP1"
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "balance_multiple": 5,
+      "initial_contracts": 5,
+      "initial_notional_usd": 12243.75,
+      "favorable_move_pct_to_equal_target": 8167.432363,
+      "quote_source_id": "TV-QUOTE-MSL1"
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "balance_multiple": 10,
+      "initial_contracts": 5,
+      "initial_notional_usd": 12243.75,
+      "favorable_move_pct_to_equal_target": 18376.722818,
+      "quote_source_id": "TV-QUOTE-MSL1"
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "balance_multiple": 20,
+      "initial_contracts": 5,
+      "initial_notional_usd": 12243.75,
+      "favorable_move_pct_to_equal_target": 38795.303726,
+      "quote_source_id": "TV-QUOTE-MSL1"
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "balance_multiple": 50,
+      "initial_contracts": 5,
+      "initial_notional_usd": 12243.75,
+      "favorable_move_pct_to_equal_target": 100051.046452,
+      "quote_source_id": "TV-QUOTE-MSL1"
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "balance_multiple": 100,
+      "initial_contracts": 5,
+      "initial_notional_usd": 12243.75,
+      "favorable_move_pct_to_equal_target": 202143.950995,
+      "quote_source_id": "TV-QUOTE-MSL1"
+    },
+    {
+      "symbol": "CME:MET1!",
+      "balance_multiple": 5,
+      "initial_contracts": 25,
+      "initial_notional_usd": 5981.25,
+      "favorable_move_pct_to_equal_target": 16718.913271,
+      "quote_source_id": "TV-QUOTE-MET1"
+    },
+    {
+      "symbol": "CME:MET1!",
+      "balance_multiple": 10,
+      "initial_contracts": 25,
+      "initial_notional_usd": 5981.25,
+      "favorable_move_pct_to_equal_target": 37617.554859,
+      "quote_source_id": "TV-QUOTE-MET1"
+    },
+    {
+      "symbol": "CME:MET1!",
+      "balance_multiple": 20,
+      "initial_contracts": 25,
+      "initial_notional_usd": 5981.25,
+      "favorable_move_pct_to_equal_target": 79414.838036,
+      "quote_source_id": "TV-QUOTE-MET1"
+    },
+    {
+      "symbol": "CME:MET1!",
+      "balance_multiple": 50,
+      "initial_contracts": 25,
+      "initial_notional_usd": 5981.25,
+      "favorable_move_pct_to_equal_target": 204806.687565,
+      "quote_source_id": "TV-QUOTE-MET1"
+    },
+    {
+      "symbol": "CME:MET1!",
+      "balance_multiple": 100,
+      "initial_contracts": 25,
+      "initial_notional_usd": 5981.25,
+      "favorable_move_pct_to_equal_target": 413793.103448,
+      "quote_source_id": "TV-QUOTE-MET1"
+    }
+  ]
+}

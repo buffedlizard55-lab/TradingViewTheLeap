@@ -255,3 +255,17 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 26px; }
   .snapshot-card { grid-template-columns: 1fr; }
   .snapshot-card code { text-align: left; }
 }
+
+/* Keyboard navigation and small-screen readability. */
+.skip-link { position: absolute; left: 16px; top: -80px; z-index: 100; padding: 12px; background: var(--panel); }
+.skip-link:focus { top: 12px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+section { scroll-margin-top: 125px; }
+caption { text-align: left; color: var(--muted); padding: 12px; }
+summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
+@media (max-width: 600px) {
+  nav.toc ul { flex-wrap: nowrap; overflow-x: auto; }
+  section { scroll-margin-top: 65px; }
+  .grid.cols-2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
