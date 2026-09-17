@@ -30,7 +30,7 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T17:15:46+00:00",
+    "run_stamp_utc": "2026-09-17T17:19:40+00:00",
     "windows": 231,
     "trades_zero_cost": 74,
     "median_net_profit_usd_zero_cost": 0.0,
@@ -56,7 +56,7 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T17:15:46+00:00",
+    "run_stamp_utc": "2026-09-17T17:19:40+00:00",
     "windows": 231,
     "trades_zero_cost": 30,
     "median_net_profit_usd_zero_cost": 0.0,
@@ -85,7 +85,7 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T17:15:46+00:00",
+    "run_stamp_utc": "2026-09-17T17:19:40+00:00",
     "windows": 231,
     "trades_zero_cost": 5,
     "median_net_profit_usd_zero_cost": 0.0,

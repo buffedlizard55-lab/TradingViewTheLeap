@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Independent walk-forward simulation of the three pre-registered candidate models on committed vendor daily bars. NOT a TradingView Strategy Report result, NOT a Paper Trading account result, NOT a prediction or recommendation.",
   "engine": "intel-1",
-  "generated_utc": "2026-09-17T17:15:46+00:00",
+  "generated_utc": "2026-09-17T17:19:40+00:00",
   "data_source": "data/market_history_index.json",
   "test_protocol": "research/strategy/testing-plan.md (T2 walk-forward, T3 costs, T4 metrics, T5 verdicts)",
   "parameters": {
