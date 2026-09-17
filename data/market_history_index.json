@@ -6,12 +6,12 @@
   "capture_window_start_utc": "2024-09-17T00:00:00Z",
   "capture_window_end_utc": "2026-09-18T00:00:00Z",
   "interval": "1d",
-  "fetched_at_utc": "2026-09-17T01:15:57+00:00",
+  "fetched_at_utc": "2026-09-17T02:22:09+00:00",
   "capture_environment": "github-actions",
-  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35169872814",
+  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35174139055",
   "symbol_count": 20,
-  "captured_count": 11,
-  "failed_count": 9,
+  "captured_count": 17,
+  "failed_count": 3,
   "provenance_note": "Each record's endpoint reproduces the exact request; sha256 covers the stored bytes. Bytes arrive either directly from the vendor host or through the public allorigins relay (recorded per record as 'transport'); the relay is a transport only and every payload is validated against the expected vendor symbol and OHLC invariants. Re-run scripts/fetch_market_data.py in a networked environment to refresh; the offline verifier audits these files without network access. Records with status 'failed' carry the error text and must be retried."
  },
  "captures": [
@@ -33,7 +33,8 @@
    "sha256": "8041212f270a87b9b60ff7784aafd5f562f7e0ab9cf9e30d6c50d9ef263c7735",
    "bytes": 1202,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "CME:MSL1!",
@@ -53,31 +54,8 @@
    "sha256": "6726cceec27dfedbdbbff2a8c3c0fedf99faf749e3536a7543cb9bd1462f7578",
    "bytes": 1178,
    "status": "captured",
-   "transport": "allorigins-relay"
-  },
-  {
-   "tradingview_symbol": "CME:XRP1!",
-   "yahoo_ticker": "XRP=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
-  },
-  {
-   "tradingview_symbol": "CME:MXP1!",
-   "yahoo_ticker": "MXP=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 500: Internal Server Error)"
-  },
-  {
-   "tradingview_symbol": "CME:BTC1!",
-   "yahoo_ticker": "BTC=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
-  },
-  {
-   "tradingview_symbol": "CME:MBT1!",
-   "yahoo_ticker": "MBT=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 408: Request Timeout)"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "CME:ETH1!",
@@ -97,13 +75,8 @@
    "sha256": "910afd0e1268c58e21de7dcd5ddbc4ad2579aafd684fc7b6f18ec2b4707db1c4",
    "bytes": 27725,
    "status": "captured",
-   "transport": "allorigins-relay"
-  },
-  {
-   "tradingview_symbol": "CME:MET1!",
-   "yahoo_ticker": "MET=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX:NG1!",
@@ -123,13 +96,8 @@
    "sha256": "d276cad7ae1c1668a870e03055fb170b005d5b84aef0745bddd6dd1ffbd401a3",
    "bytes": 56406,
    "status": "captured",
-   "transport": "allorigins-relay"
-  },
-  {
-   "tradingview_symbol": "NYMEX:MNG1!",
-   "yahoo_ticker": "MNG=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX:CL1!",
@@ -149,7 +117,8 @@
    "sha256": "670efca637d6cee5492a06f630c43dfd5d35816513c38d3ce336009a20b68774",
    "bytes": 53824,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX_MINI:QM1!",
@@ -169,13 +138,8 @@
    "sha256": "525a7ca43e72ff889ef21ffd625c710f07067151b99f0b748deb288c4852d0ab",
    "bytes": 49552,
    "status": "captured",
-   "transport": "allorigins-relay"
-  },
-  {
-   "tradingview_symbol": "NYMEX:MCL1!",
-   "yahoo_ticker": "MCL=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX:RB1!",
@@ -195,7 +159,8 @@
    "sha256": "0666f37f2a65274902bfbac2a4bbd28c4d725e84600ddb31b14ef0b84d3d6bfd",
    "bytes": 56530,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX:HO1!",
@@ -215,7 +180,8 @@
    "sha256": "dfba9916d180b86dcf048d288647839069e9f72ab535a191186957f177fe3f92",
    "bytes": 56233,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "COMEX:SI1!",
@@ -235,7 +201,8 @@
    "sha256": "98eda3b2a5fc7d795f0012fa4add18c731450d543b0c20f35116634d5d41937c",
    "bytes": 53297,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "COMEX:SIC1!",
@@ -255,13 +222,8 @@
    "sha256": "e889ba3236f281e212c52be4d0139b73d88b26cd63a63ae7ef4a742b76d1cea5",
    "bytes": 1215,
    "status": "captured",
-   "transport": "allorigins-relay"
-  },
-  {
-   "tradingview_symbol": "COMEX_MINI:SIL1!",
-   "yahoo_ticker": "SIL=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
   },
   {
    "tradingview_symbol": "NYMEX:PL1!",
@@ -281,13 +243,152 @@
    "sha256": "b518e95510ed2b40e04fa3aff37a41f2afd92acf185a143fdadbe3f2ad99f5bb",
    "bytes": 47165,
    "status": "captured",
-   "transport": "allorigins-relay"
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T01:15:57+00:00"
+  },
+  {
+   "tradingview_symbol": "CME:XRP1!",
+   "yahoo_ticker": "XRP=F",
+   "status": "failed",
+   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+  },
+  {
+   "tradingview_symbol": "CME:MXP1!",
+   "yahoo_ticker": "MXP=F",
+   "status": "failed",
+   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+  },
+  {
+   "tradingview_symbol": "CME:BTC1!",
+   "yahoo_ticker": "BTC=F",
+   "status": "failed",
+   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+  },
+  {
+   "tradingview_symbol": "CME:MBT1!",
+   "yahoo_ticker": "MBT=F",
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro Bitcoin Futures,Sep-2026",
+   "vendor_reported_exchange": "CME",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 1,
+   "sessions_valid": 1,
+   "first_session_utc": "2026-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 76070.0,
+   "last_close": 76070.0,
+   "file": "data/market_history/CME_MBT1.json",
+   "sha256": "20bfef2924b62c3cff6d67c4408fd00da6e5451ea0d8b001558563b76dc7f7ac",
+   "bytes": 1181,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
+  },
+  {
+   "tradingview_symbol": "CME:MET1!",
+   "yahoo_ticker": "MET=F",
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro Ether Futures,Sep-2026",
+   "vendor_reported_exchange": "CME",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 1,
+   "sessions_valid": 1,
+   "first_session_utc": "2026-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 2419.0,
+   "last_close": 2419.0,
+   "file": "data/market_history/CME_MET1.json",
+   "sha256": "3cd5b80bf539a225da5ce5f18fc6bae7d4c6a08dd8dabccaf9d77f34b66c41d4",
+   "bytes": 1165,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
+  },
+  {
+   "tradingview_symbol": "NYMEX:MNG1!",
+   "yahoo_ticker": "MNG=F",
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro Henry Hub Natural Gas Fut",
+   "vendor_reported_exchange": "NY Mercantile",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 1,
+   "sessions_valid": 1,
+   "first_session_utc": "2026-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 2.8989999294281006,
+   "last_close": 2.8989999294281006,
+   "file": "data/market_history/NYMEX_MNG1.json",
+   "sha256": "e00443160cbd2a986d15614fa8ad8fd2984be739bf790d4cded93fd272ad65f9",
+   "bytes": 1227,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
+  },
+  {
+   "tradingview_symbol": "NYMEX:MCL1!",
+   "yahoo_ticker": "MCL=F",
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro WTI Crude Oil Futures,Oct",
+   "vendor_reported_exchange": "NY Mercantile",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 1,
+   "sessions_valid": 1,
+   "first_session_utc": "2026-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 102.19000244140625,
+   "last_close": 102.19000244140625,
+   "file": "data/market_history/NYMEX_MCL1.json",
+   "sha256": "b5f08e878406d3fffc78ce363e6ee943373b301916da16dfc90d0dcc66003ab8",
+   "bytes": 1244,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
+  },
+  {
+   "tradingview_symbol": "COMEX_MINI:SIL1!",
+   "yahoo_ticker": "SIL=F",
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Micro Silver Futures,Dec-2026",
+   "vendor_reported_exchange": "COMEX",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 506,
+   "sessions_valid": 503,
+   "first_session_utc": "2024-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 30.618999481201172,
+   "last_close": 63.70500183105469,
+   "file": "data/market_history/COMEX_MINI_SIL1.json",
+   "sha256": "4321c5a56fc15e795d4ed293d8656ed5bdefd1443c1899e750d225807fb377b3",
+   "bytes": 52976,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
   },
   {
    "tradingview_symbol": "CME_MINI:NQ1!",
    "yahoo_ticker": "NQ=F",
-   "status": "failed",
-   "error": "GET failed after 3 attempts on both transports: https://query2.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&period2=1789689600&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&period2=1789689600&interval=1d",
+   "vendor_reported_contract": "Nasdaq 100 Sep 26",
+   "vendor_reported_exchange": "CME",
+   "vendor_reported_instrument_type": "FUTURE",
+   "currency": "USD",
+   "sessions_returned": 506,
+   "sessions_valid": 503,
+   "first_session_utc": "2024-09-17",
+   "last_session_utc": "2026-09-17",
+   "first_close": 19439.25,
+   "last_close": 29433.75,
+   "file": "data/market_history/CME_MINI_NQ1.json",
+   "sha256": "9ba48cdfc0509eee0968d1506b61e5648c55fa05ad9e889cb5c958e8c1556344",
+   "bytes": 31705,
+   "status": "captured",
+   "transport": "allorigins-relay",
+   "captured_at_utc": "2026-09-17T02:22:09+00:00"
   }
  ]
 }
