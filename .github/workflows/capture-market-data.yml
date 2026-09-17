@@ -43,9 +43,11 @@ jobs:
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           python3 -m py_compile scripts/fetch_market_data.py
+          EXTRA=""
+          if [ -f data/market_history_index.json ]; then EXTRA="--only-failed"; fi
           python3 scripts/fetch_market_data.py \
             --out-dir data/market_history \
-            --index data/market_history_index.json
+            --index data/market_history_index.json $EXTRA
 
       - name: Archive raw contest leaderboard page (best effort, for frontier parsing)
         continue-on-error: true

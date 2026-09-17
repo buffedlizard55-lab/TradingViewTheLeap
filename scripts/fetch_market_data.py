@@ -203,6 +203,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default="data/market_history")
     parser.add_argument("--index", default="data/market_history_index.json")
+    parser.add_argument("--only-failed", action="store_true",
+                        help="retry only records whose status is not 'captured'; keep already "
+                             "captured records and their stored bytes untouched")
     args = parser.parse_args()
 
     period1 = epoch_of(PERIOD1_UTC)
@@ -212,7 +215,18 @@ def main() -> int:
     fetched_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     records = []
     failures = []
-    for tv_symbol, yahoo_ticker in SYMBOL_MAP:
+    todo = SYMBOL_MAP
+    if args.only_failed and os.path.exists(args.index):
+        with open(args.index, encoding="utf-8") as fh_prev:
+            previous = json.load(fh_prev)
+        keep = [c for c in previous.get("captures", []) if c.get("status") == "captured"]
+        for c in keep:
+            c.setdefault("captured_at_utc", previous["_meta"].get("fetched_at_utc"))
+        records.extend(keep)
+        kept_syms = {c["tradingview_symbol"] for c in keep}
+        todo = [(tv, yh) for tv, yh in SYMBOL_MAP if tv not in kept_syms]
+        print(f"preserving {len(keep)} existing captures; retrying {len(todo)}", flush=True)
+    for tv_symbol, yahoo_ticker in todo:
         payload = None
         used_url = None
         transport = None
@@ -247,6 +261,7 @@ def main() -> int:
             record["bytes"] = len(payload)
             record["status"] = "captured"
             record["transport"] = transport
+            record["captured_at_utc"] = fetched_at
             records.append(record)
             print(
                 f"    {record['sessions_valid']}/{record['sessions_returned']} valid sessions "
