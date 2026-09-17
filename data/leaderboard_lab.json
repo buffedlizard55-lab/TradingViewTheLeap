@@ -1,0 +1,605 @@
+{
+  "_meta": {
+    "kind": "deterministic_arithmetic_not_backtest",
+    "description": "Leaderboard placement and prize arithmetic derived from official contest facts only: what each rank costs and what reaching it would require. Arithmetic, not a forecast.",
+    "generated_utc": "2026-09-17",
+    "reference_capture_utc": "2026-09-17T20:58:00Z",
+    "input_files": [
+      "data/contest_config.json",
+      "data/frontier_history.json",
+      "data/verified_explosive_returns.json",
+      "data/initial_capacity.json",
+      "data/volatility_intelligence.json"
+    ],
+    "source_ids": [
+      "TV-RULES-AMP-SEP2026-R5",
+      "TV-CONTEST-AMP-SEP2026-R5",
+      "TV-THELEAP-LANDING-R5"
+    ],
+    "assumptions": [
+      "A balance multiple means ending balance / 250,000 starting balance; 5x means +400% net profit, not +500%.",
+      "Fresh-account requirement = the daily compound rate that would take a brand-new 250,000 account from 0% to the captured level in exactly the days remaining at that capture; it assumes a non-stop positive return, which no tested strategy in this repository has produced.",
+      "The underlying-move equivalents divide that rate by the 20:1 leverage, i.e. a linear, no-compounding, no-fee approximation of a fully invested position.",
+      "The winning-days figures assume an unbroken sequence of full-exposure wins at the stated underlying move; a single adverse day of the same size removes the same amount of equity.",
+      "Average USD/day since start divides the displayed total by elapsed days; it assumes the participant's P/L accumulated evenly from the opening bell, which the capture-to-capture data shows is false. It is an average of a display, not a trade log.",
+      "Champion comparison uses the 15 completed-edition #1 records transcribed from the official landing page; cross-edition context only.",
+      "'history_contains_a_30d_window_as_large_as_that_requirement' is a historical envelope from overlapping vendor windows, requires perfect single-direction timing and captures nothing about execution, cost or roll effects."
+    ],
+    "not_a_forecast": true
+  },
+  "deadline": {
+    "competition_start_utc": "2026-09-01T08:00:00Z",
+    "competition_end_utc": "2026-09-30T12:00:00Z",
+    "registration_close_utc": "2026-09-23T08:00:00Z",
+    "total_competition_days": 29.166667,
+    "remaining_days_at_latest_capture": 12.626389,
+    "registration_days_left_at_latest_capture": 5.459722
+  },
+  "prize_ladder": {
+    "tiers": [
+      {
+        "from_rank": 1,
+        "to_rank": 1,
+        "recipients": 1,
+        "cash_usd_each": 10000.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 10000.0
+      },
+      {
+        "from_rank": 2,
+        "to_rank": 2,
+        "recipients": 1,
+        "cash_usd_each": 7000.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 7000.0
+      },
+      {
+        "from_rank": 3,
+        "to_rank": 3,
+        "recipients": 1,
+        "cash_usd_each": 6000.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 6000.0
+      },
+      {
+        "from_rank": 4,
+        "to_rank": 4,
+        "recipients": 1,
+        "cash_usd_each": 3500.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 3500.0
+      },
+      {
+        "from_rank": 5,
+        "to_rank": 5,
+        "recipients": 1,
+        "cash_usd_each": 2500.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 2500.0
+      },
+      {
+        "from_rank": 6,
+        "to_rank": 25,
+        "recipients": 20,
+        "cash_usd_each": 550.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 11000.0
+      },
+      {
+        "from_rank": 26,
+        "to_rank": 50,
+        "recipients": 25,
+        "cash_usd_each": 400.0,
+        "plan_months_each": null,
+        "cash_tier_total_usd": 10000.0
+      },
+      {
+        "from_rank": 51,
+        "to_rank": 300,
+        "recipients": 250,
+        "cash_usd_each": null,
+        "plan_months_each": 3,
+        "cash_tier_total_usd": null
+      }
+    ],
+    "cash_recipients": 50,
+    "plan_recipients": 250,
+    "prize_recipients_total": 300,
+    "declared_cash_arv_usd": 50000.0,
+    "summed_cash_from_tiers_usd": 50000.0,
+    "last_cash_rank": 50,
+    "first_plan_only_rank": 51,
+    "top_prize_usd": 10000.0
+  },
+  "board": {
+    "visible_ranks": 250,
+    "cash_ranks": 50,
+    "participants_displayed": 96236,
+    "visible_share_of_participants_pct": 0.259778,
+    "cash_share_of_participants_pct": 0.051956,
+    "rank50_to_rank100_gap_pct": 22.598502,
+    "rank100_to_rank250_gap_pct": 53.603543
+  },
+  "captures": [
+    {
+      "captured_at_utc": "2026-09-16T21:39:34Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026",
+      "participants_displayed": 93527,
+      "elapsed_days_since_start": 15.569144,
+      "remaining_days_to_deadline": 13.597523,
+      "registration_days_left": 6.430856,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2303725.0,
+          "realized_profit_pct": 921.49,
+          "balance_multiple": 10.2149,
+          "average_usd_per_day_since_start": 147967.355896,
+          "fresh_account_required_daily_compound_pct": 18.637479,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.931874
+        },
+        "50": {
+          "trader": "chandu0342",
+          "realized_profit_usd": 1144096.25,
+          "realized_profit_pct": 457.64,
+          "balance_multiple": 5.5764,
+          "average_usd_per_day_since_start": 73484.854747,
+          "fresh_account_required_daily_compound_pct": 13.472066,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.673603
+        },
+        "100": {
+          "trader": "yeyuliuguang",
+          "realized_profit_usd": 960203.5,
+          "realized_profit_pct": 384.08,
+          "balance_multiple": 4.8408,
+          "average_usd_per_day_since_start": 61673.495325,
+          "fresh_account_required_daily_compound_pct": 12.297665,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.614883
+        },
+        "250": {
+          "trader": "luaguiar",
+          "realized_profit_usd": 623689.0,
+          "realized_profit_pct": 249.48,
+          "balance_multiple": 3.4948,
+          "average_usd_per_day_since_start": 40059.300581,
+          "fresh_account_required_daily_compound_pct": 9.638934,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.481947
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-17T00:30:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R2",
+      "participants_displayed": 93702,
+      "elapsed_days_since_start": 15.6875,
+      "remaining_days_to_deadline": 13.479167,
+      "registration_days_left": 6.3125,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2303725.0,
+          "realized_profit_pct": 921.49,
+          "balance_multiple": 10.2149,
+          "average_usd_per_day_since_start": 146850.996016,
+          "fresh_account_required_daily_compound_pct": 18.815645,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.940782
+        },
+        "50": {
+          "trader": "RIA-JANGHU",
+          "realized_profit_usd": 1172236.0,
+          "realized_profit_pct": 468.89,
+          "balance_multiple": 5.6889,
+          "average_usd_per_day_since_start": 74724.207171,
+          "fresh_account_required_daily_compound_pct": 13.766518,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.688326
+        },
+        "100": {
+          "trader": "msm223034",
+          "realized_profit_usd": 971231.0,
+          "realized_profit_pct": 388.49,
+          "balance_multiple": 4.8849,
+          "average_usd_per_day_since_start": 61911.139442,
+          "fresh_account_required_daily_compound_pct": 12.487745,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.624387
+        },
+        "250": {
+          "trader": "luaguiar",
+          "realized_profit_usd": 623689.0,
+          "realized_profit_pct": 249.48,
+          "balance_multiple": 3.4948,
+          "average_usd_per_day_since_start": 39757.067729,
+          "fresh_account_required_daily_compound_pct": 9.72756,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.486378
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-17T16:56:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R3",
+      "participants_displayed": 95709,
+      "elapsed_days_since_start": 16.372222,
+      "remaining_days_to_deadline": 12.794444,
+      "registration_days_left": 5.627778,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2335125.0,
+          "realized_profit_pct": 934.05,
+          "balance_multiple": 10.3405,
+          "average_usd_per_day_since_start": 142627.248049,
+          "fresh_account_required_daily_compound_pct": 20.031567,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.001578
+        },
+        "50": {
+          "trader": "rajgaurav009",
+          "realized_profit_usd": 1247897.0,
+          "realized_profit_pct": 499.16,
+          "balance_multiple": 5.9916,
+          "average_usd_per_day_since_start": 76220.380048,
+          "fresh_account_required_daily_compound_pct": 15.019615,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.750981
+        },
+        "100": {
+          "trader": "wowlass63",
+          "realized_profit_usd": 999892.85,
+          "realized_profit_pct": 399.96,
+          "balance_multiple": 4.9996,
+          "average_usd_per_day_since_start": 61072.518833,
+          "fresh_account_required_daily_compound_pct": 13.40391,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.670195
+        },
+        "250": {
+          "trader": "mrchrissmithl143",
+          "realized_profit_usd": 655069.5,
+          "realized_profit_pct": 262.03,
+          "balance_multiple": 3.6203,
+          "average_usd_per_day_since_start": 40011.031558,
+          "fresh_account_required_daily_compound_pct": 10.578546,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.528927
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-17T19:04:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R4",
+      "participants_displayed": 96095,
+      "elapsed_days_since_start": 16.461111,
+      "remaining_days_to_deadline": 12.705556,
+      "registration_days_left": 5.538889,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2335125.0,
+          "realized_profit_pct": 934.05,
+          "balance_multiple": 10.3405,
+          "average_usd_per_day_since_start": 141857.070537,
+          "fresh_account_required_daily_compound_pct": 20.18499,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.009249
+        },
+        "50": {
+          "trader": "Nikola_Ng",
+          "realized_profit_usd": 1244313.5,
+          "realized_profit_pct": 497.73,
+          "balance_multiple": 5.9773,
+          "average_usd_per_day_since_start": 75591.100236,
+          "fresh_account_required_daily_compound_pct": 15.110621,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.755531
+        },
+        "100": {
+          "trader": "JeremyTradezzz",
+          "realized_profit_usd": 1012202.5,
+          "realized_profit_pct": 404.88,
+          "balance_multiple": 5.0488,
+          "average_usd_per_day_since_start": 61490.533243,
+          "fresh_account_required_daily_compound_pct": 13.591265,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.679563
+        },
+        "250": {
+          "trader": "NxSChadha",
+          "realized_profit_usd": 657305.0,
+          "realized_profit_pct": 262.92,
+          "balance_multiple": 3.6292,
+          "average_usd_per_day_since_start": 39930.779615,
+          "fresh_account_required_daily_compound_pct": 10.677751,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.533888
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-17T20:58:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R5",
+      "participants_displayed": 96236,
+      "elapsed_days_since_start": 16.540278,
+      "remaining_days_to_deadline": 12.626389,
+      "registration_days_left": 5.459722,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2335125.0,
+          "realized_profit_pct": 934.05,
+          "balance_multiple": 10.3405,
+          "average_usd_per_day_since_start": 141178.100596,
+          "fresh_account_required_daily_compound_pct": 20.323619,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.016181
+        },
+        "50": {
+          "trader": "Nikola_Ng",
+          "realized_profit_usd": 1244313.5,
+          "realized_profit_pct": 497.73,
+          "balance_multiple": 5.9773,
+          "average_usd_per_day_since_start": 75229.29885,
+          "fresh_account_required_daily_compound_pct": 15.212231,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.760612
+        },
+        "100": {
+          "trader": "nynyyynn54",
+          "realized_profit_usd": 1014950.0,
+          "realized_profit_pct": 405.98,
+          "balance_multiple": 5.0598,
+          "average_usd_per_day_since_start": 61362.33101,
+          "fresh_account_required_daily_compound_pct": 13.70166,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.685083
+        },
+        "250": {
+          "trader": "mrchrissmithl143",
+          "realized_profit_usd": 660759.5,
+          "realized_profit_pct": 264.3,
+          "balance_multiple": 3.643,
+          "average_usd_per_day_since_start": 39948.512889,
+          "fresh_account_required_daily_compound_pct": 10.781469,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.539073
+        }
+      }
+    }
+  ],
+  "targets": [
+    {
+      "balance_multiple": 5,
+      "required_net_profit_usd": 1000000.0,
+      "required_net_profit_pct": 400,
+      "required_daily_compound_pct_over_remaining_window": 13.594648,
+      "required_underlying_pct_per_day_at_20x": 0.679732,
+      "full_leverage_winning_days_at_1pct_underlying": 9,
+      "completed_champion_sample_at_or_above": 1
+    },
+    {
+      "balance_multiple": 10,
+      "required_net_profit_usd": 2250000.0,
+      "required_net_profit_pct": 900,
+      "required_daily_compound_pct_over_remaining_window": 20.004963,
+      "required_underlying_pct_per_day_at_20x": 1.000248,
+      "full_leverage_winning_days_at_1pct_underlying": 13,
+      "completed_champion_sample_at_or_above": 1
+    },
+    {
+      "balance_multiple": 20,
+      "required_net_profit_usd": 4750000.0,
+      "required_net_profit_pct": 1900,
+      "required_daily_compound_pct_over_remaining_window": 26.777022,
+      "required_underlying_pct_per_day_at_20x": 1.338851,
+      "full_leverage_winning_days_at_1pct_underlying": 17,
+      "completed_champion_sample_at_or_above": 1
+    },
+    {
+      "balance_multiple": 50,
+      "required_net_profit_usd": 12250000.0,
+      "required_net_profit_pct": 4900,
+      "required_daily_compound_pct_over_remaining_window": 36.319215,
+      "required_underlying_pct_per_day_at_20x": 1.815961,
+      "full_leverage_winning_days_at_1pct_underlying": 22,
+      "completed_champion_sample_at_or_above": 1
+    },
+    {
+      "balance_multiple": 100,
+      "required_net_profit_usd": 24750000.0,
+      "required_net_profit_pct": 9900,
+      "required_daily_compound_pct_over_remaining_window": 44.011911,
+      "required_underlying_pct_per_day_at_20x": 2.200596,
+      "full_leverage_winning_days_at_1pct_underlying": 26,
+      "completed_champion_sample_at_or_above": 0
+    }
+  ],
+  "leverage_math": {
+    "starting_balance_usd": 250000.0,
+    "leverage_ratio": 20.0,
+    "maximum_initial_notional_usd": 5000000.0,
+    "usd_per_1pct_underlying_move_at_max_notional": 50000.0,
+    "pct_of_starting_balance_per_1pct_underlying_move": 20.0,
+    "adverse_underlying_move_pct_to_erase_half_the_balance": 2.5,
+    "adverse_underlying_move_pct_to_erase_the_whole_balance": 5.0,
+    "account_reset_allowed": false,
+    "note": "Arithmetic at full 20:1 exposure with no fees, no intraday margin path and no liquidation simulation. The rules forbid resetting the competition account (section 08)."
+  },
+  "champion_sample": {
+    "completed_records": 15,
+    "maximum_completed_multiple": 53.2072,
+    "median_completed_multiple": 2.1192,
+    "minimum_completed_multiple": 1.0836,
+    "capture5_rank50_multiple": 5.9773,
+    "completed_champions_strictly_below_capture5_rank50": 14,
+    "completed_champions_at_or_above_capture5_rank50": 1,
+    "note": "Cross-edition comparison only: the completed records span stocks, crypto, forex, multi-asset and futures editions with different rules and different participant counts. It is evidence of what has been published, not a like-for-like benchmark and not a success probability."
+  },
+  "cash_frontier_instrument_requirements": [
+    {
+      "symbol": "NYMEX:CL1!",
+      "modeled_initial_notional_usd": 4916640.0,
+      "max_whole_contracts_at_initial_balance": 48,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 25.308208,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 58.37,
+      "history_contains_a_30d_window_as_large_as_that_requirement": true
+    },
+    {
+      "symbol": "COMEX:SI1!",
+      "modeled_initial_notional_usd": 4869000.0,
+      "max_whole_contracts_at_initial_balance": 15,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 25.555833,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 64.74,
+      "history_contains_a_30d_window_as_large_as_that_requirement": true
+    },
+    {
+      "symbol": "NYMEX:HO1!",
+      "modeled_initial_notional_usd": 4830289.8,
+      "max_whole_contracts_at_initial_balance": 23,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 25.760639,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 78.22,
+      "history_contains_a_30d_window_as_large_as_that_requirement": true
+    },
+    {
+      "symbol": "CME_MINI:NQ1!",
+      "modeled_initial_notional_usd": 4681080.0,
+      "max_whole_contracts_at_initial_balance": 8,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 26.581761,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 20.11,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "modeled_initial_notional_usd": 3394860.0,
+      "max_whole_contracts_at_initial_balance": 25,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 36.652866,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 66.69,
+      "history_contains_a_30d_window_as_large_as_that_requirement": true
+    },
+    {
+      "symbol": "NYMEX:PL1!",
+      "modeled_initial_notional_usd": 2232375.0,
+      "max_whole_contracts_at_initial_balance": 25,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 55.739448,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 50.3,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "NYMEX:MCL1!",
+      "modeled_initial_notional_usd": 1024300.0,
+      "max_whole_contracts_at_initial_balance": 100,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 121.479401,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "NYMEX:NG1!",
+      "modeled_initial_notional_usd": 722750.0,
+      "max_whole_contracts_at_initial_balance": 25,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 172.16375,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 140.41,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "COMEX_MINI:SIL1!",
+      "modeled_initial_notional_usd": 649200.0,
+      "max_whole_contracts_at_initial_balance": 10,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 191.668746,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 64.74,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "NYMEX_MINI:QM1!",
+      "modeled_initial_notional_usd": 512125.0,
+      "max_whole_contracts_at_initial_balance": 10,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 242.970661,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 58.37,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "CME:BTC1!",
+      "modeled_initial_notional_usd": 380425.0,
+      "max_whole_contracts_at_initial_balance": 1,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 327.085102,
+      "vendor_history_sessions": 504,
+      "best_30d_up_move_pct_in_vendor_history": 48.79,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "CME:MBT1!",
+      "modeled_initial_notional_usd": 190062.5,
+      "max_whole_contracts_at_initial_balance": 25,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 654.686485,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "CME:ETH1!",
+      "modeled_initial_notional_usd": 120475.0,
+      "max_whole_contracts_at_initial_balance": 1,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 1032.839593,
+      "vendor_history_sessions": 503,
+      "best_30d_up_move_pct_in_vendor_history": 71.81,
+      "history_contains_a_30d_window_as_large_as_that_requirement": false
+    },
+    {
+      "symbol": "CME:XRP1!",
+      "modeled_initial_notional_usd": 65150.0,
+      "max_whole_contracts_at_initial_balance": 1,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 1909.920952,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "COMEX:SIC1!",
+      "modeled_initial_notional_usd": 63200.0,
+      "max_whole_contracts_at_initial_balance": 10,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 1968.850475,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "CME:SOL1!",
+      "modeled_initial_notional_usd": 49175.0,
+      "max_whole_contracts_at_initial_balance": 1,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 2530.378241,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "NYMEX:MNG1!",
+      "modeled_initial_notional_usd": 28910.0,
+      "max_whole_contracts_at_initial_balance": 10,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 4304.093739,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "CME:MXP1!",
+      "modeled_initial_notional_usd": 16193.75,
+      "max_whole_contracts_at_initial_balance": 5,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 7683.912003,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "CME:MSL1!",
+      "modeled_initial_notional_usd": 12243.75,
+      "max_whole_contracts_at_initial_balance": 5,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 10162.84635,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    },
+    {
+      "symbol": "CME:MET1!",
+      "modeled_initial_notional_usd": 5981.25,
+      "max_whole_contracts_at_initial_balance": 25,
+      "favorable_move_pct_needed_for_capture5_rank50_level": 20803.569488,
+      "vendor_history_sessions": null,
+      "best_30d_up_move_pct_in_vendor_history": null,
+      "history_contains_a_30d_window_as_large_as_that_requirement": null
+    }
+  ]
+}

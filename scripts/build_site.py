@@ -76,6 +76,7 @@ def build() -> str:
     market_index = load("data/market_history_index.json")
     backtests = load("data/backtest_results.json")
     vol_intel = load("data/volatility_intelligence.json")
+    placement = load("data/leaderboard_lab.json")
 
     sources = source_registry["sources"]
     source_by_id = {s["source_id"]: s for s in sources}
@@ -133,6 +134,7 @@ are labeled separately.</p>
 <nav class="toc"><div class="wrap"><ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#targets">Return targets</a></li>
+<li><a href="#placement">Placement math</a></li>
 <li><a href="#rules">Rules</a></li>
 <li><a href="#frontier">Live frontier</a></li>
 <li><a href="#capacity">Capacity</a></li>
@@ -165,6 +167,14 @@ champions are simulated outcomes, and stock multiples are real market-price rati
 <div class="card"><h3>Captured ≥100x contest outcomes</h3><div class="stat red">{returns['threshold_analysis']['ge_100x']['count']}</div>
 <div class="note">unattested in this sample, not proven impossible</div></div>
 </div>
+<div class="callout high"><h3>The finish line, in numbers</h3>
+<p>The last cash-prize rank (50) displayed <strong>{placement['captures'][-1]['rows']['50']['balance_multiple']}×</strong>
+the starting balance at the latest capture ({esc(placement['captures'][-1]['captured_at_utc'])}) — an average of
+{money(placement['captures'][-1]['rows']['50']['average_usd_per_day_since_start'], 0)} per day since the opening bell.
+A fresh 250,000 account would need <strong>+{number(placement['captures'][-1]['rows']['50']['fresh_account_required_daily_compound_pct'], 2)}% per day,
+compounded without a single losing day</strong> for the {number(placement['deadline']['remaining_days_at_latest_capture'], 2)} days left, to reach it.
+At the rules' 20:1 maximum exposure that is only {number(placement['captures'][-1]['rows']['50']['fresh_account_required_underlying_pct_per_day_at_20x'], 2)}%
+of underlying move per day — and one {number(placement['leverage_math']['adverse_underlying_move_pct_to_erase_the_whole_balance'], 0)}% adverse day at that exposure erases the whole balance.</p></div>
 <div class="callout info"><h3>Evidence boundary</h3>
 <p>The official champion summaries show outcomes, not the trades that produced them. The capacity
 screen shows arithmetic feasibility, not direction or expected return. The Pine models below have
@@ -222,6 +232,103 @@ Quote and contract evidence remain in the capacity and source tables.</p>
 <p>Individual stocks are not permitted. The historical stock table is vendor-tier research, not
 an official-primary verified opportunity list. No instrument or strategy here is proven to produce
 5×, 10×, 20×, 50× or 100× in the remaining competition window.</p></div></section>""")
+
+    # Placement arithmetic — deterministic, sourced, and clearly separated from any forecast.
+    latest_cap = placement['captures'][-1]
+    latest_rank = latest_cap['rows']
+    rank50_row = latest_rank['50']
+    board = placement['board']
+    lm = placement['leverage_math']
+    cs = placement['champion_sample']
+    add(f"""<section id="placement"><h2>How to place on the board — prize arithmetic</h2>
+<p class="lead">Rank-ordered prizes mean the last cash rank is the real finish line. Everything below is
+derived from official rules and the captured board: what the line costs, how fast a fresh account would have
+to compound to reach it, and how that compares with the official champion sample. It is arithmetic, not a
+forecast or a strategy result.</p>
+<div class="grid cols-4">
+<div class="card"><h3>Last cash rank (50)</h3><div class="stat accent">{rank50_row['balance_multiple']}×</div>
+<div class="note">+{number(rank50_row['realized_profit_pct'], 2)}% · {money(rank50_row['realized_profit_usd'])} at {esc(latest_cap['captured_at_utc'])}</div></div>
+<div class="card"><h3>Average pace so far</h3><div class="stat small accent">{money(rank50_row['average_usd_per_day_since_start'], 0)}/day</div>
+<div class="note">displayed total ÷ {number(latest_cap['elapsed_days_since_start'], 2)} elapsed days</div></div>
+<div class="card"><h3>Fresh account from now</h3><div class="stat amber">+{number(rank50_row['fresh_account_required_daily_compound_pct'], 2)}%/day</div>
+<div class="note">compounded, unbroken, over {number(latest_cap['remaining_days_to_deadline'], 2)} days</div></div>
+<div class="card"><h3>In underlying terms at 20:1</h3><div class="stat amber">{number(rank50_row['fresh_account_required_underlying_pct_per_day_at_20x'], 2)}%/day</div>
+<div class="note">linear approximation, fully invested, no losing day</div></div>
+</div>
+<div class="callout critical"><h3>Maximum exposure cuts both ways</h3>
+<p>At the rules' maximum {money(lm['maximum_initial_notional_usd'], 0)} notional a 1% underlying move is
+{money(lm['usd_per_1pct_underlying_move_at_max_notional'], 0)} — {number(lm['pct_of_starting_balance_per_1pct_underlying_move'], 0)}% of the starting balance —
+and a {number(lm['adverse_underlying_move_pct_to_erase_the_whole_balance'], 0)}% adverse move erases the entire
+{money(lm['starting_balance_usd'], 0)} balance. The rules forbid resetting the account (section 08), so there is no recovery
+path after one full-exposure mistake, and no tested strategy in this repository has produced the unbroken
+sequence the arithmetic asks for.</p></div>
+<h3 class="minor-heading">Tracked frontier at the latest capture</h3>
+<div class="table-wrap"><table><thead><tr><th class="num">Rank</th><th>Trader</th><th class="num">Balance multiple</th>
+<th class="num">Average $/day</th><th class="num">Fresh account needs</th><th class="num">Underlying at 20:1</th></tr></thead><tbody>""")
+    for rank in (1, 50, 100, 250):
+        row = latest_rank[str(rank)]
+        add(f"<tr><td class=\"num\">{rank}</td><td>{esc(row['trader'])}</td><td class=\"num\">{row['balance_multiple']}×</td>"
+            f"<td class=\"num\">{money(row['average_usd_per_day_since_start'], 0)}</td>"
+            f"<td class=\"num\">+{number(row['fresh_account_required_daily_compound_pct'], 2)}%/day</td>"
+            f"<td class=\"num\">{number(row['fresh_account_required_underlying_pct_per_day_at_20x'], 2)}%/day</td></tr>")
+    add(f"""</tbody></table></div>
+<p class="note">"Fresh account needs" is the daily compound rate that would take a brand-new 250,000 account
+from zero to that level in exactly the days left at the capture. Ranks 1 and 50 can be static while lower
+ranks advance, so this list is a set of point-in-time displays, not thresholds.</p>
+<h3 class="minor-heading">Targets for the remaining window</h3>
+<div class="table-wrap"><table><thead><tr><th>Target balance</th><th class="num">Required net profit</th>
+<th class="num">Required daily compounding</th><th class="num">Underlying at 20:1</th>
+<th class="num">All-in winning days at +1%/day</th><th class="num">Completed champions ≥ target</th></tr></thead><tbody>""")
+    for t in placement['targets']:
+        add(f"<tr><td>{t['balance_multiple']}×</td><td class=\"num\">{money(t['required_net_profit_usd'], 0)}</td>"
+            f"<td class=\"num\">+{number(t['required_daily_compound_pct_over_remaining_window'], 2)}%/day</td>"
+            f"<td class=\"num\">{number(t['required_underlying_pct_per_day_at_20x'], 2)}%/day</td>"
+            f"<td class=\"num\">{t['full_leverage_winning_days_at_1pct_underlying']}</td>"
+            f"<td class=\"num\">{t['completed_champion_sample_at_or_above']} / {cs['completed_records']}</td></tr>")
+    add(f"""</tbody></table></div>
+<p class="note">From {esc(latest_cap['captured_at_utc'])}, {number(latest_cap['remaining_days_to_deadline'], 2)} days remain to the
+{esc(placement['deadline']['competition_end_utc'])} deadline; registration stays open for
+{number(latest_cap['registration_days_left'], 2)} more days. The winning-days column assumes an unbroken run of all-in wins at
+a +1% underlying move per day; an adverse day of the same size removes the same equity instead.</p>
+<div class="callout high"><h3>What the cash-prize level means across the official champion sample</h3>
+<p>{cs['completed_champions_strictly_below_capture5_rank50']} of {cs['completed_records']} completed-edition champions finished
+<em>below</em> the {cs['capture5_rank50_multiple']}× that rank 50 displayed at the latest capture; only the {cs['maximum_completed_multiple']}×
+record sits above it. That is cross-edition context — different rules, different participant counts, and no
+completed edition ran the same instrument set — so it is evidence of what has been published, not a benchmark
+and not a success probability.</p></div>
+<h3 class="minor-heading">Which selected instruments could even deliver that move?</h3>
+<div class="table-wrap"><table><thead><tr><th>Symbol</th><th class="num">Modeled initial notional</th>
+<th class="num">Favorable move for the rank-50 level</th><th class="num">Best 30-day up move captured</th><th>Vendor history contains such a window</th></tr></thead><tbody>""")
+    for row in placement['cash_frontier_instrument_requirements']:
+        best = row['best_30d_up_move_pct_in_vendor_history']
+        best_txt = "no history" if best is None else f"{number(best, 2)}%"
+        flag = row['history_contains_a_30d_window_as_large_as_that_requirement']
+        flag_txt = "—" if flag is None else ("yes" if flag else "no")
+        add(f"<tr><td>{esc(row['symbol'])}</td><td class=\"num\">{money(row['modeled_initial_notional_usd'], 0)}</td>"
+            f"<td class=\"num\">{number(row['favorable_move_pct_needed_for_capture5_rank50_level'], 2)}%</td>"
+            f"<td class=\"num\">{best_txt}</td><td>{flag_txt}</td></tr>")
+    add(f"""</tbody></table></div>
+<p class="note">The requirement column is the rank-50 level divided by each instrument's modeled initial
+notional at the rules cap; the history column is the largest 30-day close-to-close up move in the archived
+vendor window (overlapping windows, perfect single-direction timing assumed, no costs, fills or rolls). A "yes"
+means the vendor history contained a move that large <em>once</em>; it is not a forecast and not a strategy.</p>
+<div class="grid cols-3">
+<div class="card"><h3>Board density</h3><div class="stat small">{number(board['participants_displayed'])}</div>
+<div class="note">participants displayed · top {board['visible_ranks']} visible ({number(board['visible_share_of_participants_pct'], 3)}%)</div></div>
+<div class="card"><h3>Cash places</h3><div class="stat small">{board['cash_ranks']}</div>
+<div class="note">cash ranks = {number(board['cash_share_of_participants_pct'], 3)}% of participants</div></div>
+<div class="card"><h3>Gap to rank 100</h3><div class="stat small">{number(board['rank50_to_rank100_gap_pct'], 1)}%</div>
+<div class="note">rank-50 P/L above rank-100 P/L at the latest capture</div></div>
+</div>
+<p><a href="data/leaderboard_lab.json" download>Download placement arithmetic (JSON)</a> ·
+{link(source_url['TV-CONTEST-AMP-SEP2026-R5'], 'Latest leaderboard capture ↗')} ·
+{link(source_url['TV-RULES-AMP-SEP2026-R5'], 'Rules re-verified ↗')} ·
+{link(source_url['TV-THELEAP-LANDING-R5'], 'Champion sample re-verified ↗')} ·
+<a href="research/evidence/AUDIT-2026-09-17-PASS5.md">Fifth-pass audit &amp; next-session plan</a></p>
+<div class="callout critical"><h3>Read this before acting on any number here</h3>
+<p>Cash prizes end at rank 50; ranks 51–300 receive a subscription. Every frontier value is a moving
+point-in-time display that the organiser can correct, and the arithmetic above shows what the level costs —
+never that it is achievable. This repository has not placed a single competition trade.</p></div></section>""")
 
     # Rulebook
     add(f"""<section id="rules"><h2>Live rulebook, structured</h2>
