@@ -4,6 +4,7 @@ name: Capture market data
 # selected contest futures from the Yahoo Finance chart endpoint and commits the
 # raw captures to the triggering branch. The offline repository verifier then
 # audits the committed files; nothing here is trusted until verify.py passes.
+# Attempt 4 (2026-09-17): third retry pass for BTC=F/XRP=F/MXP=F relay 522s.
 
 on:
   workflow_dispatch:

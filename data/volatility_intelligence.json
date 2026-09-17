@@ -2,11 +2,11 @@
  "_meta": {
   "description": "Realized-volatility and explosive-move metrics recomputed from the committed vendor captures. Rolling 30-day windows overlap (one window per bar). The 'if best move recurred' fields are arithmetic illustrations at the modeled initial notional - an upper envelope of what history offered, NOT a forecast and NOT a backtest.",
   "engine": "intel-1",
-  "generated_utc": "2026-09-17T01:15:57+00:00",
+  "generated_utc": "2026-09-17T02:22:09+00:00",
   "data_source": "data/market_history_index.json",
   "rank250_target_usd": 623689.0,
   "rank250_target_snapshot_utc": "2026-09-16T21:39:34Z",
-  "symbol_count": 8,
+  "symbol_count": 10,
   "metric_definitions": {
    "ann_vol_pct": "stddev of daily log returns x sqrt(252) x 100",
    "atr14_pct": "ATR(14) / close x 100",
@@ -242,6 +242,51 @@
    "note_if_best_move_exceeds_rank250_requirement": true
   },
   {
+   "symbol": "COMEX_MINI:SIL1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 63.70500183105469,
+   "ann_vol_full_pct": 52.96,
+   "ann_vol_last_1y_pct": 69.47,
+   "mean_atr14_pct": 2.942,
+   "max_atr14_pct": 12.23,
+   "largest_abs_overnight_gap_pct": 9.8,
+   "largest_gap_date": "2026-02-12",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2026-01-30",
+     "abs_move_pct": 31.35,
+     "direction": "down"
+    },
+    {
+     "date": "2026-01-26",
+     "abs_move_pct": 14.03,
+     "direction": "up"
+    },
+    {
+     "date": "2025-12-30",
+     "abs_move_pct": 10.76,
+     "direction": "up"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 207,
+   "windows_30d_ge_25pct_up": 46,
+   "windows_30d_ge_50pct_up": 5,
+   "windows_30d_ge_10pct_down": 96,
+   "windows_30d_ge_25pct_down": 8,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 64.74,
+   "best_30d_up_start_date": "2025-12-29",
+   "best_30d_down_move_pct": 36.18,
+   "best_30d_down_start_date": "2026-01-26",
+   "modeled_initial_notional_usd": 649200.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 96.070394,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 420292.08,
+   "note_if_best_move_exceeds_rank250_requirement": false
+  },
+  {
    "symbol": "NYMEX:CL1!",
    "sessions": 503,
    "first_session": "2024-09-17",
@@ -374,6 +419,51 @@
    "modeled_initial_notional_usd": 2232375.0,
    "favorable_move_pct_needed_for_rank250_snapshot": 27.938362,
    "rank250_pnl_if_best_30d_up_move_recurred_usd": 1122884.62,
+   "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "CME_MINI:NQ1!",
+   "sessions": 503,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 29433.75,
+   "ann_vol_full_pct": 21.84,
+   "ann_vol_last_1y_pct": 19.58,
+   "mean_atr14_pct": 1.893,
+   "max_atr14_pct": 5.04,
+   "largest_abs_overnight_gap_pct": 3.74,
+   "largest_gap_date": "2025-04-03",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2025-04-09",
+     "abs_move_pct": 11.86,
+     "direction": "up"
+    },
+    {
+     "date": "2025-04-04",
+     "abs_move_pct": 6.09,
+     "direction": "down"
+    },
+    {
+     "date": "2025-04-03",
+     "abs_move_pct": 5.48,
+     "direction": "down"
+    }
+   ],
+   "rolling_30d_windows_scanned": 499,
+   "windows_30d_ge_10pct_up": 41,
+   "windows_30d_ge_25pct_up": 0,
+   "windows_30d_ge_50pct_up": 0,
+   "windows_30d_ge_10pct_down": 31,
+   "windows_30d_ge_25pct_down": 0,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 20.11,
+   "best_30d_up_start_date": "2025-04-21",
+   "best_30d_down_move_pct": 15.84,
+   "best_30d_down_start_date": "2025-03-25",
+   "modeled_initial_notional_usd": 4681080.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 13.323613,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 941365.19,
    "note_if_best_move_exceeds_rank250_requirement": true
   }
  ]
