@@ -1,0 +1,89 @@
+name: Capture market data
+
+# Intelligence-layer ingestion pipeline. Fetches daily-bar market history for the
+# selected contest futures from the Yahoo Finance chart endpoint and commits the
+# raw captures to the triggering branch. The offline repository verifier then
+# audits the committed files; nothing here is trusted until verify.py passes.
+# Attempt 4 (2026-09-17): third retry pass for BTC=F/XRP=F/MXP=F relay 522s.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - "scripts/fetch_market_data.py"
+      - ".github/workflows/capture-market-data.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    name: Fetch daily history for selected futures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Vendor reachability probe (annotations only, never fails the job)
+        continue-on-error: true
+        run: |
+          for host in query1 query2; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 \
+              -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" \
+              "https://${host}.finance.yahoo.com/v8/finance/chart/BTC=F?range=1d&interval=1d" || echo "curl-error")
+            echo "::notice::probe ${host}.finance.yahoo.com -> HTTP ${code}"
+          done
+
+      - name: Fetch market history (per-symbol failures recorded, not fatal)
+        env:
+          CAPTURE_ENV: github-actions
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 -m py_compile scripts/fetch_market_data.py
+          EXTRA=""
+          if [ -f data/market_history_index.json ]; then EXTRA="--only-failed"; fi
+          python3 scripts/fetch_market_data.py \
+            --out-dir data/market_history \
+            --index data/market_history_index.json $EXTRA
+
+      - name: Archive raw contest leaderboard page (best effort, for frontier parsing)
+        continue-on-error: true
+        run: |
+          mkdir -p artifact_pages
+          curl -sS -L --max-time 60 \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" \
+            "https://www.tradingview.com/the-leap/amp-futures-september-2026/" \
+            -o artifact_pages/the-leap-amp-futures-september-2026.html || echo "page capture failed (non-fatal)"
+          if [ -s artifact_pages/the-leap-amp-futures-september-2026.html ]; then
+            echo "::notice::leaderboard page archived ($(wc -c < artifact_pages/the-leap-amp-futures-september-2026.html) bytes)"
+          else
+            echo "::notice::leaderboard page archive empty"
+          fi
+
+      - name: Commit captures to the triggering branch
+        run: |
+          git config user.name "github-actions[capture]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/market_history data/market_history_index.json
+          [ -d artifact_pages ] && git add artifact_pages || true
+          if git diff --cached --quiet; then
+            echo "::notice::nothing to commit (captures unchanged)"
+            exit 0
+          fi
+          git commit -m "capture: market history + leaderboard page (automated)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "::notice::captures committed to ${GITHUB_REF_NAME} at $(git rev-parse --short HEAD)"
+
+      - name: Upload captures as artifact (secondary channel)
+        uses: actions/upload-artifact@v4
+        with:
+          name: market-history
+          path: |
+            data/market_history
+            data/market_history_index.json
+          retention-days: 30
+          if-no-files-found: error

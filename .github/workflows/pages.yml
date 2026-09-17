@@ -58,6 +58,10 @@ jobs:
           stocks = json.load(open("data/volatile_stocks.json"))
           models = json.load(open("research/strategy/models.json"))
           sources = json.load(open("research/sources/sources.json"))
+          frontier = json.load(open("data/frontier_history.json"))
+          market_idx = json.load(open("data/market_history_index.json"))
+          backtests = json.load(open("data/backtest_results.json"))
+          vol = json.load(open("data/volatility_intelligence.json"))
           probs = []
           n_uni = len(re.findall(r'data-ex="', html))
           if n_uni != len(uni["instruments"]):
@@ -74,9 +78,26 @@ jobs:
           n_models = html.count('<article class="card strategy-card">')
           if n_models != len(models["models"]):
               probs.append(f"strategy cards {n_models} != {len(models['models'])}")
-          for required in (cfg["edition_label"], snapshot["_meta"]["captured_at_utc"]):
+          n_frontier = len(re.findall(r'data-frontier="', html))
+          if n_frontier != len(frontier["captures"]):
+              probs.append(f"frontier rows {n_frontier} != {len(frontier['captures'])}")
+          n_mh = len(re.findall(r'data-mhsym="', html))
+          expected_mh = sum(1 for c in market_idx["captures"] if c.get("status") == "captured")
+          if n_mh != expected_mh:
+              probs.append(f"market-history rows {n_mh} != {expected_mh} captured symbols")
+          n_vol = len(re.findall(r'data-vol="', html))
+          if n_vol != len(vol["records"]):
+              probs.append(f"volatility rows {n_vol} != {len(vol['records'])}")
+          n_verdicts = len(re.findall(r'data-verdict="', html))
+          if n_verdicts != len(backtests["models"]):
+              probs.append(f"backtest cards {n_verdicts} != {len(backtests['models'])}")
+          for required in (cfg["edition_label"], snapshot["_meta"]["captured_at_utc"],
+                           backtests["_meta"]["generated_utc"]):
               if required not in html:
                   probs.append(f"required live-edition value {required!r} missing")
+          for m in backtests["models"]:
+              if m["verdict"] not in html:
+                  probs.append(f'verdict {m["verdict"]} missing from page')
           for sym in (x["symbol"] for x in ml["entries"]):
               if sym not in html:
                   probs.append(f"master symbol {sym} missing from page")
@@ -111,7 +132,9 @@ jobs:
               raise SystemExit(1)
           print(f"OK: {n_uni} universe, {n_ml} selected, {n_capacity} capacity, "
                 f"{len(er['records'])} contest-return, {n_stocks} stock, "
-                f"{n_models} strategy, and {len(sources['sources'])} source records rendered.")
+                f"{n_models} strategy, {n_frontier} frontier, {n_mh} market-history, "
+                f"{n_vol} volatility, {n_verdicts} backtest, and "
+                f"{len(sources['sources'])} source records rendered.")
           PY
 
 # NOTE ON PUBLISHING

@@ -1,0 +1,53 @@
+name: Probe data vendors
+
+# Diagnostics: which transports can a GitHub Actions runner use to reach the
+# Yahoo Finance chart endpoint? Results are emitted as annotations. Never fails.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - ".github/workflows/probe-vendors.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe yahoo transports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe transports against the chart endpoint
+        run: |
+          set +e
+          YAHOO_SMALL="https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?range=5d&interval=1d"
+          YAHOO_1Y="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1758067200&period2=1789689600&interval=1d"
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+          probe () {
+            name="$1"; url="$2"
+            out=$(curl -sS -L --max-time 60 -H "User-Agent: ${UA}" "$url" 2>/dev/null)
+            n=$(printf '%s' "$out" | wc -c)
+            head=$(printf '%s' "$out" | head -c 70 | tr '\n\r' '  ')
+            ok=$(printf '%s' "$out" | grep -c '"chart"' || true)
+            echo "::notice::${name} bytes=${n} has_chart_json=${ok} head=${head}"
+            true
+          }
+          ENC_SMALL=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" "$YAHOO_SMALL")
+          ENC_1Y=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" "$YAHOO_1Y")
+          probe "direct-small" "$YAHOO_SMALL"
+          probe "direct-1y" "$YAHOO_1Y"
+          probe "allorigins-raw-small" "https://api.allorigins.win/raw?url=${ENC_SMALL}"
+          probe "allorigins-raw-1y" "https://api.allorigins.win/raw?url=${ENC_1Y}"
+          probe "corsproxy-io-small" "https://corsproxy.io/?url=${ENC_SMALL}"
+          probe "corsproxy-io-1y" "https://corsproxy.io/?url=${ENC_1Y}"
+          probe "codetabs-small" "https://api.codetabs.com/v1/proxy?quest=${ENC_SMALL}"
+          probe "codetabs-1y" "https://api.codetabs.com/v1/proxy?quest=${ENC_1Y}"
+          probe "jina-small" "https://r.jina.ai/${YAHOO_SMALL}"
+          probe "jina-1y" "https://r.jina.ai/${YAHOO_1Y}"
+          probe "isomorphic-git-small" "https://cors.isomorphic-git.org/${YAHOO_SMALL}"
+          probe "whateverorigin-small" "https://www.whateverorigin.org/get?url=${ENC_SMALL}"
+          probe "corsbox-small" "https://cors.eu.org/${YAHOO_SMALL}"
+          probe "thingproxy-small" "https://thingproxy.freeboard.io/fetch/${YAHOO_SMALL}"
+          echo "::notice::probe sweep complete"
+          exit 0

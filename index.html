@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Leap Research Lab — evidence, capacity, and strategy tests</title>
-<meta name="description" content="Evidence-first research for TradingView's The Leap: official rules, live snapshots, verified returns, capacity arithmetic, and untested Pine strategy candidates.">
+<meta name="description" content="Evidence-first research for TradingView's The Leap: official rules, live snapshots, verified returns, capacity arithmetic, market-data captures, and walk-forward strategy test results.">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -30,8 +30,10 @@ are labeled separately.</p>
 <span class="badge">20 selected contracts</span>
 <span class="badge">16 contest return records</span>
 <span class="badge">20 stock market records</span>
+<span class="badge">18 captured vendor series</span>
+<span class="badge">3 walk-forward tested models</span>
 <span class="badge">3 untested strategy candidates</span>
-<span class="badge warn">16 irregularities logged</span>
+<span class="badge warn">21 irregularities logged</span>
 </div></div></header>
 <nav class="toc"><div class="wrap"><ul>
 <li><a href="#overview">Overview</a></li>
@@ -39,7 +41,9 @@ are labeled separately.</p>
 <li><a href="#rules">Rules</a></li>
 <li><a href="#frontier">Live frontier</a></li>
 <li><a href="#capacity">Capacity</a></li>
+<li><a href="#intelligence">Market data</a></li>
 <li><a href="#strategies">Strategies</a></li>
+<li><a href="#backtests">Backtest lab</a></li>
 <li><a href="#returns">Contest returns</a></li>
 <li><a href="#stocks">Stock history</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
@@ -133,6 +137,20 @@ various scripts, can trigger a ban. This repository does not automate the compet
 <p class="lead">Selected rows captured at <code>2026-09-16T21:39:34Z</code>. They can move after capture.
 The percentage/dollar pairs are verifier-checked against the starting balance and display rounding.</p>
 <div class="table-wrap"><table><thead><tr><th>Rank</th><th>Trader</th><th class="num">Realized profit %</th><th class="num">Realized profit $</th><th>Tier at capture</th></tr></thead><tbody><tr><td class="num">1</td><td>leonardo22_romano</td><td class="num">+921.49%</td><td class="num">+$2,303,725.00</td><td>$10,000</td></tr><tr><td class="num">25</td><td>k_contact</td><td class="num">+578.89%</td><td class="num">+$1,447,232.50</td><td>$550</td></tr><tr><td class="num">26</td><td>leongoat</td><td class="num">+569.30%</td><td class="num">+$1,423,240.00</td><td>$400</td></tr><tr><td class="num">50</td><td>chandu0342</td><td class="num">+457.64%</td><td class="num">+$1,144,096.25</td><td>$400</td></tr><tr><td class="num">51</td><td>Danaos</td><td class="num">+454.33%</td><td class="num">+$1,135,837.50</td><td>3-month plan</td></tr><tr><td class="num">100</td><td>yeyuliuguang</td><td class="num">+384.08%</td><td class="num">+$960,203.50</td><td>3-month plan</td></tr><tr><td class="num">250</td><td>luaguiar</td><td class="num">+249.48%</td><td class="num">+$623,689.00</td><td>3-month plan</td></tr></tbody></table></div>
+<h3>Frontier tracker</h3>
+<p class="note">Every capture of the same four frontier ranks, newest last. Deltas are raw
+subtractions against the previous capture, not growth rates. A threshold that looks frozen can
+still move before the deadline, and rank 1 or rank 250 repeating a value across captures means
+only that those participants had not realized new P/L between captures.</p>
+<div class="table-wrap"><table id="frontier-history"><thead><tr><th>Captured (UTC)</th><th class="num">Participants</th>
+<th class="num">Rank 1 $</th><th class="num">Rank 50 $</th><th class="num">Rank 100 $</th><th class="num">Rank 250 $</th><th>Evidence</th></tr></thead><tbody><tr data-frontier="2026-09-16T21:39:34Z"><td><code>2026-09-16T21:39:34Z</code></td>
+<td class="num">93,527</td>
+<td class="num">$2,303,725.00</td><td class="num">$1,144,096.25</td><td class="num">$960,203.50</td><td class="num">$623,689.00</td>
+<td><a href="research/evidence/TV-CONTEST-AMP-SEP2026.md" rel="noopener noreferrer">evidence ↗</a></td></tr><tr data-frontier="2026-09-17T00:30:00Z"><td><code>2026-09-17T00:30:00Z</code></td>
+<td class="num">93,702</td>
+<td class="num">$2,303,725.00 <span class="up">(+$0)</span></td><td class="num">$1,172,236.00 <span class="up">(+$28,140)</span></td><td class="num">$971,231.00 <span class="up">(+$11,028)</span></td><td class="num">$623,689.00 <span class="up">(+$0)</span></td>
+<td><a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md" rel="noopener noreferrer">evidence ↗</a></td></tr></tbody></table></div>
+<p class="note">Observed so far: Rank 1 and rank 250 values were byte-identical across both captures (~3 hours apart, US after-hours).</p>
 <div class="callout critical"><h3>No guaranteed live cutoff</h3>
 <p>The public table ends at rank 250, while prizes extend
 through rank 300. The unseen last-prize row cannot be recovered from
@@ -290,18 +308,204 @@ the probability or direction of that move.</p></div>
 <td class="num">$5,981</td>
 <td class="num">$60</td>
 <td class="num">10,427.40%</td>
-<td><a href="https://www.tradingview.com/symbols/CME-MET1!/" rel="noopener noreferrer">open ↗</a></td></tr></tbody></table></div><details class="assumptions"><summary>Model assumptions and omissions</summary><ul><li>Whole futures contracts only.</li><li>Modeled margin is price × contract multiplier × quantity ÷ 20, using the captured continuous-contract page value as a price proxy.</li><li>No spread, slippage, commission, cross-margin interaction, order rejection, liquidity constraint, or margin-call path is modeled.</li><li>Capacity grows or shrinks with account equity; this table models only the initial balance.</li><li>Quote pages were captured at slightly different source-reported times.</li></ul></details></section><section id="strategies"><h2>Strategy candidates and test tools</h2>
-<p class="lead">The models are pre-registered before a result exists. Their purpose is to test
-long/short volatility-expansion mechanisms on eligible TradingView charts—not to predict a winner.</p>
+<td><a href="https://www.tradingview.com/symbols/CME-MET1!/" rel="noopener noreferrer">open ↗</a></td></tr></tbody></table></div><details class="assumptions"><summary>Model assumptions and omissions</summary><ul><li>Whole futures contracts only.</li><li>Modeled margin is price × contract multiplier × quantity ÷ 20, using the captured continuous-contract page value as a price proxy.</li><li>No spread, slippage, commission, cross-margin interaction, order rejection, liquidity constraint, or margin-call path is modeled.</li><li>Capacity grows or shrinks with account equity; this table models only the initial balance.</li><li>Quote pages were captured at slightly different source-reported times.</li></ul></details></section><section id="intelligence"><h2>Market-data intelligence layer</h2>
+<p class="lead">Daily-bar vendor history for 18 of the 20 selected
+futures, captured 2024-09-17 → 2026-09-18 and stored as
+raw, SHA-256-indexed files. This is the data the walk-forward engine and the volatility table below
+run on. It is vendor-tier evidence, not an official record.</p>
+<div class="callout warn"><h3>What this data is and is not</h3>
+<p>Series are Yahoo front-month continuous futures with unadjusted roll splices — roll gaps can create artificial jumps. Capture runs through the automated workflow; the relay transport and IP-blocking detail is tracked as IR-15. The offline verifier re-checks every stored file&#x27;s hash, endpoint, window, OHLC invariants, and cross-checks the last close against the TradingView quote snapshot.</p>
+<p><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">Vendor source registry entry ↗</a> · <a href="research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md">Capture evidence file</a></p></div>
+<div class="table-wrap"><table id="mh-table"><thead><tr><th>Symbol</th><th>Vendor contract</th><th>Transport</th>
+<th class="num">Sessions</th><th>First</th><th>Last</th><th class="num">Last close</th><th class="num">Δ vs TV quote</th><th>Raw endpoint</th></tr></thead><tbody><tr data-mhsym="CME:SOL1!"><td class="sym">CME:SOL1!</td>
+<td>SOL Futures,Sep-2026</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">98.5500</td><td class="num"><span class="up">0.20%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/SOL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME:MSL1!"><td class="sym">CME:MSL1!</td>
+<td>Micro SOL Futures,Sep-2026</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">98.5500</td><td class="num"><span class="up">0.61%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/MSL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME:ETH1!"><td class="sym">CME:ETH1!</td>
+<td>Ethereum Sep 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">2,422.0000</td><td class="num"><span class="up">0.52%</span></td>
+<td><a href="https://query2.finance.yahoo.com/v8/finance/chart/ETH=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:NG1!"><td class="sym">NYMEX:NG1!</td>
+<td>Natural Gas Oct 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">2.8970</td><td class="num"><span class="up">0.21%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/NG=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:CL1!"><td class="sym">NYMEX:CL1!</td>
+<td>Crude Oil Oct 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">102.1900</td><td class="num"><span class="up">0.23%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX_MINI:QM1!"><td class="sym">NYMEX_MINI:QM1!</td>
+<td>E-mini Crude Oil Futures,Oct-20</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">102.1750</td><td class="num"><span class="up">0.24%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/QM=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:RB1!"><td class="sym">NYMEX:RB1!</td>
+<td>RBOB Gasoline Nov 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">3.2388</td><td class="num"><span class="up">0.17%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/RB=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:HO1!"><td class="sym">NYMEX:HO1!</td>
+<td>Heating Oil Nov 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">4.9823</td><td class="num"><span class="up">0.36%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/HO=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="COMEX:SI1!"><td class="sym">COMEX:SI1!</td>
+<td>Silver Dec 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">64.5300</td><td class="num"><span class="up">0.60%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="COMEX:SIC1!"><td class="sym">COMEX:SIC1!</td>
+<td>100-Ounce Silver Futures,Dec-20</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">64.5200</td><td class="num"><span class="down">2.09%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/SIC=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:PL1!"><td class="sym">NYMEX:PL1!</td>
+<td>Platinum Oct 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">1,789.4000</td><td class="num"><span class="up">0.20%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/PL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME:MBT1!"><td class="sym">CME:MBT1!</td>
+<td>Micro Bitcoin Futures,Sep-2026</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">76,070.0000</td><td class="num"><span class="up">0.06%</span></td>
+<td><a href="https://query2.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME:MET1!"><td class="sym">CME:MET1!</td>
+<td>Micro Ether Futures,Sep-2026</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">2,419.0000</td><td class="num"><span class="up">1.11%</span></td>
+<td><a href="https://query2.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:MNG1!"><td class="sym">NYMEX:MNG1!</td>
+<td>Micro Henry Hub Natural Gas Fut</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">2.8990</td><td class="num"><span class="up">0.28%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="NYMEX:MCL1!"><td class="sym">NYMEX:MCL1!</td>
+<td>Micro WTI Crude Oil Futures,Oct</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">102.1900</td><td class="num"><span class="up">0.23%</span></td>
+<td><a href="https://query2.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="COMEX_MINI:SIL1!"><td class="sym">COMEX_MINI:SIL1!</td>
+<td>Micro Silver Futures,Dec-2026</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">63.7050</td><td class="num"><span class="up">1.87%</span></td>
+<td><a href="https://query2.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME_MINI:NQ1!"><td class="sym">CME_MINI:NQ1!</td>
+<td>Nasdaq 100 Sep 26</td><td>allorigins-relay</td>
+<td class="num">503</td><td>2024-09-17</td><td>2026-09-17</td>
+<td class="num">29,433.7500</td><td class="num"><span class="up">0.60%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr data-mhsym="CME:XRP1!"><td class="sym">CME:XRP1!</td>
+<td>XRP Futures,Sep-2026</td><td>allorigins-relay</td>
+<td class="num">1</td><td>2026-09-17</td><td>2026-09-17</td>
+<td class="num">1.2995</td><td class="num"><span class="up">0.27%</span></td>
+<td><a href="https://query1.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">raw ↗</a></td></tr><tr><td colspan="9" class="note">Failed captures (recorded, retried on the next run): CME:MXP1!, CME:BTC1!</td></tr></tbody></table></div>
+<h3>Realized volatility and explosive-move screen</h3>
+<p class="note">Computed from the captured daily bars. "Best 30d" is the largest
+close-to-extreme move inside any overlapping 30-calendar-day window in the captured period — an
+upper envelope of what history offered on that ticker, not an expectation, not a trade, and not a
+forecast. The final columns join the capacity screen: if the best historical 30-day move recurred
+at the modeled initial notional, would it have covered the captured rank-250 P/L?</p>
+<div class="table-wrap"><table id="vol-table"><thead><tr><th>Symbol</th><th class="num">Ann. vol</th>
+<th class="num">Mean ATR14 %</th><th class="num">Best 30d up</th><th class="num">Best 30d down</th>
+<th class="num">30d windows ≥10% up</th><th class="num">≥25% up</th><th class="num">Largest gap %</th>
+<th class="num">Move needed for rank 250</th><th class="num">Best-move P/L at modeled notional</th></tr></thead><tbody><tr data-vol="NYMEX:NG1!"><td class="sym">NYMEX:NG1!</td>
+<td class="num">87.5%</td>
+<td class="num">6.60%</td>
+<td class="num">140.4%</td>
+<td class="num">−62.1%</td>
+<td class="num">254</td>
+<td class="num">74</td>
+<td class="num">49.84%</td>
+<td class="num">86.29%</td>
+<td class="num up">$1,014,813 (yes)</td></tr><tr data-vol="NYMEX:HO1!"><td class="sym">NYMEX:HO1!</td>
+<td class="num">46.2%</td>
+<td class="num">3.94%</td>
+<td class="num">78.2%</td>
+<td class="num">−26.3%</td>
+<td class="num">179</td>
+<td class="num">50</td>
+<td class="num">8.06%</td>
+<td class="num">12.91%</td>
+<td class="num up">$3,778,253 (yes)</td></tr><tr data-vol="CME:ETH1!"><td class="sym">CME:ETH1!</td>
+<td class="num">70.2%</td>
+<td class="num">6.37%</td>
+<td class="num">71.8%</td>
+<td class="num">−45.0%</td>
+<td class="num">236</td>
+<td class="num">106</td>
+<td class="num">15.48%</td>
+<td class="num">517.69%</td>
+<td class="num ">$86,513 (no)</td></tr><tr data-vol="NYMEX:RB1!"><td class="sym">NYMEX:RB1!</td>
+<td class="num">38.7%</td>
+<td class="num">3.30%</td>
+<td class="num">66.7%</td>
+<td class="num">−23.4%</td>
+<td class="num">124</td>
+<td class="num">27</td>
+<td class="num">19.54%</td>
+<td class="num">18.37%</td>
+<td class="num up">$2,264,032 (yes)</td></tr><tr data-vol="COMEX:SI1!"><td class="sym">COMEX:SI1!</td>
+<td class="num">53.0%</td>
+<td class="num">3.18%</td>
+<td class="num">64.7%</td>
+<td class="num">−36.2%</td>
+<td class="num">207</td>
+<td class="num">46</td>
+<td class="num">9.28%</td>
+<td class="num">12.81%</td>
+<td class="num up">$3,152,191 (yes)</td></tr><tr data-vol="COMEX_MINI:SIL1!"><td class="sym">COMEX_MINI:SIL1!</td>
+<td class="num">53.0%</td>
+<td class="num">2.94%</td>
+<td class="num">64.7%</td>
+<td class="num">−36.2%</td>
+<td class="num">207</td>
+<td class="num">46</td>
+<td class="num">9.80%</td>
+<td class="num">96.07%</td>
+<td class="num ">$420,292 (no)</td></tr><tr data-vol="NYMEX:CL1!"><td class="sym">NYMEX:CL1!</td>
+<td class="num">45.7%</td>
+<td class="num">4.03%</td>
+<td class="num">58.4%</td>
+<td class="num">−30.0%</td>
+<td class="num">157</td>
+<td class="num">43</td>
+<td class="num">11.91%</td>
+<td class="num">12.69%</td>
+<td class="num up">$2,869,843 (yes)</td></tr><tr data-vol="NYMEX_MINI:QM1!"><td class="sym">NYMEX_MINI:QM1!</td>
+<td class="num">45.4%</td>
+<td class="num">4.01%</td>
+<td class="num">58.4%</td>
+<td class="num">−30.0%</td>
+<td class="num">156</td>
+<td class="num">43</td>
+<td class="num">11.91%</td>
+<td class="num">121.78%</td>
+<td class="num ">$298,927 (no)</td></tr><tr data-vol="NYMEX:PL1!"><td class="sym">NYMEX:PL1!</td>
+<td class="num">45.3%</td>
+<td class="num">2.25%</td>
+<td class="num">50.3%</td>
+<td class="num">−29.4%</td>
+<td class="num">168</td>
+<td class="num">43</td>
+<td class="num">14.71%</td>
+<td class="num">27.94%</td>
+<td class="num up">$1,122,885 (yes)</td></tr><tr data-vol="CME_MINI:NQ1!"><td class="sym">CME_MINI:NQ1!</td>
+<td class="num">21.8%</td>
+<td class="num">1.89%</td>
+<td class="num">20.1%</td>
+<td class="num">−15.8%</td>
+<td class="num">41</td>
+<td class="num">0</td>
+<td class="num">3.74%</td>
+<td class="num">13.32%</td>
+<td class="num up">$941,365 (yes)</td></tr></tbody></table></div>
+<p class="note">Metric definitions: ann_vol_pct = stddev of daily log returns x sqrt(252) x 100; atr14_pct = ATR(14) / close x 100; best_30d_up_move_pct = max over overlapping 30-calendar-day windows of (max close in window / first close - 1) x 100; best_30d_down_move_pct = mirror of best_30d_up_move_pct using the window minimum; largest_abs_overnight_gap_pct = max |open/prev close - 1| x 100 (roll-gap proxy).</p>
+<p class="file-links"><a href="data/market_history_index.json">Capture index (JSON)</a>
+<a href="data/volatility_intelligence.json">Volatility records (JSON)</a></p></section><section id="strategies"><h2>Strategy candidates and test tools</h2>
+<p class="lead">The models were pre-registered before any result existed. Their purpose is to test
+long/short volatility-expansion mechanisms on eligible TradingView charts—not to predict a winner.
+The independent walk-forward results are in the <a href="#backtests">backtest lab</a> below;
+TradingView-platform Strategy Report validation remains a separate, still-pending step.</p>
 <div class="callout high"><h3>Platform status: not run</h3>
 <p>This repository has no authenticated TradingView chart session and no Pine compiler. The code has been statically reviewed only; no Strategy Report export was available.</p></div>
-<div class="grid cols-3"><article class="card strategy-card"><div class="model-head"><span class="mono">S1</span><span class="pill mut">untested</span></div>
+<div class="grid cols-3"><article class="card strategy-card"><div class="model-head"><span class="mono">S1</span><span class="pill no">refuted</span></div>
 <h3>Donchian trend breakout</h3><p>A close beyond the prior channel, filtered by moving-average direction and ATR expansion, captures persistent one-way moves better than an unfiltered breakout.</p>
 <dl><dt>Entry</dt><dd>Long above the prior Donchian high when the fast EMA is above the slow EMA and ATR exceeds its baseline; short below the prior Donchian low under the opposite trend condition.</dd><dt>Exit</dt><dd>Opposite signal, optional ATR bracket, or the configured test-window end.</dd>
-<dt>Reject when</dt><dd>Reject if walk-forward median net profit is not positive, if the lower confidence bound is not positive, or if results depend on one symbol or one window.</dd></dl></article><article class="card strategy-card"><div class="model-head"><span class="mono">S2</span><span class="pill mut">untested</span></div>
+<dt>Reject when</dt><dd>Reject if walk-forward median net profit is not positive, if the lower confidence bound is not positive, or if results depend on one symbol or one window.</dd></dl></article><article class="card strategy-card"><div class="model-head"><span class="mono">S2</span><span class="pill no">refuted</span></div>
 <h3>EMA impulse continuation</h3><p>A fast/slow EMA crossover accompanied by above-baseline ATR identifies momentum transitions that persist long enough to overcome modeled costs.</p>
 <dl><dt>Entry</dt><dd>Long on a fast EMA cross above the slow EMA during ATR expansion; short on the inverse cross.</dd><dt>Exit</dt><dd>Opposite signal, optional ATR bracket, or the configured test-window end.</dd>
-<dt>Reject when</dt><dd>Reject if out-of-sample net profit is non-positive after costs or if performance reverses under nearby EMA lengths.</dd></dl></article><article class="card strategy-card"><div class="model-head"><span class="mono">S3</span><span class="pill mut">untested</span></div>
+<dt>Reject when</dt><dd>Reject if out-of-sample net profit is non-positive after costs or if performance reverses under nearby EMA lengths.</dd></dl></article><article class="card strategy-card"><div class="model-head"><span class="mono">S3</span><span class="pill no">refuted</span></div>
 <h3>Bollinger squeeze release</h3><p>A close outside the Bollinger envelope after bandwidth compression captures volatility expansion without predicting whether the break will be up or down.</p>
 <dl><dt>Entry</dt><dd>Long above the upper band or short below the lower band when prior bandwidth was near its rolling minimum and current bandwidth expands.</dd><dt>Exit</dt><dd>Opposite signal, optional ATR bracket, or the configured test-window end.</dd>
 <dt>Reject when</dt><dd>Reject if out-of-sample profit is non-positive, trade count is too small for the declared confidence interval, or small parameter changes erase the result.</dd></dl></article></div>
@@ -316,7 +520,71 @@ are hypothetical broker-emulator results, not competition-account results.</p>
 <p><a href="https://www.tradingview.com/support/solutions/43000481026-how-to-autotrade-using-pine-script-strategies/" rel="noopener noreferrer">Official automation limitation ↗</a></p></div></div>
 <p class="file-links"><a href="research/strategy/the-leap-hypothesis-lab.pine">Pine source</a>
 <a href="research/strategy/models.json">Model register</a>
-<a href="research/strategy/testing-plan.md">Full testing protocol</a></p></section><section id="returns"><h2>Official simulated contest outcomes</h2>
+<a href="research/strategy/testing-plan.md">Full testing protocol</a></p></section><section id="backtests"><h2>Backtest lab — first walk-forward results</h2>
+<p class="lead">The three pre-registered models were run through the repository's own deterministic
+engine on the captured vendor daily bars: non-overlapping 30-calendar-day windows, each starting
+from a fresh $250,000 account at 20:1, across
+10 symbols with sufficient history. These are independent daily-bar simulations —
+NOT TradingView Strategy Report results, NOT competition-account results, and NOT recommendations.</p>
+<div class="callout high"><h3>Read the verdicts correctly</h3>
+<p>Verdicts apply each model's pre-registered falsification rule plus the testing plan's T5
+decision rules. A "refuted" verdict means the rule fired (for example a non-positive median
+across windows) — it does not prove the mechanism can never win a window, and a handful of
+extreme windows can still exist. Engine re-runs are byte-verified by the offline verifier.</p></div>
+<div class="grid cols-3"><article class="card strategy-card" data-verdict="S1"><div class="model-head"><span class="mono">S1</span><span class="pill no">refuted</span></div>
+<h3>Donchian trend breakout</h3>
+<div class="stat accent">$0</div>
+<div class="note">median net profit per 30-day window (zero-cost, compounding sizing)</div>
+<dl><dt>Windows / trades</dt><dd>210 / 70</dd>
+<dt>Bootstrap 95% CI of median</dt><dd>$0 … $0</dd>
+<dt>Windows ≥ 5x / ≥ 10x</dt><dd>3 / 0</dd>
+<dt>Best window</dt><dd>COMEX:SI1! 2025-12-08 → 2026-01-06: $1,596,800 (7.39x)</dd>
+<dt>Why</dt><dd>walk-forward median net profit (zero-cost) is $0.0, not positive excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol</dd></dl></article><article class="card strategy-card" data-verdict="S2"><div class="model-head"><span class="mono">S2</span><span class="pill no">refuted</span></div>
+<h3>EMA impulse continuation</h3>
+<div class="stat accent">$0</div>
+<div class="note">median net profit per 30-day window (zero-cost, compounding sizing)</div>
+<dl><dt>Windows / trades</dt><dd>210 / 28</dd>
+<dt>Bootstrap 95% CI of median</dt><dd>$0 … $0</dd>
+<dt>Windows ≥ 5x / ≥ 10x</dt><dd>0 / 0</dd>
+<dt>Best window</dt><dd>CME_MINI:NQ1! 2025-02-11 → 2025-03-12: $218,040 (1.87x)</dd>
+<dt>Why</dt><dd>walk-forward median net profit (zero-cost) is $0.0, not positive excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol</dd></dl></article><article class="card strategy-card" data-verdict="S3"><div class="model-head"><span class="mono">S3</span><span class="pill no">refuted</span></div>
+<h3>Bollinger squeeze release</h3>
+<div class="stat accent">$0</div>
+<div class="note">median net profit per 30-day window (zero-cost, compounding sizing)</div>
+<dl><dt>Windows / trades</dt><dd>210 / 4</dd>
+<dt>Bootstrap 95% CI of median</dt><dd>$0 … $0</dd>
+<dt>Windows ≥ 5x / ≥ 10x</dt><dd>0 / 0</dd>
+<dt>Best window</dt><dd>NYMEX:NG1! 2026-06-17 → 2026-07-16: $39,500 (1.16x)</dd>
+<dt>Why</dt><dd>walk-forward median net profit (zero-cost) is $0.0, not positive excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol</dd></dl></article></div>
+<h3>Cost-scenario medians (net profit per window, compounding sizing)</h3>
+<div class="table-wrap"><table id="bt-scenarios"><thead><tr><th>Model</th><th class="num">Zero cost</th>
+<th class="num">Moderate (commission $1.50/contract/side + slippage 5% of ATR(14) per leg)</th>
+<th class="num">High (commission $2.50/contract/side + slippage 10% of ATR(14) per leg)</th>
+<th class="num">Positive windows (zero)</th><th class="num">Ruin windows (zero)</th></tr></thead><tbody><tr><td class="sym">S1 — Donchian trend breakout</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">15.2%</td>
+<td class="num">2</td></tr><tr><td class="sym">S2 — EMA impulse continuation</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">7.1%</td>
+<td class="num">0</td></tr><tr><td class="sym">S3 — Bollinger squeeze release</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">$0</td>
+<td class="num">0.9%</td>
+<td class="num">0</td></tr></tbody></table></div>
+<h3>Median net profit by symbol (zero cost, compounding sizing)</h3>
+<div class="table-wrap"><table id="bt-symbols"><thead><tr><th>Symbol</th><th class="num">S1 median $</th><th class="num">S2 median $</th><th class="num">S3 median $</th></tr></thead><tbody><tr><td class="sym">CME:ETH1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">CME_MINI:NQ1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">COMEX:SI1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">COMEX_MINI:SIL1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX:CL1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX:HO1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX:NG1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX:PL1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX:RB1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr><tr><td class="sym">NYMEX_MINI:QM1!</td><td class="num down">$0</td><td class="num down">$0</td><td class="num down">$0</td></tr></tbody></table></div>
+<details class="assumptions"><summary>Sensitivity grid and declared assumptions</summary><ul><li>Signals on bar close fill at the next bar&#x27;s open (Pine broker-emulator default).</li><li>End-of-window open positions close at the final bar&#x27;s close (contest auto-close analog).</li><li>Whole contracts; position size min(rules cap, buying power); no pyramiding.</li><li>No margin-call liquidation simulated; margin breaches are counted, not acted on.</li><li>Slippage is a declared fraction of signal-bar ATR(14) on both legs; commissions per side.</li><li>Vendor series are front-month continuous futures with unadjusted rolls; roll gaps can create artificial signals.</li><li>Sensitivity variants (run at zero and moderate cost): S1: channel15 = {&#x27;channel_length&#x27;: 15}, channel25 = {&#x27;channel_length&#x27;: 25}; S2: ema15x40 = {&#x27;fast_length&#x27;: 15, &#x27;slow_length&#x27;: 40}, ema25x60 = {&#x27;fast_length&#x27;: 25, &#x27;slow_length&#x27;: 60}; S3: band15 = {&#x27;band_length&#x27;: 15}, band25 = {&#x27;band_length&#x27;: 25}</li></ul></details>
+<p class="note">Symbols excluded from testing and why: CME:SOL1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); CME:MSL1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); COMEX:SIC1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); CME:MBT1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); CME:MET1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); NYMEX:MNG1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); NYMEX:MCL1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17); CME:XRP1!: insufficient vendor history: 1 bars &lt; 150 required (2026-09-17 -&gt; 2026-09-17).</p>
+<p class="note">Target context: the captured rank-250 P/L is $623,689.00 (snapshot 2026-09-16T21:39:34Z); a window counts as hitting the target when its net profit reaches that figure at that snapshot.</p>
+<p class="note">Artifact stamp: <code>2026-09-17T02:44:53+00:00</code> — every run is byte-reproducible from the committed vendor captures via <code>python3 scripts/run_backtests.py --stamp 2026-09-17T02:44:53+00:00</code>; the verifier re-runs exactly that and requires identical output.</p>
+<p class="file-links"><a href="data/backtest_results.json">Full results (JSON)</a>
+<a href="research/strategy/testing-plan.md">Testing protocol</a>
+<a href="intel/">Engine source (intel/)</a></p></section><section id="returns"><h2>Official simulated contest outcomes</h2>
 <p class="lead">Completed #1 outcomes from TradingView's official history, plus one explicitly
 in-progress live row. Return multiple = 1 + published net-profit percentage / 100.</p>
 <div class="grid cols-4"><div class="card"><h3>≥5x</h3><div class="stat accent">2</div><div class="note">captured records</div></div><div class="card"><h3>≥10x</h3><div class="stat accent">2</div><div class="note">captured records</div></div><div class="card"><h3>≥20x</h3><div class="stat accent">1</div><div class="note">captured records</div></div><div class="card"><h3>≥50x</h3><div class="stat accent">1</div><div class="note">captured records</div></div></div><div class="controls"><input id="ret-q" type="search" placeholder="Filter edition, winner, asset…" aria-label="Filter contest returns"><span id="ret-count" class="count"></span></div><div class="table-wrap"><table id="ret-table"><thead><tr><th>Status</th><th>Edition</th><th>Asset</th><th>Winner</th><th class="num">Participants</th><th class="num">Published net profit</th><th class="num">Return multiple</th><th>Official result</th></tr></thead><tbody><tr data-search="futures - february 2025 futures benbernanke1"><td><span class="pill ok">final</span></td>
@@ -487,7 +755,15 @@ apply only to the stated test and captured evidence—not to a trading forecast.
 <dl><dt>Prediction</dt><dd>The observed completed-champion range spans both sub-1.3x and above-10x outcomes.</dd><dt>Test</dt><dd>Compare all completed #1 records in data/verified_explosive_returns.json by edition and asset-class label; exclude the in-progress live row from final-winner conclusions.</dd>
 <dt>Evidence</dt><dd><ul><li>Captured completed stock champions: 1.1758x and 1.299x.</li><li>Captured completed futures champion maximum: 53.2072x.</li><li>Observed association is not causation: editions also differ in balance, leverage, caps, instruments, duration, and field behavior. No normalized volatility or causal model has been run.</li></ul></dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/" rel="noopener noreferrer">TV-CONTEST-MAG7-MAR2026</a> · <a href="https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/" rel="noopener noreferrer">TV-RESULTS-BENBERNANKE1</a> · <a href="https://www.tradingview.com/the-leap/" rel="noopener noreferrer">TV-THELEAP-LANDING</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">H13</span><span class="pill ok">supported</span><span class="claim">The brief&#x27;s volatile-stock list is a historical research reference for future stock-edition work, not an actionable instrument set in the live futures contest; future eligibility must be rechecked.</span></div>
 <dl><dt>Prediction</dt><dd>Every one of the 20 stock records cites market_data_vendor sources only, and none of those 20 symbols appears in the 94-instrument permitted universe of the live September 2026 edition.</dd><dt>Test</dt><dd>Inspect the source tier of every record in data/volatile_stocks.json and intersect its symbols against data/contest_universe.json.</dd>
-<dt>Evidence</dt><dd><ul><li>All 20 volatile_stocks.json records cite YAHOO-* market_data_vendor source_ids; scripts/verify.py forbids any non-vendor source for stock evidence (check_volatile_stocks.source_tier).</li><li>None of the 20 stock symbols (ENPH, AMD, MARA, CVNA, GME, RIOT, SHOP, NVAX, APP, PLUG, MSTR, NIO, PLTR, AMC, SMCI, HOOD, TSLA, NVDA, COIN, PTON) appears in contest_universe.json (94 futures instruments, 0 equities).</li><li>TradingView&#x27;s official March 2026 Magnificent Seven stock-edition rules used a different, seven-stock NASDAQ universe. That confirms eligibility is edition-specific; it does not establish that this 20-stock list will be eligible later.</li></ul></dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026</a> · <a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/" rel="noopener noreferrer">TV-CONTEST-MAG7-MAR2026</a></dd></dl></article></section><section id="masterlist"><h2>Selected live-edition futures</h2>
+<dt>Evidence</dt><dd><ul><li>All 20 volatile_stocks.json records cite YAHOO-* market_data_vendor source_ids; scripts/verify.py forbids any non-vendor source for stock evidence (check_volatile_stocks.source_tier).</li><li>None of the 20 stock symbols (ENPH, AMD, MARA, CVNA, GME, RIOT, SHOP, NVAX, APP, PLUG, MSTR, NIO, PLTR, AMC, SMCI, HOOD, TSLA, NVDA, COIN, PTON) appears in contest_universe.json (94 futures instruments, 0 equities).</li><li>TradingView&#x27;s official March 2026 Magnificent Seven stock-edition rules used a different, seven-stock NASDAQ universe. That confirms eligibility is edition-specific; it does not establish that this 20-stock list will be eligible later.</li></ul></dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026</a> · <a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/" rel="noopener noreferrer">TV-CONTEST-MAG7-MAR2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">H14</span><span class="pill no">refuted</span><span class="claim">A Donchian channel breakout with EMA-trend and ATR-expansion filters (model S1) earns a positive walk-forward median net profit on daily bars across the capturable contest universe.</span></div>
+<dl><dt>Prediction</dt><dd>Across non-overlapping 30-day walk-forward windows on every captured symbol with &gt;=150 bars, the pooled median net profit is positive (&gt;$0) at zero cost, survives removal of the best symbol and best window, and nearby channel lengths (15, 25) keep it positive.</dd><dt>Test</dt><dd>scripts/run_backtests.py (engine intel-1) simulated S1 on 10 captured symbols (210 windows, 2024-09-17 to 2026-09-17 vendor daily bars) per research/strategy/testing-plan.md; verdicts follow the pre-registered falsification rules.</dd>
+<dt>Evidence</dt><dd><ul><li>Pooled median net profit at zero cost is $0.0 (mean $12,528.50 is driven by outliers); 15.24% of 210 windows were positive.</li><li>Only 70 closed trades total (43 long, 27 short); 3 of 210 windows reached &gt;=5x (best: COMEX:SI1! 2025-12-08-&gt;2026-01-06, 7.39x on a single trade), 0 reached &gt;=10x.</li><li>Concentration checks fail: excluding the best symbol or the best window flips the pooled median non-positive; per-symbol medians are $0 for all 10 symbols.</li><li>Sensitivity grid: channel_length 15 -&gt; median $0.0 (75 trades), channel_length 25 -&gt; median $0.0 (70 trades).</li><li>Worst window: NYMEX:NG1! 2026-01-07-&gt;2026-02-05 at -2.356x (margin breach without liquidation, per stated assumptions).</li></ul></dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">H15</span><span class="pill no">refuted</span><span class="claim">An EMA impulse continuation entry (fast EMA crossing/holding above slow EMA with ATR expansion, model S2) earns a positive walk-forward median net profit on daily bars.</span></div>
+<dl><dt>Prediction</dt><dd>Pooled median net profit across all captured-symbol walk-forward windows is positive at zero cost and stays positive after moderate costs ($1.50/side + 5% ATR slippage) and at nearby EMA pairs (15x40, 25x60).</dd><dt>Test</dt><dd>scripts/run_backtests.py simulated S2 on the same 10 symbols / 210 windows with the pre-registered cost and sensitivity protocol.</dd>
+<dt>Evidence</dt><dd><ul><li>Pooled median net profit at zero cost is $0.0 and the mean is negative (-$2,986.10); only 7.14% of windows were positive.</li><li>28 closed trades in 210 windows; 0 windows reached &gt;=5x (best window CME_MINI:NQ1! 2025-02-11-&gt;2025-03-12 at 1.87x).</li><li>Moderate-cost median $0.0 (mean -$3,960.53); high-cost median $0.0 (mean -$4,932.10).</li><li>Sensitivity grid: ema15x40 -&gt; median $0.0 (27 trades), ema25x60 -&gt; median $0.0 (33 trades); concentration checks fail on symbol and window removal.</li></ul></dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">H16</span><span class="pill no">refuted</span><span class="claim">Entering on a Bollinger-band squeeze release (bandwidth at a 50-bar low then expansion, model S3) captures the volatility expansions that follow squeezes, earning a positive walk-forward median net profit on daily bars.</span></div>
+<dl><dt>Prediction</dt><dd>Pooled median net profit across captured-symbol walk-forward windows is positive at zero cost, and the trade count is large enough for the declared bootstrap confidence interval.</dd><dt>Test</dt><dd>scripts/run_backtests.py simulated S3 on the same 10 symbols / 210 windows; squeeze-release signals on daily bars are rare, so the sample-size rule applies.</dd>
+<dt>Evidence</dt><dd><ul><li>Only 4 closed trades in 210 windows (0.95% of windows positive); the pre-registered rule rejects a bootstrap CI on 4 trades.</li><li>Pooled median net profit at zero cost is $0.0 (mean $123.93); 0 windows reached &gt;=5x (best NYMEX:NG1! 2026-06-17-&gt;2026-07-16 at 1.16x).</li><li>Sensitivity grid: band_length 15 -&gt; median $0.0 (5 trades), band_length 25 -&gt; median $0.0 (9 trades).</li><li>S3&#x27;s signal is too rare on daily bars to be a leaderboard strategy inside 30-day windows; intraday data would be required to re-test it meaningfully.</li></ul></dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">H17</span><span class="pill ok">supported</span><span class="claim">Within the capturable universe, the instruments whose historical 30-day moves most exceed the move needed to match the last publicly visible leaderboard rank (rank 250; cash prizes end at rank 50) are the full-size energy and metals contracts (CL1!, HO1!, RB1!, SI1!, PL1!), because their modeled initial notional hits the leverage cap, while micro contracts and ETH1! are structurally priced out.</span></div>
+<dl><dt>Prediction</dt><dd>Ranking captured symbols by (best 30-day up move) / (favorable move needed to reach the $623,689 rank-250 target from the modeled initial notional) puts full-size CL/HO/RB/SI/PL at the top, NG1! near the middle despite the highest volatility, and QM1!/ETH1! at the bottom.</dd><dt>Test</dt><dd>data/volatility_intelligence.json (written by scripts/run_backtests.py alongside the backtests) computed annualized volatility, ATR(14), best 30-day up/down moves and the rank-250 requirement per symbol from the same vendor daily bars.</dd>
+<dt>Evidence</dt><dd><ul><li>Needed vs delivered (favorable move needed -&gt; best 30d up move): CL1! 12.7%-&gt;58.4%, HO1! 12.9%-&gt;78.2%, SI1! 12.8%-&gt;64.7%, RB1! 18.4%-&gt;66.7%, PL1! 27.9%-&gt;50.3% - each historically delivered 1.8x-6.1x its requirement.</li><li>NG1! is the most volatile symbol (87.5% annualized, best 30d up +140.4%, largest overnight gap 49.8%) but its margin-limited initial notional ($722,750) requires +86.3%, which its best move exceeds 1.6x.</li><li>QM1! needs +121.8% (micro contract, $512,125 notional) but only ever delivered +58.4%; ETH1! needs +517.7% ($120,475 notional at the capture price) but only ever delivered +71.8% - both flagged note_if_best_move_exceeds_rank250_requirement=false.</li><li>All values derive from market_data_vendor captures (YAHOO-FUTURES-CHART) and are simulation inputs, not predictions; the rank-250 target comes from the official leaderboard snapshot captured 2026-09-16T21:39:34Z via TV-CONTEST-AMP-SEP2026.</li></ul></dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a></dd></dl></article></section><section id="masterlist"><h2>Selected live-edition futures</h2>
 <p class="lead">A focused research subset of the eligible universe. “Group” is a descriptive
 classification, not a measured volatility rank. Caps and multipliers are source-verified.</p>
 <div class="controls"><input id="ml-q" type="search" placeholder="Filter symbol, name, underlying…" aria-label="Filter selected futures">
@@ -703,8 +979,18 @@ visible even after resolution.</p><article class="hyp"><div class="top"><span cl
 <dl><dt>Detail</dt><dd>Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.</dd><dt>Observed</dt><dd>Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.</dd>
 <dt>Resolution</dt><dd>See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-16</span><span class="pill info">medium</span><span class="pill mut">confirmed</span><span class="claim">No-manual-input research does not imply unattended prize collection</span></div>
 <dl><dt>Detail</dt><dd>Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.</dd><dt>Observed</dt><dd>Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.</dd>
-<dt>Resolution</dt><dd>See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026</a></dd></dl></article></section><section id="sources"><h2>Source registry and manual review</h2>
-<p class="lead">All 76 registered sources, their evidence
+<dt>Resolution</dt><dd>See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-17</span><span class="pill info">medium</span><span class="pill mut">open</span><span class="claim">Market-data vendors block automated capture from datacenter IP ranges</span></div>
+<dl><dt>Detail</dt><dd>Yahoo Finance returns HTTP 429 to every chart-API request made from the GitHub Actions runner range (both query1 and query2 hosts, confirmed by probe on 2026-09-17 with a browser User-Agent). Stooq returns a 795-byte JavaScript anti-bot challenge instead of CSV data. The capture pipeline therefore retries the identical vendor URLs through the public allorigins relay, a byte transport. Every relayed payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures; the transport used is recorded per symbol in data/market_history_index.json.</dd><dt>Observed</dt><dd>20/20 symbols HTTP 429 direct from runner; stooq cl.f..eth.f all returned the identical 795-byte JS challenge; allorigins relay returned the full 27,505-byte CL=F 1-year JSON with valid chart structure.</dd>
+<dt>Resolution</dt><dd>Open. The relay works but is a third-party dependency; a licensed feed (e.g. CME settlement-based continuous series) or a residential-IP capture remains the clean fix. Workflow probe annotations document the failure mode.</dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-18</span><span class="pill mut">low</span><span class="pill mut">open</span><span class="claim">Several selected micro/crypto futures have only one day of vendor history</span></div>
+<dl><dt>Detail</dt><dd>SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to [&#x27;1d&#x27;,&#x27;5d&#x27;]), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.</dd><dt>Observed</dt><dd>Vendor listing gaps: CME:SOL1!, CME:MSL1!, COMEX:SIC1!, CME:MBT1!, CME:MET1!, NYMEX:MNG1!, NYMEX:MCL1! and CME:XRP1! returned exactly 1 daily bar for the 2-year window (newly listed on the vendor), so they cannot be backtested; 8 of 20 selected symbols are excluded from the simulation for insufficient history.</dd>
+<dt>Resolution</dt><dd>Open. These tickers will accumulate history over time; re-run the capture pipeline in later sessions. Their capacity arithmetic (rules cap x multiplier x price) is already verified from official sources and does not depend on vendor history.</dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-19</span><span class="pill mut">low</span><span class="pill mut">open</span><span class="claim">Yahoo front-month close differs from the TradingView continuous quote by 3.32% for crude oil</span></div>
+<dl><dt>Detail</dt><dd>For 2026-09-16, the captured Yahoo CL=F series closed at 105.83 while the TradingView CL1! overview page displayed 102.43. The Yahoo front contract is &#x27;Crude Oil Oct 26&#x27; while the TradingView continuous series and the intraday capture time (16:49-17:23 GMT-4) differ. All other cross-checked symbols landed within 2%. The verifier warns above 2% and hard-fails above 15% to catch genuine ticker mix-ups.</dd><dt>Observed</dt><dd>|105.83 - 102.43| / 102.43 = 3.32%.</dd>
+<dt>Resolution</dt><dd>Open, informational. Documented caveat for cross-source price comparisons; not treated as a mapping error.</dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a> · <a href="https://www.tradingview.com/symbols/NYMEX-CL1!/" rel="noopener noreferrer">TV-QUOTE-CL1</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-20</span><span class="pill mut">low</span><span class="pill mut">open</span><span class="claim">Leaderboard frontier partially static across two captures while the mid-board moved</span></div>
+<dl><dt>Detail</dt><dd>Between the 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z captures (~3 hours, US after-hours), rank 1 (leonardo22_romano, +$2,303,725.00) and rank 250 (luaguiar, +$623,689.00) were byte-identical, while rank 50 changed holder and rose $28,139.75 and rank 100 rose $11,027.50. Realized P/L only changes when positions close, so a static frontier is possible; the combination (edges frozen, middle moving) is recorded for pattern observation across future captures.</dd><dt>Observed</dt><dd>data/frontier_history.json rows 1 and 2; chandu0342 (former rank 50) held an identical value and slid to rank 53.</dd>
+<dt>Resolution</dt><dd>Open. Continue capturing the frontier; if edge ranks stay frozen while participants join, the effective last-prize threshold may be stickier than the mid-board suggests.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026-R2</a></dd></dl></article><article class="hyp"><div class="top"><span class="id">IR-21</span><span class="pill info">medium</span><span class="pill mut">open</span><span class="claim">Relay transport persistently fails for two vendor tickers (BTC=F, MXP=F)</span></div>
+<dl><dt>Detail</dt><dd>The allorigins relay returns HTTP 522/500 for exactly BTC=F and MXP=F across every capture pass attempted (four passes on 2026-09-17), while succeeding for the other 18 symbols. XRP=F also failed the first three passes before succeeding on the fourth, so per-ticker relay failures are persistent but not always permanent. CME:BTC1! and CME:MXP1! therefore have no committed vendor history.</dd><dt>Observed</dt><dd>2 of 20 selected symbols remain uncaptured after four automated passes; data/market_history_index.json records their error strings. BTC1! is the highest-visibility contest instrument, so this gap matters for representativeness (micro-bitcoin MBT=F&#x27;s single session price 76,070 is consistent with BTC=F&#x27;s regularMarketPrice ~76,460 from the in-session spot check, but is not a substitute for history).</dd>
+<dt>Resolution</dt><dd>Open</dd><dt>Sources</dt><dd><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">YAHOO-FUTURES-CHART</a></dd></dl></article></section><section id="sources"><h2>Source registry and manual review</h2>
+<p class="lead">All 78 registered sources, their evidence
 tier, allowed use, captured evidence file, and exact URL. Vendor stock sources also expose both
 endpoint windows independently.</p><div class="source-grid"><details class="source-item"><summary><span class="pill ok">official primary</span>
 <strong>TV-THELEAP-LANDING</strong> · The Leap — Paper Trading Competition by TradingView</summary>
@@ -1010,7 +1296,15 @@ endpoint windows independently.</p><div class="source-grid"><details class="sour
 <strong>CME-CONTINUOUS-SERIES</strong> · CME Group Continuous Price Series</summary>
 <p><a href="https://www.cmegroup.com/market-data/cme-group-continuous-price-series.html" rel="noopener noreferrer">https://www.cmegroup.com/market-data/cme-group-continuous-price-series.html</a></p>
 <p class="note">CME Group · accessed 2026-09-16 · <a href="research/evidence/CME-CONTINUOUS-SERIES.md">captured evidence</a></p>
-<strong>Allowed uses</strong><ul><li>Official settlement-based active/front continuous-series methodology</li><li>Licensed historical series option for futures backtesting</li><li>Volume and open-interest capacity data option</li></ul></details></div></section><section id="method"><h2>Method, verification, and limits</h2>
+<strong>Allowed uses</strong><ul><li>Official settlement-based active/front continuous-series methodology</li><li>Licensed historical series option for futures backtesting</li><li>Volume and open-interest capacity data option</li></ul></details><details class="source-item"><summary><span class="pill ok">official primary</span>
+<strong>TV-CONTEST-AMP-SEP2026-R2</strong> · The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17)</summary>
+<p><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">https://www.tradingview.com/the-leap/amp-futures-september-2026/</a></p>
+<p class="note">TradingView, Inc. · accessed 2026-09-17 · <a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md">captured evidence</a></p>
+<strong>Allowed uses</strong><ul><li>Second timestamped capture of the public leaderboard frontier (ranks 1/50/100/250), displayed participant count, prize structure and the 94-instrument eligibility count</li><li>Frontier drift between 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z in data/frontier_history.json</li></ul></details><details class="source-item"><summary><span class="pill warn">market data vendor</span>
+<strong>YAHOO-FUTURES-CHART</strong> · Yahoo Finance chart API - daily bars for the selected contest futures (front-month continuous, unadjusted rolls)</summary>
+<p><a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d</a></p><div class="endpoint-links"><a href="https://query1.finance.yahoo.com/v8/finance/chart/SOL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:SOL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MSL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:MSL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:XRP1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:MXP1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:BTC1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:MBT1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/ETH=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:ETH1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME:MET1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/NG=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:NG1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:MNG1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:CL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/QM=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX_MINI:QM1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:MCL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/RB=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:RB1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/HO=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:HO1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">COMEX:SI1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/SIC=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">COMEX:SIC1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">COMEX_MINI:SIL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/PL=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">NYMEX:PL1! ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&amp;period2=1789689600&amp;interval=1d" rel="noopener noreferrer">CME_MINI:NQ1! ↗</a></div>
+<p class="note">Yahoo (market-data vendor; not an exchange, regulator or the contest organiser) · accessed 2026-09-17 · <a href="research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md">captured evidence</a></p>
+<strong>Allowed uses</strong><ul><li>Daily OHLC history for the walk-forward simulation of the pre-registered strategy candidates (data/market_history/, data/backtest_results.json)</li><li>Realized-volatility and explosive-move metrics for the selected futures (data/volatility_intelligence.json)</li></ul></details></div></section><section id="method"><h2>Method, verification, and limits</h2>
 <p class="lead">The site is deterministic and network-free. Public evidence is captured first;
 the offline verifier then checks provenance and re-derives arithmetic.</p>
 <div class="pipeline"><div><span>1</span><strong>Capture</strong><p>Save official quotations, exact URLs, and access times.</p></div>

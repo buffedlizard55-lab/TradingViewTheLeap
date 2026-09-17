@@ -7,7 +7,7 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 76,
+  "source_count": 78,
   "reverified_utc": "2026-09-16",
   "reverification_note": "Reverified 2026-09-16. Official contest/rules/specification sources and vendor windows were refreshed; official TradingView strategy, margin, P/L, quote pages and CME continuous-series documentation were added. Vendor stock sources now expose both exact endpoint windows."
  },
@@ -1313,6 +1313,117 @@
     "Volume and open-interest capacity data option"
    ],
    "evidence_file": "research/evidence/CME-CONTINUOUS-SERIES.md"
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R2",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Second timestamped capture of the public leaderboard frontier (ranks 1/50/100/250), displayed participant count, prize structure and the 94-instrument eligibility count",
+    "Frontier drift between 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z in data/frontier_history.json"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md",
+   "official_source": true
+  },
+  {
+   "source_id": "YAHOO-FUTURES-CHART",
+   "publisher": "Yahoo (market-data vendor; not an exchange, regulator or the contest organiser)",
+   "tier": "market_data_vendor",
+   "title": "Yahoo Finance chart API - daily bars for the selected contest futures (front-month continuous, unadjusted rolls)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Daily OHLC history for the walk-forward simulation of the pre-registered strategy candidates (data/market_history/, data/backtest_results.json)",
+    "Realized-volatility and explosive-move metrics for the selected futures (data/volatility_intelligence.json)"
+   ],
+   "evidence_file": "research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md",
+   "official_source": false,
+   "endpoint_urls": [
+    {
+     "label": "CME:SOL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SOL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MSL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:XRP1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MXP1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:BTC1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MBT1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:ETH1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ETH=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MET1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:NG1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NG=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:MNG1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:CL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX_MINI:QM1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/QM=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:MCL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:RB1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RB=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:HO1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HO=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX:SI1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SI=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX:SIC1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIC=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX_MINI:SIL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:PL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME_MINI:NQ1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&period2=1789689600&interval=1d"
+    }
+   ],
+   "transport_note": "Captured by scripts/fetch_market_data.py in the capture-market-data GitHub Actions workflow; direct vendor requests are retried through the public allorigins relay when the runner IP is rate-limited (HTTP 429). Every payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures recorded in the evidence file."
   }
  ]
 }

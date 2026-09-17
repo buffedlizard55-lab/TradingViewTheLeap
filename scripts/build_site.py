@@ -72,6 +72,10 @@ def build() -> str:
     models = load("research/strategy/models.json")
     irregularities = load("research/irregularities.json")
     source_registry = load("research/sources/sources.json")
+    frontier_history = load("data/frontier_history.json")
+    market_index = load("data/market_history_index.json")
+    backtests = load("data/backtest_results.json")
+    vol_intel = load("data/volatility_intelligence.json")
 
     sources = source_registry["sources"]
     source_by_id = {s["source_id"]: s for s in sources}
@@ -84,6 +88,7 @@ def build() -> str:
     completed_best = max(completed_returns, key=lambda row: row["return_multiple"])
     exchange_counts = Counter(row["exchange"] for row in universe["instruments"])
     snapshot_at = snapshot["_meta"]["captured_at_utc"]
+    captured_syms = [c for c in market_index["captures"] if c.get("status") == "captured"]
 
     out: list[str] = []
     add = out.append
@@ -94,7 +99,7 @@ def build() -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Leap Research Lab — evidence, capacity, and strategy tests</title>
-<meta name="description" content="Evidence-first research for TradingView's The Leap: official rules, live snapshots, verified returns, capacity arithmetic, and untested Pine strategy candidates.">
+<meta name="description" content="Evidence-first research for TradingView's The Leap: official rules, live snapshots, verified returns, capacity arithmetic, market-data captures, and walk-forward strategy test results.">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -120,6 +125,8 @@ are labeled separately.</p>
 <span class="badge">{number(master['_meta']['row_count'])} selected contracts</span>
 <span class="badge">{number(returns['_meta']['record_count'])} contest return records</span>
 <span class="badge">{number(stocks['_meta']['record_count'])} stock market records</span>
+<span class="badge">{number(len(captured_syms))} captured vendor series</span>
+<span class="badge">{number(len(backtests['models']))} walk-forward tested models</span>
 <span class="badge">{number(models['_meta']['model_count'])} untested strategy candidates</span>
 <span class="badge warn">{number(irregularities['_meta']['count'])} irregularities logged</span>
 </div></div></header>
@@ -129,7 +136,9 @@ are labeled separately.</p>
 <li><a href="#rules">Rules</a></li>
 <li><a href="#frontier">Live frontier</a></li>
 <li><a href="#capacity">Capacity</a></li>
+<li><a href="#intelligence">Market data</a></li>
 <li><a href="#strategies">Strategies</a></li>
+<li><a href="#backtests">Backtest lab</a></li>
 <li><a href="#returns">Contest returns</a></li>
 <li><a href="#stocks">Stock history</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
@@ -258,6 +267,33 @@ The percentage/dollar pairs are verifier-checked against the starting balance an
         prize = money(tier["cash_usd_each"], 0) if tier["cash_usd_each"] is not None else f"{tier['plan_months_each']}-month plan"
         add(f"<tr><td class=\"num\">{rank}</td><td>{esc(row['trader'])}</td><td class=\"num\">+{number(row['realized_profit_pct'], 2)}%</td><td class=\"num\">+{money(row['realized_profit_usd'])}</td><td>{esc(prize)}</td></tr>")
     add(f"""</tbody></table></div>
+<h3>Frontier tracker</h3>
+<p class="note">Every capture of the same four frontier ranks, newest last. Deltas are raw
+subtractions against the previous capture, not growth rates. A threshold that looks frozen can
+still move before the deadline, and rank 1 or rank 250 repeating a value across captures means
+only that those participants had not realized new P/L between captures.</p>
+<div class="table-wrap"><table id="frontier-history"><thead><tr><th>Captured (UTC)</th><th class="num">Participants</th>
+<th class="num">Rank 1 $</th><th class="num">Rank 50 $</th><th class="num">Rank 100 $</th><th class="num">Rank 250 $</th><th>Evidence</th></tr></thead><tbody>""")
+    prev = None
+    for cap in frontier_history["captures"]:
+        rows = {int(k): v for k, v in cap["rows"].items()}
+        cells = []
+        for rank in (1, 50, 100, 250):
+            value = rows[rank]["realized_profit_usd"]
+            if prev is not None:
+                delta = value - prev[rank]
+                sign = "+" if delta >= 0 else "−"
+                cells.append(f'{money(value)} <span class="{"up" if delta >= 0 else "down"}">({sign}{money(abs(delta), 0)})</span>')
+            else:
+                cells.append(money(value))
+        ev_link = link(cap["evidence_file"], "evidence ↗") if cap.get("evidence_file") else ""
+        add(f"""<tr data-frontier="{esc(cap['captured_at_utc'])}"><td><code>{esc(cap['captured_at_utc'])}</code></td>
+<td class="num">{number(cap['participants_displayed'])}</td>
+<td class="num">{cells[0]}</td><td class="num">{cells[1]}</td><td class="num">{cells[2]}</td><td class="num">{cells[3]}</td>
+<td>{ev_link}</td></tr>""")
+        prev = {int(k): v["realized_profit_usd"] for k, v in cap["rows"].items()}
+    add(f"""</tbody></table></div>
+<p class="note">Observed so far: {esc(frontier_history['_meta']['observed_notes'][0])}</p>
 <div class="callout critical"><h3>No guaranteed live cutoff</h3>
 <p>The public table ends at rank {cfg['public_leaderboard_last_visible_rank']}, while prizes extend
 through rank {cfg['maximum_prize_recipients']}. The unseen last-prize row cannot be recovered from
@@ -295,10 +331,81 @@ the probability or direction of that move.</p></div>
         add(f"<li>{esc(assumption)}</li>")
     add("</ul></details></section>")
 
+    # Market-data intelligence layer
+    mh_meta = market_index["_meta"]
+    captured_syms = [c for c in market_index["captures"] if c.get("status") == "captured"]
+    failed_syms = [c for c in market_index["captures"] if c.get("status") == "failed"]
+    quote_map = {q["symbol"]: q for q in snapshot["quotes"]}
+    mh_caveat = (
+        "Series are Yahoo front-month continuous futures with unadjusted roll splices — roll "
+        "gaps can create artificial jumps. Capture runs through the automated workflow; the "
+        "relay transport and IP-blocking detail is tracked as IR-15. The offline verifier "
+        "re-checks every stored file's hash, endpoint, window, OHLC invariants, and "
+        "cross-checks the last close against the TradingView quote snapshot."
+    )
+    add(f"""<section id="intelligence"><h2>Market-data intelligence layer</h2>
+<p class="lead">Daily-bar vendor history for {len(captured_syms)} of the {mh_meta['symbol_count']} selected
+futures, captured {esc(mh_meta['capture_window_start_utc'][:10])} → {esc(mh_meta['capture_window_end_utc'][:10])} and stored as
+raw, SHA-256-indexed files. This is the data the walk-forward engine and the volatility table below
+run on. It is vendor-tier evidence, not an official record.</p>
+<div class="callout warn"><h3>What this data is and is not</h3>
+<p>{esc(mh_caveat)}</p>
+<p>{link(source_url['YAHOO-FUTURES-CHART'], 'Vendor source registry entry ↗')} · <a href="research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md">Capture evidence file</a></p></div>
+<div class="table-wrap"><table id="mh-table"><thead><tr><th>Symbol</th><th>Vendor contract</th><th>Transport</th>
+<th class="num">Sessions</th><th>First</th><th>Last</th><th class="num">Last close</th><th class="num">Δ vs TV quote</th><th>Raw endpoint</th></tr></thead><tbody>""")
+    for c in market_index["captures"]:
+        if c.get("status") != "captured":
+            continue
+        tv = c["tradingview_symbol"]
+        delta_cell = "—"
+        if tv in quote_map:
+            d_pct = abs(c["last_close"] - quote_map[tv]["price"]) / quote_map[tv]["price"] * 100
+            cls = "down" if d_pct > 2.0 else "up"
+            delta_cell = f'<span class="{cls}">{number(d_pct, 2)}%</span>'
+        add(f"""<tr data-mhsym="{esc(tv)}"><td class="sym">{esc(tv)}</td>
+<td>{esc(c.get('vendor_reported_contract') or '?')}</td><td>{esc(c.get('transport') or '?')}</td>
+<td class="num">{number(c['sessions_valid'])}</td><td>{esc(c['first_session_utc'])}</td><td>{esc(c['last_session_utc'])}</td>
+<td class="num">{number(c['last_close'], 4)}</td><td class="num">{delta_cell}</td>
+<td>{link(c['endpoint'], 'raw ↗')}</td></tr>""")
+    if failed_syms:
+        add('<tr><td colspan="9" class="note">Failed captures (recorded, retried on the next run): '
+            + esc(", ".join(c["tradingview_symbol"] for c in failed_syms)) + "</td></tr>")
+    add(f"""</tbody></table></div>
+<h3>Realized volatility and explosive-move screen</h3>
+<p class="note">Computed from the captured daily bars. "Best 30d" is the largest
+close-to-extreme move inside any overlapping 30-calendar-day window in the captured period — an
+upper envelope of what history offered on that ticker, not an expectation, not a trade, and not a
+forecast. The final columns join the capacity screen: if the best historical 30-day move recurred
+at the modeled initial notional, would it have covered the captured rank-{target_rank} P/L?</p>
+<div class="table-wrap"><table id="vol-table"><thead><tr><th>Symbol</th><th class="num">Ann. vol</th>
+<th class="num">Mean ATR14 %</th><th class="num">Best 30d up</th><th class="num">Best 30d down</th>
+<th class="num">30d windows ≥10% up</th><th class="num">≥25% up</th><th class="num">Largest gap %</th>
+<th class="num">Move needed for rank {target_rank}</th><th class="num">Best-move P/L at modeled notional</th></tr></thead><tbody>""")
+    for r in vol_intel["records"]:
+        flag = "yes" if r.get("note_if_best_move_exceeds_rank250_requirement") else "no"
+        cls = "up" if flag == "yes" else ""
+        add(f"""<tr data-vol="{esc(r['symbol'])}"><td class="sym">{esc(r['symbol'])}</td>
+<td class="num">{number(r['ann_vol_full_pct'], 1)}%</td>
+<td class="num">{number(r['mean_atr14_pct'], 2)}%</td>
+<td class="num">{number(r['best_30d_up_move_pct'], 1)}%</td>
+<td class="num">−{number(r['best_30d_down_move_pct'], 1)}%</td>
+<td class="num">{number(r['windows_30d_ge_10pct_up'])}</td>
+<td class="num">{number(r['windows_30d_ge_25pct_up'])}</td>
+<td class="num">{number(r['largest_abs_overnight_gap_pct'], 2)}%</td>
+<td class="num">{number(r['favorable_move_pct_needed_for_rank250_snapshot'], 2)}%</td>
+<td class="num {cls}">{money(r['rank250_pnl_if_best_30d_up_move_recurred_usd'], 0) if r['rank250_pnl_if_best_30d_up_move_recurred_usd'] is not None else '—'} ({flag})</td></tr>""")
+    add(f"""</tbody></table></div>
+<p class="note">Metric definitions: {esc('; '.join(f'{k} = {v}' for k, v in vol_intel['_meta']['metric_definitions'].items()))}.</p>
+<p class="file-links"><a href="data/market_history_index.json">Capture index (JSON)</a>
+<a href="data/volatility_intelligence.json">Volatility records (JSON)</a></p></section>""")
+
+
     # Strategy models
     add(f"""<section id="strategies"><h2>Strategy candidates and test tools</h2>
-<p class="lead">The models are pre-registered before a result exists. Their purpose is to test
-long/short volatility-expansion mechanisms on eligible TradingView charts—not to predict a winner.</p>
+<p class="lead">The models were pre-registered before any result existed. Their purpose is to test
+long/short volatility-expansion mechanisms on eligible TradingView charts—not to predict a winner.
+The independent walk-forward results are in the <a href="#backtests">backtest lab</a> below;
+TradingView-platform Strategy Report validation remains a separate, still-pending step.</p>
 <div class="callout high"><h3>Platform status: {esc(models['_meta']['platform_validation_status'].replace('_', ' '))}</h3>
 <p>{esc(models['_meta']['platform_validation_reason'])}</p></div>
 <div class="grid cols-3">""")
@@ -321,6 +428,83 @@ are hypothetical broker-emulator results, not competition-account results.</p>
 <p class="file-links"><a href="research/strategy/the-leap-hypothesis-lab.pine">Pine source</a>
 <a href="research/strategy/models.json">Model register</a>
 <a href="research/strategy/testing-plan.md">Full testing protocol</a></p></section>""")
+
+    # Backtest lab (independent daily-bar simulation)
+    bt_meta = backtests["_meta"]
+    bt_stamp = bt_meta["generated_utc"]
+    bt_syms = bt_meta["symbols_tested"]
+    rank250_usd = bt_meta["contest_constants"]["rank250_target_usd"]
+    add(f"""<section id="backtests"><h2>Backtest lab — first walk-forward results</h2>
+<p class="lead">The three pre-registered models were run through the repository's own deterministic
+engine on the captured vendor daily bars: non-overlapping 30-calendar-day windows, each starting
+from a fresh {money(cfg['starting_balance_virtual_usd'], 0)} account at {number(cfg['futures_leverage_ratio'], 0)}:1, across
+{len(bt_syms)} symbols with sufficient history. These are independent daily-bar simulations —
+NOT TradingView Strategy Report results, NOT competition-account results, and NOT recommendations.</p>
+<div class="callout high"><h3>Read the verdicts correctly</h3>
+<p>Verdicts apply each model's pre-registered falsification rule plus the testing plan's T5
+decision rules. A "refuted" verdict means the rule fired (for example a non-positive median
+across windows) — it does not prove the mechanism can never win a window, and a handful of
+extreme windows can still exist. Engine re-runs are byte-verified by the offline verifier.</p></div>
+<div class="grid cols-3">""")
+    for m in backtests["models"]:
+        zero = m["scenarios"]["zero"]
+        pill = STATUS_PILL.get(m["verdict"], "mut")
+        reasons = " ".join(m["verdict_reasons"][:2])
+        add(f"""<article class="card strategy-card" data-verdict="{esc(m['id'])}"><div class="model-head"><span class="mono">{esc(m['id'])}</span><span class="pill {pill}">{esc(m['verdict'])}</span></div>
+<h3>{esc(m['name'])}</h3>
+<div class="stat accent">{money(zero['median_net_profit_usd'], 0)}</div>
+<div class="note">median net profit per 30-day window (zero-cost, compounding sizing)</div>
+<dl><dt>Windows / trades</dt><dd>{number(zero['windows'])} / {number(zero['trades'])}</dd>
+<dt>Bootstrap 95% CI of median</dt><dd>{money(zero['bootstrap95_median_ci_usd'][0], 0)} … {money(zero['bootstrap95_median_ci_usd'][1], 0)}</dd>
+<dt>Windows ≥ 5x / ≥ 10x</dt><dd>{number(zero['windows_ge_5x'])} / {number(zero['windows_ge_10x'])}</dd>
+<dt>Best window</dt><dd>{esc(zero['best_window']['symbol'])} {esc(zero['best_window']['start'])} → {esc(zero['best_window']['end'])}: {money(zero['best_window']['net_profit_usd'], 0)} ({number(zero['best_window']['equity_multiple'], 2)}x)</dd>
+<dt>Why</dt><dd>{esc(reasons)}</dd></dl></article>""")
+    add(f"""</div>
+<h3>Cost-scenario medians (net profit per window, compounding sizing)</h3>
+<div class="table-wrap"><table id="bt-scenarios"><thead><tr><th>Model</th><th class="num">Zero cost</th>
+<th class="num">Moderate ({esc(bt_meta['cost_scenarios']['moderate']['label'])})</th>
+<th class="num">High ({esc(bt_meta['cost_scenarios']['high']['label'])})</th>
+<th class="num">Positive windows (zero)</th><th class="num">Ruin windows (zero)</th></tr></thead><tbody>""")
+    for m in backtests["models"]:
+        z, mo, hi = (m["scenarios"][k] for k in ("zero", "moderate", "high"))
+        add(f"""<tr><td class="sym">{esc(m['id'])} — {esc(m['name'])}</td>
+<td class="num">{money(z['median_net_profit_usd'], 0)}</td>
+<td class="num">{money(mo['median_net_profit_usd'], 0)}</td>
+<td class="num">{money(hi['median_net_profit_usd'], 0)}</td>
+<td class="num">{number(z['positive_windows_pct'], 1)}%</td>
+<td class="num">{number(z['ruined_windows'])}</td></tr>""")
+    add(f"""</tbody></table></div>
+<h3>Median net profit by symbol (zero cost, compounding sizing)</h3>
+<div class="table-wrap"><table id="bt-symbols"><thead><tr><th>Symbol</th>""")
+    for m in backtests["models"]:
+        add(f"<th class=\"num\">{esc(m['id'])} median $</th>")
+    add("</tr></thead><tbody>")
+    sym_set = []
+    for m in backtests["models"]:
+        for s in m["scenarios"]["zero"]["by_symbol_median_net_profit_usd"]:
+            if s not in sym_set:
+                sym_set.append(s)
+    for s in sym_set:
+        cells = []
+        for m in backtests["models"]:
+            v = m["scenarios"]["zero"]["by_symbol_median_net_profit_usd"].get(s)
+            cls = "up" if (v or 0) > 0 else "down"
+            cells.append(f'<td class="num {cls}">{money(v, 0) if v is not None else "—"}</td>')
+        add(f'<tr><td class="sym">{esc(s)}</td>{"".join(cells)}</tr>')
+    add(f"""</tbody></table></div>
+<details class="assumptions"><summary>Sensitivity grid and declared assumptions</summary><ul>""")
+    for a in bt_meta["assumptions"]:
+        add(f"<li>{esc(a)}</li>")
+    add("<li>Sensitivity variants (run at zero and moderate cost): "
+        + esc("; ".join(f"{mid}: " + ", ".join(f"{label} = {params}" for label, params in grid.items())
+                        for mid, grid in bt_meta["sensitivity_grid"].items())) + "</li>")
+    add(f"""</ul></details>
+<p class="note">Symbols excluded from testing and why: {esc('; '.join(f"{e['symbol']}: {e['reason']}" for e in bt_meta['symbols_excluded']) or 'none')}.</p>
+<p class="note">Target context: the captured rank-{target_rank} P/L is {money(rank250_usd)} (snapshot {esc(bt_meta['contest_constants']['rank250_target_snapshot_utc'])}); a window counts as hitting the target when its net profit reaches that figure at that snapshot.</p>
+<p class="note">Artifact stamp: <code>{esc(bt_stamp)}</code> — every run is byte-reproducible from the committed vendor captures via <code>python3 scripts/run_backtests.py --stamp {esc(bt_stamp)}</code>; the verifier re-runs exactly that and requires identical output.</p>
+<p class="file-links"><a href="data/backtest_results.json">Full results (JSON)</a>
+<a href="research/strategy/testing-plan.md">Testing protocol</a>
+<a href="intel/">Engine source (intel/)</a></p></section>""")
 
     # Contest returns
     add(f"""<section id="returns"><h2>Official simulated contest outcomes</h2>

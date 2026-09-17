@@ -269,3 +269,8 @@ summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
   .grid.cols-2 { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Delta indicators (frontier drift, cross-source deltas, per-symbol backtest medians) */
+.up { color: var(--green, #3fb950); }
+.down { color: var(--red, #f85149); }
+td.num .up, td.num .down { font-size: 12px; font-family: var(--mono); }
