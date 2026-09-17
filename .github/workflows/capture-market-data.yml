@@ -8,6 +8,11 @@ name: Capture market data
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - "scripts/fetch_market_data.py"
+      - ".github/workflows/capture-market-data.yml"
 
 permissions:
   contents: read
