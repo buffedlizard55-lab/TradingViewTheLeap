@@ -69,9 +69,11 @@ SYMBOL_MAP = [
     ("CME_MINI:NQ1!", "NQ=F"),
 ]
 
-ENDPOINT_TEMPLATE = (
+ENDPOINT_TEMPLATES = (
     "https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
-    "?period1={period1}&period2={period2}&interval=1d"
+    "?period1={period1}&period2={period2}&interval=1d",
+    "https://query2.finance.yahoo.com/v8/finance/chart/{ticker}"
+    "?period1={period1}&period2={period2}&interval=1d",
 )
 
 USER_AGENT = (
@@ -79,7 +81,11 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 )
 
-SCRIPT_VERSION = "1"
+SCRIPT_VERSION = "2"
+
+# Seconds to sleep between vendor requests. The vendor rate-limits bursts from
+# datacenter IP ranges; pacing the 20 requests costs a minute and avoids errors.
+INTER_REQUEST_DELAY_S = 3.0
 
 
 def epoch_of(iso_utc: str) -> int:
@@ -101,7 +107,7 @@ def fetch_bytes(url: str, attempts: int = 3, timeout: int = 45) -> bytes:
                 return response.read()
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
             last_error = exc
-            print(f"    attempt {attempt}/{attempts} failed: {exc}", flush=True)
+            print(f"    attempt {attempt}/{attempts} on {url.split('/')[2]} failed: {exc}", flush=True)
             time.sleep(3 * attempt)
     raise RuntimeError(f"GET failed after {attempts} attempts: {url} ({last_error})")
 
@@ -176,25 +182,60 @@ def main() -> int:
 
     fetched_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     records = []
+    failures = []
     for tv_symbol, yahoo_ticker in SYMBOL_MAP:
-        url = ENDPOINT_TEMPLATE.format(ticker=yahoo_ticker, period1=period1, period2=period2)
-        print(f"GET {tv_symbol} <- {yahoo_ticker}", flush=True)
-        payload = fetch_bytes(url)
-        path = os.path.join(args.out_dir, raw_filename(tv_symbol))
-        with open(path, "wb") as fh:
-            fh.write(payload)
-        record = summarize(payload, tv_symbol, yahoo_ticker, url)
-        record["file"] = path
-        record["sha256"] = hashlib.sha256(payload).hexdigest()
-        record["bytes"] = len(payload)
-        records.append(record)
-        print(
-            f"    {record['sessions_valid']}/{record['sessions_returned']} valid sessions "
-            f"{record['first_session_utc']} -> {record['last_session_utc']} "
-            f"({record['vendor_reported_contract']})",
-            flush=True,
-        )
+        payload = None
+        used_url = None
+        error_text = None
+        for template in ENDPOINT_TEMPLATES:
+            url = template.format(ticker=yahoo_ticker, period1=period1, period2=period2)
+            print(f"GET {tv_symbol} <- {url}", flush=True)
+            try:
+                payload = fetch_bytes(url)
+                used_url = url
+                break
+            except RuntimeError as exc:
+                error_text = str(exc)
+        if payload is None:
+            print(f"FAILED {tv_symbol}: {error_text}", flush=True)
+            failures.append({"tradingview_symbol": tv_symbol, "yahoo_ticker": yahoo_ticker,
+                             "error": error_text})
+            records.append({
+                "tradingview_symbol": tv_symbol,
+                "yahoo_ticker": yahoo_ticker,
+                "status": "failed",
+                "error": error_text,
+            })
+            continue
+        try:
+            path = os.path.join(args.out_dir, raw_filename(tv_symbol))
+            with open(path, "wb") as fh:
+                fh.write(payload)
+            record = summarize(payload, tv_symbol, yahoo_ticker, used_url)
+            record["file"] = path
+            record["sha256"] = hashlib.sha256(payload).hexdigest()
+            record["bytes"] = len(payload)
+            record["status"] = "captured"
+            records.append(record)
+            print(
+                f"    {record['sessions_valid']}/{record['sessions_returned']} valid sessions "
+                f"{record['first_session_utc']} -> {record['last_session_utc']} "
+                f"({record['vendor_reported_contract']})",
+                flush=True,
+            )
+        except (RuntimeError, ValueError, KeyError) as exc:
+            print(f"FAILED {tv_symbol}: {exc}", flush=True)
+            failures.append({"tradingview_symbol": tv_symbol, "yahoo_ticker": yahoo_ticker,
+                             "error": str(exc)})
+            records.append({
+                "tradingview_symbol": tv_symbol,
+                "yahoo_ticker": yahoo_ticker,
+                "status": "failed",
+                "error": str(exc),
+            })
+        time.sleep(INTER_REQUEST_DELAY_S)
 
+    captured = [r for r in records if r["status"] == "captured"]
     index = {
         "_meta": {
             "description": (
@@ -213,10 +254,13 @@ def main() -> int:
             "capture_environment": os.environ.get("CAPTURE_ENV", "local"),
             "workflow_run_url": os.environ.get("WORKFLOW_RUN_URL"),
             "symbol_count": len(records),
+            "captured_count": len(captured),
+            "failed_count": len(failures),
             "provenance_note": (
                 "Each record's endpoint reproduces the exact request; sha256 covers the stored "
                 "bytes. Re-run scripts/fetch_market_data.py in a networked environment to "
-                "refresh; the offline verifier audits these files without network access."
+                "refresh; the offline verifier audits these files without network access. "
+                "Records with status 'failed' carry the error text and must be retried."
             ),
         },
         "captures": records,
@@ -224,7 +268,17 @@ def main() -> int:
     with open(args.index, "w", encoding="utf-8") as fh:
         json.dump(index, fh, indent=1, sort_keys=False)
         fh.write("\n")
-    print(f"wrote {args.index} with {len(records)} captures", flush=True)
+    summary = (
+        f"captured {len(captured)}/{len(records)}"
+        + (f"; failures: " + ", ".join(
+            f"{f['tradingview_symbol']}({f['error'][-120:]})" for f in failures) if failures else "")
+    )
+    print(f"SUMMARY: {summary}", flush=True)
+    # GitHub Actions turns ::notice:: into an annotation readable without log access.
+    print(f"::notice::market-history capture {summary}", flush=True)
+    if not captured:
+        print("::error::market-history capture captured 0 symbols", flush=True)
+        return 1
     return 0
 
 
