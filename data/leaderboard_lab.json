@@ -3,7 +3,7 @@
     "kind": "deterministic_arithmetic_not_backtest",
     "description": "Leaderboard placement and prize arithmetic derived from official contest facts only: what each rank costs and what reaching it would require. Arithmetic, not a forecast.",
     "generated_utc": "2026-09-17",
-    "reference_capture_utc": "2026-09-17T20:58:00Z",
+    "reference_capture_utc": "2026-09-17T21:27:00Z",
     "input_files": [
       "data/contest_config.json",
       "data/frontier_history.json",
@@ -12,9 +12,9 @@
       "data/volatility_intelligence.json"
     ],
     "source_ids": [
-      "TV-RULES-AMP-SEP2026-R5",
-      "TV-CONTEST-AMP-SEP2026-R5",
-      "TV-THELEAP-LANDING-R5"
+      "TV-RULES-AMP-SEP2026-R6",
+      "TV-CONTEST-AMP-SEP2026-R6",
+      "TV-THELEAP-LANDING-R6"
     ],
     "assumptions": [
       "A balance multiple means ending balance / 250,000 starting balance; 5x means +400% net profit, not +500%.",
@@ -32,8 +32,8 @@
     "competition_end_utc": "2026-09-30T12:00:00Z",
     "registration_close_utc": "2026-09-23T08:00:00Z",
     "total_competition_days": 29.166667,
-    "remaining_days_at_latest_capture": 12.626389,
-    "registration_days_left_at_latest_capture": 5.459722
+    "remaining_days_at_latest_capture": 12.60625,
+    "registration_days_left_at_latest_capture": 5.439583
   },
   "prize_ladder": {
     "tiers": [
@@ -114,9 +114,9 @@
   "board": {
     "visible_ranks": 250,
     "cash_ranks": 50,
-    "participants_displayed": 96236,
-    "visible_share_of_participants_pct": 0.259778,
-    "cash_share_of_participants_pct": 0.051956,
+    "participants_displayed": 96268,
+    "visible_share_of_participants_pct": 0.259692,
+    "cash_share_of_participants_pct": 0.051938,
     "rank50_to_rank100_gap_pct": 22.598502,
     "rank100_to_rank250_gap_pct": 53.603543
   },
@@ -350,6 +350,52 @@
           "fresh_account_required_underlying_pct_per_day_at_20x": 0.539073
         }
       }
+    },
+    {
+      "captured_at_utc": "2026-09-17T21:27:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R6",
+      "participants_displayed": 96268,
+      "elapsed_days_since_start": 16.560417,
+      "remaining_days_to_deadline": 12.60625,
+      "registration_days_left": 5.439583,
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_usd": 2335125.0,
+          "realized_profit_pct": 934.05,
+          "balance_multiple": 10.3405,
+          "average_usd_per_day_since_start": 141006.415901,
+          "fresh_account_required_daily_compound_pct": 20.359188,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.017959
+        },
+        "50": {
+          "trader": "Nikola_Ng",
+          "realized_profit_usd": 1244313.5,
+          "realized_profit_pct": 497.73,
+          "balance_multiple": 5.9773,
+          "average_usd_per_day_since_start": 75137.813561,
+          "fresh_account_required_daily_compound_pct": 15.238297,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.761915
+        },
+        "100": {
+          "trader": "nynyyynn54",
+          "realized_profit_usd": 1014950.0,
+          "realized_profit_pct": 405.98,
+          "balance_multiple": 5.0598,
+          "average_usd_per_day_since_start": 61287.709146,
+          "fresh_account_required_daily_compound_pct": 13.724986,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.686249
+        },
+        "250": {
+          "trader": "mrchrissmithl143",
+          "realized_profit_usd": 660759.5,
+          "realized_profit_pct": 264.3,
+          "balance_multiple": 3.643,
+          "average_usd_per_day_since_start": 39899.932067,
+          "fresh_account_required_daily_compound_pct": 10.799592,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.53998
+        }
+      }
     }
   ],
   "targets": [
@@ -357,8 +403,8 @@
       "balance_multiple": 5,
       "required_net_profit_usd": 1000000.0,
       "required_net_profit_pct": 400,
-      "required_daily_compound_pct_over_remaining_window": 13.594648,
-      "required_underlying_pct_per_day_at_20x": 0.679732,
+      "required_daily_compound_pct_over_remaining_window": 13.617782,
+      "required_underlying_pct_per_day_at_20x": 0.680889,
       "full_leverage_winning_days_at_1pct_underlying": 9,
       "completed_champion_sample_at_or_above": 1
     },
@@ -366,8 +412,8 @@
       "balance_multiple": 10,
       "required_net_profit_usd": 2250000.0,
       "required_net_profit_pct": 900,
-      "required_daily_compound_pct_over_remaining_window": 20.004963,
-      "required_underlying_pct_per_day_at_20x": 1.000248,
+      "required_daily_compound_pct_over_remaining_window": 20.039929,
+      "required_underlying_pct_per_day_at_20x": 1.001996,
       "full_leverage_winning_days_at_1pct_underlying": 13,
       "completed_champion_sample_at_or_above": 1
     },
@@ -375,8 +421,8 @@
       "balance_multiple": 20,
       "required_net_profit_usd": 4750000.0,
       "required_net_profit_pct": 1900,
-      "required_daily_compound_pct_over_remaining_window": 26.777022,
-      "required_underlying_pct_per_day_at_20x": 1.338851,
+      "required_daily_compound_pct_over_remaining_window": 26.825083,
+      "required_underlying_pct_per_day_at_20x": 1.341254,
       "full_leverage_winning_days_at_1pct_underlying": 17,
       "completed_champion_sample_at_or_above": 1
     },
@@ -384,8 +430,8 @@
       "balance_multiple": 50,
       "required_net_profit_usd": 12250000.0,
       "required_net_profit_pct": 4900,
-      "required_daily_compound_pct_over_remaining_window": 36.319215,
-      "required_underlying_pct_per_day_at_20x": 1.815961,
+      "required_daily_compound_pct_over_remaining_window": 36.386705,
+      "required_underlying_pct_per_day_at_20x": 1.819335,
       "full_leverage_winning_days_at_1pct_underlying": 22,
       "completed_champion_sample_at_or_above": 1
     },
@@ -393,8 +439,8 @@
       "balance_multiple": 100,
       "required_net_profit_usd": 24750000.0,
       "required_net_profit_pct": 9900,
-      "required_daily_compound_pct_over_remaining_window": 44.011911,
-      "required_underlying_pct_per_day_at_20x": 2.200596,
+      "required_daily_compound_pct_over_remaining_window": 44.095846,
+      "required_underlying_pct_per_day_at_20x": 2.204792,
       "full_leverage_winning_days_at_1pct_underlying": 26,
       "completed_champion_sample_at_or_above": 0
     }

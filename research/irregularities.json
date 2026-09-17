@@ -10,7 +10,7 @@
     ],
     "count": 24,
     "reverified_utc": "2026-09-17",
-    "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14.",
+    "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
     "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
   },
   "irregularities": [
@@ -25,7 +25,7 @@
         "TV-CONTEST-MAG7-MAR2026",
         "TV-RULES-AMP-SEP2026"
       ],
-      "resolution": "Either target a future stocks edition (the 'Magnificent Seven' stocks edition of March 2026 completed with a winning return of only +17.58% \u2014 see TV-CONTEST-MAG7-MAR2026), or translate the volatility research into the futures universe. This session built data/volatile_stocks.json as the evidence base for what extreme stock volatility actually delivers, and the futures master list for what the live contest actually allows.",
+      "resolution": "Either target a future stocks edition (the 'Magnificent Seven' stocks edition of March 2026 completed with a winning return of only +17.58% — see TV-CONTEST-MAG7-MAR2026), or translate the volatility research into the futures universe. This session built data/volatile_stocks.json as the evidence base for what extreme stock volatility actually delivers, and the futures master list for what the live contest actually allows.",
       "linked_hypothesis": "H3"
     },
     {
@@ -88,7 +88,7 @@
       "id": "IR-06",
       "severity": "medium",
       "title": "Prize cut-off (300) is not visible on the public leaderboard (250 rows)",
-      "detail": "The rules award prizes to the first 300 participants, but the contest page exposes only the top 250. A participant in ranks 251\u2013300 cannot verify the prize frontier from the public table, so a public rank-300 threshold must not be invented.",
+      "detail": "The rules award prizes to the first 300 participants, but the contest page exposes only the top 250. A participant in ranks 251–300 cannot verify the prize frontier from the public table, so a public rank-300 threshold must not be invented.",
       "observed": "Latest captured page: top 250 out of 93,527 displayed participants; rules award no more than 300 prizes.",
       "expected_by_brief": "Observable prize boundary.",
       "source_ids": [
@@ -132,11 +132,11 @@
       "severity": "low",
       "title": "Live participant counters differ across pages and capture times",
       "detail": "TradingView landing and contest pages displayed slightly different participant counts when fetched at different moments. The live registration counter increased during the day. This is consistent with asynchronous snapshots rather than a fixed-data contradiction.",
-      "observed": "Latest captured pair (same session, 2026-09-17 ~20:56-20:58Z): contest page 96,236 versus landing page 96,230. Earlier same-day pairs: 96,095 vs 96,089; contest counts rose 93,527 -> 93,702 -> 95,709 -> 96,095 -> 96,236 across the five captures.",
+      "observed": "Latest captured pair (same session, 2026-09-17 ~21:27Z): contest page 96,268 versus landing page 96,263. Previous pair ~20:58Z: 96,236 versus 96,230. Earlier same-day pairs: 96,095 vs 96,089; contest counts rose 93,527 -> 93,702 -> 95,709 -> 96,095 -> 96,236 -> 96,268 (+2,741 total across six captures).",
       "expected_by_brief": "n/a",
       "source_ids": [
-        "TV-THELEAP-LANDING-R5",
-        "TV-CONTEST-AMP-SEP2026-R5"
+        "TV-THELEAP-LANDING-R6",
+        "TV-CONTEST-AMP-SEP2026-R6"
       ],
       "resolution": "Every live count must carry a snapshot time or be described as displayed at capture; never combine counts from different fetches.",
       "linked_hypothesis": null,
@@ -162,8 +162,8 @@
       "severity": "medium",
       "status": "resolved_by_correction",
       "title": "Partial locator scan initially misidentified SMCI's 2022 trough as the all-time low",
-      "detail": "A 2018-onward monthly locator scan suggested SMCI's October 2022 close (adjclose ~5.03 monthly low / 5.242 daily close on 2022-10-12) was the all-time trough. A full-history monthly scan (2007 IPO onward) disproved it: monthly lows ran \u2248 0.44\u20130.51 (adjusted) in the 2008\u20132009 financial crisis. No all-time multiple was ever published from the partial scan; the verified SMCI record (22.66x) is explicitly window-bounded to the fetched 2022 trough window and 2024 peak window.",
-      "observed": "full-history monthly lows \u2248 0.44\u20130.51 (2008\u20132009) < 5.242 (2022-10-12).",
+      "detail": "A 2018-onward monthly locator scan suggested SMCI's October 2022 close (adjclose ~5.03 monthly low / 5.242 daily close on 2022-10-12) was the all-time trough. A full-history monthly scan (2007 IPO onward) disproved it: monthly lows ran ≈ 0.44–0.51 (adjusted) in the 2008–2009 financial crisis. No all-time multiple was ever published from the partial scan; the verified SMCI record (22.66x) is explicitly window-bounded to the fetched 2022 trough window and 2024 peak window.",
+      "observed": "full-history monthly lows ≈ 0.44–0.51 (2008–2009) < 5.242 (2022-10-12).",
       "expected_by_brief": "All-time extremes must come from all-time data.",
       "source_ids": [
         "YAHOO-MONTHLY-SMCI",
@@ -204,8 +204,8 @@
       "id": "IR-14",
       "severity": "medium",
       "title": "TradingView Paper Trading help omits point value from its displayed short-futures formula",
-      "detail": "The official help page displays the long-futures formula with Quantity \u00d7 Point Value. Its displayed short-futures formula omits Point Value, but the immediately following worked example multiplies by 10 contracts and a point value of 50 to obtain \u2212$125. The formula and example are internally inconsistent.",
-      "observed": "Displayed short formula: (Average Fill Price \u2212 Ask price) \u00d7 Quantity; worked example: (4520.25 \u2212 4520.50) \u00d7 10 \u00d7 50 = \u2212125 USD.",
+      "detail": "The official help page displays the long-futures formula with Quantity × Point Value. Its displayed short-futures formula omits Point Value, but the immediately following worked example multiplies by 10 contracts and a point value of 50 to obtain −$125. The formula and example are internally inconsistent.",
+      "observed": "Displayed short formula: (Average Fill Price − Ask price) × Quantity; worked example: (4520.25 − 4520.50) × 10 × 50 = −125 USD.",
       "expected_by_brief": "Unambiguous official P/L formula.",
       "source_ids": [
         "TV-PAPER-PNL"
@@ -219,8 +219,8 @@
       "severity": "medium",
       "status": "confirmed",
       "title": "Cash-prize target differs from the last publicly visible rank",
-      "detail": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
-      "observed": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+      "detail": "Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+      "observed": "Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
       "expected_by_brief": "Autonomous research toward a competition prize.",
       "source_ids": [
         "TV-RULES-AMP-SEP2026"
@@ -233,8 +233,8 @@
       "severity": "medium",
       "status": "confirmed",
       "title": "No-manual-input research does not imply unattended prize collection",
-      "detail": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
-      "observed": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+      "detail": "Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+      "observed": "Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
       "expected_by_brief": "Autonomous research toward a competition prize.",
       "source_ids": [
         "TV-RULES-AMP-SEP2026"

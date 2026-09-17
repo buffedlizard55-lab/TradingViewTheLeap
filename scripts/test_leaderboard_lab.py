@@ -86,11 +86,13 @@ class LeaderboardLabTests(unittest.TestCase):
 
     def test_daily_equity_path_matches_stated_rate(self):
         # Growth at the stated daily rate must reach the target multiple it was derived from.
-        for t in build()["targets"]:
-            grew = (1 + t["required_daily_compound_pct_over_remaining_window"] / 100) ** 12.626389
-            self.assertLess(abs(grew - t["balance_multiple"]), 0.01)
-        for row in build()["captures"][-1]["rows"].values():
-            grew = (1 + row["fresh_account_required_daily_compound_pct"] / 100) ** 12.626389
+        lab = build()
+        remaining = lab["captures"][-1]["remaining_days_to_deadline"]
+        for target in lab["targets"]:
+            grew = (1 + target["required_daily_compound_pct_over_remaining_window"] / 100) ** remaining
+            self.assertLess(abs(grew - target["balance_multiple"]), 0.01)
+        for row in lab["captures"][-1]["rows"].values():
+            grew = (1 + row["fresh_account_required_daily_compound_pct"] / 100) ** remaining
             self.assertLess(abs(grew - row["balance_multiple"]), 0.01)
 
     def test_instrument_rows_join_capacity_and_volatility(self):
@@ -131,15 +133,15 @@ class LeaderboardLabTests(unittest.TestCase):
         self.assertIn("Maximum exposure cuts both ways", flat)
         self.assertIn("It is arithmetic, not a forecast or a strategy result.", flat)
         self.assertIn("data/leaderboard_lab.json", flat)
-        # the section must link to the same official pages the capture sources point at
+        # the section must link to the same official pages the latest captured sources point at
         sources = {s["source_id"]: s["url"] for s in
                    json.loads((ROOT / "research/sources/sources.json").read_text())["sources"]}
-        for sid in ("TV-CONTEST-AMP-SEP2026-R5", "TV-RULES-AMP-SEP2026-R5", "TV-THELEAP-LANDING-R5"):
+        lab_latest = build()
+        for sid in lab_latest["_meta"]["source_ids"]:
             self.assertIn(f'href="{sources[sid]}"', flat)
         # every rendered figure traces back to the artifact
-        lab = build()
-        self.assertIn(f"{lab['captures'][-1]['rows']['50']['balance_multiple']}×", flat)
-        self.assertIn(f"+{round(lab['captures'][-1]['rows']['50']['fresh_account_required_daily_compound_pct'], 2)}%/day", flat)
+        self.assertIn(f"{lab_latest['captures'][-1]['rows']['50']['balance_multiple']}×", flat)
+        self.assertIn(f"+{round(lab_latest['captures'][-1]['rows']['50']['fresh_account_required_daily_compound_pct'], 2)}%/day", flat)
 
 
 if __name__ == "__main__":
