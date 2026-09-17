@@ -1,4 +1,4 @@
-.PHONY: all verify selftest site serve clean check backtest capture
+.PHONY: all verify selftest site serve clean check backtest capture refresh
 
 all: check
 
@@ -13,6 +13,11 @@ backtest:
 
 capture:
 	python3 scripts/fetch_market_data.py
+
+# Re-derive all downstream artifacts after the raw captures change (backtests,
+# volatility screen, models.json sync, site rebuild). Run this after `capture`.
+refresh:
+	python3 scripts/refresh_artifacts.py
 
 selftest:
 	python3 scripts/verify.py --self-test

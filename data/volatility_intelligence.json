@@ -2,11 +2,11 @@
  "_meta": {
   "description": "Realized-volatility and explosive-move metrics recomputed from the committed vendor captures. Rolling 30-day windows overlap (one window per bar). The 'if best move recurred' fields are arithmetic illustrations at the modeled initial notional - an upper envelope of what history offered, NOT a forecast and NOT a backtest.",
   "engine": "intel-1",
-  "generated_utc": "2026-09-17T02:44:53+00:00",
+  "generated_utc": "2026-09-17T03:15:40+00:00",
   "data_source": "data/market_history_index.json",
   "rank250_target_usd": 623689.0,
   "rank250_target_snapshot_utc": "2026-09-16T21:39:34Z",
-  "symbol_count": 10,
+  "symbol_count": 11,
   "metric_definitions": {
    "ann_vol_pct": "stddev of daily log returns x sqrt(252) x 100",
    "atr14_pct": "ATR(14) / close x 100",
@@ -420,6 +420,51 @@
    "favorable_move_pct_needed_for_rank250_snapshot": 27.938362,
    "rank250_pnl_if_best_30d_up_move_recurred_usd": 1122884.62,
    "note_if_best_move_exceeds_rank250_requirement": true
+  },
+  {
+   "symbol": "CME:BTC1!",
+   "sessions": 504,
+   "first_session": "2024-09-17",
+   "last_session": "2026-09-17",
+   "last_close": 76480.0,
+   "ann_vol_full_pct": 45.8,
+   "ann_vol_last_1y_pct": 45.58,
+   "mean_atr14_pct": 4.219,
+   "max_atr14_pct": 7.379,
+   "largest_abs_overnight_gap_pct": 13.65,
+   "largest_gap_date": "2025-03-03",
+   "top3_abs_daily_moves_pct": [
+    {
+     "date": "2024-11-11",
+     "abs_move_pct": 13.41,
+     "direction": "up"
+    },
+    {
+     "date": "2026-02-05",
+     "abs_move_pct": 13.29,
+     "direction": "down"
+    },
+    {
+     "date": "2026-02-06",
+     "abs_move_pct": 10.13,
+     "direction": "up"
+    }
+   ],
+   "rolling_30d_windows_scanned": 500,
+   "windows_30d_ge_10pct_up": 180,
+   "windows_30d_ge_25pct_up": 37,
+   "windows_30d_ge_50pct_up": 0,
+   "windows_30d_ge_10pct_down": 116,
+   "windows_30d_ge_25pct_down": 20,
+   "windows_30d_ge_50pct_down": 0,
+   "best_30d_up_move_pct": 48.79,
+   "best_30d_up_start_date": "2024-10-23",
+   "best_30d_down_move_pct": 34.88,
+   "best_30d_down_start_date": "2026-01-14",
+   "modeled_initial_notional_usd": 380425.0,
+   "favorable_move_pct_needed_for_rank250_snapshot": 163.945324,
+   "rank250_pnl_if_best_30d_up_move_recurred_usd": 185609.36,
+   "note_if_best_move_exceeds_rank250_requirement": false
   },
   {
    "symbol": "CME_MINI:NQ1!",

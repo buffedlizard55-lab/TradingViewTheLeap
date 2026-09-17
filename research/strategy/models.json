@@ -30,11 +30,11 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
-    "windows": 210,
-    "trades_zero_cost": 70,
+    "run_stamp_utc": "2026-09-17T03:15:40+00:00",
+    "windows": 231,
+    "trades_zero_cost": 74,
     "median_net_profit_usd_zero_cost": 0.0,
-    "mean_net_profit_usd_zero_cost": 12528.5,
+    "mean_net_profit_usd_zero_cost": 11400.8,
     "windows_ge_5x_zero_cost": 3,
     "verdict_reasons": [
      "walk-forward median net profit (zero-cost) is $0.0, not positive",
@@ -56,11 +56,11 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
-    "windows": 210,
-    "trades_zero_cost": 28,
+    "run_stamp_utc": "2026-09-17T03:15:40+00:00",
+    "windows": 231,
+    "trades_zero_cost": 30,
     "median_net_profit_usd_zero_cost": 0.0,
-    "mean_net_profit_usd_zero_cost": -2986.1,
+    "mean_net_profit_usd_zero_cost": -2475.13,
     "windows_ge_5x_zero_cost": 0,
     "verdict_reasons": [
      "walk-forward median net profit (zero-cost) is $0.0, not positive",
@@ -85,17 +85,17 @@
    "result": {
     "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
     "artifact": "data/backtest_results.json",
-    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
-    "windows": 210,
-    "trades_zero_cost": 4,
+    "run_stamp_utc": "2026-09-17T03:15:40+00:00",
+    "windows": 231,
+    "trades_zero_cost": 5,
     "median_net_profit_usd_zero_cost": 0.0,
-    "mean_net_profit_usd_zero_cost": 123.93,
+    "mean_net_profit_usd_zero_cost": 132.58,
     "windows_ge_5x_zero_cost": 0,
     "verdict_reasons": [
      "walk-forward median net profit (zero-cost) is $0.0, not positive",
      "excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol",
      "excluding the single best window flips the pooled median non-positive ($0.0) - the result depends on one window",
-     "total closed trades (4) is too small for the declared bootstrap confidence interval",
+     "total closed trades (5) is too small for the declared bootstrap confidence interval",
      "small parameter change (band15) erases the result (median $0.0)",
      "small parameter change (band25) erases the result (median $0.0)"
     ]

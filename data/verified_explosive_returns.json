@@ -9,8 +9,8 @@
   ],
   "derivation": "return_multiple = 1 + net_profit_pct_as_published / 100. This is the only transformation applied; it is arithmetic on a published figure.",
   "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session.",
-  "reverified_utc": "2026-09-16",
-  "reverification_note": "2026-09-16 audit pass: 15 completed records re-checked against the official landing page. The in-progress row was refreshed from the live contest page at 2026-09-16T21:39:34Z: rank 1 +921.49% / +$2,303,725.00 and 93,527 displayed participants. It is a snapshot, not a final result."
+  "reverified_utc": "2026-09-17",
+  "reverification_note": "2026-09-17 re-verification: all 15 completed-edition champion records (handle, participant count, published net-profit percentage, results URL) re-read from the official landing page and identical to the 2026-09-16 capture (see research/evidence/TV-THELEAP-LANDING-R3.md). The in-progress row remains synchronized to the 2026-09-16T21:39:34Z live snapshot by construction; the newer rank-1 value (+934.05%, 95,709 participants, 2026-09-17T16:56:00Z) is recorded in data/frontier_history.json capture 3."
  },
  "records": [
   {
