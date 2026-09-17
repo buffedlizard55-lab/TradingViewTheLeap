@@ -7,7 +7,7 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 81,
+  "source_count": 84,
   "reverified_utc": "2026-09-17",
   "reverification_note": "2026-09-17 re-verification pass: the live rules page, the live contest page (third leaderboard capture) and the landing-page champions list were re-fetched and diffed line by line against the 2026-09-16 transcriptions. No rule constant, no universe entry, no champion record changed. Three new re-capture source records added (TV-CONTEST-AMP-SEP2026-R3, TV-RULES-AMP-SEP2026-R3, TV-THELEAP-LANDING-R3). The 2026-09-17 automated market-data pass also captured CME:BTC1! (504 sessions) after four relay attempts; see IR-21."
  },
@@ -1464,6 +1464,47 @@
     "Re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged as of 2026-09-17"
    ],
    "evidence_file": "research/evidence/TV-THELEAP-LANDING-R3.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,095)",
+    "Observation that the displayed rank-50 frontier decreased $3,583.50 versus the 16:56Z capture while ranks 100/250 rose (IR-23, H20)",
+    "Prize-block re-confirmation ($10,000/$7,000/$6,000/$3,500/$2,500/$550/$400/3-month subscription; top 300 win)"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth line-by-line re-verification: dates, 250,000 balance, 20:1 leverage, 5 active days, 94-symbol universe with per-instrument caps (0 equities, programmatic diff 94/94 identical including order), ranking metric, auto-close, 60/min rate limit, prize ladder, 50,000 ARV, payment methods, tie rule, disqualification clause"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R4.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged (maximum remains 53.2072x, none at or above 100x)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R4.md",
    "official_source": true
   }
  ]

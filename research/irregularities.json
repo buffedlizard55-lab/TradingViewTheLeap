@@ -8,10 +8,10 @@
    "medium",
    "low"
   ],
-  "count": 22,
+  "count": 23,
   "reverified_utc": "2026-09-17",
   "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14.",
-  "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9)."
+  "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only)."
  },
  "irregularities": [
   {
@@ -318,6 +318,21 @@
    "severity": "low",
    "resolution": "Open, informational. Will tighten automatically once SIC=F accumulates multi-session history and the quote snapshot is refreshed in a later session.",
    "linked_hypothesis": null
+  },
+  {
+   "id": "IR-23",
+   "severity": "medium",
+   "title": "Displayed rank-50 frontier decreased between two same-day captures; the board is corrected, not append-only",
+   "detail": "Between 2026-09-17T16:56:00Z and 2026-09-17T19:04:00Z the displayed rank-50 realized P/L fell from +$1,247,897.00 to +$1,244,313.50 (-$3,583.50), and the exact row value previously at rank 50 (trader rajgaurav009, same percentage and dollars) appeared at rank 49. Realized P/L on closed positions cannot shrink for a still-registered account, so the net effect is exactly one fewer row ahead of it; the most parsimonious explanation is one removal from the public board among rows ranked 1-48 at capture 3 (disqualification or correction). Official rules sections 05, 09 and 16 reserve at-any-time disqualification rights; the official pages publish no board-change log, so removals are only observable indirectly, as here.",
+   "observed": "Capture 3 -> capture 4: rank 1 unchanged at +$2,335,125.00; rank 50 -$3,583.50 with the previous row intact one place higher at rank 49; rank 100 +$12,309.65; rank 250 +$2,235.50; participants 95,709 -> 96,095.",
+   "expected_by_brief": "A leaderboard frontier is a ratchet: it can only rise as the contest progresses.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R3",
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4"
+   ],
+   "resolution": "Treat every captured frontier as a point-in-time display, never as a guaranteed floor or final threshold. The verifier enforces profit ordering only within a capture, never across captures. Hypothesis H20 records the observation and its test.",
+   "linked_hypothesis": "H20"
   }
  ]
 }
