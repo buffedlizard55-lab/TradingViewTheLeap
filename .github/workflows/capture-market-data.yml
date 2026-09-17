@@ -1,10 +1,13 @@
 name: Capture market data
 
 # Intelligence-layer ingestion pipeline. Fetches daily-bar market history for the
-# selected contest futures from the Yahoo Finance chart endpoint and commits the
-# raw captures to the triggering branch. The offline repository verifier then
-# audits the committed files; nothing here is trusted until verify.py passes.
-# Attempt 4 (2026-09-17): third retry pass for BTC=F/XRP=F/MXP=F relay 522s.
+# selected contest futures from the Yahoo Finance chart endpoint, re-derives the
+# downstream artifacts (backtests, volatility screen, models.json sync, site) via
+# scripts/refresh_artifacts.py, and commits raw captures + artifacts to the
+# triggering branch. The offline repository verifier then audits the committed
+# files; nothing here is trusted until verify.py passes.
+# Attempt 5 (2026-09-17): fourth pass captured BTC=F (relay 522s resolved);
+# artifact-refresh step added so determinism checks stay green after captures.
 
 on:
   workflow_dispatch:
@@ -50,6 +53,12 @@ jobs:
             --out-dir data/market_history \
             --index data/market_history_index.json $EXTRA
 
+      - name: Re-derive downstream artifacts (backtests, models sync, site)
+        # The verifier re-runs the backtest engine with the committed stamp and requires
+        # byte-identical artifacts; after the raw captures change, run_backtests.py must be
+        # re-run (stamp = index fetched_at_utc) and models.json/index.html must be resynced.
+        run: python3 scripts/refresh_artifacts.py
+
       - name: Archive raw contest leaderboard page (best effort, for frontier parsing)
         continue-on-error: true
         run: |
@@ -64,11 +73,13 @@ jobs:
             echo "::notice::leaderboard page archive empty"
           fi
 
-      - name: Commit captures to the triggering branch
+      - name: Commit captures + re-derived artifacts to the triggering branch
         run: |
           git config user.name "github-actions[capture]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/market_history data/market_history_index.json
+          git add data/backtest_results.json data/volatility_intelligence.json
+          git add research/strategy/models.json index.html
           [ -d artifact_pages ] && git add artifact_pages || true
           if git diff --cached --quiet; then
             echo "::notice::nothing to commit (captures unchanged)"

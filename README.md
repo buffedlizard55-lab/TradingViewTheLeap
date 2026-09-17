@@ -8,11 +8,38 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 second pass: full official re-verification + third frontier capture
+
+On 2026-09-17 (~16:55 UTC) all three official pages were re-fetched and verified line by line:
+
+- **Rules re-verified, zero changes:** every rule constant in
+  [data/contest_config.json](data/contest_config.json) re-read from the
+  [official rules](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) —
+  dates, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, auto-close, prize
+  ladder, 50,000 ARV, payment methods. The 94-symbol universe was diffed programmatically,
+  line by line: **94/94 symbols and all 94 position caps identical, 0 equity symbols**
+  ([evidence](research/evidence/TV-RULES-AMP-SEP2026-R3.md)).
+- **Third frontier capture (16:56 UTC, 95,709 participants):** all four public frontiers rose
+  during the US trading day — rank 1 +934.05% / +$2,335,125.00, rank 50 +499.16% /
+  +$1,247,897.00, rank 100 +399.96% / +$999,892.85, rank 250 +262.03% / +$655,069.50.
+  New hypotheses **H18** (frontier non-stationarity) and **H19** (cash-frontier gap) are
+  supported ([evidence](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R3.md)).
+- **Champions re-verified:** all 15 completed-edition #1 records on the
+  [landing page](https://www.tradingview.com/the-leap/) are unchanged
+  ([evidence](research/evidence/TV-THELEAP-LANDING-R3.md)).
+- **BTC1! history captured:** the fourth automated pass (03:15 UTC, run 35177491162) succeeded
+  for BTC=F after three relay failures; the backtest panel is now **11 of 20** selected symbols
+  (231 windows). IR-21 downgraded: MXP=F's single session is newly-listed vendor history (IR-18),
+  not a relay failure.
+- **Pipeline fix:** automated captures now re-derive the backtest/volatility artifacts, sync
+  `models.json` stamps and rebuild the site before committing
+  (`scripts/refresh_artifacts.py`), so the determinism check can no longer go stale after a
+  capture pass.
+
 ## September 17 review and return-target lab
 
 Fresh official rules and champion-page review: [claim-by-claim audit, source quotations,
 limitations and prioritized next-session work](research/evidence/AUDIT-2026-09-17.md).
-This review does **not** refresh the September 16 leaderboard or price inputs below.
 
 - **Cash prizes end at rank 50**; ranks 51–300 receive subscriptions. Rank 250 is not a cash frontier.
 - New [target dataset](data/target_lab.json): 5×, 10×, 20×, 50× and 100× balance targets,
@@ -47,20 +74,32 @@ Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Fu
 | Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
 | Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-The live page displayed **93,527 participants**. Captured public frontiers were rank 1
-**+$2,303,725.00 (+921.49%)**, rank 50 **+$1,144,096.25 (+457.64%)**, rank 100
-**+$960,203.50 (+384.08%)**, and rank 250 **+$623,689.00 (+249.48%)**. These are moving snapshots,
-not final thresholds and not prize guarantees. See [`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
+The live page displayed **95,709 participants** at the 2026-09-17 ~16:56 UTC capture (third).
+Captured public frontiers at that capture: rank 1 **+$2,335,125.00 (+934.05%)**, rank 50
+**+$1,247,897.00 (+499.16%)**, rank 100 **+$999,892.85 (+399.96%)**, rank 250
+**+$655,069.50 (+262.03%)**. These are moving snapshots, not final thresholds and not prize
+guarantees. The first (2026-09-16) capture is the point-in-time record in
+[`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
 
 ### Frontier tracker
 
-A second official capture on **2026-09-17 ~00:30 UTC** (93,702 participants) moved the mid-board
-frontier: rank 50 **+$1,172,236.00 (+468.89%)**, rank 100 **+$971,231.00 (+388.49%)**, while rank 1
-and rank 250 were unchanged. Every capture is stored with its official URL in
+Three official captures are stored with their official URLs in
 [`data/frontier_history.json`](data/frontier_history.json); the verifier re-derives all deltas and
 percentage arithmetic and requires each capture's values to be internally consistent
 (`frontier.*` checks). The raw leaderboard HTML of each capture is archived under
 `artifact_pages/` for manual review.
+
+| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) |
+|---|---|---|---|
+| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) |
+| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) |
+| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) |
+| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) |
+| Participants | 93,527 | 93,702 | 95,709 |
+
+The 3-hour window between captures 1 and 2 froze rank 1 and 250 while the mid-board moved; during
+the US trading day before capture 3 **all four frontiers rose** and ranks 50/100/250 changed
+holders (H18, supported). The P/L needed to hold a public rank is a rising moving target.
 
 ## What the evidence says
 
@@ -71,8 +110,9 @@ percentage arithmetic and requires each capture's values to be internally consis
 3. **The live edition has no single stocks.** The 20-stock module is historical reference for a
    future stock edition, not a live tradable list.
 4. **All three pre-registered strategies are refuted on daily bars.** The independent walk-forward
-   simulation (below) produced a **$0.0 pooled median net profit** for S1, S2 and S3 across 210
-   windows, with concentration and sensitivity failures on top (H14–H16).
+   simulation (below) produced a **$0.0 pooled median net profit** for S1, S2 and S3 across 231
+   windows (11 symbols), with concentration and sensitivity failures on top (H14–H16). Adding
+   CME:BTC1! to the panel did not change any verdict.
 5. **Volatility alone cannot rank instruments.** Dollar P/L also depends on price, multiplier,
    contracts, the rules cap, and buying power. The volatility screen (below) ranks captured symbols
    by historical 30-day moves versus the move each needs to reach the captured rank-250 frontier
@@ -97,9 +137,13 @@ fetches 2 years of daily bars (2024-09-17 → 2026-09-18) for the 20 selected fu
 Finance chart endpoint, with a relay-transport fallback for datacenter-IP blocks (IR-17). It writes
 raw vendor bytes per symbol plus [`data/market_history_index.json`](data/market_history_index.json)
 (SHA-256, endpoint, transport, session counts per record). Captured 2026-09-17 over four automated
-passes: **10 symbols with 503 sessions** (CL1!, QM1!, RB1!, HO1!, NG1!, SI1!, SIL1!, PL1!, NQ1!,
-ETH1!), **8 newly listed single-session symbols** (excluded, IR-20), and **2 persistent relay
-failures** (BTC1!, MXP1!, IR-21). Captures are `market_data_vendor` tier, spot-verified in-session and
+passes; the fourth (03:15 UTC, run 35177491162) left **20/20 captured, 0 failed**: **11 symbols
+with full history** (CL1!, QM1!, RB1!, HO1!, NG1!, SI1!, SIL1!, PL1!, NQ1!, ETH1! at 503 sessions
+each; BTC1! at 504 — its three relay failures resolved on the fourth pass, IR-21) and **9 newly
+listed single-session symbols** (SOL1!, MSL1!, SIC1!, MBT1!, MET1!, MNG1!, MCL1!, XRP1!, MXP1! —
+excluded by the 150-bar minimum, IR-18). The workflow then re-derives all downstream artifacts via
+`scripts/refresh_artifacts.py` before committing, so the backtest determinism check stays green
+after every capture. Captures are `market_data_vendor` tier, spot-verified in-session and
 cross-checked against the official TradingView quote snapshot (warn >2%, fail >15%); see
 [`research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md`](research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md).
 
@@ -114,9 +158,12 @@ Results: [`data/backtest_results.json`](data/backtest_results.json).
 
 | Model | Verdict | Zero-cost median | Windows | Trades | ≥5x windows |
 |---|---|---:|---:|---:|---:|
-| S1 Donchian trend breakout | **refuted** | $0.0 | 210 | 70 | 3 (best 7.39x, single trade) |
-| S2 EMA impulse continuation | **refuted** | $0.0 | 210 | 28 | 0 (best 1.87x) |
-| S3 Bollinger squeeze release | **refuted** | $0.0 | 210 | 4 | 0 (best 1.16x) |
+| S1 Donchian trend breakout | **refuted** | $0.0 | 231 | 74 | 3 (best 7.39x, single trade) |
+| S2 EMA impulse continuation | **refuted** | $0.0 | 231 | 30 | 0 (best 1.87x) |
+| S3 Bollinger squeeze release | **refuted** | $0.0 | 231 | 5 | 0 (best 1.16x) |
+
+(Run stamp 2026-09-17T03:15:40+00:00, 11 symbols; S1's three ≥5x windows are single-trade
+Donchian breakouts in silver and crude.)
 
 Every per-symbol median is $0.0; means are outlier-driven (S1's three ≥5x windows are single-trade
 Donchian breakouts in silver and crude); S2's mean is negative in all cost scenarios; S3 fires too
@@ -133,7 +180,9 @@ prizes end at rank 50, see the target lab above) from each symbol's modeled init
 versus the best 30-day move actually delivered in the 2-year window. Full-size CL1!/HO1!/SI1!
 needed only ~12.7–12.9% and delivered 58–78%; NG1! (87.5% annualized, best 30-day +140.4%) needed
 86.3% because its margin-limited notional is small; QM1! and ETH1! are structurally priced out
-(needed +121.8% / +517.7%). This is simulation arithmetic on vendor data, not a prediction.
+(needed +121.8% / +517.7%); BTC1! (now with full history) needed +163.9% against a best 30-day
+up move of +48.8% because its 1-contract cap leaves a $380,425 modeled notional. This is
+simulation arithmetic on vendor data, not a prediction.
 
 ## Return datasets: keep these separate
 
@@ -186,6 +235,7 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `artifact_pages/` | Raw archived official pages (leaderboard HTML per capture) |
 | `scripts/verify.py` | Offline provenance, arithmetic, endpoint, backtest-audit, and mutation checks |
 | `scripts/run_backtests.py` | Deterministic backtest/volatility orchestrator (`--stamp` for byte reproducibility) |
+| `scripts/refresh_artifacts.py` | One-step post-capture refresh: re-run backtests, sync `models.json`, rebuild the site (used by the CI capture workflow) |
 | `scripts/fetch_market_data.py` | CI-side vendor capture with integrity checks and relay fallback |
 | `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
 
@@ -200,15 +250,22 @@ python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/run_backtests.py
 ```
 
+After the raw captures change (CI or manual `scripts/fetch_market_data.py`), re-derive the
+downstream artifacts in one step:
+
+```bash
+python3 scripts/refresh_artifacts.py   # re-run backtests, sync models.json, rebuild site
+```
+
 Current audit result:
 
 ```text
-verify:    312 passed, 0 failed, 2 warnings
-self-test: 348 passed, 0 failed, 0 warnings
+verify:    321 passed, 0 failed, 1 warning
+self-test: 357 passed, 0 failed, 1 warning
 ```
 
-The two verify warnings are recorded for review: a 2.09% vendor-vs-quote delta on the newly listed
-COMEX:SIC1!, and the two symbols excluded by persistent relay failures (IR-21).
+The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly
+listed COMEX:SIC1! (front-contract month and capture time may differ; tracked as IR-22).
 
 The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard
 arithmetic, capacity math, strategy result state, multipliers, return ratios, counts, stock
@@ -223,9 +280,11 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
   session this environment does not have.
 - **S1/S2/S3 are refuted on daily bars only.** Intraday bars could change signal frequency
   (S3 in particular fires too rarely on daily bars); no licensed intraday history is stored here.
-- **BTC1! and MXP1! have no captured history** (persistent relay failures across four passes, IR-21); the panel is
-  10 of 20 selected symbols. Eight more symbols are newly listed on the vendor with a single
-  session (IR-20).
+- **Nine selected symbols are newly listed on the vendor with a single session each**
+  (SOL1!, MSL1!, SIC1!, MBT1!, MET1!, MNG1!, MCL1!, XRP1!, MXP1!; IR-18); the backtest panel is
+  11 of 20 selected symbols. BTC1! now has full history (captured on the fourth automated pass,
+  IR-21 resolved for BTC=F). Their capacity arithmetic (rules cap x multiplier x price) is
+  verified from official sources and does not depend on vendor history.
 - The verifier is offline. Public pages were captured through the research environment and can
   change later; rerun the source-capture process for a new snapshot.
 - Live leaderboard and quote values are asynchronous point-in-time displays, not executable prices;
