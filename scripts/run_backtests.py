@@ -129,7 +129,10 @@ def build_volatility_intelligence(inputs: list[SymbolInput], stamp: str) -> dict
         needed = (
             cap_row["favorable_move_pct_needed_for_rank250_snapshot"] if cap_row else None
         )
-        best_up_pnl = round(best_up[0] / 100.0 * notional, 2) if notional else None
+        # Compute from the ROUNDED stored move so the verifier's re-derivation from
+        # stored fields is exact.
+        best_up_rounded = round(best_up[0], 2)
+        best_up_pnl = round(best_up_rounded / 100.0 * notional, 2) if notional else None
 
         rows.append({
             "symbol": inp.symbol,

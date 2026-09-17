@@ -255,3 +255,8 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 26px; }
   .snapshot-card { grid-template-columns: 1fr; }
   .snapshot-card code { text-align: left; }
 }
+
+/* Delta indicators (frontier drift, cross-source deltas, per-symbol backtest medians) */
+.up { color: var(--green, #3fb950); }
+.down { color: var(--red, #f85149); }
+td.num .up, td.num .down { font-size: 12px; font-family: var(--mono); }

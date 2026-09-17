@@ -1,4 +1,4 @@
-.PHONY: all verify selftest site serve clean check
+.PHONY: all verify selftest site serve clean check backtest capture
 
 all: check
 
@@ -7,6 +7,12 @@ check: verify site freshness
 
 verify:
 	python3 scripts/verify.py
+
+backtest:
+	python3 scripts/run_backtests.py
+
+capture:
+	python3 scripts/fetch_market_data.py
 
 selftest:
 	python3 scripts/verify.py --self-test

@@ -8,7 +8,7 @@
    "medium",
    "low"
   ],
-  "count": 14,
+  "count": 18,
   "reverified_utc": "2026-09-16",
   "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14."
  },
@@ -212,6 +212,56 @@
    "resolution": "Flag for manual review. The capacity model uses the contract multiplier symmetrically for directional point moves and does not quote the malformed short formula as complete.",
    "linked_hypothesis": null,
    "status": "confirmed"
+  },
+  {
+   "id": "IR-15",
+   "severity": "medium",
+   "title": "Market-data vendors block automated capture from datacenter IP ranges",
+   "detail": "Yahoo Finance returns HTTP 429 to every chart-API request made from the GitHub Actions runner range (both query1 and query2 hosts, confirmed by probe on 2026-09-17 with a browser User-Agent). Stooq returns a 795-byte JavaScript anti-bot challenge instead of CSV data. The capture pipeline therefore retries the identical vendor URLs through the public allorigins relay, a byte transport. Every relayed payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures; the transport used is recorded per symbol in data/market_history_index.json.",
+   "observed": "20/20 symbols HTTP 429 direct from runner; stooq cl.f..eth.f all returned the identical 795-byte JS challenge; allorigins relay returned the full 27,505-byte CL=F 1-year JSON with valid chart structure.",
+   "expected_by_brief": "Automated, reproducible ingestion of daily futures history from a free vendor.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ],
+   "resolution": "Open. The relay works but is a third-party dependency; a licensed feed (e.g. CME settlement-based continuous series) or a residential-IP capture remains the clean fix. Workflow probe annotations document the failure mode."
+  },
+  {
+   "id": "IR-16",
+   "severity": "low",
+   "title": "Four selected crypto futures have under five days of vendor history",
+   "detail": "SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to ['1d','5d']), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.",
+   "observed": "Each ticker returned exactly one bar on 2026-09-17 (e.g. SOL=F close 98.80000305175781) with validRanges ['1d','5d'].",
+   "expected_by_brief": "Testable history for every selected instrument.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ],
+   "resolution": "Open. These tickers will accumulate history over time; re-run the capture pipeline in later sessions. Their capacity arithmetic (rules cap x multiplier x price) is already verified from official sources and does not depend on vendor history."
+  },
+  {
+   "id": "IR-17",
+   "severity": "low",
+   "title": "Yahoo front-month close differs from the TradingView continuous quote by 3.32% for crude oil",
+   "detail": "For 2026-09-16, the captured Yahoo CL=F series closed at 105.83 while the TradingView CL1! overview page displayed 102.43. The Yahoo front contract is 'Crude Oil Oct 26' while the TradingView continuous series and the intraday capture time (16:49-17:23 GMT-4) differ. All other cross-checked symbols landed within 2%. The verifier warns above 2% and hard-fails above 15% to catch genuine ticker mix-ups.",
+   "observed": "|105.83 - 102.43| / 102.43 = 3.32%.",
+   "expected_by_brief": "Vendor and platform prices for the same underlying should be close enough to confirm the ticker mapping.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-QUOTE-CL1"
+   ],
+   "resolution": "Open, informational. Documented caveat for cross-source price comparisons; not treated as a mapping error."
+  },
+  {
+   "id": "IR-18",
+   "severity": "low",
+   "title": "Leaderboard frontier partially static across two captures while the mid-board moved",
+   "detail": "Between the 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z captures (~3 hours, US after-hours), rank 1 (leonardo22_romano, +$2,303,725.00) and rank 250 (luaguiar, +$623,689.00) were byte-identical, while rank 50 changed holder and rose $28,139.75 and rank 100 rose $11,027.50. Realized P/L only changes when positions close, so a static frontier is possible; the combination (edges frozen, middle moving) is recorded for pattern observation across future captures.",
+   "observed": "data/frontier_history.json rows 1 and 2; chandu0342 (former rank 50) held an identical value and slid to rank 53.",
+   "expected_by_brief": "Understanding how the prize frontier moves over time.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026-R2"
+   ],
+   "resolution": "Open. Continue capturing the frontier; if edge ranks stay frozen while participants join, the effective last-prize threshold may be stickier than the mid-board suggests."
   }
  ]
 }

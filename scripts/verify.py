@@ -68,7 +68,7 @@ OFFICIAL_DOMAINS = (
 MARKET_DATA_VENDOR_DOMAINS = ("yahoo.com",)
 
 SEVERITIES = ("critical", "high", "medium", "low")
-HYP_STATUSES = ("supported", "refuted", "untested", "partially_supported")
+HYP_STATUSES = ("supported", "refuted", "untested", "partially_supported", "inconclusive")
 VERIFY_STATUSES = ("fully_verified", "identity_verified", "pending_evidence")
 
 
@@ -395,6 +395,292 @@ def check_capacity(rep: Report, cfg: dict, snap: dict, master: dict, source_ids:
         rep.ok(f"all {len(rows)} capacity rows and their ordering were re-derived from source inputs")
 
 
+def _load_or_fail(rep: Report, rel: str, check: str):
+    """Load a required artifact, recording a clean failure when it is absent."""
+    path = os.path.join(ROOT, rel)
+    if not os.path.exists(path):
+        rep.fail(check, f"{rel} is missing; run the pipeline step that produces it")
+        return None
+    return load(rel)
+
+
+def check_frontier(rep: Report, cfg: dict, source_ids: dict) -> None:
+    """Audit the leaderboard frontier capture history."""
+    fh = _load_or_fail(rep, "data/frontier_history.json", "frontier.present")
+    if fh is None:
+        return
+    captures = fh["captures"]
+    if fh["_meta"]["capture_count"] != len(captures):
+        rep.fail("frontier.count", "declared capture count does not match")
+    if len(captures) < 2:
+        rep.fail("frontier.min_rows", "at least two captures are required to track drift")
+    times = [c["captured_at_utc"] for c in captures]
+    for t in times:
+        try:
+            parse_utc(t)
+        except (TypeError, ValueError) as exc:
+            rep.fail("frontier.timestamp", f"invalid capture timestamp {t!r}: {exc}")
+    if times != sorted(times):
+        rep.fail("frontier.order", "captures must be chronologically sorted")
+    balance = cfg["starting_balance_virtual_usd"]
+    rounding_bound = balance * 0.00005
+    for c in captures:
+        ranks = {int(k): v for k, v in c["rows"].items()}
+        if set(ranks) != {1, 50, 100, 250}:
+            rep.fail("frontier.ranks", f"{c['captured_at_utc']}: must record ranks 1/50/100/250")
+            continue
+        if c["participants_displayed"] < cfg["public_leaderboard_last_visible_rank"]:
+            rep.fail("frontier.participants", f"{c['captured_at_utc']}: participants below 250")
+        for rank, row in ranks.items():
+            expected_usd = balance * row["realized_profit_pct"] / 100
+            if abs(row["realized_profit_usd"] - expected_usd) > rounding_bound + 1e-6:
+                rep.fail("frontier.math",
+                         f"{c['captured_at_utc']} rank {rank}: %/$ differ beyond rounding bound")
+        usds = [ranks[r]["realized_profit_usd"] for r in (1, 50, 100, 250)]
+        pcts = [ranks[r]["realized_profit_pct"] for r in (1, 50, 100, 250)]
+        if any(usds[i] < usds[i + 1] for i in range(3)) or any(
+                pcts[i] < pcts[i + 1] for i in range(3)):
+            rep.fail("frontier.monotonic", f"{c['captured_at_utc']}: profit must fall with rank")
+        if c["source_id"] not in source_ids:
+            rep.fail("frontier.source", f"{c['captured_at_utc']}: unregistered source {c['source_id']}")
+        else:
+            src = source_ids[c["source_id"]]
+            if src.get("url") != fh["_meta"]["leaderboard_url"]:
+                rep.fail("frontier.url", f"{c['captured_at_utc']}: source URL differs from leaderboard URL")
+            if not src.get("evidence_file") or not os.path.exists(
+                    os.path.join(ROOT, src["evidence_file"])):
+                rep.fail("frontier.evidence", f"{c['captured_at_utc']}: evidence file missing")
+    # Cross-file consistency: the first capture must equal the live snapshot rows.
+    snap = load("data/live_contest_snapshot.json")
+    first = captures[0]
+    for rank, row in {int(k): v for k, v in first["rows"].items()}.items():
+        snap_row = next((r for r in snap["leaderboard"] if r["rank"] == rank), None)
+        if snap_row is None:
+            rep.fail("frontier.snapshot_link", f"rank {rank} absent from live snapshot")
+            continue
+        if (snap_row["trader"] != row["trader"]
+                or not approx(snap_row["realized_profit_pct"], row["realized_profit_pct"], 1e-9)
+                or not approx(snap_row["realized_profit_usd"], row["realized_profit_usd"], 1e-9)):
+            rep.fail("frontier.snapshot_link", f"rank {rank} differs from live_contest_snapshot")
+    if first["participants_displayed"] != snap["participants_displayed"]:
+        rep.fail("frontier.snapshot_participants", "first capture participants differ from snapshot")
+    if first["captured_at_utc"] != snap["_meta"]["captured_at_utc"]:
+        rep.fail("frontier.snapshot_time", "first capture timestamp differs from snapshot")
+    rep.ok(f"all {len(captures)} frontier captures re-derived, cross-checked against the live snapshot")
+
+
+def check_market_history(rep: Report, source_ids: dict, snap: dict, master: dict) -> dict:
+    """Audit the raw vendor captures and their provenance index."""
+    import hashlib
+
+    sys.path.insert(0, ROOT)
+    from intel.data import load_series  # noqa: E402
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "fetch_market_data", os.path.join(ROOT, "scripts", "fetch_market_data.py"))
+    fetch_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fetch_mod)
+
+    idx = _load_or_fail(rep, "data/market_history_index.json", "market_history.present")
+    if idx is None:
+        return
+    captures = idx["captures"]
+    meta = idx["_meta"]
+    if meta["symbol_count"] != len(captures):
+        rep.fail("market_history.count", "declared symbol count does not match")
+    captured = [c for c in captures if c.get("status") == "captured"]
+    failed = [c for c in captures if c.get("status") == "failed"]
+    if meta.get("captured_count") != len(captured) or meta.get("failed_count") != len(failed):
+        rep.fail("market_history.status_counts", "captured/failed counts do not match")
+    if meta["capture_window_start_utc"] != fetch_mod.PERIOD1_UTC or \
+            meta["capture_window_end_utc"] != fetch_mod.PERIOD2_UTC:
+        rep.fail("market_history.window", "index window differs from the fetch script constants")
+    period1 = fetch_mod.epoch_of(fetch_mod.PERIOD1_UTC)
+    period2 = fetch_mod.epoch_of(fetch_mod.PERIOD2_UTC)
+    symbol_map = {tv: yh for tv, yh in fetch_mod.SYMBOL_MAP}
+    master_symbols = {e["symbol"] for e in master["entries"]}
+    quote_map = {q["symbol"]: q for q in snap["quotes"]}
+    deltas = []
+    for c in captures:
+        tv = c["tradingview_symbol"]
+        if symbol_map.get(tv) != c.get("yahoo_ticker"):
+            rep.fail("market_history.mapping", f"{tv}: ticker pair not in the frozen symbol map")
+            continue
+        if tv not in master_symbols:
+            rep.fail("market_history.master", f"{tv}: not in the selected master list")
+        if c.get("status") != "captured":
+            if not c.get("error"):
+                rep.fail("market_history.failed_reason", f"{tv}: failed record without error text")
+            continue
+        path = os.path.join(ROOT, c["file"])
+        if not os.path.exists(path):
+            rep.fail("market_history.file", f"{tv}: raw file missing at {c['file']}")
+            continue
+        with open(path, "rb") as fh_:
+            payload = fh_.read()
+        if hashlib.sha256(payload).hexdigest() != c["sha256"]:
+            rep.fail("market_history.sha256", f"{tv}: stored bytes differ from indexed sha256")
+            continue
+        if len(payload) != c["bytes"]:
+            rep.fail("market_history.bytes", f"{tv}: stored byte length differs from index")
+        expected_url = fetch_mod.ENDPOINT_TEMPLATES[0].format(
+            ticker=c["yahoo_ticker"], period1=period1, period2=period2)
+        if c["endpoint"] not in (
+                expected_url,
+                fetch_mod.ENDPOINT_TEMPLATES[1].format(
+                    ticker=c["yahoo_ticker"], period1=period1, period2=period2)):
+            rep.fail("market_history.endpoint", f"{tv}: endpoint does not match the frozen window/ticker")
+        try:
+            bars = load_series(tv)
+        except (ValueError, KeyError, json.JSONDecodeError) as exc:
+            rep.fail("market_history.parse", f"{tv}: raw capture failed validation: {exc}")
+            continue
+        if len(bars) != c["sessions_valid"]:
+            rep.fail("market_history.sessions", f"{tv}: valid session count differs from index")
+        if bars and (bars[0].date != c["first_session_utc"]
+                     or bars[-1].date != c["last_session_utc"]
+                     or not approx(bars[0].close, c["first_close"], 1e-9)
+                     or not approx(bars[-1].close, c["last_close"], 1e-9)):
+            rep.fail("market_history.bounds", f"{tv}: first/last session or close differs from index")
+        if c.get("transport") not in ("direct", "allorigins-relay"):
+            rep.fail("market_history.transport", f"{tv}: unknown transport {c.get('transport')!r}")
+        if tv in quote_map:
+            delta = abs(bars[-1].close - quote_map[tv]["price"]) / quote_map[tv]["price"] * 100
+            deltas.append((tv, delta))
+            if delta > 15.0:
+                rep.fail("market_history.quote_crosscheck",
+                         f"{tv}: vendor close is {delta:.2f}% away from the TradingView quote "
+                         "- ticker mapping is probably wrong")
+    for tv, delta in deltas:
+        if delta > 2.0:
+            rep.warning(
+                f"market_history.quote_delta: {tv}: vendor close differs from the TradingView "
+                f"snapshot quote by {delta:.2f}% (front-contract month and capture time may "
+                "differ); recorded for review")
+    if captured:
+        rep.ok(f"all {len(captured)} raw vendor captures match their sha256, endpoints, "
+               "windows and parse with valid OHLC; "
+               f"{len(deltas)} cross-checked against TradingView quotes "
+               f"({sum(1 for _, d in deltas if d <= 2.0)} within 2%)")
+    if failed:
+        rep.warning(
+            f"market_history.incomplete: {len(failed)} symbol(s) failed capture and are "
+            "excluded downstream: " + ", ".join(c["tradingview_symbol"] for c in failed))
+    return idx
+
+
+def check_backtests(rep: Report, cfg: dict, snap: dict, master: dict, source_ids: dict) -> dict:
+    """Audit the walk-forward artifacts by deterministically re-running the engine."""
+    import subprocess
+    import tempfile
+
+    results = _load_or_fail(rep, "data/backtest_results.json", "backtest.present")
+    vol = _load_or_fail(rep, "data/volatility_intelligence.json", "backtest.present")
+    if results is None or vol is None:
+        return
+    meta = results["_meta"]
+    models = {m["id"]: m for m in results["models"]}
+    if set(models) != {"S1", "S2", "S3"}:
+        rep.fail("backtest.models", "expected exactly models S1, S2, S3")
+        return results
+    cc = meta["contest_constants"]
+    if not approx(cc["starting_balance_virtual_usd"], cfg["starting_balance_virtual_usd"]):
+        rep.fail("backtest.constants", "starting balance differs from contest config")
+    if not approx(cc["futures_leverage_ratio"], cfg["futures_leverage_ratio"]):
+        rep.fail("backtest.constants", "leverage differs from contest config")
+    rank250 = next(r for r in snap["leaderboard"] if r["rank"] == 250)
+    if not approx(cc["rank250_target_usd"], rank250["realized_profit_usd"]):
+        rep.fail("backtest.constants", "rank-250 target differs from the live snapshot")
+    if cc["rank250_target_snapshot_utc"] != snap["_meta"]["captured_at_utc"]:
+        rep.fail("backtest.constants", "rank-250 target timestamp differs from the live snapshot")
+
+    master_symbols = {e["symbol"] for e in master["entries"]}
+    tested = meta["symbols_tested"]
+    if not tested or any(s not in master_symbols for s in tested):
+        rep.fail("backtest.symbols", "symbols_tested must be a nonempty subset of the master list")
+    if len(tested) != len(set(tested)):
+        rep.fail("backtest.symbols_unique", "duplicate symbols in symbols_tested")
+
+    for mid, m in models.items():
+        if m["verdict"] not in ("supported", "refuted", "inconclusive"):
+            rep.fail("backtest.verdict", f"{mid}: invalid verdict {m['verdict']!r}")
+        if not m.get("verdict_reasons"):
+            rep.fail("backtest.reasons", f"{mid}: verdict without reasons")
+        for scenario in ("zero", "moderate", "high"):
+            agg = m["scenarios"].get(scenario)
+            if not agg or agg.get("windows") is None or agg.get("median_net_profit_usd") is None:
+                rep.fail("backtest.scenario", f"{mid}: missing {scenario} aggregate")
+                continue
+            rows = m["window_rows"].get(scenario, [])
+            if len(rows) != agg["windows"]:
+                rep.fail("backtest.window_rows", f"{mid}/{scenario}: row count != windows")
+            if sum(r["trades"] for r in rows) != agg["trades"]:
+                rep.fail("backtest.trade_count", f"{mid}/{scenario}: trades mismatch vs rows")
+            if sum(1 for r in rows if r["equity_multiple"] >= 5) != agg["windows_ge_5x"]:
+                rep.fail("backtest.bucket_count", f"{mid}/{scenario}: >=5x count mismatch")
+            for r in rows:
+                if not approx(1 + r["net_profit_usd"] / 250000.0, r["equity_multiple"], 5e-4):
+                    rep.fail("backtest.row_math", f"{mid}/{scenario} {r['symbol']}: multiple != 1+pnl/250k")
+                    break
+
+    # models.json must agree with the backtest verdicts.
+    models_json = load("research/strategy/models.json")
+    for row in models_json["models"]:
+        m = models[row["id"]]
+        if row["status"] != m["verdict"]:
+            rep.fail("backtest.models_status",
+                     f"{row['id']}: models.json status {row['status']!r} != backtest verdict {m['verdict']!r}")
+        if row["status"] != "untested":
+            res = row.get("result") or {}
+            if not isinstance(res, dict) or res.get("artifact") != "data/backtest_results.json":
+                rep.fail("backtest.models_result", f"{row['id']}: result must cite the artifact")
+            elif res.get("run_stamp_utc") != meta["generated_utc"]:
+                rep.fail("backtest.models_stamp", f"{row['id']}: result stamp differs from artifact")
+
+    # volatility intelligence cross-checks
+    if {r["symbol"] for r in vol["records"]} != set(tested):
+        rep.fail("backtest.vol_symbols", "volatility records must cover exactly symbols_tested")
+    for r in vol["records"]:
+        needed = r.get("favorable_move_pct_needed_for_rank250_snapshot")
+        best = r.get("best_30d_up_move_pct")
+        implied = r.get("rank250_pnl_if_best_30d_up_move_recurred_usd")
+        if needed is None or best is None:
+            continue
+        if not approx(implied, round(best / 100.0 * r["modeled_initial_notional_usd"], 2), 0.02):
+            rep.fail("backtest.vol_math", f"{r['symbol']}: implied best-move P/L arithmetic is wrong")
+        if r["note_if_best_move_exceeds_rank250_requirement"] != (best >= needed):
+            rep.fail("backtest.vol_flag", f"{r['symbol']}: best-move-vs-requirement flag is wrong")
+
+    # Deterministic re-run: the committed artifacts must be reproducible. The
+    # comparison is against the LOADED documents (not disk bytes) so a corrupted
+    # value anywhere in either artifact fails here even if the on-disk file is
+    # otherwise untouched.
+    stamp = meta["generated_utc"]
+    with tempfile.TemporaryDirectory() as tmp:
+        proc = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "scripts", "run_backtests.py"),
+             "--stamp", stamp, "--out-dir", tmp],
+            capture_output=True, text=True, timeout=1200)
+        if proc.returncode != 0:
+            rep.fail("backtest.rerun", f"engine re-run failed: {proc.stderr[-400:]}")
+        else:
+            for name, loaded in (("backtest_results.json", results),
+                                 ("volatility_intelligence.json", vol)):
+                fresh_path = os.path.join(tmp, name)
+                if not os.path.exists(fresh_path):
+                    rep.fail("backtest.rerun", f"engine re-run did not produce {name}")
+                    continue
+                with open(fresh_path, encoding="utf-8") as fh_:
+                    fresh = json.load(fh_)
+                if fresh != loaded:
+                    rep.fail("backtest.determinism",
+                             f"{name}: committed artifact differs from a deterministic "
+                             "re-run from the raw captures")
+    rep.ok(f"backtest artifacts re-derived from raw captures: verdicts "
+           + ", ".join(f"{mid}={m['verdict']}" for mid, m in models.items()))
+    return results
+
+
 def check_strategy_models(rep: Report, cfg: dict, source_ids: dict) -> None:
     models = load("research/strategy/models.json")
     rows = models["models"]
@@ -411,6 +697,14 @@ def check_strategy_models(rep: Report, cfg: dict, source_ids: dict) -> None:
             rep.fail("strategy.result", f"{row['id']}: untested model must have null result")
         if row["status"] not in ("untested", "supported", "refuted", "inconclusive"):
             rep.fail("strategy.status", f"{row['id']}: invalid status")
+        if row["status"] != "untested":
+            res = row.get("result")
+            if not isinstance(res, dict) or not res.get("basis") or not res.get("artifact"):
+                rep.fail("strategy.result",
+                         f"{row['id']}: verdict requires a result with basis and artifact")
+            elif "independent daily-bar simulation" not in res["basis"]:
+                rep.fail("strategy.result",
+                         f"{row['id']}: result basis must name the independent simulation")
     for sid in models["_meta"]["source_ids"]:
         if sid not in source_ids:
             rep.fail("strategy.source", f"unregistered source {sid}")
@@ -433,7 +727,11 @@ def check_strategy_models(rep: Report, cfg: dict, source_ids: dict) -> None:
             rep.fail("strategy.pine_config", f"Pine implementation missing {token!r}")
     if models["_meta"]["platform_validation_status"] != "not_run":
         rep.fail("strategy.validation_status", "no platform export exists, so status must remain not_run")
-    rep.ok(f"{len(rows)} pre-registered strategy models are explicitly untested and have implementation/protocol files")
+    sim_status = models["_meta"].get("independent_simulation_status")
+    if sim_status not in (None, "not_run", "completed"):
+        rep.fail("strategy.simulation_status", f"invalid independent_simulation_status {sim_status!r}")
+    rep.ok(f"{len(rows)} pre-registered strategy models carry implementation/protocol files; "
+           "TradingView platform validation remains not_run by construction")
 
 
 def check_evidence_quotes(rep: Report) -> None:
@@ -884,6 +1182,10 @@ def self_test(rep: Report) -> None:
     snap = load("data/live_contest_snapshot.json")
     capacity = load("data/initial_capacity.json")
     models = load("research/strategy/models.json")
+    frontier = load("data/frontier_history.json")
+    market_idx = load("data/market_history_index.json")
+    backtests = load("data/backtest_results.json")
+    vol_intel = load("data/volatility_intelligence.json")
     with open(os.path.join(ROOT, "data", "master_list.csv"), newline="", encoding="utf-8") as fh:
         master_csv_rows = list(csv.DictReader(fh))
     source_ids = {s["source_id"]: s for s in src["sources"]}
@@ -974,6 +1276,46 @@ def self_test(rep: Report) -> None:
     def capacity_math(v): v["entries"][0]["modeled_initial_notional_usd"] += 1_000.0
     def model_result(v): v["models"][0]["result"] = {"net_profit": 1}
 
+    def corrupt_frontier(fn):
+        f = copy.deepcopy(frontier)
+        fn(f)
+        return "data/frontier_history.json", f
+
+    def corrupt_market_idx(fn):
+        m = copy.deepcopy(market_idx)
+        fn(m)
+        return "data/market_history_index.json", m
+
+    def corrupt_backtests(fn):
+        b = copy.deepcopy(backtests)
+        fn(b)
+        return "data/backtest_results.json", b
+
+    def corrupt_vol(fn):
+        v = copy.deepcopy(vol_intel)
+        fn(v)
+        return "data/volatility_intelligence.json", v
+
+    def corrupt_models_status(v):
+        v["models"][0]["status"] = "supported"
+        v["models"][0]["result"] = {
+            "basis": "independent daily-bar simulation (not a TradingView Strategy Report)",
+            "artifact": "data/backtest_results.json",
+            "run_stamp_utc": backtests["_meta"]["generated_utc"],
+        }
+
+    def frontier_math(f): f["captures"][1]["rows"]["50"]["realized_profit_usd"] += 100.0
+    def mh_sha(m):
+        cap = next(c for c in m["captures"] if c.get("status") == "captured")
+        cap["sha256"] = "0" * 64
+    def mh_sessions(m):
+        cap = next(c for c in m["captures"] if c.get("status") == "captured")
+        cap["sessions_valid"] += 1
+    def bt_median(b): b["models"][0]["scenarios"]["zero"]["median_net_profit_usd"] += 1.0
+    def bt_rows(b): b["models"][0]["window_rows"]["zero"][0]["trades"] += 1
+    def vol_flag(v): v["records"][0]["note_if_best_move_exceeds_rank250_requirement"] = \
+        not v["records"][0]["note_if_best_move_exceeds_rank250_requirement"]
+
     bad_master_csv = copy.deepcopy(master_csv_rows)
     bad_master_csv[0]["max_open_position_contracts"] = "999"
 
@@ -1019,6 +1361,20 @@ def self_test(rep: Report) -> None:
          lambda r: check_capacity(r, cfg, snap, ml, source_ids)),
         ("strategy.result", corrupt_models(model_result),
          lambda r: check_strategy_models(r, cfg, source_ids)),
+        ("frontier.math", corrupt_frontier(frontier_math),
+         lambda r: check_frontier(r, cfg, source_ids)),
+        ("market_history.sha256", corrupt_market_idx(mh_sha),
+         lambda r: check_market_history(r, source_ids, snap, ml)),
+        ("market_history.sessions", corrupt_market_idx(mh_sessions),
+         lambda r: check_market_history(r, source_ids, snap, ml)),
+        ("backtest.determinism", corrupt_backtests(bt_median),
+         lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
+        ("backtest.trade_count", corrupt_backtests(bt_rows),
+         lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
+        ("backtest.models_status", corrupt_models(corrupt_models_status),
+         lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
+        ("backtest.vol_flag", corrupt_vol(vol_flag),
+         lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
     ]
     # the null-multiplier flag check: strip the multiplier AND its flag from an entry
     m = copy.deepcopy(ml)
@@ -1056,7 +1412,10 @@ def main() -> int:
     check_master_csv(rep, master)
     check_returns(rep, source_ids, cfg, snap)
     check_capacity(rep, cfg, snap, master, source_ids)
+    check_frontier(rep, cfg, source_ids)
+    check_market_history(rep, source_ids, snap, master)
     check_volatile_stocks(rep, source_ids)
+    check_backtests(rep, cfg, snap, master, source_ids)
     check_strategy_models(rep, cfg, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)

@@ -1,0 +1,41 @@
+{
+ "_meta": {
+  "description": "Timestamped captures of the public leaderboard frontier (ranks 1, 50, 100, 250) and the displayed participant count. Each row is a moving snapshot, not a final threshold and not a prize guarantee. The public page exposes only ranks 1-250 while prizes extend through rank 300.",
+  "generated_utc": "2026-09-17",
+  "capture_count": 2,
+  "leaderboard_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+  "capture_granularity_note": "The 2026-09-17 capture was read between roughly 00:25 and 00:35 UTC; the recorded timestamp is the midpoint of that window. Leaderboard values update no more than once per hour and rank by realized P/L, which only changes when a participant closes a position.",
+  "observed_notes": [
+   "Rank 1 and rank 250 values were byte-identical across both captures (~3 hours apart, US after-hours).",
+   "The mid-board moved between captures: rank 50 changed holder and rose $28,139.75; rank 100 rose $11,027.50; the former rank 50 (chandu0342) held an identical value and slid to rank 53.",
+   "Displayed participants rose from 93,527 to 93,702 (+175) during a window in which registration remains open until 2026-09-23."
+  ]
+ },
+ "captures": [
+  {
+   "captured_at_utc": "2026-09-16T21:39:34Z",
+   "participants_displayed": 93527,
+   "source_id": "TV-CONTEST-AMP-SEP2026",
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026.md",
+   "derived_from": "data/live_contest_snapshot.json",
+   "rows": {
+    "1": {"trader": "leonardo22_romano", "realized_profit_pct": 921.49, "realized_profit_usd": 2303725.00},
+    "50": {"trader": "chandu0342", "realized_profit_pct": 457.64, "realized_profit_usd": 1144096.25},
+    "100": {"trader": "yeyuliuguang", "realized_profit_pct": 384.08, "realized_profit_usd": 960203.50},
+    "250": {"trader": "luaguiar", "realized_profit_pct": 249.48, "realized_profit_usd": 623689.00}
+   }
+  },
+  {
+   "captured_at_utc": "2026-09-17T00:30:00Z",
+   "participants_displayed": 93702,
+   "source_id": "TV-CONTEST-AMP-SEP2026-R2",
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md",
+   "rows": {
+    "1": {"trader": "leonardo22_romano", "realized_profit_pct": 921.49, "realized_profit_usd": 2303725.00},
+    "50": {"trader": "RIA-JANGHU", "realized_profit_pct": 468.89, "realized_profit_usd": 1172236.00},
+    "100": {"trader": "msm223034", "realized_profit_pct": 388.49, "realized_profit_usd": 971231.00},
+    "250": {"trader": "luaguiar", "realized_profit_pct": 249.48, "realized_profit_usd": 623689.00}
+   }
+  }
+ ]
+}
