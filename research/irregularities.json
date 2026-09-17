@@ -8,7 +8,7 @@
    "medium",
    "low"
   ],
-  "count": 18,
+  "count": 19,
   "reverified_utc": "2026-09-16",
   "reverification_note": "2026-09-16 audit: stale resolved text corrected, the automation brief was no longer misread as an autotrading requirement, and the official short-futures P/L documentation inconsistency was added as IR-14."
  },
@@ -230,7 +230,7 @@
    "severity": "low",
    "title": "Four selected crypto futures have under five days of vendor history",
    "detail": "SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to ['1d','5d']), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.",
-   "observed": "Each ticker returned exactly one bar on 2026-09-17 (e.g. SOL=F close 98.80000305175781) with validRanges ['1d','5d'].",
+   "observed": "Vendor listing gaps: CME:SOL1!, CME:MSL1!, COMEX:SIC1!, CME:MBT1!, CME:MET1!, NYMEX:MNG1!, NYMEX:MCL1! and CME:XRP1! returned exactly 1 daily bar for the 2-year window (newly listed on the vendor), so they cannot be backtested; 8 of 20 selected symbols are excluded from the simulation for insufficient history.",
    "expected_by_brief": "Testable history for every selected instrument.",
    "source_ids": [
     "YAHOO-FUTURES-CHART"
@@ -262,6 +262,16 @@
     "TV-CONTEST-AMP-SEP2026-R2"
    ],
    "resolution": "Open. Continue capturing the frontier; if edge ranks stay frozen while participants join, the effective last-prize threshold may be stickier than the mid-board suggests."
+  },
+  {
+   "id": "IR-19",
+   "title": "Relay transport persistently fails for three vendor tickers (BTC=F, XRP=F, MXP=F)",
+   "detail": "The allorigins relay returns HTTP 522/500 for exactly BTC=F and MXP=F across every capture pass attempted (four passes on 2026-09-17), while succeeding for the other 18 symbols. XRP=F also failed the first three passes before succeeding on the fourth, so per-ticker relay failures are persistent but not always permanent. CME:BTC1! and CME:MXP1! therefore have no committed vendor history.",
+   "observed": "2 of 20 selected symbols remain uncaptured after four automated passes; data/market_history_index.json records their error strings. BTC1! is the highest-visibility contest instrument, so this gap matters for representativeness (micro-bitcoin MBT=F's single session price 76,070 is consistent with BTC=F's regularMarketPrice ~76,460 from the in-session spot check, but is not a substitute for history).",
+   "severity": "medium",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ]
   }
  ]
 }

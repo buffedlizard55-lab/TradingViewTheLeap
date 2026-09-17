@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Independent walk-forward simulation of the three pre-registered candidate models on committed vendor daily bars. NOT a TradingView Strategy Report result, NOT a Paper Trading account result, NOT a prediction or recommendation.",
   "engine": "intel-1",
-  "generated_utc": "2026-09-17T02:22:09+00:00",
+  "generated_utc": "2026-09-17T02:44:53+00:00",
   "data_source": "data/market_history_index.json",
   "test_protocol": "research/strategy/testing-plan.md (T2 walk-forward, T3 costs, T4 metrics, T5 verdicts)",
   "parameters": {
@@ -118,6 +118,10 @@
    },
    {
     "symbol": "NYMEX:MCL1!",
+    "reason": "insufficient vendor history: 1 bars < 150 required (2026-09-17 -> 2026-09-17)"
+   },
+   {
+    "symbol": "CME:XRP1!",
     "reason": "insufficient vendor history: 1 bars < 150 required (2026-09-17 -> 2026-09-17)"
    }
   ],

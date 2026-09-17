@@ -1,55 +1,105 @@
 {
-  "_meta": {
-    "description": "Pre-registered strategy candidates for TradingView Strategy Report tests. These are hypotheses, not recommendations or claimed results.",
-    "generated_utc": "2026-09-16",
-    "model_count": 3,
-    "implementation_file": "research/strategy/the-leap-hypothesis-lab.pine",
-    "test_protocol_file": "research/strategy/testing-plan.md",
-    "platform_validation_status": "not_run",
-    "platform_validation_reason": "This repository has no authenticated TradingView chart session and no Pine compiler. The code has been statically reviewed only; no Strategy Report export was available.",
-    "source_ids": [
-      "TV-PINE-STRATEGIES",
-      "TV-PINE-AUTOTRADE",
-      "TV-PINE-LEVERAGE",
-      "CME-CONTINUOUS-SERIES"
+ "_meta": {
+  "description": "Pre-registered strategy candidates for TradingView Strategy Report tests. These are hypotheses, not recommendations or claimed results.",
+  "generated_utc": "2026-09-16",
+  "model_count": 3,
+  "implementation_file": "research/strategy/the-leap-hypothesis-lab.pine",
+  "test_protocol_file": "research/strategy/testing-plan.md",
+  "platform_validation_status": "not_run",
+  "platform_validation_reason": "This repository has no authenticated TradingView chart session and no Pine compiler. The code has been statically reviewed only; no Strategy Report export was available.",
+  "source_ids": [
+   "TV-PINE-STRATEGIES",
+   "TV-PINE-AUTOTRADE",
+   "TV-PINE-LEVERAGE",
+   "CME-CONTINUOUS-SERIES"
+  ],
+  "independent_simulation_status": "completed",
+  "independent_simulation_note": "Run by scripts/run_backtests.py (engine intel-1) on committed vendor daily bars; platform_validation_status stays not_run because no TradingView Strategy Report exists."
+ },
+ "models": [
+  {
+   "id": "S1",
+   "name": "Donchian trend breakout",
+   "pine_option": "Donchian breakout",
+   "hypothesis": "A close beyond the prior channel, filtered by moving-average direction and ATR expansion, captures persistent one-way moves better than an unfiltered breakout.",
+   "entry_logic": "Long above the prior Donchian high when the fast EMA is above the slow EMA and ATR exceeds its baseline; short below the prior Donchian low under the opposite trend condition.",
+   "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
+   "contest_fit": "Tests directional expansion in either direction and realizes P/L on reversal instead of assuming a known market direction.",
+   "status": "refuted",
+   "falsification_rule": "Reject if walk-forward median net profit is not positive, if the lower confidence bound is not positive, or if results depend on one symbol or one window.",
+   "result": {
+    "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
+    "artifact": "data/backtest_results.json",
+    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
+    "windows": 210,
+    "trades_zero_cost": 70,
+    "median_net_profit_usd_zero_cost": 0.0,
+    "mean_net_profit_usd_zero_cost": 12528.5,
+    "windows_ge_5x_zero_cost": 3,
+    "verdict_reasons": [
+     "walk-forward median net profit (zero-cost) is $0.0, not positive",
+     "excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol",
+     "excluding the single best window flips the pooled median non-positive ($0.0) - the result depends on one window"
     ]
+   }
   },
-  "models": [
-    {
-      "id": "S1",
-      "name": "Donchian trend breakout",
-      "pine_option": "Donchian breakout",
-      "hypothesis": "A close beyond the prior channel, filtered by moving-average direction and ATR expansion, captures persistent one-way moves better than an unfiltered breakout.",
-      "entry_logic": "Long above the prior Donchian high when the fast EMA is above the slow EMA and ATR exceeds its baseline; short below the prior Donchian low under the opposite trend condition.",
-      "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
-      "contest_fit": "Tests directional expansion in either direction and realizes P/L on reversal instead of assuming a known market direction.",
-      "status": "untested",
-      "falsification_rule": "Reject if walk-forward median net profit is not positive, if the lower confidence bound is not positive, or if results depend on one symbol or one window.",
-      "result": null
-    },
-    {
-      "id": "S2",
-      "name": "EMA impulse continuation",
-      "pine_option": "EMA impulse",
-      "hypothesis": "A fast/slow EMA crossover accompanied by above-baseline ATR identifies momentum transitions that persist long enough to overcome modeled costs.",
-      "entry_logic": "Long on a fast EMA cross above the slow EMA during ATR expansion; short on the inverse cross.",
-      "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
-      "contest_fit": "Produces fewer, explicit direction changes than a bar-by-bar ranking heuristic and can be compared across every eligible futures chart.",
-      "status": "untested",
-      "falsification_rule": "Reject if out-of-sample net profit is non-positive after costs or if performance reverses under nearby EMA lengths.",
-      "result": null
-    },
-    {
-      "id": "S3",
-      "name": "Bollinger squeeze release",
-      "pine_option": "Squeeze release",
-      "hypothesis": "A close outside the Bollinger envelope after bandwidth compression captures volatility expansion without predicting whether the break will be up or down.",
-      "entry_logic": "Long above the upper band or short below the lower band when prior bandwidth was near its rolling minimum and current bandwidth expands.",
-      "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
-      "contest_fit": "Directly tests a compression-to-expansion mechanism rather than labeling an asset volatile from its name or asset class.",
-      "status": "untested",
-      "falsification_rule": "Reject if out-of-sample profit is non-positive, trade count is too small for the declared confidence interval, or small parameter changes erase the result.",
-      "result": null
-    }
-  ]
+  {
+   "id": "S2",
+   "name": "EMA impulse continuation",
+   "pine_option": "EMA impulse",
+   "hypothesis": "A fast/slow EMA crossover accompanied by above-baseline ATR identifies momentum transitions that persist long enough to overcome modeled costs.",
+   "entry_logic": "Long on a fast EMA cross above the slow EMA during ATR expansion; short on the inverse cross.",
+   "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
+   "contest_fit": "Produces fewer, explicit direction changes than a bar-by-bar ranking heuristic and can be compared across every eligible futures chart.",
+   "status": "refuted",
+   "falsification_rule": "Reject if out-of-sample net profit is non-positive after costs or if performance reverses under nearby EMA lengths.",
+   "result": {
+    "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
+    "artifact": "data/backtest_results.json",
+    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
+    "windows": 210,
+    "trades_zero_cost": 28,
+    "median_net_profit_usd_zero_cost": 0.0,
+    "mean_net_profit_usd_zero_cost": -2986.1,
+    "windows_ge_5x_zero_cost": 0,
+    "verdict_reasons": [
+     "walk-forward median net profit (zero-cost) is $0.0, not positive",
+     "excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol",
+     "excluding the single best window flips the pooled median non-positive ($0.0) - the result depends on one window",
+     "out-of-sample median net profit after moderate costs is $0.0 (non-positive)",
+     "nearby parameters (ema15x40) reverse the result (median $0.0)",
+     "nearby parameters (ema25x60) reverse the result (median $0.0)"
+    ]
+   }
+  },
+  {
+   "id": "S3",
+   "name": "Bollinger squeeze release",
+   "pine_option": "Squeeze release",
+   "hypothesis": "A close outside the Bollinger envelope after bandwidth compression captures volatility expansion without predicting whether the break will be up or down.",
+   "entry_logic": "Long above the upper band or short below the lower band when prior bandwidth was near its rolling minimum and current bandwidth expands.",
+   "exit_logic": "Opposite signal, optional ATR bracket, or the configured test-window end.",
+   "contest_fit": "Directly tests a compression-to-expansion mechanism rather than labeling an asset volatile from its name or asset class.",
+   "status": "refuted",
+   "falsification_rule": "Reject if out-of-sample profit is non-positive, trade count is too small for the declared confidence interval, or small parameter changes erase the result.",
+   "result": {
+    "basis": "independent daily-bar simulation (intel engine; NOT a TradingView Strategy Report)",
+    "artifact": "data/backtest_results.json",
+    "run_stamp_utc": "2026-09-17T02:44:53+00:00",
+    "windows": 210,
+    "trades_zero_cost": 4,
+    "median_net_profit_usd_zero_cost": 0.0,
+    "mean_net_profit_usd_zero_cost": 123.93,
+    "windows_ge_5x_zero_cost": 0,
+    "verdict_reasons": [
+     "walk-forward median net profit (zero-cost) is $0.0, not positive",
+     "excluding the single best symbol flips the pooled median non-positive ($0.0) - the result depends on one symbol",
+     "excluding the single best window flips the pooled median non-positive ($0.0) - the result depends on one window",
+     "total closed trades (4) is too small for the declared bootstrap confidence interval",
+     "small parameter change (band15) erases the result (median $0.0)",
+     "small parameter change (band25) erases the result (median $0.0)"
+    ]
+   }
+  }
+ ]
 }

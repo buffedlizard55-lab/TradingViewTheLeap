@@ -35,4 +35,30 @@ The offline verifier compares each captured symbol's last close against the Trad
 
 ## Per-symbol capture table
 
-Completed after the workflow capture lands; see `data/market_history_index.json` for the machine-readable per-symbol record (endpoint, transport, SHA-256, sessions, first/last dates, first/last close) and the verifier check `market_history.*` which re-derives all of it offline.
+Captured 2026-09-17 in automated passes (GitHub Actions runs on this branch; the latest run URL is in `data/market_history_index.json` `_meta.workflow_run_url`). Later passes used `--only-failed`, so each full-history record's bytes and digest are frozen at its first successful pass.
+The 10 full-history symbols are the backtest panel; the 8 single-session symbols are newly listed on the vendor and are excluded (IR-16). CME:BTC1! and CME:MXP1! failed every relay pass attempted (IR-19).
+
+| Symbol | Vendor ticker | Sessions | Window | Transport | SHA-256 (prefix) |
+|---|---|---|---|---|---|
+| CME:SOL1! | SOL=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `8041212f270a87b9…` |
+| CME:MSL1! | MSL=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `6726cceec27dfedb…` |
+| CME:ETH1! | ETH=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `910afd0e1268c58e…` |
+| NYMEX:NG1! | NG=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `d276cad7ae1c1668…` |
+| NYMEX:CL1! | CL=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `670efca637d6cee5…` |
+| NYMEX_MINI:QM1! | QM=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `525a7ca43e72ff88…` |
+| NYMEX:RB1! | RB=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `0666f37f2a652749…` |
+| NYMEX:HO1! | HO=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `dfba9916d180b86d…` |
+| COMEX:SI1! | SI=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `98eda3b2a5fc7d79…` |
+| COMEX:SIC1! | SIC=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `e889ba3236f281e2…` |
+| NYMEX:PL1! | PL=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `b518e95510ed2b40…` |
+| CME:MBT1! | MBT=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `20bfef2924b62c3c…` |
+| CME:MET1! | MET=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `3cd5b80bf539a225…` |
+| NYMEX:MNG1! | MNG=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `e00443160cbd2a98…` |
+| NYMEX:MCL1! | MCL=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `b5f08e878406d3ff…` |
+| COMEX_MINI:SIL1! | SIL=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `4321c5a56fc15e79…` |
+| CME_MINI:NQ1! | NQ=F | 503 | 2024-09-17 → 2026-09-17 | allorigins-relay | `9ba48cdfc0509eee…` |
+| CME:XRP1! | XRP=F | 1 | 2026-09-17 → 2026-09-17 | allorigins-relay | `913e498daef0a361…` |
+| CME:MXP1! | MXP=F | — | — | failed | GET failed after 3 attempts on both transports: https://quer |
+| CME:BTC1! | BTC=F | — | — | failed | GET failed after 3 attempts on both transports: https://quer |
+
+Full SHA-256 digests, byte counts, endpoints and per-record capture timestamps live in `data/market_history_index.json`; `scripts/verify.py` (`check_market_history`) re-derives every digest and re-validates OHLC invariants offline. Captures are `market_data_vendor` tier: raw vendor bytes, spot-verified against independent in-session fetches (above) and the TradingView quote snapshot (warn >2%, fail >15%).

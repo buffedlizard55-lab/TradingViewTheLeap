@@ -553,7 +553,7 @@ def check_market_history(rep: Report, source_ids: dict, snap: dict, master: dict
                          "- ticker mapping is probably wrong")
     for tv, delta in deltas:
         if delta > 2.0:
-            rep.warning(
+            rep.warn(
                 f"market_history.quote_delta: {tv}: vendor close differs from the TradingView "
                 f"snapshot quote by {delta:.2f}% (front-contract month and capture time may "
                 "differ); recorded for review")
@@ -563,7 +563,7 @@ def check_market_history(rep: Report, source_ids: dict, snap: dict, master: dict
                f"{len(deltas)} cross-checked against TradingView quotes "
                f"({sum(1 for _, d in deltas if d <= 2.0)} within 2%)")
     if failed:
-        rep.warning(
+        rep.warn(
             f"market_history.incomplete: {len(failed)} symbol(s) failed capture and are "
             "excluded downstream: " + ", ".join(c["tradingview_symbol"] for c in failed))
     return idx

@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Realized-volatility and explosive-move metrics recomputed from the committed vendor captures. Rolling 30-day windows overlap (one window per bar). The 'if best move recurred' fields are arithmetic illustrations at the modeled initial notional - an upper envelope of what history offered, NOT a forecast and NOT a backtest.",
   "engine": "intel-1",
-  "generated_utc": "2026-09-17T02:22:09+00:00",
+  "generated_utc": "2026-09-17T02:44:53+00:00",
   "data_source": "data/market_history_index.json",
   "rank250_target_usd": 623689.0,
   "rank250_target_snapshot_utc": "2026-09-16T21:39:34Z",
