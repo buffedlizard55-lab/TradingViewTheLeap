@@ -8,6 +8,19 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 sixth pass: explosive futures playbook + sixth frontier capture (board frozen)
+
+On 2026-09-17 (~21:27 UTC) all three official pages were fetched again and verified line by line
+([evidence: contest](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R6.md) ·
+[rules](research/evidence/TV-RULES-AMP-SEP2026-R6.md) ·
+[landing](research/evidence/TV-THELEAP-LANDING-R6.md)):
+
+- **New research: [`research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-17.md`](research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-17.md)** — a complete testing strategy for the user's "no risk-management, maximum explosive returns (5×/10×/20×/50×/100×, paper-simulated)" objective, translated into the live **futures-only** universe (IR-01: **0 stocks** in September — the stock list is historical reference for a future stocks edition). It ranks the 94 futures by **dollar capacity** (rules cap × multiplier × price at 20:1) and by **best 30-day vendor move**, fuses them into a **cash-frontier delivery ratio** (best30 ÷ needed-for-rank-50) and concludes the only four futures that have historically delivered **1.8×–3×** the current cash-frontier requirement inside one 30-day window are **`HO1!`, `CL1!`, `SI1!`, `RB1!`** (all with ~$3.4M–$4.9M modeled initial notional, needed ~25–36% vs best 58–78%). `NG1!` (volatility champion, 140.4% best 30d) and all micro/crypto contracts are **structurally priced out** at the $250k start (needed 86%–10,000% vs best 48–140%) — not because their underlying is calm but because their notional is too small. The playbook then specifies the next falsifiable queue **S4–S6 (intraday squeeze re-entry, volatility-breakout always-in, gap+trend)** with pre-registration, compounding and liquidation-path rules, because S1–S3 on daily bars all have a **$0.00 pooled median** (H14–H16).
+- **Sixth frontier capture (21:27 UTC, 96,268 participants, hero 96,263 — IR-09 async +5): all four tracked frontiers byte-identical to capture 5** — rank 1 $2,335,125.00 (+934.05%), rank 50 $1,244,313.50 (+497.73%), rank 100 $1,014,950.00 (+405.98%), rank 250 $660,759.50 (+264.30%). Participants rose 96,236 → **96,268 (+32)** while the tracked board was static for **0.48 h**, the second observed uniform-stasis window (after captures 1→2) and the third distinct board behaviour this day alongside heterogeneous rise (H22) and correction-driven fall (H20). New hypothesis **H24 (supported)** records it. Remaining window at the latest capture: **12.606 days**; fresh-account rate to reach the cash frontier: **+15.24%/day** (0.76% underlying at 20:1); 5× needs +13.62%/day and 100× +44.10%/day over the window.
+- **Rules re-verified for the sixth time, zero changes:** the whole §08 universe again machine-diffed against `data/contest_universe.json` — 94/94 symbols, all 94 caps and listing order identical, 0 equities; §09 prize ladder, $50,000 ARV, wire threshold and 14-day claim window unchanged.
+- **Champions re-verified for the sixth time:** all 15 completed-edition records unchanged; maximum remains 53.2072×, none at/above 100×.
+- **Site rebuilt** (`python3 scripts/build_site.py` → 291.9 KB) and **verifier green:** `352 passed / 0 failed / 1 warning` (`396` in `--self-test`).
+
 ## September 17 fifth pass: placement arithmetic + fifth frontier capture
 
 On 2026-09-17 (~20:58 UTC) all three official pages were fetched again and verified line by line
@@ -143,7 +156,7 @@ Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Fu
 | Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
 | Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-The live page displayed **96,236 participants** at the 2026-09-17 ~20:58 UTC capture (fifth).
+The live page displayed **96,268 participants** at the 2026-09-17 ~21:27 UTC capture (sixth, +32 vs the 20:58 UTC capture; landing hero 96,263 at the same minute, IR-09).
 Captured public frontiers at that capture: rank 1 **+$2,335,125.00 (+934.05%)**, rank 50
 **+$1,244,313.50 (+497.73%)**, rank 100 **+$1,014,950.00 (+405.98%)**, rank 250
 **+$660,759.50 (+264.30%)**. These are moving snapshots, not final thresholds and not prize
@@ -152,20 +165,20 @@ guarantees. The first (2026-09-16) capture is the point-in-time record in
 
 ### Frontier tracker
 
-Five official captures are stored with their official URLs in
+Six official captures are stored with their official URLs in
 [`data/frontier_history.json`](data/frontier_history.json); the verifier re-derives all deltas and
 percentage arithmetic and requires each capture's values to be internally consistent
 (`frontier.*` checks). The raw leaderboard HTML of the first capture is archived under
 `artifact_pages/` for manual review; captures 2–5 are preserved as verbatim quotations in their
 evidence files.
 
-| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) | Capture 5 (09-17 20:58) |
+| Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) | Capture 5 (09-17 20:58) | Capture 6 (09-17 21:27) |
 |---|---|---|---|---|---|
-| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) |
-| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) | **+$1,244,313.50 (+497.73%) ↓** | +$1,244,313.50 (+497.73%) = |
-| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) | +$1,012,202.50 (+404.88%) | +$1,014,950.00 (+405.98%) |
-| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) | +$657,305.00 (+262.92%) | +$660,759.50 (+264.30%) |
-| Participants | 93,527 | 93,702 | 95,709 | 96,095 | 96,236 |
+| 1 | +$2,303,725.00 (+921.49%) | +$2,303,725.00 (+921.49%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) | +$2,335,125.00 (+934.05%) = |
+| 50 | +$1,144,096.25 (+457.64%) | +$1,172,236.00 (+468.89%) | +$1,247,897.00 (+499.16%) | **+$1,244,313.50 (+497.73%) ↓** | +$1,244,313.50 (+497.73%) = | +$1,244,313.50 (+497.73%) = |
+| 100 | +$960,203.50 (+384.08%) | +$971,231.00 (+388.49%) | +$999,892.85 (+399.96%) | +$1,012,202.50 (+404.88%) | +$1,014,950.00 (+405.98%) | +$1,014,950.00 (+405.98%) = |
+| 250 | +$623,689.00 (+249.48%) | +$623,689.00 (+249.48%) | +$655,069.50 (+262.03%) | +$657,305.00 (+262.92%) | +$660,759.50 (+264.30%) | +$660,759.50 (+264.30%) = |
+| Participants | 93,527 | 93,702 | 95,709 | 96,095 | 96,236 | **96,268** |
 
 The 3-hour window between captures 1 and 2 froze rank 1 and 250 while the mid-board moved; during
 the US trading day before capture 3 **all four frontiers rose** and ranks 50/100/250 changed
@@ -174,8 +187,11 @@ capture 4 proved it is not a one-way ratchet: the rank-50 frontier **fell** $3,5
 two hours while the former rank-50 row survived intact one place higher at rank 49 (H20, IR-23).
 Capture 5 then showed the opposite extreme: ranks 1 and 50 unchanged to the cent for the next
 1.90 hours while rank 100 rose $2,747.50 and rank 250 $3,454.50, with one new row entering between
-rank 50 and rank 100 (H22). A static edge is therefore not evidence that entry is still cheap, and
-a moving edge is not evidence that it will keep rising.
+rank 50 and rank 100 (H22). Capture 6 extended the pattern to **all four ranks frozen for the next
+0.48 hours** while participants still rose (+32), completing a same-day catalogue of three distinct
+board behaviours: heterogeneous rise, correction-driven fall, and uniform stasis (H24). A static
+edge is therefore not evidence that entry is still cheap, and a moving edge is not evidence that
+it will keep rising.
 
 ## What the evidence says
 
@@ -339,8 +355,8 @@ python3 scripts/refresh_artifacts.py   # re-run backtests, placement lab, models
 Current audit result:
 
 ```text
-verify:    341 passed, 0 failed, 1 warning
-self-test: 384 passed, 0 failed, 1 warning
+verify:    352 passed, 0 failed, 1 warning
+self-test: 396 passed, 0 failed, 1 warning
 ```
 
 The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly

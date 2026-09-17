@@ -321,9 +321,9 @@ means the vendor history contained a move that large <em>once</em>; it is not a 
 <div class="note">rank-50 P/L above rank-100 P/L at the latest capture</div></div>
 </div>
 <p><a href="data/leaderboard_lab.json" download>Download placement arithmetic (JSON)</a> ·
-{link(source_url['TV-CONTEST-AMP-SEP2026-R5'], 'Latest leaderboard capture ↗')} ·
-{link(source_url['TV-RULES-AMP-SEP2026-R5'], 'Rules re-verified ↗')} ·
-{link(source_url['TV-THELEAP-LANDING-R5'], 'Champion sample re-verified ↗')} ·
+{link(source_url['TV-CONTEST-AMP-SEP2026-R6'], 'Latest leaderboard capture ↗')} ·
+{link(source_url['TV-RULES-AMP-SEP2026-R6'], 'Rules re-verified ↗')} ·
+{link(source_url['TV-THELEAP-LANDING-R6'], 'Champion sample re-verified ↗')} ·
 <a href="research/evidence/AUDIT-2026-09-17-PASS5.md">Fifth-pass audit &amp; next-session plan</a></p>
 <div class="callout critical"><h3>Read this before acting on any number here</h3>
 <p>Cash prizes end at rank 50; ranks 51–300 receive a subscription. Every frontier value is a moving

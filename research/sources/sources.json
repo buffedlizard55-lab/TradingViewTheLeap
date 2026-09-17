@@ -7,16 +7,16 @@
       "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
       "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
     },
-    "source_count": 87,
+    "source_count": 90,
     "reverified_utc": "2026-09-17",
-    "reverification_note": "2026-09-17 fifth pass (~20:58Z): the live rules page, the live contest page (fifth leaderboard capture) and the landing-page champions list were re-fetched and diffed line by line. No rule constant, no universe entry and no champion record changed; the 94-instrument transcription of this pass is machine-diffed against data/contest_universe.json by scripts/verify.py. Three re-capture source records added (TV-CONTEST-AMP-SEP2026-R5, TV-RULES-AMP-SEP2026-R5, TV-THELEAP-LANDING-R5)."
+    "reverification_note": "2026-09-17 sixth pass (~21:27Z): the live rules page, the live contest page (sixth leaderboard capture, all four frontiers static vs R5) and the landing-page champions list were re-fetched and diffed line by line. No rule constant, no universe entry and no champion record changed; the 94-instrument transcription of this pass is machine-diffed against data/contest_universe.json by scripts/verify.py. Three re-capture source records added (TV-CONTEST-AMP-SEP2026-R6, TV-RULES-AMP-SEP2026-R6, TV-THELEAP-LANDING-R6). Participants 96,236 -> 96,268 (+32 contest), hero 96,230 -> 96,263 (+33 landing)."
   },
   "sources": [
     {
       "source_id": "TV-THELEAP-LANDING",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "The Leap \u2014 Paper Trading Competition by TradingView",
+      "title": "The Leap — Paper Trading Competition by TradingView",
       "url": "https://www.tradingview.com/the-leap/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -30,7 +30,7 @@
       "source_id": "TV-CONTEST-AMP-SEP2026",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "The Leap by AMP Futures \u2014 September, 2026",
+      "title": "The Leap by AMP Futures — September, 2026",
       "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -45,7 +45,7 @@
       "source_id": "TV-RULES-AMP-SEP2026",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "The Leap by AMP Futures \u2014 Terms and Conditions (Official Competition Rules)",
+      "title": "The Leap by AMP Futures — Terms and Conditions (Official Competition Rules)",
       "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -61,7 +61,7 @@
       "source_id": "TV-RULES-TS-JUL2026",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "The Leap with TradeStation \u2014 Terms and Conditions",
+      "title": "The Leap with TradeStation — Terms and Conditions",
       "url": "https://www.tradingview.com/the-leap/tradestation-july-2026/rules/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -75,7 +75,7 @@
       "source_id": "TV-CONTEST-MAG7-MAR2026",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "The Leap by TradingView \u2014 March, 2026 (Magnificent Seven)",
+      "title": "The Leap by TradingView — March, 2026 (Magnificent Seven)",
       "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -115,7 +115,7 @@
       "source_id": "TV-RESULTS-BENBERNANKE1",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "Leap by CME \u2014 winners announced (blog)",
+      "title": "Leap by CME — winners announced (blog)",
       "url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -129,7 +129,7 @@
       "source_id": "CME-SPEC-BTC1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Bitcoin futures \u2014 contract specs",
+      "title": "Bitcoin futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -141,7 +141,7 @@
       "source_id": "CME-SPEC-MBT1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro Bitcoin futures \u2014 contract specs",
+      "title": "Micro Bitcoin futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -153,7 +153,7 @@
       "source_id": "CME-SPEC-ETH1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Ether futures \u2014 contract specs",
+      "title": "Ether futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -165,7 +165,7 @@
       "source_id": "CME-SPEC-MET1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro Ether futures \u2014 contract specs",
+      "title": "Micro Ether futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -177,7 +177,7 @@
       "source_id": "CME-SPEC-NG1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Henry Hub Natural Gas futures \u2014 contract specs",
+      "title": "Henry Hub Natural Gas futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -189,7 +189,7 @@
       "source_id": "CME-SPEC-MNG1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro Henry Hub Natural Gas futures \u2014 contract specs",
+      "title": "Micro Henry Hub Natural Gas futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -201,7 +201,7 @@
       "source_id": "CME-SPEC-CL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Crude Oil (Light Sweet) futures \u2014 contract specs",
+      "title": "Crude Oil (Light Sweet) futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -213,7 +213,7 @@
       "source_id": "CME-SPEC-MCL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro WTI Crude Oil futures \u2014 contract specs",
+      "title": "Micro WTI Crude Oil futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -225,7 +225,7 @@
       "source_id": "CME-SPEC-QM1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "E-mini Crude Oil futures \u2014 contract specs",
+      "title": "E-mini Crude Oil futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -237,7 +237,7 @@
       "source_id": "CME-SPEC-RB1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "RBOB Gasoline futures \u2014 contract specs",
+      "title": "RBOB Gasoline futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -249,7 +249,7 @@
       "source_id": "CME-SPEC-HO1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "NY Harbor ULSD (Heating Oil) futures \u2014 contract specs",
+      "title": "NY Harbor ULSD (Heating Oil) futures — contract specs",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -261,7 +261,7 @@
       "source_id": "CME-SPEC-SI1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Silver futures \u2014 contract specs",
+      "title": "Silver futures — contract specs",
       "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -273,7 +273,7 @@
       "source_id": "CME-SPEC-SIC1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "100-Ounce Silver futures \u2014 contract specs",
+      "title": "100-Ounce Silver futures — contract specs",
       "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -285,7 +285,7 @@
       "source_id": "CME-SPEC-SIL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro Silver (1000-oz) futures \u2014 contract specs",
+      "title": "Micro Silver (1000-oz) futures — contract specs",
       "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -297,7 +297,7 @@
       "source_id": "CME-SPEC-PL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Platinum futures \u2014 contract specs",
+      "title": "Platinum futures — contract specs",
       "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -309,7 +309,7 @@
       "source_id": "CME-SPEC-NQ1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "E-mini Nasdaq-100 futures \u2014 contract specs",
+      "title": "E-mini Nasdaq-100 futures — contract specs",
       "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -319,7 +319,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-GME",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "GME",
@@ -327,8 +327,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 0.699999988079071 on 2020-04-03 (window 2020-03-01\u21922020-05-01)",
-        "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01\u21922021-02-01, separate fetch)",
+        "Verified trough adjclose 0.699999988079071 on 2020-04-03 (window 2020-03-01→2020-05-01)",
+        "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01→2021-02-01, separate fetch)",
         "Recomputable multiple 124.11x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -345,7 +345,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-AMC",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "AMC",
@@ -353,8 +353,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 20.799999237060547 on 2020-04-13 (window 2020-03-01\u21922020-05-01)",
-        "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15\u21922021-06-15, separate fetch)",
+        "Verified trough adjclose 20.799999237060547 on 2020-04-13 (window 2020-03-01→2020-05-01)",
+        "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15→2021-06-15, separate fetch)",
         "Recomputable multiple 30.07x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -371,7 +371,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-SMCI",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "SMCI",
@@ -379,8 +379,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 5.242000102996826 on 2022-10-12 (window 2022-10-01\u21922022-12-01)",
-        "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15\u21922024-04-01, separate fetch)",
+        "Verified trough adjclose 5.242000102996826 on 2022-10-12 (window 2022-10-01→2022-12-01)",
+        "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15→2024-04-01, separate fetch)",
         "Recomputable multiple 22.66x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -397,7 +397,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-MSTR",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "MSTR",
@@ -405,8 +405,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 9.220000267028809 on 2020-03-18 (window 2020-03-01\u21922020-04-15)",
-        "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15\u21922025-08-01, plus confirmation window 2025-07-16\u21922025-12-01)",
+        "Verified trough adjclose 9.220000267028809 on 2020-03-18 (window 2020-03-01→2020-04-15)",
+        "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15→2025-08-01, plus confirmation window 2025-07-16→2025-12-01)",
         "Recomputable multiple 49.45x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -423,7 +423,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-NVDA",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "NVDA",
@@ -431,8 +431,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 11.186724662780762 on 2022-10-14 (window 2022-10-01\u21922022-11-15); value re-adjusted by vendor 2026-09-16 (was 11.186728477478027), see IR-13",
-        "Verified peak adjclose 135.20562744140625 on 2024-06-18 (window 2024-06-01\u21922024-07-01, separate fetch); value re-adjusted by vendor 2026-09-16 (was 135.20559692382812), see IR-13",
+        "Verified trough adjclose 11.186724662780762 on 2022-10-14 (window 2022-10-01→2022-11-15); value re-adjusted by vendor 2026-09-16 (was 11.186728477478027), see IR-13",
+        "Verified peak adjclose 135.20562744140625 on 2024-06-18 (window 2024-06-01→2024-07-01, separate fetch); value re-adjusted by vendor 2026-09-16 (was 135.20559692382812), see IR-13",
         "Recomputable multiple 12.09x (both endpoint generations)"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -450,7 +450,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-TSLA",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "TSLA",
@@ -458,8 +458,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 24.08133316040039 on 2020-03-18 (window 2020-03-01\u21922020-04-15)",
-        "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15\u21922021-11-15, separate fetch)",
+        "Verified trough adjclose 24.08133316040039 on 2020-03-18 (window 2020-03-01→2020-04-15)",
+        "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15→2021-11-15, separate fetch)",
         "Recomputable multiple 17.02x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -476,7 +476,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-PLTR",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "PLTR",
@@ -484,8 +484,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 6.0 on 2022-12-27 (window 2022-12-01\u21922023-01-15)",
-        "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15\u21922025-12-15, separate fetch)",
+        "Verified trough adjclose 6.0 on 2022-12-27 (window 2022-12-01→2023-01-15)",
+        "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15→2025-12-15, separate fetch)",
         "Recomputable multiple 34.53x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -502,7 +502,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-COIN",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "COIN",
@@ -510,8 +510,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 32.529998779296875 on 2022-12-28 (window 2022-12-01\u21922023-01-15)",
-        "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01\u21922024-12-01, separate fetch)",
+        "Verified trough adjclose 32.529998779296875 on 2022-12-28 (window 2022-12-01→2023-01-15)",
+        "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01→2024-12-01, separate fetch)",
         "Recomputable multiple 10.00x"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
@@ -528,7 +528,7 @@
     },
     {
       "source_id": "YAHOO-MONTHLY-MSTR",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "MSTR",
@@ -536,14 +536,14 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1514764800&period2=1789516800&interval=1mo",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Monthly locator scan 2018\u21922026: trough monthly close 11.81 (2020-03), peak monthly close 404.23 (2025-06)",
+        "Monthly locator scan 2018→2026: trough monthly close 11.81 (2020-03), peak monthly close 404.23 (2025-06)",
         "Selection of the daily trough/peak windows for MSTR"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
     },
     {
       "source_id": "YAHOO-MONTHLY-GME",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "GME",
@@ -551,14 +551,14 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1009843200&period2=1789516800&interval=1mo",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Full-history monthly scan: all monthly lows 2002\u20132019 \u2265 1.1775, below which the 2020-04-03 daily trough 0.70 sits",
+        "Full-history monthly scan: all monthly lows 2002–2019 ≥ 1.1775, below which the 2020-04-03 daily trough 0.70 sits",
         "Confirms the April-2020 trough is the global adjusted low of the fetched history up to that point"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
     },
     {
       "source_id": "YAHOO-MONTHLY-SMCI",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 NOT an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "SMCI",
@@ -566,7 +566,7 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1167609600&period2=1789516800&interval=1mo",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Full-history monthly scan: monthly lows \u2248 0.44\u20130.51 in 2008\u20132009, disproving the 2022 trough as all-time",
+        "Full-history monthly scan: monthly lows ≈ 0.44–0.51 in 2008–2009, disproving the 2022 trough as all-time",
         "Basis for keeping the SMCI multiple window-bounded (22.66x) rather than asserting an all-time multiple"
       ],
       "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
@@ -575,7 +575,7 @@
       "source_id": "CME-SPEC-XRP1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "XRP futures \u2014 contract specs",
+      "title": "XRP futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -588,7 +588,7 @@
       "source_id": "CME-SPEC-SOL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Solana (SOL) futures \u2014 contract specs",
+      "title": "Solana (SOL) futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -600,7 +600,7 @@
       "source_id": "CME-SPEC-MSL1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro Solana futures \u2014 contract specs",
+      "title": "Micro Solana futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -612,7 +612,7 @@
       "source_id": "CME-SPEC-MXP1!",
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
-      "title": "Micro XRP futures \u2014 contract specs",
+      "title": "Micro XRP futures — contract specs",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -622,7 +622,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-ENPH",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "ENPH",
@@ -630,8 +630,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 0.699999988079071 on 2017-05-18 (window 2017-04-15\u21922017-06-15, 42 sessions)",
-        "Verified peak adjclose 267.739990234375 on 2021-11-19 (window 2021-10-15\u21922021-11-20, 26 sessions)",
+        "Verified trough adjclose 0.699999988079071 on 2017-05-18 (window 2017-04-15→2017-06-15, 42 sessions)",
+        "Verified peak adjclose 267.739990234375 on 2021-11-19 (window 2021-10-15→2021-11-20, 26 sessions)",
         "Recomputable multiple 382.49x",
         "Bounding fetch (1d): peak follow-up window 2021-11-15 to 2022-01-14: max close 261.12 on 2021-11-22, below the 2021-11-19 peak",
         "Bounding fetch (1mo): monthly locator 2017-01-01 to 2018-06-01: lowest monthly close 0.76 (May 2017), monthly low 0.65 (May 2017)",
@@ -651,7 +651,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-AMD",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "AMD",
@@ -659,8 +659,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 1.7999999523162842 on 2016-01-20 (window 2016-01-15\u21922016-03-01, 30 sessions)",
-        "Verified peak adjclose 580.9099731445312 on 2026-06-30 (window 2026-05-20\u21922026-07-01, 28 sessions)",
+        "Verified trough adjclose 1.7999999523162842 on 2016-01-20 (window 2016-01-15→2016-03-01, 30 sessions)",
+        "Verified peak adjclose 580.9099731445312 on 2026-06-30 (window 2026-05-20→2026-07-01, 28 sessions)",
         "Recomputable multiple 322.73x",
         "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Jun 2026 is the highest monthly close (580.9099731445312) and highest monthly high (584.72998046875); Jul-Sep 2026 highs stay below 575",
         "Bounding fetch (1d): peak sub-window 2026-06-23 to 2026-07-01 (second fetch, pins the 2026-06-30 close)"
@@ -679,7 +679,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-MARA",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "MARA",
@@ -687,8 +687,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 0.4000000059604645 on 2020-03-18 (window 2020-03-01\u21922020-04-01, 22 sessions)",
-        "Verified peak adjclose 76.08999633789062 on 2021-11-09 (window 2021-10-25\u21922021-12-01, 26 sessions)",
+        "Verified trough adjclose 0.4000000059604645 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
+        "Verified peak adjclose 76.08999633789062 on 2021-11-09 (window 2021-10-25→2021-12-01, 26 sessions)",
         "Recomputable multiple 190.22x",
         "Bounding fetch (1d): peak follow-up window 2021-11-12 to 2021-12-01: max close 75.91999816894531 (2021-11-12), below the 2021-11-09 peak; the 2021-11-30 close 51.06999969482422 matches the November monthly-close anchor",
         "Bounding fetch (1mo): monthly locator Aug 2019 to May 2020: lowest monthly close 0.44999998807907104 (Mar 2020), monthly low 0.3499999940395355",
@@ -708,7 +708,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-CVNA",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "CVNA",
@@ -716,8 +716,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 0.7440000176429749 on 2022-12-27 (window 2022-12-01\u21922023-01-10, 26 sessions)",
-        "Verified peak adjclose 95.69000244140625 on 2026-01-22 (window 2025-12-01\u21922026-03-01, 60 sessions)",
+        "Verified trough adjclose 0.7440000176429749 on 2022-12-27 (window 2022-12-01→2023-01-10, 26 sessions)",
+        "Verified peak adjclose 95.69000244140625 on 2026-01-22 (window 2025-12-01→2026-03-01, 60 sessions)",
         "Recomputable multiple 128.62x",
         "Bounding fetch (1d): trough follow-up window 2023-01-10 to 2023-02-15: min close 0.8840000033378601 (2023-01-10), above the 2022-12-27 trough",
         "Bounding fetch (1mo): monthly scan Feb-May 2023: lowest monthly low 1.2899999618530273 (Mar 2023), above the archived trough",
@@ -738,7 +738,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-RIOT",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "RIOT",
@@ -746,8 +746,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 0.6499999761581421 on 2020-03-18 (window 2020-03-01\u21922020-04-01, 22 sessions)",
-        "Verified peak adjclose 77.9000015258789 on 2021-02-17 (window 2021-02-01\u21922021-03-15, 29 sessions)",
+        "Verified trough adjclose 0.6499999761581421 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
+        "Verified peak adjclose 77.9000015258789 on 2021-02-17 (window 2021-02-01→2021-03-15, 29 sessions)",
         "Recomputable multiple 119.85x",
         "Bounding fetch (1mo): monthly locator Jan 2019 to May 2020: lowest monthly close 0.8330000042915344 (Mar 2020), monthly low 0.5109999775886536",
         "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Feb 2021 has an intraday high below 77.90; Mar 2021 high 67.85 and Apr 2021 high 61.55 bound all later closes below the archived peak; the 2021-02-26 close 43.7400016784668 matches the February monthly-close anchor"
@@ -766,7 +766,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-NVAX",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "NVAX",
@@ -774,8 +774,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 3.930000066757202 on 2020-01-10 (window 2019-12-01\u21922020-01-15, 30 sessions)",
-        "Verified peak adjclose 319.92999267578125 on 2021-02-08 (window 2021-02-01\u21922021-02-27, 19 sessions)",
+        "Verified trough adjclose 3.930000066757202 on 2020-01-10 (window 2019-12-01→2020-01-15, 30 sessions)",
+        "Verified peak adjclose 319.92999267578125 on 2021-02-08 (window 2021-02-01→2021-02-27, 19 sessions)",
         "Recomputable multiple 81.41x",
         "Bounding fetch (1mo): monthly locator Jun 2018 to Dec 2019: lowest monthly close 3.9800000190734863 (Dec 2019), monthly low 3.8499999046325684",
         "Bounding fetch (1mo): monthly scan Jan-Jun 2020: lowest monthly low 3.6500000953674316 (Jan 2020); Feb 2020 low 6.26 excludes a lower close after the archived trough",
@@ -795,7 +795,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-APP",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "APP",
@@ -803,8 +803,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 9.300000190734863 on 2022-12-27 (window 2022-12-01\u21922023-01-15, 30 sessions)",
-        "Verified peak adjclose 733.5999755859375 on 2025-12-22 (window 2025-09-01\u21922026-01-01, 86 sessions)",
+        "Verified trough adjclose 9.300000190734863 on 2022-12-27 (window 2022-12-01→2023-01-15, 30 sessions)",
+        "Verified peak adjclose 733.5999755859375 on 2025-12-22 (window 2025-09-01→2026-01-01, 86 sessions)",
         "Recomputable multiple 78.88x",
         "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: highest monthly close before the daily window is 718.5399780273438 (Sep 2025); Jan-Aug 2026 highs stay below 684, bounding all later closes below the archived peak",
         "Bounding fetch (1mo): monthly scan Apr-Nov 2022: lowest monthly low 13.0 (Nov 2022), above the archived Dec 2022 trough"
@@ -823,7 +823,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-SHOP",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "SHOP",
@@ -831,8 +831,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 1.9329999685287476 on 2016-02-12 (window 2016-01-01\u21922016-02-20, 33 sessions)",
-        "Verified peak adjclose 179.00999450683594 on 2025-10-29 (window 2025-10-01\u21922025-11-01, 23 sessions)",
+        "Verified trough adjclose 1.9329999685287476 on 2016-02-12 (window 2016-01-01→2016-02-20, 33 sessions)",
+        "Verified peak adjclose 179.00999450683594 on 2025-10-29 (window 2025-10-01→2025-11-01, 23 sessions)",
         "Recomputable multiple 92.61x",
         "Bounding fetch (1mo): monthly locator Oct 2015 to Apr 2016: lowest monthly close 2.23799991607666 (Jan 2016), monthly low 1.8480000495910645",
         "Bounding fetch (1mo): monthly scan Jan 2019 to Nov 2021: only Nov 2021 has an intraday high (176.2917938232422) above the Nov-2021 interim daily peak close 169.05999755859375 (2021-11-19)",
@@ -853,7 +853,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-PLUG",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "PLUG",
@@ -861,8 +861,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 1.0099999904632568 on 2018-12-20 (window 2018-12-01\u21922019-02-01, 40 sessions)",
-        "Verified peak adjclose 73.18000030517578 on 2021-01-26 (window 2021-01-01\u21922021-02-01, 19 sessions)",
+        "Verified trough adjclose 1.0099999904632568 on 2018-12-20 (window 2018-12-01→2019-02-01, 40 sessions)",
+        "Verified peak adjclose 73.18000030517578 on 2021-01-26 (window 2021-01-01→2021-02-01, 19 sessions)",
         "Recomputable multiple 72.46x",
         "Bounding fetch (1mo): monthly locator Jan 2019 to Apr 2021: Feb 2021 high 70.51000213623047 and all later monthly highs stay below the archived peak close; the 2021-01-29 close 63.16999816894531 matches the January monthly-close anchor",
         "Bounding fetch (1mo): monthly scan Jun-Dec 2018: lowest monthly low outside Dec 2018 is 1.7100000381469727 (Nov 2018); Dec 2018 monthly low 0.9900000095367432 is inside the daily trough window",
@@ -882,7 +882,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-NIO",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "NIO",
@@ -890,8 +890,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 1.3200000524520874 on 2019-10-01 (window 2019-09-25\u21922019-10-15, 14 sessions)",
-        "Verified peak adjclose 62.84000015258789 on 2021-02-09 (window 2021-01-01\u21922021-02-26, 38 sessions)",
+        "Verified trough adjclose 1.3200000524520874 on 2019-10-01 (window 2019-09-25→2019-10-15, 14 sessions)",
+        "Verified peak adjclose 62.84000015258789 on 2021-02-09 (window 2021-01-01→2021-02-26, 38 sessions)",
         "Recomputable multiple 47.61x",
         "Bounding fetch (1d): trough guard window 2019-09-03 to 2019-09-24: min close 2.5999999046325684 (2019-09-03), above the archived trough",
         "Bounding fetch (1mo): monthly locator Sep 2018 to Jan 2021: only the Oct 2019 bar has a monthly low (1.190000057220459) below 1.32; the Oct 2019 daily window pins the min close at 1.3200000524520874",
@@ -911,7 +911,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-PTON",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "PTON",
@@ -919,8 +919,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 19.510000228881836 on 2020-03-12 (window 2020-03-01\u21922020-04-15, 31 sessions)",
-        "Verified peak adjclose 167.4199981689453 on 2021-01-14 (window 2020-12-15\u21922021-02-01, 31 sessions)",
+        "Verified trough adjclose 19.510000228881836 on 2020-03-12 (window 2020-03-01→2020-04-15, 31 sessions)",
+        "Verified peak adjclose 167.4199981689453 on 2021-01-14 (window 2020-12-15→2021-02-01, 31 sessions)",
         "Recomputable multiple 8.58x",
         "Bounding fetch (1mo): monthly scan Jan 2020 to Jan 2021: every month before Dec 2020 has an intraday high below 139.76, and the Dec 2020 high 167.3699951171875 is below the archived peak close",
         "Bounding fetch (1mo): monthly scan 2021: Feb-Dec 2021 highs stay below 157.84, bounding all later closes below the archived peak; the 2020-12-31 close 151.72000122070312 and 2021-01-29 close 146.1300048828125 match the December and January monthly-close anchors"
@@ -939,7 +939,7 @@
     },
     {
       "source_id": "YAHOO-DAILY-HOOD",
-      "publisher": "Yahoo Finance chart API (market data vendor \u2014 not an official exchange or regulator)",
+      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
       "tier": "market_data_vendor",
       "official_source": false,
       "symbol": "HOOD",
@@ -947,8 +947,8 @@
       "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d",
       "accessed_utc": "2026-09-16",
       "used_for": [
-        "Verified trough adjclose 7.699999809265137 on 2022-12-28 (window 2022-12-01\u21922023-01-15, 30 sessions)",
-        "Verified peak adjclose 152.4600061035156 on 2025-10-09 (window 2025-10-01\u21922025-11-15, 33 sessions)",
+        "Verified trough adjclose 7.699999809265137 on 2022-12-28 (window 2022-12-01→2023-01-15, 30 sessions)",
+        "Verified peak adjclose 152.4600061035156 on 2025-10-09 (window 2025-10-01→2025-11-15, 33 sessions)",
         "Recomputable multiple 19.8x",
         "Bounding fetch (1d): trough guard window 2022-11-15 to 2022-11-30: min close 8.850000381469727 (2022-11-21), above the archived trough",
         "Bounding fetch (1mo): monthly locator Jan 2025 to Sep 2026: Oct 2025 is the highest-close month (146.77999877929688, matching the 2025-10-31 daily close anchor); Nov 2025 high 149.41 is below the archived peak close; Dec 2025 onward monthly highs stay below 139.76"
@@ -1249,7 +1249,7 @@
       "source_id": "TV-PINE-STRATEGIES",
       "publisher": "TradingView, Inc.",
       "tier": "official_primary",
-      "title": "Pine Script strategies \u2014 concepts and Strategy Report",
+      "title": "Pine Script strategies — concepts and Strategy Report",
       "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
       "accessed_utc": "2026-09-16",
       "used_for": [
@@ -1549,6 +1549,49 @@
         "Live-edition hero counter (96,230) versus the contest-page counter (96,236) recorded as the asynchronous-counter pattern IR-09"
       ],
       "evidence_file": "research/evidence/TV-THELEAP-LANDING-R5.md",
+      "official_source": true
+    },
+    {
+      "source_id": "TV-CONTEST-AMP-SEP2026-R6",
+      "publisher": "TradingView, Inc.",
+      "tier": "official_primary",
+      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, sixth pass)",
+      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+      "accessed_utc": "2026-09-17",
+      "used_for": [
+        "Sixth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,268)",
+        "Observation that ALL FOUR tracked frontiers were byte-identical to the 20:58Z capture while participants rose +32 (H24)",
+        "Participants hero async check: landing 96,263 vs contest 96,268 (IR-09)"
+      ],
+      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R6.md",
+      "official_source": true
+    },
+    {
+      "source_id": "TV-RULES-AMP-SEP2026-R6",
+      "publisher": "TradingView, Inc.",
+      "tier": "official_primary",
+      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, sixth pass)",
+      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+      "accessed_utc": "2026-09-17",
+      "used_for": [
+        "Sixth line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe with all 94 caps transcribed in this pass",
+        "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
+      ],
+      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R6.md",
+      "official_source": true
+    },
+    {
+      "source_id": "TV-THELEAP-LANDING-R6",
+      "publisher": "TradingView, Inc.",
+      "tier": "official_primary",
+      "title": "The Leap landing page (champions list re-verified 2026-09-17, sixth pass)",
+      "url": "https://www.tradingview.com/the-leap/",
+      "accessed_utc": "2026-09-17",
+      "used_for": [
+        "Sixth re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
+        "Live-edition hero counter (96,263) versus the contest-page counter (96,268) recorded as the asynchronous-counter pattern IR-09"
+      ],
+      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R6.md",
       "official_source": true
     }
   ]

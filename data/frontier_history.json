@@ -2,9 +2,9 @@
   "_meta": {
     "description": "Timestamped captures of the public leaderboard frontier (ranks 1, 50, 100, 250) and the displayed participant count. Each row is a moving snapshot, not a final threshold and not a prize guarantee. The public page exposes only ranks 1-250 while prizes extend through rank 300.",
     "generated_utc": "2026-09-17",
-    "capture_count": 5,
+    "capture_count": 6,
     "leaderboard_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-    "capture_granularity_note": "The 2026-09-17 00:30 capture was read between roughly 00:25 and 00:35 UTC; the 16:56 capture was read between roughly 16:54 and 16:58 UTC; the 19:04 capture between roughly 18:58 and 19:08 UTC; the 20:58 capture between roughly 20:55 and 21:01 UTC. Recorded timestamps are the midpoints of those windows. Leaderboard values update no more than once per hour and rank by realized P/L, which only changes when a participant closes a position (official rules section 08).",
+    "capture_granularity_note": "The 2026-09-17 00:30 capture was read between roughly 00:25 and 00:35 UTC; the 16:56 capture was read between roughly 16:54 and 16:58 UTC; the 19:04 capture between roughly 18:58 and 19:08 UTC; the 20:58 capture between roughly 20:55 and 21:01 UTC; the 21:27 capture between roughly 21:15 and 21:30 UTC. Recorded timestamps are the midpoints of those windows. Leaderboard values update no more than once per hour and rank by realized P/L, which only changes when a participant closes a position (official rules section 08).",
     "observed_notes": [
       "Between captures 1 and 2 (~3 hours, US after-hours) rank 1 and rank 250 were byte-identical while the mid-board moved (rank 50 +$28,139.75, rank 100 +$11,027.50).",
       "Between captures 2 and 3 (~16.4 hours, US trading day) ALL FOUR frontiers rose: rank 1 +$31,400.00 (same holder), rank 50 +$75,661.00 (new holder), rank 100 +$28,661.85 (new holder), rank 250 +$31,380.50 (new holder). The 3-hour quiet at captures 1-2 does not generalize: the frontier is a moving target.",
@@ -14,7 +14,8 @@
       "Displayed participants rose 93,527 -> 93,702 -> 95,709 -> 96,095 while registration remained open until 2026-09-23 08:00 UTC; the landing-page counter read 96,089 at the same minute (IR-09 async counters).",
       "Row-level sliding re-confirmed at capture 4: capture-2 rank 100 msm223034 +$971,231.00 slid to rank 116; capture-3 rank 100 wowlass63 +$999,892.85 slid to rank 103.",
       "Between captures 4 and 5 (~1.9 hours, US after-hours) the movement was rank-heterogeneous: ranks 1 and 50 were byte-identical (leonardo22_romano +$2,335,125.00; Nikola_Ng +$1,244,313.50) while rank 100 rose +$2,747.50 and rank 250 rose +$3,454.50. Capture-4's rank-100 row (JeremyTradezzz +$1,012,202.50) reappeared at rank 101 and capture-3's rank-100 row (wowlass63 +$999,892.85) at rank 105, so the mid-board boundary was pushed down by one new row while the cash-prize edge did not move at all (H22).",
-      "Participants displayed rose 93,527 -> 93,702 -> 95,709 -> 96,095 -> 96,236 (+2,709 across the four 2026-09-17 passes) while registration remains open until 2026-09-23 08:00 UTC. The landing page showed 96,230 for the same edition at the same minute (IR-09, asynchronous counters)."
+      "Participants displayed rose 93,527 -> 93,702 -> 95,709 -> 96,095 -> 96,236 (+2,709 across the four 2026-09-17 passes) while registration remains open until 2026-09-23 08:00 UTC. The landing page showed 96,230 for the same edition at the same minute (IR-09, asynchronous counters).",
+      "Between captures 5 and 6 (~0.48 hours, US evening) ALL FOUR tracked frontiers were byte-identical: rank 1 +$2,335,125.00, rank 50 +$1,244,313.50, rank 100 +$1,014,950.00, rank 250 +$660,759.50, all same holders and same cent values, while participants rose 96,236 -> 96,268 (+32) and the landing page 96,230 -> 96,263 (+33). This is the second observed interval of complete frontier stasis (after the 3-hour freeze at captures 1-2) and, together with H22's heterogeneous rise and H20's correction-driven fall, completes a same-day catalogue of three distinct board behaviours (H24)."
     ]
   },
   "captures": [
@@ -136,6 +137,34 @@
       "participants_displayed": 96236,
       "source_id": "TV-CONTEST-AMP-SEP2026-R5",
       "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R5.md",
+      "rows": {
+        "1": {
+          "trader": "leonardo22_romano",
+          "realized_profit_pct": 934.05,
+          "realized_profit_usd": 2335125.0
+        },
+        "50": {
+          "trader": "Nikola_Ng",
+          "realized_profit_pct": 497.73,
+          "realized_profit_usd": 1244313.5
+        },
+        "100": {
+          "trader": "nynyyynn54",
+          "realized_profit_pct": 405.98,
+          "realized_profit_usd": 1014950.0
+        },
+        "250": {
+          "trader": "mrchrissmithl143",
+          "realized_profit_pct": 264.3,
+          "realized_profit_usd": 660759.5
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-17T21:27:00Z",
+      "participants_displayed": 96268,
+      "source_id": "TV-CONTEST-AMP-SEP2026-R6",
+      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R6.md",
       "rows": {
         "1": {
           "trader": "leonardo22_romano",
