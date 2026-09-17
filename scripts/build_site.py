@@ -458,6 +458,7 @@ extreme windows can still exist. Engine re-runs are byte-verified by the offline
     add(f"""</ul></details>
 <p class="note">Symbols excluded from testing and why: {esc('; '.join(f"{e['symbol']}: {e['reason']}" for e in bt_meta['symbols_excluded']) or 'none')}.</p>
 <p class="note">Target context: the captured rank-{target_rank} P/L is {money(rank250_usd)} (snapshot {esc(bt_meta['contest_constants']['rank250_target_snapshot_utc'])}); a window counts as hitting the target when its net profit reaches that figure at that snapshot.</p>
+<p class="note">Artifact stamp: <code>{esc(bt_stamp)}</code> — every run is byte-reproducible from the committed vendor captures via <code>python3 scripts/run_backtests.py --stamp {esc(bt_stamp)}</code>; the verifier re-runs exactly that and requires identical output.</p>
 <p class="file-links"><a href="data/backtest_results.json">Full results (JSON)</a>
 <a href="research/strategy/testing-plan.md">Testing protocol</a>
 <a href="intel/">Engine source (intel/)</a></p></section>""")
