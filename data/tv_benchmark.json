@@ -1,0 +1,402 @@
+{
+ "_meta": {
+  "kind": "pine_vs_python_fill_benchmark",
+  "description": "Comparison of exported Pine Strategy Report fills against the repository's Python fill model on the same committed vendor bars, plus a strict import audit of every export (header, column mapping, SHA-256, rejected rows, arithmetic P/L cross-check).",
+  "engine": "tv-benchmark-1",
+  "generated_utc": "2026-09-17T17:19:40+00:00",
+  "scenario": {
+   "key": "moderate",
+   "label": "commission $1.50/contract/side + slippage 5% of ATR(14) per leg",
+   "commission_per_contract_per_side_usd": 1.5,
+   "slippage_atr_fraction": 0.05
+  },
+  "status": "blocked",
+  "blocked_reason": "No authenticated TradingView Strategy Report export is present in data/tv_reports/. Producing one requires a signed-in TradingView account with export entitlement (the official support page documents the CSV export button in the Strategy Report). This environment holds no TradingView credentials and does not fabricate platform output, so the Pine-vs-Python fill benchmark cannot be completed from real exports yet.",
+  "reports_dir": "data/tv_reports",
+  "real_exports_found": 0,
+  "fixture_exports_found": 1,
+  "pine_emulator_rules": {
+   "market_order_default": "Default calculation behavior: the script executes once per bar's closing tick, and the broker emulator fills a market order at the open of the following bar.",
+   "intrabar_assumption": "Intrabar assumption: open->high->low->close when the open is closer to the high, open->low->high->close when it is closer to the low; no gaps exist inside a chart bar.",
+   "gap_rule": "Gap rule: if a price-based order's level is crossed between bars, the emulator fills at the opening price of the bar following the gap instead of the order's price.",
+   "source": "https://www.tradingview.com/pine-script-docs/concepts/strategies/"
+  },
+  "how_to_complete_this_benchmark": [
+   "Sign in to TradingView on a plan that includes Strategy Tester export.",
+   "Run the strategy on a chart, open the Strategy Report, and use the Download button on the 'List of Trades' tab (CSV) - optionally also download the 'Performance Summary' tab.",
+   "Commit the downloaded CSV to data/tv_reports/ (any filename).",
+   "Re-run: python3 scripts/tv_benchmark.py",
+   "The import audit runs immediately; the fill benchmark additionally needs the symbol, either in the export or in a <stem>.manifest.json beside it."
+  ],
+  "not_a_forecast": true
+ },
+ "exports": [],
+ "fixtures": [
+  {
+   "path": "data/tv_reports/_fixtures/synthetic_list_of_trades.csv",
+   "sha256": "7ce4fb86e8407ea7a5f132c84517d076115ecf646455736b88a18f313dc4e8e6",
+   "kind": "list_of_trades",
+   "is_fixture": true,
+   "header_observed": [
+    "Trade #",
+    "Type",
+    "Date/Time",
+    "Signal",
+    "Price",
+    "Contracts",
+    "Profit",
+    "Cumulative Profit",
+    "Run-Up",
+    "Draw-Down",
+    "Symbol"
+   ],
+   "column_map": {
+    "cumulative_profit": "Cumulative Profit",
+    "datetime": "Date/Time",
+    "draw_down": "Draw-Down",
+    "price": "Price",
+    "profit": "Profit",
+    "qty": "Contracts",
+    "run_up": "Run-Up",
+    "signal": "Signal",
+    "symbol": "Symbol",
+    "trade_number": "Trade #",
+    "trade_type": "Type"
+   },
+   "symbol": "CME_MINI:NQ1!",
+   "trade_rows": 12,
+   "rejected_rows": [
+    {
+     "line": 14,
+     "row": [
+      "99",
+      "Entry Long",
+      "2026-09-02",
+      "Buy",
+      "0.00",
+      "2",
+      "",
+      "",
+      "",
+      "",
+      "CME_MINI:NQ1!"
+     ],
+     "reason": "non-positive or unparsable price 0.0"
+    }
+   ],
+   "warnings": [],
+   "round_trips": 6,
+   "arithmetic_cross_check": {
+    "tolerance": 0.02,
+    "round_trips_with_declared_profit": 6,
+    "max_abs_diff": 0.0,
+    "median_abs_diff": 0.0,
+    "within_tolerance": true,
+    "method": "gross P/L recomputed as direction x (exit price - entry price) x quantity from the export's own entry/exit rows, then compared to the export's declared profit column"
+   },
+   "fill_source": "data/market_history/CME_MINI_NQ1.json",
+   "fill_benchmark": {
+    "status": "measured",
+    "bars_source_file": "data/market_history/CME_MINI_NQ1.json",
+    "fills_compared": 12,
+    "fills_unmatched": 0,
+    "share_exact_open_match": 0.916667,
+    "median_abs_delta_vs_bar_open_bps": 0.0,
+    "median_abs_delta_vs_prior_close_bps": 10.7011,
+    "median_abs_delta_vs_python_fill_bps": 11.9105,
+    "python_fill_model": "next bar open + 0.05 x ATR(14) against the direction of the trade",
+    "rows": [
+     {
+      "line": 2,
+      "datetime": "2026-06-26",
+      "phase": "entry",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 29742.0,
+      "vendor_bar": {
+       "date": "2026-06-26",
+       "time_utc": null,
+       "open": 29742.0,
+       "high": 29892.75,
+       "low": 29160.5,
+       "close": 29368.25
+      },
+      "prior_close": 29724.75,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 17.25,
+      "python_fill_next_open_plus_slippage": 29780.127175,
+      "delta_vs_python_fill": -38.127175,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 5.8032,
+      "abs_delta_vs_python_fill_bps": 12.8193
+     },
+     {
+      "line": 3,
+      "datetime": "2026-07-01",
+      "phase": "exit",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 30505.75,
+      "vendor_bar": {
+       "date": "2026-07-01",
+       "time_utc": null,
+       "open": 30505.75,
+       "high": 30553.75,
+       "low": 30008.5,
+       "close": 30094.25
+      },
+      "prior_close": 30523.5,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": -17.75,
+      "python_fill_next_open_plus_slippage": 30543.545642,
+      "delta_vs_python_fill": -37.795642,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 5.8152,
+      "abs_delta_vs_python_fill_bps": 12.3897
+     },
+     {
+      "line": 4,
+      "datetime": "2026-07-08",
+      "phase": "entry",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 29373.75,
+      "vendor_bar": {
+       "date": "2026-07-08",
+       "time_utc": null,
+       "open": 29373.75,
+       "high": 29558.75,
+       "low": 28909.75,
+       "close": 29468.5
+      },
+      "prior_close": 29391.5,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": -17.75,
+      "python_fill_next_open_plus_slippage": 29410.974052,
+      "delta_vs_python_fill": -37.224052,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 6.0392,
+      "abs_delta_vs_python_fill_bps": 12.6726
+     },
+     {
+      "line": 5,
+      "datetime": "2026-07-13",
+      "phase": "exit",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 29952.0,
+      "vendor_bar": {
+       "date": "2026-07-13",
+       "time_utc": null,
+       "open": 29952.0,
+       "high": 30041.0,
+       "low": 29386.5,
+       "close": 29475.75
+      },
+      "prior_close": 30032.25,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": -80.25,
+      "python_fill_next_open_plus_slippage": 29987.225435,
+      "delta_vs_python_fill": -35.225435,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 26.7213,
+      "abs_delta_vs_python_fill_bps": 11.7606
+     },
+     {
+      "line": 6,
+      "datetime": "2026-07-20",
+      "phase": "entry",
+      "side": "short",
+      "qty": 2.0,
+      "exported_price": 28747.75,
+      "vendor_bar": {
+       "date": "2026-07-20",
+       "time_utc": null,
+       "open": 28747.75,
+       "high": 29192.5,
+       "low": 28709.75,
+       "close": 28778.75
+      },
+      "prior_close": 28773.25,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": -25.5,
+      "python_fill_next_open_plus_slippage": 28712.574191,
+      "delta_vs_python_fill": 35.175809,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 8.8624,
+      "abs_delta_vs_python_fill_bps": 12.236
+     },
+     {
+      "line": 7,
+      "datetime": "2026-07-23",
+      "phase": "exit",
+      "side": "short",
+      "qty": 2.0,
+      "exported_price": 29100.5,
+      "vendor_bar": {
+       "date": "2026-07-23",
+       "time_utc": null,
+       "open": 29100.0,
+       "high": 29282.5,
+       "low": 28432.5,
+       "close": 28620.75
+      },
+      "prior_close": 29181.25,
+      "delta_vs_bar_open": 0.5,
+      "delta_vs_prior_close": -80.75,
+      "python_fill_next_open_plus_slippage": 29066.754714,
+      "delta_vs_python_fill": 33.745286,
+      "abs_delta_vs_bar_open_bps": 0.1718,
+      "abs_delta_vs_prior_close_bps": 27.6719,
+      "abs_delta_vs_python_fill_bps": 11.5963
+     },
+     {
+      "line": 8,
+      "datetime": "2026-07-29",
+      "phase": "entry",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 27962.0,
+      "vendor_bar": {
+       "date": "2026-07-29",
+       "time_utc": null,
+       "open": 27962.0,
+       "high": 28178.25,
+       "low": 27201.5,
+       "close": 27342.0
+      },
+      "prior_close": 27922.0,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 40.0,
+      "python_fill_next_open_plus_slippage": 27995.723241,
+      "delta_vs_python_fill": -33.723241,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 14.3256,
+      "abs_delta_vs_python_fill_bps": 12.0604
+     },
+     {
+      "line": 9,
+      "datetime": "2026-08-03",
+      "phase": "exit",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 28565.0,
+      "vendor_bar": {
+       "date": "2026-08-03",
+       "time_utc": null,
+       "open": 28565.0,
+       "high": 28964.25,
+       "low": 28313.5,
+       "close": 28891.75
+      },
+      "prior_close": 28404.25,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 160.75,
+      "python_fill_next_open_plus_slippage": 28601.336752,
+      "delta_vs_python_fill": -36.336752,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 56.5936,
+      "abs_delta_vs_python_fill_bps": 12.7207
+     },
+     {
+      "line": 10,
+      "datetime": "2026-08-10",
+      "phase": "entry",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 29851.25,
+      "vendor_bar": {
+       "date": "2026-08-10",
+       "time_utc": null,
+       "open": 29851.25,
+       "high": 29984.0,
+       "low": 29718.75,
+       "close": 29737.0
+      },
+      "prior_close": 29834.75,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 16.5,
+      "python_fill_next_open_plus_slippage": 29885.907736,
+      "delta_vs_python_fill": -34.657736,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 5.5305,
+      "abs_delta_vs_python_fill_bps": 11.6101
+     },
+     {
+      "line": 11,
+      "datetime": "2026-08-13",
+      "phase": "exit",
+      "side": "long",
+      "qty": 2.0,
+      "exported_price": 29825.0,
+      "vendor_bar": {
+       "date": "2026-08-13",
+       "time_utc": null,
+       "open": 29825.0,
+       "high": 30272.75,
+       "low": 29780.5,
+       "close": 30188.5
+      },
+      "prior_close": 29853.25,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": -28.25,
+      "python_fill_next_open_plus_slippage": 29856.08456,
+      "delta_vs_python_fill": -31.08456,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 9.463,
+      "abs_delta_vs_python_fill_bps": 10.4223
+     },
+     {
+      "line": 12,
+      "datetime": "2026-08-20",
+      "phase": "entry",
+      "side": "short",
+      "qty": 2.0,
+      "exported_price": 29561.5,
+      "vendor_bar": {
+       "date": "2026-08-20",
+       "time_utc": null,
+       "open": 29561.5,
+       "high": 29689.75,
+       "low": 29202.75,
+       "close": 29300.5
+      },
+      "prior_close": 29512.75,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 48.75,
+      "python_fill_next_open_plus_slippage": 29533.740876,
+      "delta_vs_python_fill": 27.759124,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 16.5183,
+      "abs_delta_vs_python_fill_bps": 9.3903
+     },
+     {
+      "line": 13,
+      "datetime": "2026-08-25",
+      "phase": "exit",
+      "side": "short",
+      "qty": 2.0,
+      "exported_price": 29140.5,
+      "vendor_bar": {
+       "date": "2026-08-25",
+       "time_utc": null,
+       "open": 29140.5,
+       "high": 29425.75,
+       "low": 29017.0,
+       "close": 29276.75
+      },
+      "prior_close": 29105.75,
+      "delta_vs_bar_open": 0.0,
+      "delta_vs_prior_close": 34.75,
+      "python_fill_next_open_plus_slippage": 29113.810643,
+      "delta_vs_python_fill": 26.689357,
+      "abs_delta_vs_bar_open_bps": 0.0,
+      "abs_delta_vs_prior_close_bps": 11.9392,
+      "abs_delta_vs_python_fill_bps": 9.1589
+     }
+    ]
+   }
+  }
+ ],
+ "fixture_notice": "Records under 'fixtures' are SYNTHETIC files written by this repository to prove the import and benchmark code path. They are not TradingView output and their numbers must never be quoted as platform results."
+}

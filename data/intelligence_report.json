@@ -133,13 +133,17 @@
         "YAHOO-DAILY-SMCI",
         "YAHOO-DAILY-TSLA",
         "YAHOO-FUTURES-CHART",
+        "YAHOO-INTRADAY-CHART",
         "YAHOO-MONTHLY-GME",
         "YAHOO-MONTHLY-MSTR",
         "YAHOO-MONTHLY-SMCI"
       ],
       "captured_series": 20,
       "failed_series": 0,
-      "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills."
+      "intraday_captured_series": 0,
+      "intraday_captured_bars": 0,
+      "intraday_index_stamp": null,
+      "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary."
     },
     "repository_simulation": {
       "status": "reproducible_paper_simulation",
@@ -191,13 +195,93 @@
       "next_step": "Add a genuinely out-of-sample season and validate fills against a higher-frequency source; do not optimize to the current vendor window."
     },
     {
-      "workstream": "TradingView Strategy Report / Pine platform validation",
+      "workstream": "intraday vendor captures (15m / 1h / long 1d) for the volatile pool",
       "status": "blocked_or_unrun",
       "evidence": [
+        "scripts/fetch_intraday.py",
+        "intel/intraday.py",
+        "research/evidence/YAHOO-INTRADAY-CAPTURE.md",
+        ".github/workflows/capture-intraday.yml"
+      ],
+      "next_step": "The capture workflow has not committed data/intraday_index.json yet; dispatch .github/workflows/capture-intraday.yml (the repository sandbox has no egress to the vendor).",
+      "detail": {
+        "captured_series": 0,
+        "by_interval": {},
+        "captured_bar_total": 0,
+        "failed_or_not_attempted": 0,
+        "index": null,
+        "index_stamp": null,
+        "vendor_rate_limited_direct": null,
+        "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
+      }
+    },
+    {
+      "workstream": "intra-session gap fill and execution latency (our own measurement)",
+      "status": "blocked_or_unrun",
+      "evidence": [
+        "scripts/run_intraday_study.py",
+        "intel/intraday.py"
+      ],
+      "next_step": "Run scripts/run_intraday_study.py once data/intraday_index.json exists."
+    },
+    {
+      "workstream": "volatile-stock division of the paper competition (20 usernames)",
+      "status": "blocked_or_unrun",
+      "evidence": [
+        "data/competition/stock_roster.json",
+        "intel/stock_strategies.py",
+        "scripts/run_stock_competition.py"
+      ],
+      "next_step": "Run scripts/run_stock_competition.py once the intraday captures exist.",
+      "detail": {
+        "roster_usernames": 20,
+        "artifact": null,
+        "primary_profile": false,
+        "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
+      }
+    },
+    {
+      "workstream": "executive summary of mechanically-implied upcoming orders",
+      "status": "captured",
+      "evidence": [
+        "data/exec_summary.json",
+        "scripts/build_exec_summary.py"
+      ],
+      "next_step": "Re-derive after every capture and after every competition re-run; the sizes are indicative rule-arithmetic, never advice.",
+      "detail": {
+        "pending_order_count": 2,
+        "divisions": [
+          "futures",
+          "stocks_daily"
+        ],
+        "sizing_note": "Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price."
+      }
+    },
+    {
+      "workstream": "Pine broker-emulator rules vs the Python fill model",
+      "status": "completed_with_caveats",
+      "evidence": [
+        "data/tv_benchmark.json",
+        "intel/pine_emulator.py",
+        "scripts/tv_benchmark.py"
+      ],
+      "next_step": "The rules are encoded from TradingView's own Pine documentation and the import path is proven on a synthetic fixture; the numbers are not yet validated against a real platform run.",
+      "detail": {
+        "status": "blocked",
+        "real_exports_found": 0,
+        "fixture_exports_found": 1
+      }
+    },
+    {
+      "workstream": "authenticated TradingView Strategy Report import",
+      "status": "blocked_or_unrun",
+      "evidence": [
+        "intel/tv_import.py",
+        "scripts/tv_benchmark.py",
         "research/strategy/models.json",
         "research/strategy/the-leap-hypothesis-lab.pine"
       ],
-      "next_step": "Requires an authenticated TradingView session and a manually reviewable Strategy Report export; no result is claimed here."
+      "next_step": "Requires a signed-in TradingView account with Strategy Report export entitlement. The importer (intel/tv_import.py) accepts the official List-of-Trades CSV, the Performance-Summary CSV and the 5-sheet XLSX and fails loudly on gating; drop an export into data/tv_reports/ and re-run scripts/tv_benchmark.py. No figure on this site is claimed to come from a real export."
     },
     {
       "workstream": "official listed-trader strategy attribution",
@@ -472,6 +556,22 @@
     }
   },
   "coverage": {
+    "intraday_capture": {
+      "captured_series": 0,
+      "by_interval": {},
+      "captured_bar_total": 0,
+      "failed_or_not_attempted": 0,
+      "index": null,
+      "index_stamp": null,
+      "vendor_rate_limited_direct": null,
+      "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
+    },
+    "stock_division": {
+      "roster_usernames": 20,
+      "artifact": null,
+      "primary_profile": false,
+      "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
+    },
     "latest_official_frontier_capture": "2026-09-18T02:27:00Z",
     "latest_official_participants_displayed": 96586,
     "vendor_captured_symbols": [

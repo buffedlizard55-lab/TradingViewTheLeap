@@ -1,0 +1,389 @@
+{
+ "_meta": {
+  "kind": "intraday_capture_run_report",
+  "description": "What one capture run did, written by the run itself because its logs and artifacts are not readable from the research sandbox. Written on every run, including runs that stored nothing.",
+  "run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35392489653",
+  "head_sha": "51479cd1414ccc3d7b8ce2b6a9eb38da3f39f4a6",
+  "generated_utc": "2026-09-18T21:47:21+00:00",
+  "not_a_forecast": "Operational record of one capture attempt; contains no market view."
+ },
+ "index": {
+  "present": true,
+  "meta": {
+   "script_version": "3",
+   "fetched_at_utc": "2026-09-18T20:57:43+00:00",
+   "direct_rate_limited": true,
+   "direct_429_count": 2,
+   "captured_count": 0,
+   "failed_count": 11,
+   "not_attempted_count": 29,
+   "captured_by_interval": {}
+  },
+  "captured": [],
+  "not_captured": [
+   {
+    "symbol": "AMC",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "AMD",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: AMD[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/AMD?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "APP",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: APP[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/APP?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "COIN",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CVNA",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: CVNA[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/CVNA?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "ENPH",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: ENPH: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]"
+   },
+   {
+    "symbol": "GME",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: GME[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/GME?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "HOOD",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "MARA",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: MARA: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]"
+   },
+   {
+    "symbol": "MSTR",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: MSTR[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "NIO",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NVAX",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: NVAX[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/NVAX?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "NVDA",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "PLTR",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "PLUG",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: PLUG[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PLUG?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   },
+   {
+    "symbol": "PTON",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "RIOT",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: RIOT: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]"
+   },
+   {
+    "symbol": "SHOP",
+    "interval": "1h",
+    "status": "failed",
+    "error": "RuntimeError: SHOP: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]"
+   },
+   {
+    "symbol": "SMCI",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "TSLA",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:BTC1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:ETH1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:MBT1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:MET1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:MSL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:MXP1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:SOL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME:XRP1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "CME_MINI:NQ1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "COMEX:SI1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "COMEX:SIC1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "COMEX_MINI:SIL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:CL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:HO1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:MCL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:MNG1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:NG1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:PL1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX:RB1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   },
+   {
+    "symbol": "NYMEX_MINI:QM1!",
+    "interval": "1h",
+    "status": "not_attempted",
+    "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   }
+  ]
+ },
+ "log_tail": [
+  "    allorigins relay attempt 2/2 failed: HTTP Error 502: Bad Gateway",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED APP [1h]: RuntimeError: APP[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/APP?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)",
+  "GET PLUG [1h] across 5 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 500: Internal Server Error",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED PLUG [1h]: RuntimeError: PLUG[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PLUG?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)",
+  "GET MSTR [1h] across 5 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 520: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED MSTR [1h]: RuntimeError: MSTR[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)",
+  "wrote data/intraday_index.json (40 records, 0 captured)",
+  "SUMMARY: captured 0/40 series; by interval {}; failures: ENPH[1h](RuntimeError: ENPH: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), AMD[1h](nance/chart/AMD?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), MARA[1h](RuntimeError: MARA: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), CVNA[1h](ance/chart/CVNA?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), GME[1h](nance/chart/GME?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), RIOT[1h](RuntimeError: RIOT: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), SHOP[1h](RuntimeError: SHOP: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), NVAX[1h](ance/chart/NVAX?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), APP[1h](nance/chart/APP?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), PLUG[1h](ance/chart/PLUG?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), MSTR[1h](ance/chart/MSTR?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>))",
+  "::notice::intraday capture captured 0/40 series; by interval {}; failures: ENPH[1h](RuntimeError: ENPH: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), AMD[1h](nance/chart/AMD?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), MARA[1h](RuntimeError: MARA: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), CVNA[1h](ance/chart/CVNA?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), GME[1h](nance/chart/GME?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), RIOT[1h](RuntimeError: RIOT: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), SHOP[1h](RuntimeError: SHOP: bar at 1789761600 outside the requested chunk [1726876800, 1742428800]), NVAX[1h](ance/chart/NVAX?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), APP[1h](nance/chart/APP?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), PLUG[1h](ance/chart/PLUG?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)), MSTR[1h](ance/chart/MSTR?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>))",
+  "GET ENPH [15m] across 4 chunk(s)",
+  "    direct attempt 1 failed: HTTP 429",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 520: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    direct disabled for this run after repeated HTTP 429",
+  "    direct attempt 1 failed: HTTP 429",
+  "    relay preference set to allorigins",
+  "FAILED ENPH [15m]: RuntimeError: ENPH: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET AMD [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 500: Internal Server Error",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED AMD [15m]: RuntimeError: AMD: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET MARA [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 520: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "FAILED MARA [15m]: RuntimeError: MARA: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET CVNA [15m] across 4 chunk(s)",
+  "FAILED CVNA [15m]: RuntimeError: CVNA: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET GME [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 500: Internal Server Error",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED GME [15m]: RuntimeError: GME[15m] chunk 1784592000: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/GME?period1=1784592000&period2=1785888000&interval=15m (HTTP Error 522: <none>)",
+  "GET RIOT [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 500: Internal Server Error",
+  "FAILED RIOT [15m]: RuntimeError: RIOT: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET SHOP [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED SHOP [15m]: RuntimeError: SHOP: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET NVAX [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 500: Internal Server Error",
+  "FAILED NVAX [15m]: RuntimeError: NVAX: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET APP [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "FAILED APP [15m]: RuntimeError: APP: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET PLUG [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED PLUG [15m]: RuntimeError: PLUG[15m] chunk 1784592000: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PLUG?period1=1784592000&period2=1785888000&interval=15m (HTTP Error 522: <none>)",
+  "GET MSTR [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "FAILED MSTR [15m]: RuntimeError: MSTR: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET NIO [15m] across 4 chunk(s)",
+  "FAILED NIO [15m]: RuntimeError: NIO: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET PLTR [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 500: Internal Server Error",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    allorigins relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 1/2 failed: HTTP Error 522: <none>",
+  "    codetabs relay attempt 2/2 failed: HTTP Error 522: <none>",
+  "FAILED PLTR [15m]: RuntimeError: PLTR[15m] chunk 1784592000: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PLTR?period1=1784592000&period2=1785888000&interval=15m (HTTP Error 522: <none>)",
+  "GET AMC [15m] across 4 chunk(s)",
+  "FAILED AMC [15m]: RuntimeError: AMC: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET SMCI [15m] across 4 chunk(s)",
+  "    allorigins relay attempt 1/2 failed: HTTP Error 520: <none>",
+  "FAILED SMCI [15m]: RuntimeError: SMCI: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET HOOD [15m] across 4 chunk(s)",
+  "FAILED HOOD [15m]: RuntimeError: HOOD: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET TSLA [15m] across 4 chunk(s)",
+  "FAILED TSLA [15m]: RuntimeError: TSLA: bar at 1789761600 outside the requested chunk [1784592000, 1785888000]",
+  "GET NVDA [15m] across 4 chunk(s)"
+ ],
+ "commit_comment": "posted as comment 201041563"
+}

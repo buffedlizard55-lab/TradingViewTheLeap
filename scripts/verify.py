@@ -29,6 +29,7 @@ import json
 import math
 import os
 import re
+import statistics
 import sys
 from datetime import datetime, timezone
 
@@ -1656,6 +1657,664 @@ def check_no_unsourced_numbers(rep: Report) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Intraday captures + study, volatile-stock division, executive summary and
+# the TradingView export benchmark.
+#
+# Every check below re-derives its numbers from the artifacts on disk (or, for
+# the four builders, by re-running the builder at its pinned stamp and requiring
+# field-for-field equality). Nothing here trusts a stored aggregate by itself.
+# ---------------------------------------------------------------------------
+INTRADAY_INTERVALS = ("15m", "1h", "1d")
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def load_opt(rel: str):
+    """Load an artifact, or return None when the pipeline has not produced it yet.
+
+    A missing artifact is a warning (the capture workflow may still be running), never a
+    silent pass: the caller records which check was skipped and why.
+    """
+    try:
+        return load(rel)
+    except FileNotFoundError:
+        return None
+
+
+def median_of(values) -> float | None:
+    vals = sorted(v for v in values if v is not None)
+    if not vals:
+        return None
+    mid = len(vals) // 2
+    return float(vals[mid]) if len(vals) % 2 else float((vals[mid - 1] + vals[mid]) / 2)
+
+
+def _reproduce(rep: Report, check: str, script: str, rel: str, extra: tuple = ()) -> dict | None:
+    """Re-run a deterministic builder at its stored stamp and require identical content."""
+    import subprocess
+    import tempfile
+
+    stored = load_opt(rel)
+    if stored is None:
+        rep.warn(f"{check}: {rel} not present yet - run scripts/{script} once its inputs exist")
+        return None
+    stamp = (stored.get("_meta") or {}).get("generated_utc")
+    if not stamp or stamp == "unknown":
+        rep.fail(f"{check}.stamp",
+                 f"{rel}: _meta.generated_utc is {stamp!r}; a pinned deterministic stamp is required")
+        return stored
+    with tempfile.TemporaryDirectory() as tmp:
+        out = os.path.join(tmp, "reproduced.json")
+        proc = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "scripts", script), "--out", out,
+             "--stamp", stamp, *extra],
+            cwd=ROOT, capture_output=True, text=True)
+        if proc.returncode != 0:
+            rep.fail(f"{check}.rerun",
+                     f"scripts/{script} exited {proc.returncode}: "
+                     f"{(proc.stdout + proc.stderr).strip()[-400:]}")
+            return stored
+        with open(out, encoding="utf-8") as fh:
+            fresh = json.load(fh)
+    if fresh != stored:
+        rep.fail(f"{check}.determinism",
+                 f"{rel} is not reproduced field-for-field by scripts/{script} at stamp {stamp}")
+    else:
+        rep.ok(f"{rel} reproduced field-for-field by scripts/{script} at stamp {stamp}")
+    return stored
+
+
+def _volatile_pool_symbols() -> set:
+    vs = load("data/volatile_stocks.json")
+    return {r["symbol"] for r in vs["records"]}
+
+
+def check_intraday(rep: Report, source_ids: dict) -> None:
+    """Audit the intraday capture index, the stored capture files, and the study derived from them.
+
+    Re-hashes every capture file, re-validates every bar through the same loader the study
+    uses, re-derives the declared first/last timestamps, re-counts the status tallies, and
+    (for the study) re-derives every aggregate from the bucket rows and the per-symbol rows.
+    """
+    import hashlib
+    sys.path.insert(0, ROOT)
+    from intel import intraday as intraday_mod
+
+    pool = _volatile_pool_symbols()
+    idx = load_opt("data/intraday_index.json")
+    meta = (idx or {}).get("_meta", {})
+    caps = (idx or {}).get("captures", [])
+    captured: list[dict] = []
+
+    if idx is None:
+        rep.warn("intraday.index: data/intraday_index.json not present yet "
+                 "(the capture-intraday workflow has not committed a capture) - "
+                 "intraday capture, study and stock-division checks skipped")
+    else:
+        if meta.get("kind") != "intraday_capture_index":
+            rep.fail("intraday.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+        if meta.get("script") != "scripts/fetch_intraday.py":
+            rep.fail("intraday.script", f"unexpected _meta.script {meta.get('script')!r}")
+        sid = meta.get("vendor_source_id") or meta.get("source_id")
+        if sid is None:
+            rep.warn("intraday.source: the index does not declare vendor_source_id "
+                     "(capture written by a build older than the field) - skipped")
+        elif sid not in source_ids:
+            rep.fail("intraday.source", f"index cites unregistered source {sid!r}")
+        else:
+            rep.ok(f"intraday index cites registered market-data-vendor source {sid}")
+
+        seen: set = set()
+        failed = deferred = 0
+        for record in caps:
+            symbol = record.get("symbol")
+            interval = record.get("interval")
+            status = record.get("status")
+            if (symbol, interval) in seen:
+                rep.fail("intraday.duplicate", f"duplicate capture record {symbol}[{interval}]")
+            seen.add((symbol, interval))
+            if interval not in INTRADAY_INTERVALS:
+                rep.fail("intraday.interval", f"{symbol}: unknown interval {interval!r}")
+            if record.get("kind") == "equity" and symbol not in pool:
+                rep.fail("intraday.symbol",
+                         f"{symbol}: equity capture is not a member of the 20-stock volatile pool")
+            if status in ("failed", "not_attempted"):
+                failed += status == "failed"
+                deferred += status == "not_attempted"
+                if not record.get("error"):
+                    rep.fail("intraday.failure_reason",
+                             f"{symbol}[{interval}]: {status} record carries no error text")
+                continue
+            if status != "captured":
+                rep.fail("intraday.status", f"{symbol}[{interval}]: unknown status {status!r}")
+                continue
+            captured.append(record)
+
+            rel = str(record.get("file", ""))
+            if not rel.startswith("data/intraday/"):
+                rep.fail("intraday.capture_file",
+                         f"{symbol}[{interval}]: file {rel!r} is outside data/intraday/")
+                continue
+            path = os.path.join(ROOT, rel)
+            if not os.path.exists(path):
+                rep.fail("intraday.capture_file", f"{symbol}[{interval}]: declared file missing: {rel}")
+                continue
+            with open(path, "rb") as fh:
+                payload = fh.read()
+            digest = hashlib.sha256(payload).hexdigest()
+            if digest != record.get("stored_sha256"):
+                rep.fail("intraday.sha256",
+                         f"{symbol}[{interval}]: file SHA-256 {digest[:16]}... != index "
+                         f"{str(record.get('stored_sha256'))[:16]}...")
+                continue
+            if record.get("stored_bytes") != len(payload):
+                rep.fail("intraday.bytes",
+                         f"{symbol}[{interval}]: stored_bytes {record.get('stored_bytes')} != "
+                         f"file length {len(payload)}")
+            if record.get("vendor_data_granularity") != interval:
+                rep.warn(f"intraday.granularity: {symbol}[{interval}]: vendor reported "
+                         f"{record.get('vendor_data_granularity')!r}")
+            try:
+                capture = intraday_mod.load_capture(record)
+            except intraday_mod.IntradayError as exc:
+                rep.fail("intraday.capture", f"{symbol}[{interval}]: {exc}")
+                continue
+            # Independent re-derivation of the declared first/last stamps and the plan tally.
+            first_iso = datetime.fromtimestamp(capture.bars[0].ts, tz=timezone.utc).isoformat()
+            last_iso = datetime.fromtimestamp(capture.bars[-1].ts, tz=timezone.utc).isoformat()
+            if parse_utc(record.get("first_utc", "")) != parse_utc(first_iso):
+                rep.fail("intraday.timestamps",
+                         f"{symbol}[{interval}]: first_utc {record.get('first_utc')!r} != "
+                         f"first bar {first_iso!r}")
+            if parse_utc(record.get("last_utc", "")) != parse_utc(last_iso):
+                rep.fail("intraday.timestamps",
+                         f"{symbol}[{interval}]: last_utc {record.get('last_utc')!r} != "
+                         f"last bar {last_iso!r}")
+            chunks = record.get("chunk_provenance") or []
+            if record.get("chunks") != len(chunks):
+                rep.fail("intraday.chunks",
+                         f"{symbol}[{interval}]: chunks {record.get('chunks')} != "
+                         f"{len(chunks)} chunk records")
+            total_bytes = 0
+            for chunk in chunks:
+                if not HEX64.match(str(chunk.get("raw_response_sha256", ""))):
+                    rep.fail("intraday.chunk_sha",
+                             f"{symbol}[{interval}]: chunk digest "
+                             f"{chunk.get('raw_response_sha256')!r} is not a SHA-256")
+                if not str(chunk.get("endpoint", "")).startswith("https://"):
+                    rep.fail("intraday.chunk_endpoint",
+                             f"{symbol}[{interval}]: chunk endpoint {chunk.get('endpoint')!r} is not https")
+                nb = chunk.get("raw_response_bytes")
+                if not isinstance(nb, int) or nb <= 0:
+                    rep.fail("intraday.chunk_bytes",
+                             f"{symbol}[{interval}]: chunk raw_response_bytes {nb!r}")
+                else:
+                    total_bytes += nb
+            if record.get("raw_response_bytes_total") != total_bytes:
+                rep.fail("intraday.chunk_bytes",
+                         f"{symbol}[{interval}]: raw_response_bytes_total "
+                         f"{record.get('raw_response_bytes_total')} != {total_bytes}")
+        rep.ok(f"intraday index: {len(captured)} captures re-hashed, re-validated and re-counted")
+
+        by_interval: dict = {}
+        for record in captured:
+            by_interval[record["interval"]] = by_interval.get(record["interval"], 0) + 1
+        if meta.get("captured_count") != len(captured):
+            rep.fail("intraday.counts",
+                     f"_meta.captured_count {meta.get('captured_count')} != {len(captured)} captured records")
+        if meta.get("failed_count") != failed:
+            rep.fail("intraday.counts", f"_meta.failed_count {meta.get('failed_count')} != {failed}")
+        if meta.get("not_attempted_count") != deferred:
+            rep.fail("intraday.counts",
+                     f"_meta.not_attempted_count {meta.get('not_attempted_count')} != {deferred}")
+        if meta.get("symbol_count") != len(caps):
+            rep.fail("intraday.counts", f"_meta.symbol_count {meta.get('symbol_count')} != {len(caps)}")
+        stored_by_iv = dict(meta.get("captured_by_interval") or {})
+        if stored_by_iv != by_interval:
+            rep.fail("intraday.counts",
+                     f"_meta.captured_by_interval {stored_by_iv} != re-counted {by_interval}")
+        unpaid = [s for s in (meta.get("equity_symbols") or []) if s not in pool]
+        if unpaid:
+            rep.fail("intraday.plan", f"index equity_symbols not in the volatile pool: {unpaid}")
+        if len(set(meta.get("equity_symbols") or [])) != len(meta.get("equity_symbols") or []):
+            rep.fail("intraday.plan", "index equity_symbols contains duplicates")
+        missing_pool = sorted(s for s in pool if s not in set(meta.get("equity_symbols") or []))
+        if missing_pool:
+            rep.fail("intraday.plan", f"volatile pool symbols absent from the capture plan: {missing_pool}")
+
+    # ---- the study derived from those captures -------------------------------
+    study = _reproduce(rep, "intraday.study", "run_intraday_study.py", "data/intraday_study.json")
+    if study is None:
+        return
+    smeta = study.get("_meta", {})
+    if smeta.get("kind") != "intraday_study":
+        rep.fail("intraday.study_kind", f"unexpected _meta.kind {smeta.get('kind')!r}")
+    if smeta.get("engine") != "intraday-study-1":
+        rep.fail("intraday.study_engine", f"unexpected _meta.engine {smeta.get('engine')!r}")
+    if smeta.get("not_a_forecast") is not True:
+        rep.fail("intraday.study_honesty", "study must declare not_a_forecast: true")
+    if not smeta.get("methodology") or not smeta.get("assumptions"):
+        rep.fail("intraday.study_method", "study must record its methodology and assumptions")
+
+    coverage = study.get("coverage") or []
+    by_key = {(row.get("symbol"), row.get("interval")): row for row in coverage}
+    for record in captured:
+        if record["interval"] == "1d":
+            continue  # the study measures intraday series only
+        key = (record["symbol"], record["interval"])
+        row = by_key.get(key)
+        if row is None:
+            rep.fail("intraday.study_coverage",
+                     f"{key[0]}[{key[1]}] is captured but missing from the study coverage")
+            continue
+        if row.get("bars") != record.get("bar_count") or row.get("stored_sha256") != record.get("stored_sha256"):
+            rep.fail("intraday.study_coverage",
+                     f"{key[0]}[{key[1]}]: coverage (bars={row.get('bars')}, sha={str(row.get('stored_sha256'))[:12]}...) "
+                     f"does not match the index (bars={record.get('bar_count')}, "
+                     f"sha={str(record.get('stored_sha256'))[:12]}...)")
+
+    buckets = (study.get("gap_fill") or {}).get("buckets") or []
+    per_symbol = (study.get("gap_fill") or {}).get("per_symbol") or []
+    aggregate = (study.get("gap_fill") or {}).get("aggregate_by_kind") or {}
+    for kind, arow in aggregate.items():
+        rows = [b for b in buckets if b.get("kind") == kind]
+        sessions = sum(b["sessions"] for b in rows)
+        if sessions != arow.get("sessions_with_gap"):
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: bucket sessions {sessions} != sessions_with_gap {arow.get('sessions_with_gap')}")
+            continue
+        ge1 = [b for b in rows if b.get("bucket") in ("1.0_2.0_atr", "ge_2.0_atr")]
+        ge1_sessions = sum(b["sessions"] for b in ge1)
+        if ge1_sessions != arow.get("sessions_with_gap_ge_1_atr"):
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: >=1 ATR bucket sessions {ge1_sessions} != "
+                     f"{arow.get('sessions_with_gap_ge_1_atr')}")
+        weighted = sum(b["sessions"] * b["fill_rate"] for b in rows) / sessions if sessions else None
+        if weighted is None or not approx(weighted, arow.get("fill_rate_all", -1), 5e-6):
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: sessions-weighted bucket fill rate {weighted} != fill_rate_all "
+                     f"{arow.get('fill_rate_all')}")
+        if ge1_sessions:
+            weighted_ge1 = sum(b["sessions"] * b["fill_rate"] for b in ge1) / ge1_sessions
+            if not approx(weighted_ge1, arow.get("fill_rate_ge_1_atr", -1), 5e-6):
+                rep.fail("intraday.study_aggregate",
+                         f"{kind}: weighted >=1 ATR fill rate {weighted_ge1} != "
+                         f"{arow.get('fill_rate_ge_1_atr')}")
+        # Every session after the first must be accounted for: either it produced a gap row or
+        # it was skipped for a reason the study publishes (no ATR baseline yet / opened exactly
+        # at the prior close). Not "sessions - 1", which silently assumes every session has an
+        # ATR value and a non-zero gap.
+        kind_rows = [r for r in per_symbol if r.get("kind") == kind]
+        analysed = sum(r.get("gaps_analyzed", 0) for r in kind_rows)
+        candidates = sum(r.get("gap_candidates", 0) for r in kind_rows)
+        skipped = sum(r.get("gaps_skipped_no_atr", 0) + r.get("gaps_skipped_zero_gap", 0)
+                      for r in kind_rows)
+        if analysed + skipped != candidates:
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: gap accounting does not close: {analysed} analysed + {skipped} "
+                     f"skipped != {candidates} sessions after the first")
+        elif analysed != sessions:
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: per-symbol rows hold {analysed} gaps but the bucket rows hold {sessions}")
+        symbol_sessions = sum(r.get("sessions", 0) for r in kind_rows)
+        if candidates != symbol_sessions - len(kind_rows):
+            rep.fail("intraday.study_aggregate",
+                     f"{kind}: {candidates} gap candidates for {symbol_sessions} sessions over "
+                     f"{len(kind_rows)} series (expected sessions-1 per series)")
+    for row in (study.get("execution_latency") or {}).get("by_kind_interval") or []:
+        for name, summary in row.items():
+            if not isinstance(summary, dict):
+                continue
+            if summary.get("observations") == 0:
+                continue
+            if summary.get("median_abs_bps") is None or summary.get("median_abs_bps") < 0:
+                rep.fail("intraday.study_latency",
+                         f"{row.get('kind')}[{row.get('interval')}].{name}: median_abs_bps "
+                         f"{summary.get('median_abs_bps')!r}")
+            if summary.get("mean_signed_bps") is None:
+                rep.fail("intraday.study_latency",
+                         f"{row.get('kind')}[{row.get('interval')}].{name}: mean_signed_bps missing")
+    rep.ok(f"intraday study: {len(coverage)} series, {len(buckets)} bucket rows and "
+           f"{len(aggregate)} kind aggregates re-derived from the capture index")
+
+
+def check_stock_competition(rep: Report, source_ids: dict) -> None:
+    """Audit the volatile-stock division against its roster and the rule profiles.
+
+    The artifact is re-generated at its own stamp and required to match; the roster join,
+    the pool membership and the leaderboard ordering are then re-checked independently.
+    """
+    doc = _reproduce(rep, "stock_competition", "run_stock_competition.py",
+                     "data/stock_competition_results.json")
+    if doc is None:
+        return
+    sys.path.insert(0, ROOT)
+    from intel.competition import RULE_PROFILES
+
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "own_stock_competition_simulation":
+        rep.fail("stock_competition.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("engine") != "intel-competition-2":
+        rep.fail("stock_competition.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("stock_competition.honesty", "artifact must declare not_a_forecast: true")
+    for sid in meta.get("source_ids", []):
+        if sid not in source_ids:
+            rep.fail("stock_competition.source", f"unregistered source {sid}")
+    for profile_name in (meta.get("primary_profile"), meta.get("counterfactual_profile")):
+        if profile_name and profile_name not in RULE_PROFILES:
+            rep.fail("stock_competition.profile", f"unknown rule profile {profile_name!r}")
+
+    roster = load("data/competition/stock_roster.json")
+    usernames = {p["username"] for p in roster["participants"]}
+    pool = _volatile_pool_symbols()
+    for p in roster["participants"]:
+        bad = sorted(set(p["pool"]) - pool)
+        if bad:
+            rep.fail("stock_competition.pool", f"{p['username']}: pool symbols outside the volatile pool: {bad}")
+    for sid in roster["_meta"].get("price_source_ids", []):
+        if sid not in source_ids:
+            rep.fail("stock_competition.source", f"roster cites unregistered source {sid}")
+
+    covered: set = set()
+    for name, division in (doc.get("divisions") or {}).items():
+        leaderboard = division.get("leaderboard")
+        if not leaderboard:
+            continue
+        ranks = [row["season_rank"] for row in leaderboard]
+        if ranks != list(range(1, len(leaderboard) + 1)):
+            rep.fail("stock_competition.ranks", f"{name}: season_rank is not 1..{len(leaderboard)}")
+        pnls = [row["season_realized_pnl_usd"] for row in leaderboard]
+        if pnls != sorted(pnls, reverse=True):
+            rep.fail("stock_competition.sort", f"{name}: leaderboard is not sorted by season P/L")
+        for row in leaderboard:
+            if row["username"] not in usernames:
+                rep.fail("stock_competition.roster", f"{name}: {row['username']} is not on the roster")
+            covered.add(row["username"])
+            if row.get("best_edition_multiple") is not None and row.get("median_edition_multiple") is not None:
+                if row["best_edition_multiple"] + 1e-9 < row["median_edition_multiple"]:
+                    rep.fail("stock_competition.multiple",
+                             f"{name}/{row['username']}: best edition multiple below the median")
+        # Re-derive every season aggregate from the per-edition rows.
+        editions = division.get("editions") or []
+        per_user: dict[str, list[dict]] = {}
+        all_rows: list[dict] = []
+        for edition in editions:
+            for row in edition.get("rows") or []:
+                per_user.setdefault(row["username"], []).append(row)
+                all_rows.append(row)
+        targets = division.get("target_summary") or {}
+        checks = {
+            "participant_editions": len(all_rows),
+            "ge_1.1x": sum(1 for r in all_rows if r["equity_multiple"] >= 1.1),
+            "ge_2x": sum(1 for r in all_rows if r["equity_multiple"] >= 2),
+            "ge_5x": sum(1 for r in all_rows if r["equity_multiple"] >= 5),
+            "ge_10x": sum(1 for r in all_rows if r["equity_multiple"] >= 10),
+            "ge_20x": sum(1 for r in all_rows if r["equity_multiple"] >= 20),
+            "ge_50x": sum(1 for r in all_rows if r["equity_multiple"] >= 50),
+            "ge_100x": sum(1 for r in all_rows if r["equity_multiple"] >= 100),
+            "ruined_participant_editions": sum(1 for r in all_rows if r["ruined"]),
+            "mean_equity_multiple": (round(statistics.fmean(
+                r["equity_multiple"] for r in all_rows), 6) if all_rows else None),
+            "median_equity_multiple": (round(statistics.median(
+                r["equity_multiple"] for r in all_rows), 6) if all_rows else None),
+        }
+        for key, want in checks.items():
+            if key in targets and targets[key] != want:
+                rep.fail("stock_competition.aggregates",
+                         f"{name}: target_summary.{key} {targets[key]!r} != re-derived {want!r}")
+        for row in division.get("leaderboard") or []:
+            per = per_user.get(row["username"], [])
+            want_pnl = round(sum(r["realized_pnl_usd"] for r in per), 2)
+            if not approx(row["season_realized_pnl_usd"], want_pnl, 0.011):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: season P/L {row['season_realized_pnl_usd']} != "
+                         f"re-derived {want_pnl}")
+            product = 1.0
+            for r in per:
+                product *= max(r["equity_multiple"], 0.0)
+            if not approx(row["season_multiple"], round(product, 6), 1e-9):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: season_multiple {row['season_multiple']} != "
+                         f"re-derived {round(product, 6)}")
+            want_best = round(max(r["equity_multiple"] for r in per), 6)
+            if not approx(row["best_edition_multiple"], want_best, 1e-9):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: best_edition_multiple "
+                         f"{row['best_edition_multiple']} != re-derived {want_best}")
+            if row["editions_ge_2x"] != sum(1 for r in per if r["equity_multiple"] >= 2):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: editions_ge_2x {row['editions_ge_2x']} != "
+                         f"re-derived count")
+        # The rule-profile constants must mirror the engine's own definition.
+        for key, want in (("starting_balance", RULE_PROFILES[division.get("profile", "")].starting_balance
+                           if division.get("profile") in RULE_PROFILES else None),
+                          ("leverage", RULE_PROFILES[division.get("profile", "")].leverage
+                           if division.get("profile") in RULE_PROFILES else None)):
+            if want is None:
+                continue
+            got = (doc.get("_meta", {}).get("profiles", {})
+                   .get(division.get("profile"), {}).get(key))
+            if got is not None and not approx(got, want, 1e-9):
+                rep.fail("stock_competition.profile",
+                         f"{name}: _meta.profiles.{division.get('profile')}.{key} {got} != engine {want}")
+    # The counterfactual block must be flagged as a counterfactual wherever it is rendered.
+    for name, div in (doc.get("counterfactual_20x") or {}).items():
+        if div.get("is_counterfactual") is not True:
+            rep.fail("stock_competition.counterfactual",
+                     f"counterfactual_20x.{name} must declare is_counterfactual: true")
+    bound = (doc.get("official_rule_bound") or {}).get("summary") or {}
+    if bound:
+        rows = (doc.get("official_rule_bound") or {}).get("editions") or []
+        if bound.get("editions_evaluated") != len(rows):
+            rep.fail("stock_competition.bound",
+                     f"official_rule_bound.summary.editions_evaluated {bound.get('editions_evaluated')} "
+                     f"!= {len(rows)} per-edition rows")
+        worst = max((r["max_edition_multiple"] for r in rows), default=None)
+        if worst is not None and not approx(bound.get("max_edition_multiple_observed_bound", -1), worst, 1e-9):
+            rep.fail("stock_competition.bound",
+                     f"official_rule_bound max multiple {bound.get('max_edition_multiple_observed_bound')} "
+                     f"!= re-derived {worst}")
+        if bound.get("five_x_reachable") != any(r["max_edition_multiple"] >= 5 for r in rows):
+            rep.fail("stock_competition.bound", "five_x_reachable disagrees with the per-edition bounds")
+        if bound.get("ten_x_reachable") != any(r["max_edition_multiple"] >= 10 for r in rows):
+            rep.fail("stock_competition.bound", "ten_x_reachable disagrees with the per-edition bounds")
+    missing = sorted(usernames - covered)
+    if missing and (doc.get("divisions") or {}):
+        rep.warn(f"stock_competition.coverage: {len(missing)} roster usernames appear in no "
+                 f"leaderboard: {missing[:6]}{'...' if len(missing) > 6 else ''}")
+    rep.ok(f"stock competition: {len(covered)} usernames audited across "
+           f"{len(doc.get('divisions') or {})} divisions")
+
+
+def check_exec_summary(rep: Report, source_ids: dict) -> None:
+    """Audit the executive-summary orders: reproduced, cross-checked against the competitions."""
+    doc = _reproduce(rep, "exec_summary", "build_exec_summary.py", "data/exec_summary.json")
+    if doc is None:
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "executive_summary_recommendations":
+        rep.fail("exec_summary.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("engine") != "exec-summary-1":
+        rep.fail("exec_summary.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("exec_summary.honesty", "artifact must declare not_a_forecast: true")
+    if not meta.get("honesty_note"):
+        rep.fail("exec_summary.honesty", "artifact must carry the paper-trading honesty note")
+
+    comp = load_opt("data/competition_results.json") or {}
+    season_pnl = {}
+    for row in (comp.get("season_leaderboard") or comp.get("leaderboard") or []):
+        if isinstance(row, dict) and "username" in row and "season_realized_pnl_usd" in row:
+            season_pnl[row["username"]] = row["season_realized_pnl_usd"]
+
+    orders = 0
+    for name, division in (doc.get("divisions") or {}).items():
+        status = division.get("status")
+        if status and status != "run":
+            # The builder is re-run above and must match the artifact byte for byte, so a
+            # non-run status is the builder's current, honest output (typically a division that
+            # cannot be evaluated yet). It is reported, not treated as a failure.
+            reason = str(division.get("reason", ""))[:120]
+            rep.warn(f"exec_summary.division: {name} status {status!r} - {reason}")
+            continue
+        ranking = division.get("ranking") or []
+        pnls = [row["season_realized_pnl_usd"] for row in ranking]
+        if pnls != sorted(pnls, reverse=True):
+            rep.fail("exec_summary.ranking", f"{name}: ranking is not sorted by season P/L")
+        if [row["season_rank"] for row in ranking] != list(range(1, len(ranking) + 1)):
+            rep.fail("exec_summary.ranking", f"{name}: season_rank is not 1..{len(ranking)}")
+        for row in ranking:
+            if row["username"] in season_pnl and not approx(
+                    row["season_realized_pnl_usd"], season_pnl[row["username"]], 0.01):
+                rep.fail("exec_summary.ranking",
+                         f"{name}/{row['username']}: season P/L {row['season_realized_pnl_usd']} != "
+                         f"competition artifact {season_pnl[row['username']]}")
+        for rec in division.get("recommendations") or []:
+            if rec["username"] not in {r["username"] for r in ranking}:
+                rep.fail("exec_summary.recommendation",
+                         f"{name}/{rec['username']}: recommended but absent from the ranking")
+            if rec.get("rule_profile") != division.get("rule_profile"):
+                rep.fail("exec_summary.recommendation",
+                         f"{name}/{rec['username']}: rule profile {rec.get('rule_profile')!r} != "
+                         f"division profile {division.get('rule_profile')!r}")
+            for order in rec.get("pending_orders") or []:
+                orders += 1
+                for field in ("symbol", "action", "decided_on", "order_type", "sizing_rule"):
+                    if not order.get(field):
+                        rep.fail("exec_summary.order",
+                                 f"{name}/{rec['username']}: pending order missing {field}")
+                if order.get("decided_on") != rec.get("as_of_last_bar"):
+                    rep.fail("exec_summary.order",
+                             f"{name}/{rec['username']}: order decided_on {order.get('decided_on')!r} "
+                             f"!= as_of_last_bar {rec.get('as_of_last_bar')!r}")
+                size = order.get("indicative_size_units")
+                if size is None:
+                    if "exit" not in order.get("action", "").lower():
+                        rep.fail("exec_summary.order",
+                                 f"{name}/{rec['username']}: only exit legs may omit a size")
+                elif not isinstance(size, int) or size <= 0:
+                    rep.fail("exec_summary.order",
+                             f"{name}/{rec['username']}: indicative_size_units {size!r}")
+                if "not a forecast" not in (meta.get("honesty_note") or "") and not meta.get("not_a_forecast"):
+                    rep.fail("exec_summary.honesty", "orders presented without the not-a-forecast flag")
+    if meta.get("pending_order_count") != orders:
+        rep.fail("exec_summary.count",
+                 f"_meta.pending_order_count {meta.get('pending_order_count')} != {orders} "
+                 "pending orders in the artifact")
+    rep.ok(f"exec summary: {orders} pending orders re-derived and cross-checked "
+           f"against {len(season_pnl)} competition rows")
+
+
+def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
+    """Audit the Pine-vs-Python fill benchmark: import integrity, arithmetic, honesty.
+
+    Every median and share is recomputed from the stored per-fill rows; every declared file
+    digest is re-hashed from disk; a synthetic fixture can never be labelled a real export.
+    """
+    import hashlib
+    doc = _reproduce(rep, "tv_benchmark", "tv_benchmark.py", "data/tv_benchmark.json")
+    if doc is None:
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "pine_vs_python_fill_benchmark":
+        rep.fail("tv_benchmark.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("engine") != "tv-benchmark-1":
+        rep.fail("tv_benchmark.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("tv_benchmark.honesty", "artifact must declare not_a_forecast: true")
+    rules = meta.get("pine_emulator_rules") or {}
+    for key in ("market_order_default", "intrabar_assumption", "gap_rule"):
+        if not rules.get(key):
+            rep.fail("tv_benchmark.rules", f"pine_emulator_rules.{key} is empty")
+    if "tradingview.com" not in str(rules.get("source", "")):
+        rep.fail("tv_benchmark.rules", f"pine_emulator_rules.source {rules.get('source')!r} is not a "
+                                       "TradingView URL")
+
+    exports = doc.get("exports") or []
+    fixtures = doc.get("fixtures") or []
+    if meta.get("real_exports_found") != len(exports):
+        rep.fail("tv_benchmark.counts",
+                 f"_meta.real_exports_found {meta.get('real_exports_found')} != {len(exports)}")
+    if meta.get("fixture_exports_found") != len(fixtures):
+        rep.fail("tv_benchmark.counts",
+                 f"_meta.fixture_exports_found {meta.get('fixture_exports_found')} != {len(fixtures)}")
+    if not exports:
+        if meta.get("status") != "blocked":
+            rep.fail("tv_benchmark.status",
+                     f"no real export present but status is {meta.get('status')!r}")
+        if not meta.get("blocked_reason"):
+            rep.fail("tv_benchmark.status", "a blocked benchmark must state the reason")
+        if not meta.get("how_to_complete_this_benchmark"):
+            rep.fail("tv_benchmark.status", "a blocked benchmark must state how to complete it")
+    elif meta.get("status") != "measured":
+        rep.fail("tv_benchmark.status", f"real exports are present but status is {meta.get('status')!r}")
+    if fixtures and "SYNTHETIC" not in str(doc.get("fixture_notice", "")):
+        rep.fail("tv_benchmark.fixture_notice",
+                 "fixtures are present without a notice stating they are synthetic")
+    for record in fixtures:
+        if record.get("is_fixture") is not True:
+            rep.fail("tv_benchmark.fixture_notice",
+                     f"{record.get('path')}: a record under 'fixtures' must carry is_fixture: true")
+
+    for record in exports + fixtures:
+        rel = record.get("path")
+        if not rel:
+            rep.fail("tv_benchmark.record", "record without a path")
+            continue
+        path = os.path.join(ROOT, rel)
+        if not os.path.exists(path):
+            rep.fail("tv_benchmark.file", f"{rel}: declared export file is missing")
+            continue
+        with open(path, "rb") as fh:
+            digest = hashlib.sha256(fh.read()).hexdigest()
+        if digest != record.get("sha256"):
+            rep.fail("tv_benchmark.sha256",
+                     f"{rel}: file SHA-256 {digest[:16]}... != stored {str(record.get('sha256'))[:16]}...")
+        fb = record.get("fill_benchmark") or {}
+        rows = fb.get("rows") or []
+        compared = [r for r in rows if r.get("vendor_bar")]
+        if fb.get("fills_compared") != len(compared):
+            rep.fail("tv_benchmark.fills",
+                     f"{rel}: fills_compared {fb.get('fills_compared')} != {len(compared)} matched rows")
+        if fb.get("fills_unmatched") != len(rows) - len(compared):
+            rep.fail("tv_benchmark.fills",
+                     f"{rel}: fills_unmatched {fb.get('fills_unmatched')} != {len(rows) - len(compared)}")
+        if fb.get("status") != ("measured" if compared else "no_fills_matched"):
+            rep.fail("tv_benchmark.status", f"{rel}: fill_benchmark.status {fb.get('status')!r}")
+        if compared:
+            share = round(sum(1 for r in compared if abs(r["delta_vs_bar_open"]) < 1e-9) / len(compared), 6)
+            if not approx(share, fb.get("share_exact_open_match", -1), 1e-9):
+                rep.fail("tv_benchmark.arithmetic",
+                         f"{rel}: share_exact_open_match {fb.get('share_exact_open_match')} != "
+                         f"re-derived {share}")
+            for field, source_key in (("median_abs_delta_vs_bar_open_bps", "abs_delta_vs_bar_open_bps"),
+                                      ("median_abs_delta_vs_prior_close_bps", "abs_delta_vs_prior_close_bps"),
+                                      ("median_abs_delta_vs_python_fill_bps", "abs_delta_vs_python_fill_bps")):
+                want = median_of([r.get(source_key) for r in compared])
+                want = round(want, 4) if want is not None else None
+                if not approx(want if want is not None else -1, fb.get(field, -2), 1e-9):
+                    rep.fail("tv_benchmark.arithmetic",
+                             f"{rel}: {field} {fb.get(field)} != re-derived {want}")
+            for r in compared:
+                bar = r["vendor_bar"]
+                if not approx(round(r["delta_vs_bar_open"], 6),
+                              round(r["exported_price"] - bar["open"], 6), 1e-9):
+                    rep.fail("tv_benchmark.arithmetic",
+                             f"{rel} line {r.get('line')}: delta_vs_bar_open is not "
+                             "exported_price - bar open")
+        cross = record.get("arithmetic_cross_check") or {}
+        if cross.get("within_tolerance") is not True:
+            rep.fail("tv_benchmark.cross_check",
+                     f"{rel}: the export's own declared profit does not reconcile with its prices")
+        if cross.get("tolerance") is not None and cross["tolerance"] > 0.02:
+            rep.fail("tv_benchmark.cross_check", f"{rel}: profit tolerance {cross['tolerance']} is too loose")
+        if not record.get("rejected_rows") and record.get("trade_rows") == 0:
+            rep.fail("tv_benchmark.record", f"{rel}: record parsed zero trade rows without saying why")
+    rep.ok(f"TV benchmark: {len(exports)} real export(s) and {len(fixtures)} fixture(s) "
+           "re-hashed, recomputed and honesty-checked")
+
+
+# ---------------------------------------------------------------------------
 # Self-test: prove each check can actually fail
 # ---------------------------------------------------------------------------
 class _LoadShim:
@@ -1971,6 +2630,54 @@ def self_test(rep: Report) -> None:
     scenarios.append(("master_list.null_flag", ("data/master_list.json", m),
                       lambda r: check_master_list(r, universe, source_ids)))
 
+    # --- new artifacts: proves the intraday / division / exec-summary / TV checks fire ---
+    fake_index = {
+        "_meta": {"kind": "intraday_capture_index", "script": "scripts/fetch_intraday.py",
+                  "vendor_source_id": "YAHOO-INTRADAY-CHART", "captured_count": 1,
+                  "failed_count": 0, "not_attempted_count": 0, "symbol_count": 1,
+                  "captured_by_interval": {"15m": 1},
+                  "equity_symbols": sorted(_volatile_pool_symbols())},
+        "captures": [{"symbol": sorted(_volatile_pool_symbols())[0], "interval": "15m",
+                      "kind": "equity", "status": "captured",
+                      "file": "data/intraday/synthetic_missing_15m.json", "stored_sha256": "0" * 64,
+                      "bar_count": 1, "first_utc": "2026-09-17T13:30:00+00:00",
+                      "last_utc": "2026-09-17T13:30:00+00:00",
+                      "chunks": 0, "chunk_provenance": []}]}
+    scenarios.append(("intraday.capture_file", ("data/intraday_index.json", fake_index),
+                      lambda r: check_intraday(r, source_ids)))
+
+    fake_study = {"_meta": {"kind": "not_an_intraday_study", "engine": "intraday-study-1",
+                            "generated_utc": "2026-01-01T00:00:00Z", "not_a_forecast": True,
+                            "methodology": ["x"], "assumptions": ["x"]},
+                  "coverage": [], "gap_fill": {"aggregate_by_kind": {}, "buckets": [], "per_symbol": []},
+                  "execution_latency": {"by_kind_interval": []}}
+    scenarios.append(("intraday.study_kind", ("data/intraday_study.json", fake_study),
+                      lambda r: check_intraday(r, source_ids)))
+
+    fake_stock = {"_meta": {"kind": "not_a_stock_division", "engine": "intel-competition-2",
+                            "generated_utc": "2026-01-01T00:00:00Z", "not_a_forecast": True},
+                  "divisions": {}}
+    scenarios.append(("stock_competition.kind", ("data/stock_competition_results.json", fake_stock),
+                      lambda r: check_stock_competition(r, source_ids)))
+
+    exec_doc = load_opt("data/exec_summary.json")
+    if exec_doc is not None:
+        mutated = copy.deepcopy(exec_doc)
+        mutated["_meta"]["pending_order_count"] = (mutated["_meta"]["pending_order_count"] or 0) + 1
+        scenarios.append(("exec_summary.determinism", ("data/exec_summary.json", mutated),
+                          lambda r: check_exec_summary(r, source_ids)))
+
+    tv_doc = load_opt("data/tv_benchmark.json")
+    if tv_doc is not None:
+        mutated = copy.deepcopy(tv_doc)
+        mutated["_meta"]["fixture_exports_found"] = (mutated["_meta"]["fixture_exports_found"] or 0) + 1
+        scenarios.append(("tv_benchmark.determinism", ("data/tv_benchmark.json", mutated),
+                          lambda r: check_tv_benchmark(r, source_ids)))
+        mutated = copy.deepcopy(tv_doc)
+        mutated["_meta"]["status"] = "measured"
+        scenarios.append(("tv_benchmark.status", ("data/tv_benchmark.json", mutated),
+                          lambda r: check_tv_benchmark(r, source_ids)))
+
     for expected, (path, payload), runner in scenarios:
         r = Report()
         with _LoadShim(path, payload):
@@ -2006,6 +2713,10 @@ def main() -> int:
     check_backtests(rep, cfg, snap, master, source_ids)
     check_competition(rep, cfg, master, source_ids)
     check_strategy_models(rep, cfg, source_ids)
+    check_intraday(rep, source_ids)
+    check_stock_competition(rep, source_ids)
+    check_exec_summary(rep, source_ids)
+    check_tv_benchmark(rep, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)

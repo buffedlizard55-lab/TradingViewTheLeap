@@ -33,6 +33,24 @@ jobs:
           python3 scripts/build_intelligence.py
           git diff --exit-code -- data/intelligence_report.json
 
+      - name: Re-derive the intraday-dependent artifacts (skipped when no captures exist)
+        run: |
+          if [ ! -f data/intraday_index.json ]; then
+            echo "::notice::no data/intraday_index.json committed - the intraday study, stock division and exec summary cannot be re-derived"
+            exit 0
+          fi
+          python3 scripts/run_intraday_study.py
+          python3 scripts/run_stock_competition.py
+          python3 scripts/build_exec_summary.py
+          python3 scripts/tv_benchmark.py
+          if ! git diff --quiet -- data/intraday_study.json data/stock_competition_results.json \
+               data/exec_summary.json data/tv_benchmark.json; then
+            echo "::error::an intraday-derived artifact is stale with respect to data/intraday/. Re-run scripts/run_intraday_study.py, scripts/run_stock_competition.py, scripts/build_exec_summary.py, scripts/tv_benchmark.py and commit the result."
+            git diff --stat -- data/intraday_study.json data/stock_competition_results.json data/exec_summary.json data/tv_benchmark.json
+            exit 1
+          fi
+          echo "intraday-derived artifacts are in sync with the captures."
+
       - name: Rebuild the site from data
         run: python3 scripts/build_site.py
 
@@ -68,7 +86,46 @@ jobs:
           market_idx = json.load(open("data/market_history_index.json"))
           backtests = json.load(open("data/backtest_results.json"))
           vol = json.load(open("data/volatility_intelligence.json"))
+          import os
+
+          def opt(rel):
+              return json.load(open(rel)) if os.path.exists(rel) else None
+
           probs = []
+          # The executive summary must be rendered from the generated artifact, never hardcoded:
+          # count the order rows against the artifact and require every pending symbol to appear.
+          es = opt("data/exec_summary.json")
+          if es:
+              n_ord = len(re.findall(r'data-ord="', html))
+              if n_ord != es["_meta"]["pending_order_count"]:
+                  probs.append(f"exec-summary order rows {n_ord} != {es['_meta']['pending_order_count']} pending orders")
+              for div_name, div in es["divisions"].items():
+                  for rec in div.get("recommendations", []):
+                      if rec["username"] not in html:
+                          probs.append(f"exec-summary username {rec['username']} missing from page")
+                      for order in rec.get("pending_orders", []):
+                          if order["symbol"] not in html:
+                              probs.append(f"exec-summary order symbol {order['symbol']} missing from page")
+          study = opt("data/intraday_study.json")
+          if study:
+              n_cov = len(re.findall(r'data-icov="', html))
+              if n_cov != len(study["coverage"]):
+                  probs.append(f"intraday coverage rows {n_cov} != {len(study['coverage'])} captured series")
+          stock_comp = opt("data/stock_competition_results.json")
+          if stock_comp:
+              n_srow = len(re.findall(r'data-srow="', html))
+              want_srow = sum(len(d.get("leaderboard") or []) for d in stock_comp["divisions"].values())
+              if n_srow != want_srow:
+                  probs.append(f"stock-division rows {n_srow} != {want_srow} leaderboard rows")
+          tvb = opt("data/tv_benchmark.json")
+          if tvb:
+              if tvb["_meta"]["status"] not in html:
+                  probs.append(f"TV benchmark status {tvb['_meta']['status']!r} missing from page")
+              if "fixture" in json.dumps(tvb["fixtures"]) and "SYNTHETIC" not in html:
+                  probs.append("synthetic-fixture notice missing from page")
+          for banned in ("Upcoming Trade Signal Matrix",):
+              if banned in html:
+                  probs.append(f"hardcoded block {banned!r} is back in the page")
           n_uni = len(re.findall(r'data-ex="', html))
           if n_uni != len(uni["instruments"]):
               probs.append(f"universe rows {n_uni} != {len(uni['instruments'])}")
