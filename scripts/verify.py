@@ -601,9 +601,9 @@ def check_leaderboard_lab(rep: Report, cfg: dict, source_ids: dict) -> None:
             not approx(cs["minimum_completed_multiple"], min(multiples), 1e-9):
         rep.fail("leaderboard_lab.champion_sample", "champion sample statistics are wrong")
     rank50_multiple = lab["captures"][-1]["rows"]["50"]["balance_multiple"]
-    if cs["capture5_rank50_multiple"] != rank50_multiple or \
-            cs["completed_champions_strictly_below_capture5_rank50"] != sum(m < rank50_multiple for m in multiples) or \
-            cs["completed_champions_at_or_above_capture5_rank50"] != sum(m >= rank50_multiple for m in multiples):
+    if cs["latest_rank50_multiple"] != rank50_multiple or \
+            cs["completed_champions_strictly_below_latest_rank50"] != sum(m < rank50_multiple for m in multiples) or \
+            cs["completed_champions_at_or_above_latest_rank50"] != sum(m >= rank50_multiple for m in multiples):
         rep.fail("leaderboard_lab.champion_sample", "champion-vs-frontier comparison is wrong")
 
     # --- instrument join ------------------------------------------------------
@@ -620,7 +620,7 @@ def check_leaderboard_lab(rep: Report, cfg: dict, source_ids: dict) -> None:
                 row["max_whole_contracts_at_initial_balance"] != cap["max_whole_contracts_at_initial_balance"]:
             rep.fail("leaderboard_lab.instrument_join", f"{symbol}: capacity fields differ from the source")
         needed = 100.0 * rank50_usd / row["modeled_initial_notional_usd"]
-        if not approx(row["favorable_move_pct_needed_for_capture5_rank50_level"], needed, 1e-4):
+        if not approx(row["favorable_move_pct_needed_for_latest_rank50_level"], needed, 1e-4):
             rep.fail("leaderboard_lab.instrument_join", f"{symbol}: required move is wrong")
         source_vol = vol.get(symbol)
         if source_vol is None:
@@ -637,6 +637,68 @@ def check_leaderboard_lab(rep: Report, cfg: dict, source_ids: dict) -> None:
             rep.fail("leaderboard_lab.instrument_join", f"{symbol}: envelope flag is wrong")
     rep.ok("leaderboard_lab.json re-derived: prize ladder, frontier pace, targets, leverage and "
            "instrument joins all recomputable")
+
+
+def check_intelligence_report(rep: Report, source_ids: dict) -> None:
+    """Check the consolidated intelligence layer without treating it as a prediction."""
+    report = _load_or_fail(rep, "data/intelligence_report.json", "intelligence.present")
+    if report is None:
+        return
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "build_intelligence", os.path.join(ROOT, "scripts", "build_intelligence.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if mod.build_report() != report:
+        rep.fail("intelligence.determinism", "intelligence_report.json differs from deterministic re-derivation")
+    else:
+        rep.ok("intelligence_report.json is exactly reproducible from committed artifacts")
+
+    meta = report.get("_meta", {})
+    if not meta.get("deterministic") or not meta.get("not_a_forecast") or not meta.get("not_trading_advice"):
+        rep.fail("intelligence.boundary", "intelligence report must declare deterministic/non-forecast boundaries")
+    for rel in meta.get("input_artifacts", []):
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            rep.fail("intelligence.input", f"missing declared input artifact: {rel}")
+
+    provenance = report.get("provenance", {})
+    for key in ("tradingview_official", "cme_official", "market_data_vendor", "repository_simulation"):
+        if key not in provenance:
+            rep.fail("intelligence.provenance", f"missing provenance class: {key}")
+    for key in ("tradingview_official", "cme_official", "market_data_vendor"):
+        for sid in provenance.get(key, {}).get("source_ids", []):
+            if sid not in source_ids:
+                rep.fail("intelligence.source", f"{key}: unregistered source {sid}")
+    if provenance.get("market_data_vendor", {}).get("captured_series", 0) < 1:
+        rep.fail("intelligence.coverage", "report must account for at least one captured vendor series")
+
+    comp = load("data/competition_results.json")
+    result_models = {r.get("model") for r in report.get("model_comparison", {}).get("results", [])}
+    expected_models = {m.get("model") for m in comp.get("models", [])}
+    if result_models != expected_models:
+        rep.fail("intelligence.models", "model comparison does not cover exactly the frozen competition model set")
+    expected_users = {p.get("username") for p in comp.get("participants", [])}
+    reported_users = {u for r in report.get("model_comparison", {}).get("results", []) for u in r.get("usernames", [])}
+    if reported_users != expected_users:
+        rep.fail("intelligence.usernames", "model comparison usernames do not match the competition roster/results")
+    decision = report.get("model_comparison", {}).get("decision", {})
+    for key, expected in (("any_shadow_10x", comp["target_summary"]["ge_10x"] > 0),
+                          ("any_shadow_20x", comp["target_summary"]["ge_20x"] > 0),
+                          ("any_shadow_50x", comp["target_summary"]["ge_50x"] > 0),
+                          ("any_shadow_100x", comp["target_summary"]["ge_100x"] > 0)):
+        if decision.get(key) != expected:
+            rep.fail("intelligence.thresholds", f"{key} disagrees with competition_results")
+
+    statuses = {"verified", "captured", "completed_with_caveats", "blocked_or_unrun", "blocked_by_public_data"}
+    for item in report.get("status_register", []):
+        if item.get("status") not in statuses:
+            rep.fail("intelligence.status", f"unknown workstream status: {item.get('status')}")
+        if not item.get("evidence") or not item.get("next_step"):
+            rep.fail("intelligence.status", f"workstream lacks evidence or next step: {item.get('workstream')}")
+        for rel in item.get("evidence", []):
+            if rel.endswith((".json", ".md", ".py", ".pine")) and not os.path.exists(os.path.join(ROOT, rel)):
+                rep.fail("intelligence.evidence", f"missing workstream evidence: {rel}")
+    rep.ok("intelligence provenance classes, usernames, thresholds, and blocked-work statuses are auditable")
 
 
 def check_market_history(rep: Report, source_ids: dict, snap: dict, master: dict) -> dict:
@@ -1148,17 +1210,23 @@ def check_returns(rep: Report, source_ids: dict, cfg: dict, snap: dict) -> None:
         else:
             rep.ok(f"live leaderboard self-consistent: ${usd:,.2f} == "
                    f"{balance:,.0f} x ({r['return_multiple']}-1) = ${exp_usd:,.2f}")
-        rank1 = next(x for x in snap["leaderboard"] if x["rank"] == 1)
+        # The in-progress return row represents the newest official frontier capture.
+        # The original live_contest_snapshot.json is intentionally preserved as the
+        # first historical capture used by the initial capacity benchmark.
+        frontier = load("data/frontier_history.json")
+        latest = frontier["captures"][-1]
+        rank1 = latest["rows"]["1"]
         sync = (
             approx(r["net_profit_pct_as_published"], rank1["realized_profit_pct"], 1e-9)
             and approx(usd, rank1["realized_profit_usd"], 1e-9)
-            and r.get("participants") == snap["participants_displayed"]
-            and r.get("captured_at_utc") == snap["_meta"]["captured_at_utc"]
+            and r.get("participants") == latest["participants_displayed"]
+            and r.get("captured_at_utc") == latest["captured_at_utc"]
+            and r.get("source_id") == latest["source_id"]
         )
         if not sync:
-            rep.fail("returns.live_snapshot_sync", f"{r['edition_label']}: live record is stale vs snapshot")
+            rep.fail("returns.live_snapshot_sync", f"{r['edition_label']}: live record is stale vs latest frontier capture")
         else:
-            rep.ok("in-progress return row matches the timestamped live snapshot")
+            rep.ok("in-progress return row matches the latest timestamped official frontier capture")
 
     thr = er["threshold_analysis"]
     for key, blk in thr.items():
@@ -1767,8 +1835,8 @@ def self_test(rep: Report) -> None:
     def lab_target(v): v["targets"][1]["required_daily_compound_pct_over_remaining_window"] += 1.0
     def lab_fresh(v): v["captures"][-1]["rows"]["50"]["fresh_account_required_daily_compound_pct"] += 1.0
     def lab_leverage(v): v["leverage_math"]["adverse_underlying_move_pct_to_erase_the_whole_balance"] = 1.0
-    def lab_champion(v): v["champion_sample"]["completed_champions_at_or_above_capture5_rank50"] = 9
-    def lab_instrument(v): v["cash_frontier_instrument_requirements"][0]["favorable_move_pct_needed_for_capture5_rank50_level"] += 1.0
+    def lab_champion(v): v["champion_sample"]["completed_champions_at_or_above_latest_rank50"] = 9
+    def lab_instrument(v): v["cash_frontier_instrument_requirements"][0]["favorable_move_pct_needed_for_latest_rank50_level"] += 1.0
     def lab_capture_link(v): v["captures"][-1]["participants_displayed"] += 1
     def mh_sha(m):
         cap = next(c for c in m["captures"] if c.get("status") == "captured")
@@ -1932,6 +2000,7 @@ def main() -> int:
     check_capacity(rep, cfg, snap, master, source_ids)
     check_frontier(rep, cfg, source_ids)
     check_leaderboard_lab(rep, cfg, source_ids)
+    check_intelligence_report(rep, source_ids)
     check_market_history(rep, source_ids, snap, master)
     check_volatile_stocks(rep, source_ids)
     check_backtests(rep, cfg, snap, master, source_ids)

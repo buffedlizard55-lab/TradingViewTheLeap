@@ -8,6 +8,39 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 18 ninth pass: R8 official frontier + auditable intelligence layer
+
+The latest official contest capture was read on 2026-09-18 at approximately 02:27 UTC and is
+stored in [`research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md`](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md).
+It records 96,586 displayed participants and the following point-in-time public rows:
+
+- rank 1: **+934.05% / $2,335,125.00**
+- rank 50: **+552.16% / $1,380,404.00**
+- rank 100: **+449.24% / $1,123,096.25**
+- rank 250: **+286.02% / $715,045.00**
+
+The R8 capture is appended to [`data/frontier_history.json`](data/frontier_history.json), while
+[`data/live_contest_snapshot.json`](data/live_contest_snapshot.json) remains the original
+2026-09-16 baseline used for initial-capacity arithmetic. The page labels the latest frontier and
+the baseline inputs separately; neither is a final cutoff or a forecast.
+
+- **New auditable intelligence report:** [`data/intelligence_report.json`](data/intelligence_report.json)
+  separates TradingView official evidence, CME contract references, Yahoo vendor history, and
+  repository-generated paper simulations. It lists verified, captured, caveated, blocked/unrun,
+  and public-data-blocked workstreams with a next honest step for each.
+- **Frozen comparison:** the report summarizes 12 contrarian and 3 baseline paper usernames over
+  24 moderate-cost editions. Contrarian models produced the highest single-edition multiple in
+  this finite window (7.239835× versus 1.881351× for baselines), but no simulated username reached
+  10×, 20×, 50×, or 100×. This is engine/window evidence, not a strategy edge, forecast, or claim
+  about any official contest participant.
+- **Reproducibility:** `scripts/build_intelligence.py` is pure-stdlib and deterministic;
+  `scripts/verify.py` re-derives the report and checks provenance classes, source IDs, model IDs,
+  usernames, threshold flags, status evidence, and the explicit non-forecast boundary.
+- **Site refresh:** `scripts/build_site.py` now derives the latest frontier source/capture label,
+  renders the intelligence status table, and removes hardcoded R7 latest links. The prior corrupted
+  frontier note was repaired and the R8 source/evidence entry is registered for manual review.
+  The three-pass audit is [`research/evidence/AUDIT-2026-09-18-PASS9.md`](research/evidence/AUDIT-2026-09-18-PASS9.md).
+
 ## September 17 eighth pass: OUR OWN SHADOW COMPETITION (usernames, contrarian strategies, real captured prices)
 
 This session delivered the project's core new asset: **the repository's own paper competition** —
@@ -386,8 +419,9 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `data/backtest_results.json` | Independent walk-forward simulation results for S1/S2/S3 (verdicts, costs, sensitivity, bootstrap) |
 | `data/volatility_intelligence.json` | Per-symbol volatility and rank-250 requirement screen |
 | `data/target_lab.json` | Balance-multiple targets (5x–100x), champion occurrence counts, fixed-exposure scenarios |
-| `data/leaderboard_lab.json` | Placement arithmetic: prize-ladder reconciliation, frontier pace, fresh-account daily-compounding requirements, leverage/ruin math, instrument move requirements |
-| `data/verified_explosive_returns.json` | Official historical champion results plus one live snapshot |
+| `data/leaderboard_lab.json` | Placement arithmetic: prize-ladder reconciliation, latest frontier pace, fresh-account daily-compounding requirements, leverage/ruin math, instrument move requirements |
+| `data/intelligence_report.json` | Deterministic provenance/status register and contrarian-vs-baseline paper comparison |
+| `data/verified_explosive_returns.json` | Official historical champion results plus the latest point-in-time in-progress frontier row |
 | `data/volatile_stocks.json` | Vendor-tier, recomputable, window-bounded stock moves |
 | `intel/` | Pure-stdlib simulation engine: data loading, Pine-faithful indicators, strategy signals, backtest, walk-forward |
 | `research/hypotheses/hypotheses.json` | Falsifiable research claims, tests, verdicts, and evidence |
@@ -400,7 +434,8 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `scripts/run_backtests.py` | Deterministic backtest/volatility orchestrator (`--stamp` for byte reproducibility) |
 | `scripts/refresh_artifacts.py` | One-step post-capture refresh: re-run backtests, sync `models.json`, rebuild the site (used by the CI capture workflow) |
 | `scripts/fetch_market_data.py` | CI-side vendor capture with integrity checks and relay fallback |
-| `scripts/leaderboard_lab.py` | Deterministic placement/prize arithmetic from contest config + captures (no market data) |
+| `scripts/leaderboard_lab.py` | Deterministic placement/prize arithmetic from contest config + latest captures (no market data) |
+| `scripts/build_intelligence.py` | Deterministic provenance/status and model-comparison report builder |
 | `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
 
 ## Verify and build
@@ -410,23 +445,24 @@ python3 scripts/verify.py
 python3 scripts/verify.py --self-test
 python3 scripts/target_lab.py
 python3 scripts/leaderboard_lab.py
+python3 scripts/build_intelligence.py
 python3 scripts/build_site.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
-python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/run_backtests.py
+python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/build_intelligence.py scripts/run_backtests.py
 ```
 
 After the raw captures change (CI or manual `scripts/fetch_market_data.py`), re-derive the
 downstream artifacts in one step:
 
 ```bash
-python3 scripts/refresh_artifacts.py   # re-run backtests, placement lab, models.json, rebuild site
+python3 scripts/refresh_artifacts.py   # re-run backtests, placement lab, intelligence report, models.json, rebuild site
 ```
 
 Current audit result:
 
 ```text
-verify:    352 passed, 0 failed, 1 warning
-self-test: 396 passed, 0 failed, 1 warning
+verify:    369 passed, 0 failed, 1 warning
+self-test: 421 passed, 0 failed, 1 warning
 ```
 
 The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly

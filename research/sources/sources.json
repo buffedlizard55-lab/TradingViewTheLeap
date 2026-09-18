@@ -7,9 +7,9 @@
       "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
       "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
     },
-    "source_count": 93,
-    "reverified_utc": "2026-09-17",
-    "reverification_note": "2026-09-17 sixth pass (~21:27Z): the live rules page, the live contest page (sixth leaderboard capture, all four frontiers static vs R5) and the landing-page champions list were re-fetched and diffed line by line. No rule constant, no universe entry and no champion record changed; the 94-instrument transcription of this pass is machine-diffed against data/contest_universe.json by scripts/verify.py. Three re-capture source records added (TV-CONTEST-AMP-SEP2026-R6, TV-RULES-AMP-SEP2026-R6, TV-THELEAP-LANDING-R6). Participants 96,236 -> 96,268 (+32 contest), hero 96,230 -> 96,263 (+33 landing)."
+    "source_count": 94,
+    "reverified_utc": "2026-09-18",
+    "reverification_note": "2026-09-18 eighth pass (~02:27Z): the current official contest page was re-read. The displayed participant count was 96,586; rank 1 remained $2,335,125.00 while ranks 50/100/250 were $1,380,404.00/$1,123,096.25/$715,045.00. The new frontier capture is registered as TV-CONTEST-AMP-SEP2026-R8. No claim is made that this is a final threshold."
   },
   "sources": [
     {
@@ -1635,6 +1635,20 @@
         "Live-edition hero counter (96,336) versus the contest-page counter (96,344) recorded as the asynchronous-counter pattern IR-09"
       ],
       "evidence_file": "research/evidence/TV-THELEAP-LANDING-R7.md",
+      "official_source": true
+    },
+    {
+      "source_id": "TV-CONTEST-AMP-SEP2026-R8",
+      "publisher": "TradingView, Inc.",
+      "tier": "official_primary",
+      "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-18, eighth pass)",
+      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+      "accessed_utc": "2026-09-18",
+      "used_for": [
+        "Eighth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,586)",
+        "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
+      ],
+      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md",
       "official_source": true
     }
   ]

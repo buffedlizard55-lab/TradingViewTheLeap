@@ -206,9 +206,9 @@ def build() -> dict:
         "maximum_completed_multiple": max(multiples),
         "median_completed_multiple": round_half_up(median, 6),
         "minimum_completed_multiple": min(multiples),
-        "capture5_rank50_multiple": rank50_multiple,
-        "completed_champions_strictly_below_capture5_rank50": sum(m < rank50_multiple for m in multiples),
-        "completed_champions_at_or_above_capture5_rank50": sum(m >= rank50_multiple for m in multiples),
+        "latest_rank50_multiple": rank50_multiple,
+        "completed_champions_strictly_below_latest_rank50": sum(m < rank50_multiple for m in multiples),
+        "completed_champions_at_or_above_latest_rank50": sum(m >= rank50_multiple for m in multiples),
         "note": "Cross-edition comparison only: the completed records span stocks, crypto, forex, multi-asset and "
                 "futures editions with different rules and different participant counts. It is evidence of what has "
                 "been published, not a like-for-like benchmark and not a success probability.",
@@ -227,7 +227,7 @@ def build() -> dict:
             "symbol": symbol,
             "modeled_initial_notional_usd": notional,
             "max_whole_contracts_at_initial_balance": entry["max_whole_contracts_at_initial_balance"],
-            "favorable_move_pct_needed_for_capture5_rank50_level": round_half_up(move_needed_pct, 6),
+            "favorable_move_pct_needed_for_latest_rank50_level": round_half_up(move_needed_pct, 6),
             "vendor_history_sessions": None if vol is None else vol["sessions"],
             "best_30d_up_move_pct_in_vendor_history": None if vol is None else vol["best_30d_up_move_pct"],
             "history_contains_a_30d_window_as_large_as_that_requirement": (
@@ -235,14 +235,14 @@ def build() -> dict:
             ),
         }
         instruments.append(row)
-    instruments.sort(key=lambda r: r["favorable_move_pct_needed_for_capture5_rank50_level"])
+    instruments.sort(key=lambda r: r["favorable_move_pct_needed_for_latest_rank50_level"])
 
     return {
         "_meta": {
             "kind": "deterministic_arithmetic_not_backtest",
             "description": "Leaderboard placement and prize arithmetic derived from official contest facts only: "
                 "what each rank costs and what reaching it would require. Arithmetic, not a forecast.",
-            "generated_utc": "2026-09-17",
+            "generated_utc": fh["_meta"]["generated_utc"],
             "reference_capture_utc": latest["captured_at_utc"],
             "input_files": [
                 "data/contest_config.json",
@@ -252,9 +252,9 @@ def build() -> dict:
                 "data/volatility_intelligence.json",
             ],
             "source_ids": [
-                "TV-RULES-AMP-SEP2026-R7",
-                "TV-CONTEST-AMP-SEP2026-R7",
-                "TV-THELEAP-LANDING-R7",
+                "TV-RULES-AMP-SEP2026",
+                fh["captures"][-1]["source_id"],
+                "TV-THELEAP-LANDING",
             ],
             "assumptions": [
                 "A balance multiple means ending balance / 250,000 starting balance; 5x means +400% net profit, "
