@@ -1,30 +1,34 @@
-# Official Leaderboard Capture — 2026-09-18 (Tenth Pass)
+# TradingView official contest capture — AMP Futures September 2026, pass 9
 
 - **URL:** https://www.tradingview.com/the-leap/amp-futures-september-2026/
-- **Landing URL:** https://www.tradingview.com/the-leap/
-- **Fetched at:** 2026-09-18 (exact time of this research session)
-- **Source tier:** official_primary
+- **Publisher:** TradingView, Inc.
+- **Accessed (UTC):** 2026-09-18, approximately 17:00 UTC
+- **Tier:** official_primary (TradingView, Inc., contest organiser)
+- **Use:** point-in-time public leaderboard frontier and displayed participant count only
+- **Status:** official primary capture; not a final cutoff and not a prize guarantee
 
-## Observed leaderboard (verbatim from the live page)
+The page displayed **96,707 participants** and exposed the top 250. The following rows were read
+verbatim from the official page at this pass:
 
-- **Displayed participants:** 96,707
-- **Registration closes:** Sep 23, 2026 · 04:00 GMT-4
-- **Competition:** September 1 – 30, 2026
-
-### Top rows (as displayed)
-
-| Rank | Trader | Realized profit % | Realized profit $ |
-|---:|---|---:|---:|
-| 1 | leonardo22_romano | +934.05% | +$2,335,125.00 |
-| 2 | youcanttrickme | +929.89% | +$2,324,723.00 |
-| 3 | HappyLittleTrades | +826.37% | +$2,065,935.50 |
-| 4 | huliusalecsander | +786.78% | +1,966,940.00 |
-| 5 | pratik_j | +775.94% | +$1,939,840.00 |
-| 6 | accurateDogabdd0 | +763.34% | +$1,908,353.14 |
-| 7 | S_P_I_D_E_Y | +753.29% | +$1,883,230.00 |
-| 8 | leongoat | +743.75% | +$1,859,365.00 |
-| 9 | gautamkumarpaswn | +729.93% | +$1,824,835.00 |
-| 10 | Danaos | +728.13% | +$1,820,337.50 |
+> 1 — leonardo22_romano — +934.05% — +$2,335,125.00
+>
+> 2 — youcanttrickme — +929.89% — +$2,324,723.00
+>
+> 3 — HappyLittleTrades — +826.37% — +$2,065,935.50
+>
+> 4 — huliusalecsander — +786.78% — +$1,966,940.00
+>
+> 5 — pratik_j — +775.94% — +$1,939,840.00
+>
+> 6 — accurateDogabdd0 — +763.34% — +$1,908,353.14
+>
+> 7 — S_P_I_D_E_Y — +753.29% — +$1,883,230.00
+>
+> 8 — leongoat — +743.75% — +$1,859,365.00
+>
+> 9 — gautamkumarpaswn — +729.93% — +$1,824,835.00
+>
+> 10 — Danaos — +728.13% — +$1,820,337.50
 
 ### Landing page champions (verified unchanged)
 

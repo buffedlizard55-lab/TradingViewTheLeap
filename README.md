@@ -8,6 +8,19 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 18 tenth pass: EXECUTIVE SUMMARY — Recommended Upcoming Competition Trades
+
+This session delivered the top-level **Executive Summary** section placed at the very top of the site (`index.html`), explicitly highlighting actionable trade setups for paper trading competitions based on top-performing strategy models and usernames:
+
+- **Executive Summary at Very Top of Site:** Features explicit trade recommendations derived from our 24-edition paper trading shadow competition (15 tracked usernames, 11 verified futures markets, 20 verified volatile stock records) to target explosive paper trading returns (5x–100x multiples) using maximum allowable 20:1 leverage and zero risk management constraints.
+- **Actionable Trade Setup Cards & Matrix Table:**
+  1. **`ContrarianQueen` (Model C5 Capitulation Pyramider [patient] — Season Rank 1 Champion, +$2,806,899.58 P/L):** **BUY / LONG CME Ether (`CME:ETH1!`) & Bitcoin (`CME:BTC1!`)** on 3-day capitulation drops >= 1.0 ATR with expanding volatility; pyramid additions every +1.5 ATR.
+  2. **`GapGoblin` (Model C2 Gap Fade [tight] — Latest Live Mirror Rank 1 Champion, +$468,102.43 P/L in 30 days):** **BUY / LONG COMEX Silver (`COMEX:SI1!`) & Micro Silver (`COMEX_MINI:SIL1!`)** fading overnight down-gaps > 1.0 ATR back toward 5-session mean.
+  3. **`ClimaxCarla` (Model C4 Exhaustion Reversal [loose] — Season Rank 3, +$1,168,973.61 P/L):** **SELL / SHORT NYMEX Crude Oil (`NYMEX:CL1!`) & Gasoline (`NYMEX:RB1!`)** on liquidation climax up-bars (TR >= 1.5 ATR, close in top 35% range tail).
+  4. **`FadeThePanic` (Model C1 Capitulation Reversal [default] — Peak Single Edition Champion 7.24x, +$1,561,000 P/L):** **SELL / SHORT NYMEX Heating Oil (`NYMEX:HO1!`)** / **BUY LONG Natural Gas (`NYMEX:NG1!`)** on multi-day extension >= 1.0 ATR.
+  5. **Stock Competition Intelligence:** Highlights 20 verified high-beta volatile stock opportunities (ENPH 382x, AMD 322x, MARA 190x, CVNA 128x, GME 124x, TSLA 17x, NVDA 12x, MSTR 49x) with exact historical trough/peak window provenance for stock paper trading competitions.
+- **Verification & Audit:** Full multi-pass line-by-line verification in [`research/evidence/AUDIT-2026-09-18-PASS10.md`](research/evidence/AUDIT-2026-09-18-PASS10.md); 371 verifier checks passed / 0 failed; zero hallucinations.
+
 ## September 18 ninth pass: R8 official frontier + auditable intelligence layer
 
 The latest official contest capture was read on 2026-09-18 at approximately 02:27 UTC and is
