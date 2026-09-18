@@ -92,7 +92,11 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
         for entry in div.get("recommendations", []):
             for order in entry["pending_orders"]:
                 size = order["indicative_size_units"]
-                size_text = f"~{number_or_dash(size)} units" if size is not None else "closes existing position"
+                # The artifact publishes the rendered label, so the page cannot drift from the
+                # builder's wording (the two copies disagreed on "1 unit" vs "1 units").
+                size_text = order.get("indicative_size_label") or (
+                    f"~{number_or_dash(size)} units" if size is not None
+                    else "closes existing position")
                 rows.append(
                     f'<tr data-ord="{esc(name)}">'
                     f'<td><span class="pill {"ok" if order["action"].startswith(("LONG", "BUY")) else "no" if order["action"].startswith(("SHORT", "SELL")) else "warn"}">'
@@ -381,7 +385,8 @@ def _order_line(order, source_url, spec_source_by_symbol, equity_source_by_symbo
     """One pending order rendered from the artifact, with whatever official spec link exists."""
     symbol = order.get("symbol", "")
     size = order.get("indicative_size_units")
-    size_text = f"{number_or_dash(size)} unit(s)" if size is not None else "closes the existing position"
+    size_text = order.get("indicative_size_label") or (
+        f"{number_or_dash(size)} unit(s)" if size is not None else "closes the existing position")
     sid = spec_source_by_symbol.get(symbol) or equity_source_by_symbol.get(symbol)
     source = link(source_url[sid], "contract/price source ↗") if sid in source_url else ""
     close = number_or_dash(order.get("decided_close"), 4) if order.get("decided_close") is not None else "n/a"

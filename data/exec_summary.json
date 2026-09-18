@@ -144,7 +144,8 @@
        "order_type": "market at the next bar open of the same series",
        "sizing_rule": "the exit leg closes the position the model already holds; the entry leg is sized by the rule below",
        "indicative_size_units": 1,
-       "indicative_size_note": "indicative only: computed from the last captured close and the official rule constants; the actual fill price at the next open is unknown"
+       "indicative_size_note": "indicative only: computed from the last captured close and the official rule constants; the actual fill price at the next open is unknown",
+       "indicative_size_label": "~1 unit"
       }
      ],
      "waiting_for": null,
@@ -206,7 +207,8 @@
        "order_type": "market at the next bar open of the same series",
        "sizing_rule": "close the open position; no new size",
        "indicative_size_units": null,
-       "indicative_size_note": "an exit leg carries no size: it closes whatever the position is"
+       "indicative_size_note": "an exit leg carries no size: it closes whatever the position is",
+       "indicative_size_label": "closes existing position"
       }
      ],
      "waiting_for": null,

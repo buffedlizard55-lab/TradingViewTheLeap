@@ -435,6 +435,17 @@ def main() -> int:
         },
         "divisions": divisions,
     }
+    # The rendered size label lives in the artifact rather than in each renderer, so the console
+    # line, the exec-summary table and the strategy cards cannot disagree ("~1 units" once did).
+    # Labels are therefore finalised BEFORE the document is serialised.
+    for div in divisions.values():
+        for entry in div.get("recommendations", []):
+            for order in entry["pending_orders"]:
+                size = order["indicative_size_units"]
+                order["indicative_size_label"] = (
+                    f"~{size} unit" + ("" if size == 1 else "s")) if size is not None \
+                    else "closes existing position"
+
     out_path = os.path.join(ROOT, args.out)
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(doc, fh, indent=1)
@@ -444,10 +455,9 @@ def main() -> int:
     for name, div in divisions.items():
         for entry in div.get("recommendations", []):
             for order in entry["pending_orders"]:
-                size = order["indicative_size_units"]
-                size_text = f"~{size} units" if size is not None else "closes existing position"
                 print(f"  {name}: {entry['username']} ({entry['model']}) "
-                      f"{order['action'].upper()} {order['symbol']} @ next open ({size_text})")
+                      f"{order['action'].upper()} {order['symbol']} @ next open "
+                      f"({order['indicative_size_label']})")
     print(f"wrote {os.path.relpath(out_path, ROOT)}")
     return 0
 
