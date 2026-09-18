@@ -45,8 +45,12 @@ permissions:
   contents: write
 
 concurrency:
+  # A superseded run must not occupy the single slot until its 120-minute job timeout: that is
+  # exactly what happened on 2026-09-18, when a rate-limited sweep blocked every later run and
+  # committed nothing. Each run is resumable through --only-failed, so cancelling the older one
+  # is strictly better than waiting for it.
   group: capture-intraday-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   capture:
@@ -94,13 +98,16 @@ jobs:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -o pipefail
           python3 scripts/fetch_intraday.py --interval 1d ${{ steps.plan.outputs.extra }} \
             --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5 \
-            --time-budget-seconds 900
+            --time-budget-seconds 900 2>&1 | tee -a /tmp/capture_log.txt
+      - name: Commit long daily capture (fails the job if the push fails)
+        if: always()
+        run: |
           bash .github/scripts/commit_capture.sh \
             "capture: long daily bars for the volatile stock pool (automated)" \
             data/intraday data/intraday_index.json
-
       - name: Capture hourly bars (20 stocks + 20 futures, last ~730 days)
         if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '1h'
         continue-on-error: true
@@ -108,13 +115,16 @@ jobs:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -o pipefail
           python3 scripts/fetch_intraday.py --interval 1h ${{ steps.plan.outputs.extra }} \
             --futures-hourly --out-dir data/intraday --index data/intraday_index.json \
-            --pacing-seconds 0.5 --time-budget-seconds 1500
+            --pacing-seconds 0.5 --time-budget-seconds 1500 2>&1 | tee -a /tmp/capture_log.txt
+      - name: Commit hourly capture (fails the job if the push fails)
+        if: always()
+        run: |
           bash .github/scripts/commit_capture.sh \
             "capture: hourly bars for stocks and futures (automated)" \
             data/intraday data/intraday_index.json
-
       - name: Capture 15-minute bars (20-stock volatile pool, last ~60 days)
         if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '15m'
         continue-on-error: true
@@ -122,13 +132,16 @@ jobs:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -o pipefail
           python3 scripts/fetch_intraday.py --interval 15m ${{ steps.plan.outputs.extra }} \
             --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5 \
-            --time-budget-seconds 1500
+            --time-budget-seconds 1500 2>&1 | tee -a /tmp/capture_log.txt
+      - name: Commit 15-minute capture (fails the job if the push fails)
+        if: always()
+        run: |
           bash .github/scripts/commit_capture.sh \
             "capture: 15-minute bars for the volatile stock pool (automated)" \
             data/intraday data/intraday_index.json
-
       - name: Capture summary (fails the job only if nothing at all was captured)
         run: |
           python3 - <<'PY'
@@ -152,6 +165,16 @@ jobs:
               print("::error::intraday capture stored zero series")
               sys.exit(1)
           PY
+
+      - name: Capture run diagnostics (always runs; posts its findings as a commit comment)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/capture_diagnostics.py
+          bash .github/scripts/commit_capture.sh \
+            "capture: intraday capture run report (automated)" \
+            data/intraday_capture_report.json
 
       - name: Final safety commit (in case a step's own commit was interrupted)
         run: |
