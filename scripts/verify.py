@@ -29,6 +29,7 @@ import json
 import math
 import os
 import re
+import statistics
 import sys
 from datetime import datetime, timezone
 
@@ -1974,7 +1975,7 @@ def check_stock_competition(rep: Report, source_ids: dict) -> None:
     from intel.competition import RULE_PROFILES
 
     meta = doc.get("_meta", {})
-    if meta.get("kind") != "stock_division_competition_simulation":
+    if meta.get("kind") != "own_stock_competition_simulation":
         rep.fail("stock_competition.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
     if meta.get("engine") != "intel-competition-2":
         rep.fail("stock_competition.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
@@ -2017,14 +2018,90 @@ def check_stock_competition(rep: Report, source_ids: dict) -> None:
                 if row["best_edition_multiple"] + 1e-9 < row["median_edition_multiple"]:
                     rep.fail("stock_competition.multiple",
                              f"{name}/{row['username']}: best edition multiple below the median")
+        # Re-derive every season aggregate from the per-edition rows.
+        editions = division.get("editions") or []
+        per_user: dict[str, list[dict]] = {}
+        all_rows: list[dict] = []
+        for edition in editions:
+            for row in edition.get("rows") or []:
+                per_user.setdefault(row["username"], []).append(row)
+                all_rows.append(row)
         targets = division.get("target_summary") or {}
-        if targets.get("participant_editions") is not None:
-            rows = division.get("editions") or []
-            counted = sum(len(e.get("participants", [])) for e in rows) if rows else None
-            if counted is not None and counted != targets["participant_editions"]:
+        checks = {
+            "participant_editions": len(all_rows),
+            "ge_1.1x": sum(1 for r in all_rows if r["equity_multiple"] >= 1.1),
+            "ge_2x": sum(1 for r in all_rows if r["equity_multiple"] >= 2),
+            "ge_5x": sum(1 for r in all_rows if r["equity_multiple"] >= 5),
+            "ge_10x": sum(1 for r in all_rows if r["equity_multiple"] >= 10),
+            "ge_20x": sum(1 for r in all_rows if r["equity_multiple"] >= 20),
+            "ge_50x": sum(1 for r in all_rows if r["equity_multiple"] >= 50),
+            "ge_100x": sum(1 for r in all_rows if r["equity_multiple"] >= 100),
+            "ruined_participant_editions": sum(1 for r in all_rows if r["ruined"]),
+            "mean_equity_multiple": (round(statistics.fmean(
+                r["equity_multiple"] for r in all_rows), 6) if all_rows else None),
+            "median_equity_multiple": (round(statistics.median(
+                r["equity_multiple"] for r in all_rows), 6) if all_rows else None),
+        }
+        for key, want in checks.items():
+            if key in targets and targets[key] != want:
                 rep.fail("stock_competition.aggregates",
-                         f"{name}: edition rows hold {counted} participant-editions but the summary "
-                         f"declares {targets['participant_editions']}")
+                         f"{name}: target_summary.{key} {targets[key]!r} != re-derived {want!r}")
+        for row in division.get("leaderboard") or []:
+            per = per_user.get(row["username"], [])
+            want_pnl = round(sum(r["realized_pnl_usd"] for r in per), 2)
+            if not approx(row["season_realized_pnl_usd"], want_pnl, 0.011):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: season P/L {row['season_realized_pnl_usd']} != "
+                         f"re-derived {want_pnl}")
+            product = 1.0
+            for r in per:
+                product *= max(r["equity_multiple"], 0.0)
+            if not approx(row["season_multiple"], round(product, 6), 1e-9):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: season_multiple {row['season_multiple']} != "
+                         f"re-derived {round(product, 6)}")
+            want_best = round(max(r["equity_multiple"] for r in per), 6)
+            if not approx(row["best_edition_multiple"], want_best, 1e-9):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: best_edition_multiple "
+                         f"{row['best_edition_multiple']} != re-derived {want_best}")
+            if row["editions_ge_2x"] != sum(1 for r in per if r["equity_multiple"] >= 2):
+                rep.fail("stock_competition.aggregates",
+                         f"{name}/{row['username']}: editions_ge_2x {row['editions_ge_2x']} != "
+                         f"re-derived count")
+        # The rule-profile constants must mirror the engine's own definition.
+        for key, want in (("starting_balance", RULE_PROFILES[division.get("profile", "")].starting_balance
+                           if division.get("profile") in RULE_PROFILES else None),
+                          ("leverage", RULE_PROFILES[division.get("profile", "")].leverage
+                           if division.get("profile") in RULE_PROFILES else None)):
+            if want is None:
+                continue
+            got = (doc.get("_meta", {}).get("profiles", {})
+                   .get(division.get("profile"), {}).get(key))
+            if got is not None and not approx(got, want, 1e-9):
+                rep.fail("stock_competition.profile",
+                         f"{name}: _meta.profiles.{division.get('profile')}.{key} {got} != engine {want}")
+    # The counterfactual block must be flagged as a counterfactual wherever it is rendered.
+    for name, div in (doc.get("counterfactual_20x") or {}).items():
+        if div.get("is_counterfactual") is not True:
+            rep.fail("stock_competition.counterfactual",
+                     f"counterfactual_20x.{name} must declare is_counterfactual: true")
+    bound = (doc.get("official_rule_bound") or {}).get("summary") or {}
+    if bound:
+        rows = (doc.get("official_rule_bound") or {}).get("editions") or []
+        if bound.get("editions_evaluated") != len(rows):
+            rep.fail("stock_competition.bound",
+                     f"official_rule_bound.summary.editions_evaluated {bound.get('editions_evaluated')} "
+                     f"!= {len(rows)} per-edition rows")
+        worst = max((r["max_edition_multiple"] for r in rows), default=None)
+        if worst is not None and not approx(bound.get("max_edition_multiple_observed_bound", -1), worst, 1e-9):
+            rep.fail("stock_competition.bound",
+                     f"official_rule_bound max multiple {bound.get('max_edition_multiple_observed_bound')} "
+                     f"!= re-derived {worst}")
+        if bound.get("five_x_reachable") != any(r["max_edition_multiple"] >= 5 for r in rows):
+            rep.fail("stock_competition.bound", "five_x_reachable disagrees with the per-edition bounds")
+        if bound.get("ten_x_reachable") != any(r["max_edition_multiple"] >= 10 for r in rows):
+            rep.fail("stock_competition.bound", "ten_x_reachable disagrees with the per-edition bounds")
     missing = sorted(usernames - covered)
     if missing and (doc.get("divisions") or {}):
         rep.warn(f"stock_competition.coverage: {len(missing)} roster usernames appear in no "
