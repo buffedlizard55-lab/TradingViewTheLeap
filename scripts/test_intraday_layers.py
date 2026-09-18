@@ -319,5 +319,96 @@ class TestTvBenchmarkRenderer(unittest.TestCase):
         self.assertNotIn("None", html)
 
 
+class TestCaptureTransportRetry(unittest.TestCase):
+    """Regression tests for the capture-lane failures observed on a GitHub runner.
+
+    Observed in run 35391995169: direct requests answered HTTP 429, both public relays answered
+    HTTP 522, one relay closed a chunked body early (`http.client.IncompleteRead`), and that
+    escaping read error killed the process before the provenance index was written -- so the
+    workflow committed nothing and its steps still reported success.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fetch = load_module("fetch_intraday_under_test", "scripts/fetch_intraday.py")
+
+    def _run_capture(self, tmp, failing_calls: int, always_fail: bool = False):
+        """Run the fetch script offline with the first `failing_calls` HTTP calls failing."""
+        import urllib.error
+
+        state = {"calls": 0}
+
+        def fake_get(self, url):
+            state["calls"] += 1
+            if always_fail or state["calls"] <= failing_calls:
+                raise urllib.error.URLError(
+                    "truncated response body: IncompleteRead(82203 bytes read)")
+            return fake_payload(url)
+
+        def fake_payload(url):
+            import urllib.parse as up
+
+            parsed = up.urlparse(url)
+            query = up.parse_qs(parsed.query)
+            ticker = parsed.path.rsplit("/", 1)[-1]
+            interval = query["interval"][0]
+            p1, p2 = int(query["period1"][0]), int(query["period2"][0])
+            step = {"15m": 900, "1h": 3600, "1d": 86400}[interval]
+            ts, price = p1 + step, 10.0
+            stamps, o, h, l, c, v = [], [], [], [], [], []
+            while ts <= p2 and len(stamps) < 50:
+                price *= 1.0005
+                stamps.append(ts)
+                o.append(price)
+                h.append(price * 1.01)
+                l.append(price * 0.99)
+                c.append(price * 1.001)
+                v.append(100)
+                ts += step
+            return json.dumps({"chart": {"result": [{
+                "meta": {"symbol": ticker, "dataGranularity": interval, "gmtoffset": -14400,
+                         "exchangeTimezoneName": "America/New_York"},
+                "timestamp": stamps,
+                "indicators": {"quote": [{"open": o, "high": h, "low": l, "close": c,
+                                          "volume": v}]}}], "error": None}}).encode()
+
+        self.fetch.Transport._get = fake_get
+        # the transport backs off between attempts; the tests exercise the retry logic, not the
+        # waiting, so the clock is neutralised and the suite stays fast
+        real_sleep, self.fetch.time.sleep = self.fetch.time.sleep, lambda *_: None
+        out_dir = os.path.join(tmp, "intraday")
+        index = os.path.join(tmp, "intraday_index.json")
+        old_argv, old_symbols = sys.argv, self.fetch.stock_symbols
+        sys.argv = ["fetch_intraday.py", "--interval", "1d", "--out-dir", out_dir,
+                    "--index", index, "--pacing-seconds", "0"]
+        self.fetch.stock_symbols = lambda: [("MARA", "MARA")]
+        try:
+            code = self.fetch.main()
+        finally:
+            sys.argv, self.fetch.stock_symbols = old_argv, old_symbols
+            self.fetch.time.sleep = real_sleep
+        with open(index, encoding="utf-8") as fh:
+            return code, json.load(fh)
+
+    def test_transient_transport_failure_is_retried_and_still_captures(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, index = self._run_capture(tmp, failing_calls=3)
+        self.assertEqual(code, 0)
+        self.assertEqual([c["status"] for c in index["captures"]], ["captured"])
+        self.assertEqual(index["_meta"]["captured_count"], 1)
+
+    def test_a_run_that_cannot_fetch_still_writes_one_failure_record_per_series(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, index = self._run_capture(tmp, failing_calls=0, always_fail=True)
+        self.assertEqual(code, 0, "a fully rate-limited run must still exit cleanly")
+        self.assertEqual(len(index["captures"]), 1, index["captures"])
+        record = index["captures"][0]
+        self.assertEqual(record["status"], "failed")
+        self.assertIn("IncompleteRead", record["error"])
+        self.assertEqual(index["_meta"]["captured_count"], 0)
+        self.assertEqual(index["_meta"]["failed_count"], 1)
+        self.assertEqual(index["_meta"]["script_version"], "3")
+
+
 if __name__ == "__main__":
     unittest.main()

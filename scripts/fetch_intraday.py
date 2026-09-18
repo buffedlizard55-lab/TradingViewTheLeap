@@ -55,6 +55,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import sys
@@ -183,7 +184,14 @@ class Transport:
             url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
         )
         with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            return response.read()
+            try:
+                return response.read()
+            except (http.client.IncompleteRead, http.client.HTTPException) as exc:
+                # Public relays routinely close a chunked body early ("IncompleteRead: 82203
+                # bytes read" was observed on a GitHub runner). That is a transport failure and
+                # must be retried or handed to the next relay, never allowed to escape: an
+                # escaping read error used to end the whole run before the index was written.
+                raise urllib.error.URLError(f"truncated response body: {exc}") from exc
 
     def fetch(self, url: str) -> tuple[bytes, str]:
         last_error: Exception | None = None
@@ -203,7 +211,8 @@ class Transport:
                             self.direct_disabled = True
                             self.log("    direct disabled for this run after repeated HTTP 429")
                     self.log(f"    direct attempt {attempt} failed: HTTP {exc.code}")
-                except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                except (urllib.error.URLError, TimeoutError, OSError,
+                        http.client.HTTPException) as exc:
                     last_error = exc
                     self.log(f"    direct attempt {attempt} failed: {exc}")
                 time.sleep(2 * attempt)
@@ -219,7 +228,8 @@ class Transport:
                         self.preferred_relay = name
                         self.log(f"    relay preference set to {name}")
                     return payload, f"{name}-relay"
-                except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+                except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError,
+                        http.client.HTTPException) as exc:
                     last_error = exc
                     self.log(f"    {name} relay attempt {attempt}/{self.relay_attempts} "
                              f"failed: {exc}")
@@ -394,111 +404,140 @@ def main() -> int:
     attempted = 0
     deferred: list[tuple[str, str, str, str]] = []
 
-    for key, yahoo, kind, interval in jobs:
-        if args.time_budget_seconds and (time.time() - started_at) > args.time_budget_seconds:
-            deferred.append((key, yahoo, kind, interval))
-            continue
-        if args.max_series and attempted >= args.max_series:
-            deferred.append((key, yahoo, kind, interval))
-            continue
-        attempted += 1
-        print(f"GET {key} [{interval}] across {len(chunks_for(interval))} chunk(s)", flush=True)
-        try:
-            result = capture_series(transport, key, yahoo, interval, args.pacing_seconds)
-        except Exception as exc:                      # noqa: BLE001 - see the note below
-            # Deliberately broad. A rate-limited vendor or a relay that answers with an HTML
-            # error page raises types that are not worth enumerating (JSONDecodeError,
-            # UnicodeDecodeError, HTTPError, socket timeouts, ...), and an escaping exception
-            # kills the whole run BEFORE the index is written: the workflow then commits
-            # nothing and reports a green step, which is exactly how two capture runs were lost
-            # on 2026-09-18. One series failing must never cost the other nineteen.
-            detail = f"{type(exc).__name__}: {exc}"
-            print(f"FAILED {key} [{interval}]: {detail}", flush=True)
-            failures.append({"symbol": key, "interval": interval, "error": detail})
-            records.append({
-                "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
-                "status": "failed", "error": detail,
-            })
-            continue
+    pending = list(jobs)
+    for pass_number in (1, 2):
+        failed_this_pass: list[tuple[str, str, str, str]] = []
+        for key, yahoo, kind, interval in pending:
+            if args.time_budget_seconds and (time.time() - started_at) > args.time_budget_seconds:
+                if pass_number == 1:
+                    deferred.append((key, yahoo, kind, interval))
+                continue
+            if args.max_series and attempted >= args.max_series:
+                if pass_number == 1:
+                    deferred.append((key, yahoo, kind, interval))
+                continue
+            attempted += 1
+            print(f"GET {key} [{interval}] across {len(chunks_for(interval))} chunk(s)", flush=True)
+            try:
+                result = capture_series(transport, key, yahoo, interval, args.pacing_seconds)
+            except Exception as exc:                      # noqa: BLE001 - see the note below
+                # Deliberately broad. A rate-limited vendor or a relay that answers with an HTML
+                # error page raises types that are not worth enumerating (JSONDecodeError,
+                # UnicodeDecodeError, HTTPError, socket timeouts, ...), and an escaping exception
+                # kills the whole run BEFORE the index is written: the workflow then commits
+                # nothing and reports a green step, which is exactly how two capture runs were lost
+                # on 2026-09-18. One series failing must never cost the other nineteen.
+                detail = f"{type(exc).__name__}: {exc}"
+                print(f"FAILED {key} [{interval}]: {detail}", flush=True)
+                # Exactly one record per series however it ends: a series that fails on both
+                # passes must not be reported twice, or the index tallies would double-count it.
+                records[:] = [r for r in records
+                              if (r.get("symbol"), r.get("interval")) != (key, interval)
+                              or r.get("status") == "captured"]
+                failures[:] = [f for f in failures
+                               if (f["symbol"], f["interval"]) != (key, interval)]
+                failures.append({"symbol": key, "interval": interval, "error": detail})
+                records.append({
+                    "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
+                    "status": "failed", "error": detail,
+                })
+                failed_this_pass.append((key, yahoo, kind, interval))
+                continue
 
-        bars = result["bars"]
-        document = {
-            "_meta": {
-                "kind": "intraday_vendor_capture",
-                "description": (
-                    "Canonicalised Yahoo Finance chart capture: bars are validated and stored as "
-                    "[epoch_seconds, open, high, low, close, volume] with prices rounded to "
-                    f"{ROUNDING_DECIMALS} decimals. Per-chunk raw-response SHA-256 and byte "
-                    "lengths are recorded in data/intraday_index.json; rounding is the only "
-                    "transformation applied."
-                ),
-                "script": "scripts/fetch_intraday.py",
-                "script_version": SCRIPT_VERSION,
+            bars = result["bars"]
+            document = {
+                "_meta": {
+                    "kind": "intraday_vendor_capture",
+                    "description": (
+                        "Canonicalised Yahoo Finance chart capture: bars are validated and stored as "
+                        "[epoch_seconds, open, high, low, close, volume] with prices rounded to "
+                        f"{ROUNDING_DECIMALS} decimals. Per-chunk raw-response SHA-256 and byte "
+                        "lengths are recorded in data/intraday_index.json; rounding is the only "
+                        "transformation applied."
+                    ),
+                    "script": "scripts/fetch_intraday.py",
+                    "script_version": SCRIPT_VERSION,
+                    "interval": interval,
+                    "rounding_decimals": ROUNDING_DECIMALS,
+                    "vendor_retention_note": VENDOR_RETENTION_NOTE,
+                },
+                "symbol": key,
+                "yahoo_ticker": yahoo,
+                "kind": kind,
                 "interval": interval,
+                "captured_at_utc": fetched_at,
+                **result["facts"],
+                "dropped_null_bars": result["dropped_null"],
+                "chunks": result["chunks"],
+                "bar_count": len(bars),
+                "bars": bars,
+            }
+            # A series that failed earlier in this run and succeeds on the retry pass replaces
+            # its own failure record instead of appearing twice in the index.
+            records[:] = [r for r in records
+                          if (r.get("symbol"), r.get("interval")) != (key, interval)
+                          or r.get("status") == "captured"]
+            failures[:] = [f for f in failures
+                           if (f["symbol"], f["interval"]) != (key, interval)]
+            # The stored file must be EXACTLY the bytes that stored_sha256 digests: the offline
+            # loader (intel/intraday.py) re-hashes the file on disk and refuses a mismatch, so no
+            # trailing newline is appended here.
+            # A multi-chunk series has no single raw vendor response, so the series-level digest is
+            # defined as SHA-256 over the ordered concatenation of every chunk's raw-response digest.
+            # It is written to BOTH the capture document and the index record, and the offline loader
+            # requires the two to agree (or both to be absent, for captures written before this field).
+            chunk_digests = "".join(c["raw_response_sha256"] for c in result["chunks"])
+            document["raw_response_sha256"] = hashlib.sha256(chunk_digests.encode("ascii")).hexdigest()
+            document["raw_response_note"] = (
+                "SHA-256 over the ordered concatenation of every chunk's raw-response SHA-256; "
+                "multi-chunk series have no single raw vendor response."
+            )
+            stored_text = json.dumps(document, separators=(",", ":"))
+            filename = stored_filename(key, interval)
+            with open(os.path.join(ROOT, args.out_dir, filename), "w", encoding="utf-8") as fh:
+                fh.write(stored_text)
+            records.append({
+                "symbol": key,
+                "yahoo_ticker": yahoo,
+                "kind": kind,
+                "interval": interval,
+                "endpoint": result["chunks"][0]["endpoint"],
+                "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+                "file": f"{args.out_dir}/{filename}".replace("\\", "/"),
+                "bar_count": len(bars),
+                "dropped_null_bars": result["dropped_null"],
+                "first_epoch": bars[0][0],
+                "last_epoch": bars[-1][0],
+                "first_utc": iso_of(bars[0][0]),
+                "last_utc": iso_of(bars[-1][0]),
+                "first_close": bars[0][4],
+                "last_close": bars[-1][4],
+                "chunks": len(result["chunks"]),
+                "chunk_provenance": result["chunks"],
+                "raw_response_bytes_total": sum(c["raw_response_bytes"] for c in result["chunks"]),
+                "raw_response_sha256": document["raw_response_sha256"],
+                "stored_bytes": len(stored_text.encode("utf-8")),
+                "stored_sha256": hashlib.sha256(stored_text.encode("utf-8")).hexdigest(),
                 "rounding_decimals": ROUNDING_DECIMALS,
-                "vendor_retention_note": VENDOR_RETENTION_NOTE,
-            },
-            "symbol": key,
-            "yahoo_ticker": yahoo,
-            "kind": kind,
-            "interval": interval,
-            "captured_at_utc": fetched_at,
-            **result["facts"],
-            "dropped_null_bars": result["dropped_null"],
-            "chunks": result["chunks"],
-            "bar_count": len(bars),
-            "bars": bars,
-        }
-        # The stored file must be EXACTLY the bytes that stored_sha256 digests: the offline
-        # loader (intel/intraday.py) re-hashes the file on disk and refuses a mismatch, so no
-        # trailing newline is appended here.
-        # A multi-chunk series has no single raw vendor response, so the series-level digest is
-        # defined as SHA-256 over the ordered concatenation of every chunk's raw-response digest.
-        # It is written to BOTH the capture document and the index record, and the offline loader
-        # requires the two to agree (or both to be absent, for captures written before this field).
-        chunk_digests = "".join(c["raw_response_sha256"] for c in result["chunks"])
-        document["raw_response_sha256"] = hashlib.sha256(chunk_digests.encode("ascii")).hexdigest()
-        document["raw_response_note"] = (
-            "SHA-256 over the ordered concatenation of every chunk's raw-response SHA-256; "
-            "multi-chunk series have no single raw vendor response."
-        )
-        stored_text = json.dumps(document, separators=(",", ":"))
-        filename = stored_filename(key, interval)
-        with open(os.path.join(ROOT, args.out_dir, filename), "w", encoding="utf-8") as fh:
-            fh.write(stored_text)
-        records.append({
-            "symbol": key,
-            "yahoo_ticker": yahoo,
-            "kind": kind,
-            "interval": interval,
-            "endpoint": result["chunks"][0]["endpoint"],
-            "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
-            "file": f"{args.out_dir}/{filename}".replace("\\", "/"),
-            "bar_count": len(bars),
-            "dropped_null_bars": result["dropped_null"],
-            "first_epoch": bars[0][0],
-            "last_epoch": bars[-1][0],
-            "first_utc": iso_of(bars[0][0]),
-            "last_utc": iso_of(bars[-1][0]),
-            "first_close": bars[0][4],
-            "last_close": bars[-1][4],
-            "chunks": len(result["chunks"]),
-            "chunk_provenance": result["chunks"],
-            "raw_response_bytes_total": sum(c["raw_response_bytes"] for c in result["chunks"]),
-            "raw_response_sha256": document["raw_response_sha256"],
-            "stored_bytes": len(stored_text.encode("utf-8")),
-            "stored_sha256": hashlib.sha256(stored_text.encode("utf-8")).hexdigest(),
-            "rounding_decimals": ROUNDING_DECIMALS,
-            "max_abs_rounding_delta": 0.5 * 10 ** -ROUNDING_DECIMALS,
-            "vendor_reported_exchange": result["facts"].get("vendor_reported_exchange"),
-            "vendor_reported_instrument_type": result["facts"].get(
-                "vendor_reported_instrument_type"),
-            "vendor_currency": result["facts"].get("vendor_currency"),
-            "vendor_exchange_timezone": result["facts"].get("vendor_exchange_timezone"),
-            "status": "captured",
-            "captured_at_utc": fetched_at,
-        })
-        print(f"    {len(bars)} bars {iso_of(bars[0][0])} -> {iso_of(bars[-1][0])}", flush=True)
+                "max_abs_rounding_delta": 0.5 * 10 ** -ROUNDING_DECIMALS,
+                "vendor_reported_exchange": result["facts"].get("vendor_reported_exchange"),
+                "vendor_reported_instrument_type": result["facts"].get(
+                    "vendor_reported_instrument_type"),
+                "vendor_currency": result["facts"].get("vendor_currency"),
+                "vendor_exchange_timezone": result["facts"].get("vendor_exchange_timezone"),
+                "status": "captured",
+                "captured_at_utc": fetched_at,
+            })
+            print(f"    {len(bars)} bars {iso_of(bars[0][0])} -> {iso_of(bars[-1][0])}", flush=True)
+
+        if pass_number == 1 and failed_this_pass:
+            # The vendor's per-IP limit and the public relays both recover within seconds to
+            # minutes, so every failed series gets exactly one more chance before the run ends.
+            # Observed on a GitHub runner: direct HTTP 429 everywhere plus HTTP 522 from both
+            # relays, and truncated relay bodies, before chunks started succeeding again.
+            print(f"RETRY pass: {len(failed_this_pass)} series failed on pass 1 "
+                  f"({len(deferred)} deferred so far)", flush=True)
+        pending = failed_this_pass
 
     for key, yahoo, kind, interval in deferred:
         records.append({
