@@ -83,7 +83,12 @@ jobs:
           if git push origin "HEAD:${GITHUB_REF_NAME}"; then
             echo "::notice::derived artifacts committed to ${GITHUB_REF_NAME}"
           else
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            # A capture run may have committed while this job was deriving. -X theirs during a
+            # rebase keeps the artifacts this job just re-derived (they are strictly newer), and
+            # the same conflict policy is used by .github/scripts/commit_capture.sh, so the two
+            # lanes cannot deadlock against each other.
+            echo "::notice::push rejected - rebasing onto origin/${GITHUB_REF_NAME} and retrying"
+            git pull --rebase --autostash -X theirs origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
