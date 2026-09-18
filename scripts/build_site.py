@@ -1383,6 +1383,7 @@ apply only to the stated test and captured evidence—not to a trading forecast.
 <button type="button" class="active" data-status="">All ({len(hypotheses['hypotheses'])})</button>
 <button type="button" data-status="supported">Supported ({sum(1 for h in hypotheses['hypotheses'] if h['status'] == 'supported')})</button>
 <button type="button" data-status="refuted">Refuted ({sum(1 for h in hypotheses['hypotheses'] if h['status'] == 'refuted')})</button>
+<button type="button" data-status="untested">Untested ({sum(1 for h in hypotheses['hypotheses'] if h['status'] == 'untested')})</button>
 </div>
 <span id="hyp-count" class="count"></span>
 </div>""")

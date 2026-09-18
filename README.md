@@ -60,8 +60,11 @@ verifier-audited content, and added the four research pipelines the brief asked 
   study's own loader, re-run each builder at its pinned stamp and require field-for-field equality,
   re-derive the study's aggregates from its bucket rows, recompute the benchmark medians from its
   per-fill rows, and cross-check the exec summary against the competition artifact. Current result:
-  **378 verifier checks passed, 0 failed** and **436 self-test checks passed, 0 failed** (see
-  "Verify and build" below; the numbers are re-run at each commit).
+  **379 verifier checks passed, 0 failed** and **437 self-test checks passed, 0 failed** (see
+  "Verify and build" below; the numbers are re-run at each commit). Five warnings, all recorded:
+  four are the deliberate "artifact not produced yet" notes for the unlanded intraday capture and
+  its downstream study, division and stock rows, and the fifth is the COMEX:SIC1! vendor-vs-quote
+  delta tracked as IR-22. The intraday-dependent checks turn strict the moment the capture lands.
 
 ## September 18 tenth pass: EXECUTIVE SUMMARY at the top of the site
 
@@ -560,17 +563,18 @@ make derived intraday stocks exec tvbench   # same steps as individual targets
 Current audit result (re-run at this commit):
 
 ```text
-verify:    378 passed, 0 failed, 4 warnings
-self-test: 436 passed, 0 failed, 4 warnings
+verify:    379 passed, 0 failed, 5 warnings
+self-test: 437 passed, 0 failed, 5 warnings
 ```
 
-Three of the four warnings are the deliberate "artifact not produced yet" notes for the intraday
-capture, the intraday study and the stock division while the capture workflow is still running; the
-fourth is the recorded COMEX:SIC1! vendor-vs-quote delta below. The intraday-dependent checks turn
-strict (and the warnings disappear) as soon as `data/intraday_index.json` is committed.
+Four of the five warnings are the deliberate "artifact not produced yet" notes for the intraday
+capture, the intraday study, the stock division and the stock rows of the executive summary while
+the capture workflow is still running; the fifth is the recorded COMEX:SIC1! vendor-vs-quote delta
+below. The intraday-dependent checks turn strict (and the warnings disappear) as soon as
+`data/intraday_index.json` is committed.
 
-The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly
-listed COMEX:SIC1! (front-contract month and capture time may differ; tracked as IR-22).
+The vendor warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly listed
+COMEX:SIC1! (front-contract month and capture time may differ; tracked as IR-22).
 
 The mutation self-test proves checks fail when source endpoints, rule constants, leaderboard
 arithmetic, prize tiers, the placement lab's pace/leverage arithmetic, capacity math, strategy

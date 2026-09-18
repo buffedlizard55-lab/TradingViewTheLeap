@@ -1,478 +1,478 @@
 {
-  "_meta": {
-    "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
-    "generated_utc": "2026-09-16",
-    "hypothesis_count": 30,
-    "reverified_utc": "2026-09-17",
-    "reverification_note": "2026-09-17 eighth pass (shadow-competition session): H28-H30 added and supported from data/competition_results.json; H25/H26/H27 restored from a shell-expansion corruption event (see IR-26). All frontier and champion numbers re-derived by scripts/verify.py including the shadow-competition artifact."
+ "_meta": {
+  "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
+  "generated_utc": "2026-09-16",
+  "hypothesis_count": 32,
+  "reverified_utc": "2026-09-18",
+  "reverification_note": "2026-09-18 eleventh pass (intraday + stock-division session): H31 added and supported from the capture-lane evidence (sandbox egress, a timed-out unbounded sweep, a bounded lane that produced a validated artifact); H32 registered as the falsifiable intraday gap-fill/latency prediction that the study artifact will answer once captures are committed - deliberately left without a verdict rather than asserted in advance. H27-H30 unchanged from the eighth-pass reverification."
+ },
+ "hypotheses": [
+  {
+   "id": "H1",
+   "claim": "Returns of >=10x on the paper account are achievable in The Leap and have been officially recorded.",
+   "prediction": "At least one completed edition has a published #1 net profit >= 900%.",
+   "test": "Count records in data/verified_explosive_returns.json with return_multiple >= 10.",
+   "status": "supported",
+   "evidence": [
+    "Completed Futures - February 2025: BenBernanke1, +5,220.72% (53.2072x), 59,187 participants.",
+    "Live AMP Futures - September 2026 snapshot: leonardo22_romano, +921.49% (10.2149x), 93,527 displayed participants; in progress and not a final result."
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
   },
-  "hypotheses": [
-    {
-      "id": "H1",
-      "claim": "Returns of >=10x on the paper account are achievable in The Leap and have been officially recorded.",
-      "prediction": "At least one completed edition has a published #1 net profit >= 900%.",
-      "test": "Count records in data/verified_explosive_returns.json with return_multiple >= 10.",
-      "status": "supported",
-      "evidence": [
-        "Completed Futures - February 2025: BenBernanke1, +5,220.72% (53.2072x), 59,187 participants.",
-        "Live AMP Futures - September 2026 snapshot: leonardo22_romano, +921.49% (10.2149x), 93,527 displayed participants; in progress and not a final result."
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H2",
-      "claim": "In the captured official champion sample, records at or above 10x occur in futures editions; the two captured stock editions finished below 1.3x.",
-      "prediction": "At least one completed futures record is at or above 10x, while both captured completed stock records are below 1.3x.",
-      "test": "Group completed records in data/verified_explosive_returns.json by asset_class_label and compare their observed ranges. Do not infer causation or a universal strategy route.",
-      "status": "supported",
-      "evidence": [
-        "Completed futures sample: best 53.2072x and at least one record above 10x.",
-        "Completed stocks sample (n=2): 1.299x and 1.1758x.",
-        "This small champion-only sample does not prove that leverage or asset class caused the difference."
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H3",
-      "claim": "The live (September 2026) contest permits trading single stocks.",
-      "prediction": "The permitted instrument list contains at least one NASDAQ/NYSE/AMEX single-stock contract.",
-      "test": "Parse data/contest_universe.json and count instruments whose exchange is an equity venue.",
-      "status": "refuted",
-      "evidence": [
-        "94 instruments in the permitted list. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2. Equity instruments: 0."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H4",
-      "claim": "Per-unit volatility by itself is sufficient to identify the best instrument for absolute-dollar leaderboard placement.",
-      "prediction": "If sufficient, no position-cap, multiplier, quote-price, or buying-power input would change the dollar P/L comparison.",
-      "test": "Combine each selected instrument\u2019s rules cap, verified multiplier, captured TradingView continuous-contract price, and the 20:1 initial buying-power limit. Compute whole-contract modeled notional and the favorable percentage move needed to equal the captured rank-250 P/L. Historical normalized volatility is not available, so do not rank expected returns.",
-      "status": "refuted",
-      "evidence": [
-        "Dollar P/L per underlying point equals contracts \u00d7 multiplier; dollar P/L for a 1% move also depends on price.",
-        "At the captured prices, the 20:1 buying-power model reduces CL from its rules cap of 100 contracts to 48 whole contracts, SI from 25 to 15, HO from 25 to 23, and NQ from 100 to 8.",
-        "The favorable underlying moves needed to equal the captured rank-250 P/L are 12.6853% for CL, 12.8094% for SI, 12.9120% for HO, and 13.3236% for NQ under the stated model assumptions.",
-        "Conclusion is limited: volatility alone is insufficient. The repository has not measured normalized historical volatility and does not claim that caps, margin, or any one instrument is the binding or best predictor."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-PINE-LEVERAGE",
-        "TV-QUOTE-CL1",
-        "TV-QUOTE-SI1",
-        "TV-QUOTE-HO1",
-        "TV-QUOTE-NQ1"
-      ]
-    },
-    {
-      "id": "H5",
-      "claim": "The live rules rank participants by realized profit/loss on closed positions, and the public leaderboard displays both percentage and absolute-dollar columns.",
-      "prediction": "The rules define realized P/L on closed positions as the ranking metric, and displayed dollars are consistent with displayed percentage on the 250,000 virtual-USD base.",
-      "test": "Read the ranking clause and recompute captured leaderboard rows within the maximum error implied by percentage rounding.",
-      "status": "supported",
-      "evidence": [
-        "Rules: 'A participant\u2019s place ... is determined based on the realized profit/loss on the Competition account.'",
-        "Rules: realized P/L is P/L on closed positions; all open positions are automatically closed at the end and included.",
-        "The leaderboard displays 'Realized profit %' and 'Realized profit $'.",
-        "Snapshot rank 1: 250,000 \u00d7 9.2149 = 2,303,725, exactly the displayed realized P/L. Closing timing does not create extra P/L; it only changes when open P/L becomes realized."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H6",
-      "claim": "A return at or above 100x is present in the 16-record official contest sample captured by this repository.",
-      "prediction": "At least one captured official record shows return_multiple >= 100.",
-      "test": "Count captured records with return_multiple >= 100.",
-      "status": "refuted",
-      "evidence": [
-        "0 cases at or above 100x across all 16 sourced records.",
-        "The sample maximum is 53.2072x (Futures - February 2025). This does not prove a universal ceiling or exhaust every edition."
-      ],
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H7",
-      "claim": "Contest parameters are stable across editions, so a strategy tuned once carries over.",
-      "prediction": "Balance, leverage, position caps and commission are identical between consecutive futures editions.",
-      "test": "Diff the TradeStation Jul 2026 rules against the AMP Futures Sep 2026 rules.",
-      "status": "refuted",
-      "evidence": [
-        "Balance 100,000 -> 250,000 virtual USD (2.5x).",
-        "Futures leverage 10:1 -> 20:1 (2x); max notional 1,000,000 -> 5,000,000 (5x).",
-        "NYMEX:CL1! position cap 1.0 -> 100.0 contracts (100x).",
-        "CME:MBT1! position cap 5.0 -> 25.0 contracts (5x).",
-        "Prize-paying ranks 250 -> 300."
-      ],
-      "source_ids": [
-        "TV-RULES-TS-JUL2026",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H8",
-      "claim": "A free-plan account can compete on equal terms in the live edition.",
-      "prediction": "Free-plan participants receive the same market data as paid participants.",
-      "test": "Read the real-time data clause (section 06) of the live rules.",
-      "status": "refuted",
-      "evidence": [
-        "Rules: free-plan users 'who were not previously active users of TradingView's paid services will not be provided with the Competition Real-Time Data by reason of their participation in the Competition.'",
-        "Rules: after subscribing, 'access to the Competition Real-Time Data will then be granted within twenty-four (24) hours'.",
-        "They may register and are prize-eligible, but they trade without competition real-time data unless they subscribe or trial."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H9",
-      "claim": "The leverage-implied upper bound on initial account notional is $5,000,000 before per-symbol caps and whole-contract constraints.",
-      "prediction": "The starting balance multiplied by stated futures leverage equals $5,000,000.",
-      "test": "Recompute starting_balance_virtual_usd \u00d7 futures_leverage_ratio from the live rules.",
-      "status": "supported",
-      "evidence": [
-        "'The preset balance size for the Paper Trading Competition Account is 250,000 virtual USD. Leverage for futures: 20:1.'",
-        "Computed upper bound: 250,000 x 20 = 5,000,000 USD. Actual initial deployment can be lower because of position caps and whole-contract quantities.",
-        "Corollary (computed): an adverse move of 250,000 / 5,000,000 = 5.00% on a hypothetical fully deployed $5,000,000 notional equals the entire starting balance. Equivalently 1/20 = 5%, the inverse of the stated leverage."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H10",
-      "claim": "The captured live leaderboard frontiers are point-in-time values that move during the edition; at 2026-09-16T21:39:34Z, ranks 50, 100, and 250 displayed +457.64%, +384.08%, and +249.48%.",
-      "prediction": "A later same-day capture can differ from an earlier capture because the rules allow leaderboard updates during the contest.",
-      "test": "Compare data/live_contest_snapshot.json with the earlier same-day rows archived in research/evidence/TV-CONTEST-AMP-SEP2026.md.",
-      "status": "supported",
-      "evidence": [
-        "Current captured rows: rank 50 +457.64% / +$1,144,096.25; rank 100 +384.08% / +$960,203.50; rank 250 +249.48% / +$623,689.00.",
-        "Tier boundaries: rank 25 +578.89%, rank 26 +569.30%, rank 50 +457.64%, rank 51 +454.33%.",
-        "Earlier same-day archived rank-250 values were lower, demonstrating snapshot drift.",
-        "The public page displays only ranks through 250 even though rules award up to 300 potential prizes; no public rank-300 threshold is claimed."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H11",
-      "claim": "The leaderboard's displayed $ profit equals 250,000 x (displayed %)/100 up to the rounding of the percentage to two decimals \u2014 the % and $ columns are one number, not two.",
-      "prediction": "Every captured dollar value lies within $12.50 of 250,000 \u00d7 displayed_pct/100, the maximum error caused by rounding percentage to two decimals.",
-      "test": "Recompute all seven rows in data/live_contest_snapshot.json.",
-      "status": "supported",
-      "evidence": [
-        "Rank 1 difference $0.00; rank 25 $7.50; rank 26 $10.00; rank 50 $3.75; rank 51 $12.50; rank 100 $3.50; rank 250 $11.00.",
-        "Every difference is within the inclusive $12.50 rounding bound."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-RULES-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H12",
-      "claim": "Winning returns vary substantially across the captured editions; this sample does not establish a universal win number or prove that asset class caused the difference.",
-      "prediction": "The observed completed-champion range spans both sub-1.3x and above-10x outcomes.",
-      "test": "Compare all completed #1 records in data/verified_explosive_returns.json by edition and asset-class label; exclude the in-progress live row from final-winner conclusions.",
-      "status": "supported",
-      "evidence": [
-        "Captured completed stock champions: 1.1758x and 1.299x.",
-        "Captured completed futures champion maximum: 53.2072x.",
-        "Observed association is not causation: editions also differ in balance, leverage, caps, instruments, duration, and field behavior. No normalized volatility or causal model has been run."
-      ],
-      "source_ids": [
-        "TV-CONTEST-MAG7-MAR2026",
-        "TV-RESULTS-BENBERNANKE1",
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H13",
-      "claim": "The brief's volatile-stock list is a historical research reference for future stock-edition work, not an actionable instrument set in the live futures contest; future eligibility must be rechecked.",
-      "prediction": "Every one of the 20 stock records cites market_data_vendor sources only, and none of those 20 symbols appears in the 94-instrument permitted universe of the live September 2026 edition.",
-      "test": "Inspect the source tier of every record in data/volatile_stocks.json and intersect its symbols against data/contest_universe.json.",
-      "status": "supported",
-      "evidence": [
-        "All 20 volatile_stocks.json records cite YAHOO-* market_data_vendor source_ids; scripts/verify.py forbids any non-vendor source for stock evidence (check_volatile_stocks.source_tier).",
-        "None of the 20 stock symbols (ENPH, AMD, MARA, CVNA, GME, RIOT, SHOP, NVAX, APP, PLUG, MSTR, NIO, PLTR, AMC, SMCI, HOOD, TSLA, NVDA, COIN, PTON) appears in contest_universe.json (94 futures instruments, 0 equities).",
-        "TradingView's official March 2026 Magnificent Seven stock-edition rules used a different, seven-stock NASDAQ universe. That confirms eligibility is edition-specific; it does not establish that this 20-stock list will be eligible later."
-      ],
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-CONTEST-MAG7-MAR2026"
-      ]
-    },
-    {
-      "id": "H14",
-      "claim": "A Donchian channel breakout with EMA-trend and ATR-expansion filters (model S1) earns a positive walk-forward median net profit on daily bars across the capturable contest universe.",
-      "prediction": "Across non-overlapping 30-day walk-forward windows on every captured symbol with >=150 bars, the pooled median net profit is positive (>$0) at zero cost, survives removal of the best symbol and best window, and nearby channel lengths (15, 25) keep it positive.",
-      "test": "scripts/run_backtests.py (engine intel-1) simulated S1 on 11 captured symbols (231 windows, 2024-09-17 to 2026-09-17 vendor daily bars, run stamp 2026-09-17T03:15:40+00:00) per research/strategy/testing-plan.md; verdicts follow the pre-registered falsification rules.",
-      "status": "refuted",
-      "evidence": [
-        "Pooled median net profit at zero cost is $0.0 (mean $11,400.80 is driven by outliers); 14.72% of 231 windows were positive.",
-        "Only 74 closed trades total (56 long, 18 short); 3 of 231 windows reached >=5x (best: COMEX:SI1! 2025-12-08->2026-01-06, 7.3872x on a single trade; the other two are NYMEX:CL1! 6.5076x and 7.1851x, also single-trade), 0 reached >=10x.",
-        "Concentration checks fail: excluding the best symbol or the best window flips the pooled median non-positive; per-symbol medians are $0.0.",
-        "Sensitivity grid (zero cost): channel15 -> 80 trades, 14.72% positive; channel25 -> 74 trades, 14.72% positive; initial fixed sizing -> 74 trades. All medians $0.0.",
-        "Adding CME:BTC1! (captured 2026-09-17T03:15:40Z, 504 sessions) did not change the verdict or the set of >=5x windows."
-      ],
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H15",
-      "claim": "An EMA impulse continuation entry (fast EMA crossing/holding above slow EMA with ATR expansion, model S2) earns a positive walk-forward median net profit on daily bars.",
-      "prediction": "Pooled median net profit across all captured-symbol walk-forward windows is positive at zero cost and stays positive after moderate costs ($1.50/side + 5% ATR slippage) and at nearby EMA pairs (15x40, 25x60).",
-      "test": "scripts/run_backtests.py simulated S2 on the same 11 symbols / 231 windows (run stamp 2026-09-17T03:15:40+00:00) with the pre-registered cost and sensitivity protocol.",
-      "status": "refuted",
-      "evidence": [
-        "Pooled median net profit at zero cost is $0.0 and the mean is negative (-$2,475.13); only 7.36% of 231 windows were positive.",
-        "30 closed trades in 231 windows; 0 windows reached >=5x (best window CME_MINI:NQ1! 2025-02-11->2025-03-12 at 1.8722x).",
-        "Moderate-cost median $0.0 (mean -$3,376.81); high-cost median $0.0 (mean -$4,275.87).",
-        "Sensitivity grid (zero cost): ema15x40 -> median $0.0 (29 trades), ema25x60 -> median $0.0 (38 trades); concentration checks fail on symbol and window removal."
-      ],
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H16",
-      "claim": "Entering on a Bollinger-band squeeze release (bandwidth at a 50-bar low then expansion, model S3) captures the volatility expansions that follow squeezes, earning a positive walk-forward median net profit on daily bars.",
-      "prediction": "Pooled median net profit across captured-symbol walk-forward windows is positive at zero cost, and the trade count is large enough for the declared bootstrap confidence interval.",
-      "test": "scripts/run_backtests.py simulated S3 on the same 11 symbols / 231 windows (run stamp 2026-09-17T03:15:40+00:00); squeeze-release signals on daily bars are rare, so the sample-size rule applies.",
-      "status": "refuted",
-      "evidence": [
-        "Only 5 closed trades in 231 windows (1.3% of windows positive); the pre-registered rule rejects a bootstrap CI on 5 trades.",
-        "Pooled median net profit at zero cost is $0.0 (mean $132.58); 0 windows reached >=5x (best NYMEX:NG1! 2026-06-17->2026-07-16 at 1.158x).",
-        "Sensitivity grid (zero cost): band_length 15 -> median $0.0 (5 trades), band_length 25 -> median $0.0 (9 trades).",
-        "S3's signal is too rare on daily bars to be a leaderboard strategy inside 30-day windows; intraday data would be required to re-test it meaningfully."
-      ],
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H17",
-      "claim": "Within the capturable universe, the instruments whose historical 30-day moves most exceed the move needed to match the last publicly visible leaderboard rank (rank 250; cash prizes end at rank 50) are the full-size energy and metals contracts (CL1!, HO1!, RB1!, SI1!, PL1!), because their modeled initial notional hits the leverage cap, while micro contracts and ETH1! are structurally priced out.",
-      "prediction": "Ranking captured symbols by (best 30-day up move) / (favorable move needed to reach the $623,689 rank-250 target from the modeled initial notional) puts full-size CL/HO/RB/SI/PL at the top, NG1! near the middle despite the highest volatility, and QM1!/ETH1! at the bottom.",
-      "test": "data/volatility_intelligence.json (written by scripts/run_backtests.py alongside the backtests) computed annualized volatility, ATR(14), best 30-day up/down moves and the rank-250 requirement per symbol from the same vendor daily bars.",
-      "status": "supported",
-      "evidence": [
-        "Needed vs delivered (favorable move needed -> best 30d up move, rank-250 target $623,689 from the 2026-09-16 snapshot): CL1! 12.7%->58.4%, HO1! 12.9%->78.2%, SI1! 12.8%->64.7%, RB1! 18.4%->66.7%, PL1! 27.9%->50.3% - each historically delivered 1.8x-6.1x its requirement inside one 30-day window.",
-        "NG1! needed 86.3% (margin-limited notional $722,750) and historically delivered 140.4% (ratio 1.63); QM1! (needed 121.8%) and ETH1! (needed 517.7%) are structurally priced out (ratios 0.48 / 0.14).",
-        "New in this run: CME:BTC1! (captured 2026-09-17T03:15:40Z) needed 163.9% against a best 30-day up move of 48.8% (ratio 0.30) - its 1-contract cap x multiplier x price leaves a $380,425 modeled notional, far below the rank-250 requirement.",
-        "This is simulation arithmetic on vendor data (upper envelope of what history offered), not a forecast and not a backtest of a tradable strategy."
-      ],
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-CONTEST-AMP-SEP2026"
-      ]
-    },
-    {
-      "id": "H18",
-      "claim": "The public leaderboard frontier (ranks 1/50/100/250) of the live AMP Futures September 2026 edition is non-stationary during the contest: by the third capture (~19.5 hours after the first) all four frontier P/L values had risen and three of the four had changed holders.",
-      "prediction": "Capture 3 (2026-09-17T16:56:00Z) shows strictly higher realized P/L at ranks 1, 50, 100 and 250 than capture 1 (2026-09-16T21:39:34Z).",
-      "test": "Comparison of capture 1 vs capture 3 in data/frontier_history.json; every value quoted verbatim from the official contest page (evidence TV-CONTEST-AMP-SEP2026.md, TV-CONTEST-AMP-SEP2026-2026-09-17.md, TV-CONTEST-AMP-SEP2026-2026-09-17-R3.md).",
-      "status": "supported",
-      "evidence": [
-        "Rank 1: +$2,303,725.00 (+921.49%) -> +$2,335,125.00 (+934.05%): +$31,400.00 (+12.56 pp), same holder (leonardo22_romano).",
-        "Rank 50: +$1,144,096.25 (+457.64%) -> +$1,247,897.00 (+499.16%): +$103,800.75 (+41.52 pp), holder changed twice (chandu0342 -> RIA-JANGHU -> rajgaurav009).",
-        "Rank 100: +$960,203.50 (+384.08%) -> +$999,892.85 (+399.96%): +$39,689.35 (+15.88 pp), holder changed twice (yeyuliuguang -> msm223034 -> wowlass63).",
-        "Rank 250: +$623,689.00 (+249.48%) -> +$655,069.50 (+262.03%): +$31,380.50 (+12.55 pp), holder changed (luaguiar -> mrchrissmithl143).",
-        "Displayed participants rose 93,527 -> 93,702 -> 95,709 (+2,182 total) over the same window while registration remained open until 2026-09-23 08:00 UTC.",
-        "The 3-hour quiet between captures 1 and 2 (rank 1 and 250 frozen) did not generalize: during the US trading day all four frontiers moved up. The P/L required to hold any given public rank is a rising moving target, and no captured value is a final threshold."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026-R2",
-        "TV-CONTEST-AMP-SEP2026-R3"
-      ]
-    },
-    {
-      "id": "H19",
-      "claim": "The last cash-prize rank (50) sits far above the last publicly visible rank (250): holding rank 50 required roughly 90% more realized P/L than holding rank 250 at the third capture, and the actual last-prize frontier (rank 300) is not observable on the public board.",
-      "prediction": "At capture 3, (rank-50 P/L - rank-250 P/L) / rank-250 P/L > 0.9.",
-      "test": "Arithmetic on capture 3 of data/frontier_history.json: (1,247,897.00 - 655,069.50) / 655,069.50; prize tiers from official rules section 09.",
-      "status": "supported",
-      "evidence": [
-        "Capture 3: rank 50 +$1,247,897.00 (+499.16%) vs rank 250 +$655,069.50 (+262.03%): rank 50 requires $592,827.50 (90.5%) more realized P/L than rank 250.",
-        "Cash prizes end at rank 50 (ranks 26-50 at $400 each); ranks 51-300 receive 3-month subscriptions (official rules section 09). The public leaderboard exposes only ranks 1-250, so the P/L actually required for rank 300 - the real last prize - is unobservable (IR-06).",
-        "Practical reading: a strategy aimed at any cash prize must target well above the rank-250 frontier, and the gap is widening as the contest progresses (H18)."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R3",
-        "TV-RULES-AMP-SEP2026",
-        "TV-RULES-AMP-SEP2026-R3"
-      ]
-    },
-    {
-      "id": "H20",
-      "claim": "The public live leaderboard is corrected over time, not append-only: between capture 3 (2026-09-17T16:56:00Z) and capture 4 (2026-09-17T19:04:00Z) the displayed rank-50 frontier DECREASED from +$1,247,897.00 to +$1,244,313.50 while ranks 100 and 250 rose and rank 1 was unchanged; the exact row value previously displayed at rank 50 (rajgaurav009 +$1,247,897.00) re-appeared at rank 49.",
-      "prediction": "Capture 4 rank-50 realized P/L is strictly lower than capture 3 rank-50 realized P/L, and the capture-3 rank-50 row value appears verbatim (same trader, same percentage, same dollars) at rank 49 in capture 4.",
-      "test": "Row-by-row comparison of captures 3 and 4 in data/frontier_history.json plus the full-board rows 45-116 re-read verbatim from the official contest page (TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md).",
-      "status": "supported",
-      "evidence": [
-        "Rank 50: +$1,247,897.00 (+499.16%) -> +$1,244,313.50 (+497.73%): -$3,583.50 (-1.4334 pp); holder changed from rajgaurav009 (now at rank 49 with the identical value pair) to Nikola_Ng.",
-        "Realized P/L on closed positions cannot shrink for a still-registered account; the net effect is exactly one fewer row ahead of the tracked row, and the most parsimonious explanation is one removal from the board ranked 1-48 at capture 3 (disqualification or board correction; official rules sections 05, 09 and especially 16 reserve at-any-time disqualification rights and the official pages publish no board-change log).",
-        "Control rows behaved normally over the same 2.1-hour window: rank 1 unchanged ($2,335,125.00, same holder), rank 100 +$12,309.65 (new holder JeremyTradezzz; capture-3 holder wowlass63 slid to rank 103), rank 250 +$2,235.50 (new holder NxSChadha).",
-        "Consequence for strategy: a captured frontier value is not a ratchet floor; the P/L needed for any rank at contest end cannot be read off as 'minimum observed so far' in either direction."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R3",
-        "TV-CONTEST-AMP-SEP2026-R4",
-        "TV-RULES-AMP-SEP2026-R4"
-      ]
-    },
-    {
-      "id": "H21",
-      "claim": "Every tracked public frontier's average realized-P/L accumulation rate since the competition start is positive and quantified, so a static lead decays: from 2026-09-01T08:00:00Z to capture 4 (2026-09-17T19:04:00Z, 16.4611 days) the displayed frontiers averaged $141,857.07/day (rank 1), $75,591.10/day (rank 50), $61,490.53/day (rank 100) and $39,930.78/day (rank 250).",
-      "prediction": "Each of the four capture-4 frontier values divided by the 16.4611 elapsed days is positive, and the rank-50 average rate exceeds the rank-250 average rate.",
-      "test": "Division of capture-4 realized P/L in data/frontier_history.json by elapsed days computed from data/contest_config.json dates; constant-rate scenario = value x (29.1667 total contest days / 16.4611 elapsed days); scenario arithmetic only, not a forecast.",
-      "status": "supported",
-      "evidence": [
-        "Average rates over 16.4611 elapsed days: rank 1 $141,857.07/day; rank 50 $75,591.10/day; rank 100 $61,490.53/day; rank 250 $39,930.78/day. All positive; mid-board rates sit far above the board edge, so the gap between cash ranks and the public edge is structural (H19).",
-        "Time remaining at capture 4: 12.7056 days to the 2026-09-30 12:00 UTC deadline; registration stays open for 5.5389 more days (until 2026-09-23 08:00 UTC), about 43.6% of the remaining window, so newly joining participants can still push the board upward during that part of it.",
-        "Constant-rate scenario values at contest end (arithmetic equalities, NOT forecasts): rank 1 ~$4,137,497.89; rank 50 ~$2,204,740.42; rank 100 ~$1,793,473.89; rank 250 ~$1,164,647.74. H18/H20 show the true path is non-stationary and even correctable downward, so these scenario numbers bound nothing.",
-        "Practical reading for a leaderboard-placement attempt: the entry threshold keeps rising on average, so deferring entry raises the required final P/L; the 5 active UTC days qualification can be satisfied any time before the deadline."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R4",
-        "TV-RULES-AMP-SEP2026-R4"
-      ]
-    },
-    {
-      "id": "H22",
-      "claim": "Frontier drift is rank-heterogeneous: inside one short interval some tracked ranks can be completely static while others advance, so the displayed board is not one moving level and 'the frontier' has no single rate.",
-      "prediction": "Between capture 4 (2026-09-17T19:04:00Z) and capture 5 (2026-09-17T20:58:00Z) at least one tracked rank is unchanged to the cent while at least one other tracked rank rises.",
-      "test": "Diff the four tracked rank values of captures 4 and 5 in data/frontier_history.json and re-identify the displaced rows by their exact displayed values.",
-      "status": "supported",
-      "evidence": [
-        "Ranks 1 and 50 byte-identical across the 1.90-hour interval: leonardo22_romano +$2,335,125.00 and Nikola_Ng +$1,244,313.50 (0.00 change), while rank 100 rose +$2,747.50 (JeremyTradezzz +$1,012,202.50 -> nynyyynn54 +$1,014,950.00) and rank 250 rose +$3,454.50 (NxSChadha +$657,305.00 -> mrchrissmithl143 +$660,759.50).",
-        "Row identity proves which boundary moved: capture-4's rank-100 row re-appeared verbatim at rank 101 and capture-3's rank-100 row (wowlass63 +$999,892.85) at rank 105, so one new row entered between rank 50 and rank 100 while the cash-prize edge did not move at all.",
-        "This is the first observed interval in which the rank-50 cash edge was static while lower tracked frontiers rose; it does not contradict H18/H20, which show the path is non-stationary and even correctable downward, and it means a static edge is not evidence that entry is 'still cheap'.",
-        "Practical consequence: any placement plan must be re-priced against the latest capture, not against a single measured rate; the frontier tracker's deltas are the only honest measure of what changed."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R5",
-        "TV-RULES-AMP-SEP2026-R5"
-      ]
-    },
-    {
-      "id": "H23",
-      "claim": "The cash-prize level is arithmetically reachable from a fresh account inside the remaining window, but only at a strictly positive compounded daily rate that must hold every day: at capture 5 the rank-50 level is 5.9773x the starting balance, so a new 250,000 account needs +15.2122%/day compounded for the 12.6264 days left, equal to a 0.7606%/day underlying move at the rules' 20:1 leverage.",
-      "prediction": "Re-deriving from data/contest_config.json and data/frontier_history.json yields a positive required daily compound rate for every tracked rank, and an adverse full-exposure move smaller than 5% of the underlying is enough to erase the entire starting balance.",
-      "test": "Deterministic arithmetic in scripts/leaderboard_lab.py -> data/leaderboard_lab.json: required daily compound = (balance multiple)^(1/remaining days) - 1; underlying equivalent = rate / 20; ruin arithmetic = 100% / 20x leverage; cross-checked by scripts/verify.py against the capture and config files.",
-      "status": "supported",
-      "evidence": [
-        "Required daily compounding from the 2026-09-17T20:58:00Z capture (12.6264 days left): rank 1 +20.3236%/day, rank 50 +15.2122%/day, rank 100 +13.7017%/day, rank 250 +10.7815%/day. Underlying equivalents at 20:1: 1.0162% / 0.7606% / 0.6851% / 0.5391% per day.",
-        "Balance-multiple targets over the same window: 5x needs +13.5946%/day (0.6797% underlying), 10x +20.0050%/day (1.0002%), 20x +26.7770%/day (1.3389%), 50x +36.3192%/day (1.8160%), 100x +44.0119%/day (2.2006%); at an illustrative +1% underlying day with full reinvestment, 5x takes 9 unbroken winning days and 100x takes 26.",
-        "Exposure arithmetic: maximum initial notional is $5,000,000 (250,000 x 20), so 1% of underlying is $50,000 = 20% of the starting balance; a 2.5% adverse move erases half the balance and a 5% adverse move erases all of it. The rules forbid resetting the account (section 08), so the required path admits no full-exposure loss day.",
-        "Reality check from this repository's own tests: the three pre-registered models are refuted with $0.0 pooled median net profit across 231 windows (H14-H16), so no tested strategy has produced any positive daily compounding, let alone the unbroken sequence above. The arithmetic shows what the prize costs; it is not evidence that it can be earned.",
-        "Cross-check: the rank-50 level (5.9773x) is above 14 of the 15 completed-edition champion records; only BenBernanke1's 53.2072x is higher (cross-edition context only)."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R5",
-        "TV-RULES-AMP-SEP2026-R5",
-        "TV-THELEAP-LANDING-R5"
-      ]
-    },
-    {
-      "id": "H24",
-      "claim": "Complete frontier stasis for the tracked ranks can extend beyond the first interval while the participant count keeps rising: between capture 5 (20:58Z) and capture 6 (21:27Z) all four tracked P/L values were byte-identical while participants rose 96,236 -> 96,268 (+32).",
-      "prediction": "Capture 6 rank-1, rank-50, rank-100 and rank-250 realized P/L are exactly equal to capture-5 values, and participant count is strictly higher.",
-      "test": "Direct equality diff of the four tracked rows in data/frontier_history.json captures 5 vs 6 and participant count comparison, plus landing-page hero cross-check.",
-      "status": "supported",
-      "evidence": [
-        "All four tracked rows byte-identical to the cent: leonardo22_romano +$2,335,125.00 (+934.05%), Nikola_Ng +$1,244,313.50 (+497.73%), nynyyynn54 +$1,014,950.00 (+405.98%), mrchrissmithl143 +$660,759.50 (+264.30%).",
-        "Participants: contest 96,236 -> 96,268 (+32, +0.03%); landing hero 96,230 -> 96,263 (+33); async gap at capture 6 is 5 participants (IR-09).",
-        "Together with H22 (rank-heterogeneous rise in 1.90 h) and H20 (correction-driven fall), this completes a same-day catalogue of three distinct board behaviours in 0.48-19.5 h windows: heterogeneous rise, correction-driven fall, and uniform stasis. None of the three is a reliable predictor of the next interval.",
-        "Practical reading: a static high board is not evidence that the required final P/L has stopped rising (registration remains open until 2026-09-23 08:00 UTC), and inflow of new participants does not mechanically move the tracked frontier every hour."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R6",
-        "TV-RULES-AMP-SEP2026-R6",
-        "TV-THELEAP-LANDING-R6"
-      ]
-    },
-    {
-      "id": "H25",
-      "claim": "The cash-prize cutoff (Rank 50) exhibits punctuated threshold acceleration: between capture 6 (21:27 UTC) and capture 7 (23:08 UTC), the Rank 50 cutoff rose +$111,303.63 (+44.52 pp of initial balance) in 1.68 hours, elevating the required fresh-account compounding rate from 15.24%/day to 15.99%/day.",
-      "prediction": "Capture 7 rank-50 threshold is strictly higher than capture 6, and the required daily compound rate over the remaining 12.54 days increases accordingly.",
-      "test": "Direct delta computation of rank-50 realized P/L between capture 6 ($1,244,313.50) and capture 7 ($1,355,617.13) in data/frontier_history.json, and recomputation of the daily compound formula in data/leaderboard_lab.json.",
-      "status": "supported",
-      "evidence": [
-        "Rank 50 rose from Nikola_Ng (+$1,244,313.50 / +497.73%) to Greed027 (+$1,355,617.13 / +542.25%), an absolute increase of +$111,303.63 in 1.68 hours.",
-        "Rank 100 also rose +$76,695.00 ($1,014,950.00 to $1,091,645.00) and Rank 250 rose +$38,065.50 ($660,759.50 to $698,825.00), confirming broad upward movement across the board.",
-        "Fresh-account compounding requirement to reach Rank 50 equity ($1,605,617.13 / 6.4225x) over the remaining 12.536 days rose from 15.24%/day to 15.99%/day (+0.75%/day increase).",
-        "This confirms IR-25: leaderboard threshold advances in punctuated bursts as participants liquidate winning positions."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R7",
-        "TV-RULES-AMP-SEP2026-R7",
-        "TV-THELEAP-LANDING-R7"
-      ]
-    },
-    {
-      "id": "H26",
-      "claim": "High-notional energy and metals futures (HO1!, CL1!, SI1!, RB1!) remain the only capturable universe instruments capable of delivering the updated Rank 50 cash-prize hurdle (requiring +27.1% to +39.7% favorable underlying moves vs 58%-78% historical 30-day vendor peaks).",
-      "prediction": "At the new Rank 50 threshold ($1,355,617.13), only instruments with initial notional >= .4M have historical 30-day price moves strictly greater than the required percentage move at maximum allowable position size.",
-      "test": "Cross-check between data/initial_capacity.json modeled notional, data/volatility_intelligence.json best 30-day moves, and the new Rank 50 P/L target.",
-      "status": "supported",
-      "evidence": [
-        "HO1! (.998M initial notional) requires +27.12% favorable move vs +78.36% best historical 30d move (delivery ratio 2.89x).",
-        "CL1! (.789M initial notional) requires +28.31% favorable move vs +58.82% best historical 30d move (delivery ratio 2.08x).",
-        "SI1! (.638M initial notional) requires +29.23% favorable move vs +65.02% best historical 30d move (delivery ratio 2.22x).",
-        "RB1! (.414M initial notional) requires +39.71% favorable move vs +71.07% best historical 30d move (delivery ratio 1.79x).",
-        "All other 90 instruments (including NG1!, BTC1!, ETH1!, equity index micros) either have insufficient notional (<$2.5M) or lower historical moves than the required threshold at starting capital."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R7",
-        "TV-RULES-AMP-SEP2026-R7",
-        "YAHOO-FUTURES-CHART",
-        "TV-QUOTE-HO1",
-        "TV-QUOTE-CL1",
-        "TV-QUOTE-SI1",
-        "TV-QUOTE-RB1"
-      ]
-    },
-    {
-      "id": "H27",
-      "claim": "Paper-simulated pursuit of explosive 10x-100x competition targets requires multi-trade intraday pyramiding and reinvestment strategies (models S4-S6), because single-contract daily-bar trend systems (S1-S3) produce median net profit of $0.00 across walk-forward windows.",
-      "prediction": "Daily-bar indicators produce insufficient trade frequency (<5 qualifying trades in 30 days) and zero positive median return, whereas intraday multi-entry pyramiding can theoretically scale notional exposure as equity compounds.",
-      "test": "Evaluation of data/backtest_results.json walk-forward metrics for S1-S3 against the compounding requirements derived in data/target_lab.json.",
-      "status": "supported",
-      "evidence": [
-        "In data/backtest_results.json, S1 (Donchian Breakout), S2 (EMA Impulse), and S3 (Squeeze Momentum) all yielded $0.00 median net profit across 1,845 walk-forward window evaluations due to daily whipsaw and low trade density.",
-        "To achieve 10x ($2.5M equity) or 100x ($25M equity) from $250k in ~12.5 days requires compounding rates of 20.18%/day and 44.52%/day respectively.",
-        "Fixed initial contract sizing without compounding cannot scale past the single-position ceiling; intraday reinvestment and pyramiding during momentum bursts are mathematically required to chase top-tier outcomes."
-      ],
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R7",
-        "TV-RULES-AMP-SEP2026-R7",
-        "TV-RESULTS-BENBERNANKE1"
-      ]
-    },
-    {
+  {
+   "id": "H2",
+   "claim": "In the captured official champion sample, records at or above 10x occur in futures editions; the two captured stock editions finished below 1.3x.",
+   "prediction": "At least one completed futures record is at or above 10x, while both captured completed stock records are below 1.3x.",
+   "test": "Group completed records in data/verified_explosive_returns.json by asset_class_label and compare their observed ranges. Do not infer causation or a universal strategy route.",
+   "status": "supported",
+   "evidence": [
+    "Completed futures sample: best 53.2072x and at least one record above 10x.",
+    "Completed stocks sample (n=2): 1.299x and 1.1758x.",
+    "This small champion-only sample does not prove that leverage or asset class caused the difference."
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H3",
+   "claim": "The live (September 2026) contest permits trading single stocks.",
+   "prediction": "The permitted instrument list contains at least one NASDAQ/NYSE/AMEX single-stock contract.",
+   "test": "Parse data/contest_universe.json and count instruments whose exchange is an equity venue.",
+   "status": "refuted",
+   "evidence": [
+    "94 instruments in the permitted list. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2. Equity instruments: 0."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H4",
+   "claim": "Per-unit volatility by itself is sufficient to identify the best instrument for absolute-dollar leaderboard placement.",
+   "prediction": "If sufficient, no position-cap, multiplier, quote-price, or buying-power input would change the dollar P/L comparison.",
+   "test": "Combine each selected instrument’s rules cap, verified multiplier, captured TradingView continuous-contract price, and the 20:1 initial buying-power limit. Compute whole-contract modeled notional and the favorable percentage move needed to equal the captured rank-250 P/L. Historical normalized volatility is not available, so do not rank expected returns.",
+   "status": "refuted",
+   "evidence": [
+    "Dollar P/L per underlying point equals contracts × multiplier; dollar P/L for a 1% move also depends on price.",
+    "At the captured prices, the 20:1 buying-power model reduces CL from its rules cap of 100 contracts to 48 whole contracts, SI from 25 to 15, HO from 25 to 23, and NQ from 100 to 8.",
+    "The favorable underlying moves needed to equal the captured rank-250 P/L are 12.6853% for CL, 12.8094% for SI, 12.9120% for HO, and 13.3236% for NQ under the stated model assumptions.",
+    "Conclusion is limited: volatility alone is insufficient. The repository has not measured normalized historical volatility and does not claim that caps, margin, or any one instrument is the binding or best predictor."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-PINE-LEVERAGE",
+    "TV-QUOTE-CL1",
+    "TV-QUOTE-SI1",
+    "TV-QUOTE-HO1",
+    "TV-QUOTE-NQ1"
+   ]
+  },
+  {
+   "id": "H5",
+   "claim": "The live rules rank participants by realized profit/loss on closed positions, and the public leaderboard displays both percentage and absolute-dollar columns.",
+   "prediction": "The rules define realized P/L on closed positions as the ranking metric, and displayed dollars are consistent with displayed percentage on the 250,000 virtual-USD base.",
+   "test": "Read the ranking clause and recompute captured leaderboard rows within the maximum error implied by percentage rounding.",
+   "status": "supported",
+   "evidence": [
+    "Rules: 'A participant’s place ... is determined based on the realized profit/loss on the Competition account.'",
+    "Rules: realized P/L is P/L on closed positions; all open positions are automatically closed at the end and included.",
+    "The leaderboard displays 'Realized profit %' and 'Realized profit $'.",
+    "Snapshot rank 1: 250,000 × 9.2149 = 2,303,725, exactly the displayed realized P/L. Closing timing does not create extra P/L; it only changes when open P/L becomes realized."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H6",
+   "claim": "A return at or above 100x is present in the 16-record official contest sample captured by this repository.",
+   "prediction": "At least one captured official record shows return_multiple >= 100.",
+   "test": "Count captured records with return_multiple >= 100.",
+   "status": "refuted",
+   "evidence": [
+    "0 cases at or above 100x across all 16 sourced records.",
+    "The sample maximum is 53.2072x (Futures - February 2025). This does not prove a universal ceiling or exhaust every edition."
+   ],
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H7",
+   "claim": "Contest parameters are stable across editions, so a strategy tuned once carries over.",
+   "prediction": "Balance, leverage, position caps and commission are identical between consecutive futures editions.",
+   "test": "Diff the TradeStation Jul 2026 rules against the AMP Futures Sep 2026 rules.",
+   "status": "refuted",
+   "evidence": [
+    "Balance 100,000 -> 250,000 virtual USD (2.5x).",
+    "Futures leverage 10:1 -> 20:1 (2x); max notional 1,000,000 -> 5,000,000 (5x).",
+    "NYMEX:CL1! position cap 1.0 -> 100.0 contracts (100x).",
+    "CME:MBT1! position cap 5.0 -> 25.0 contracts (5x).",
+    "Prize-paying ranks 250 -> 300."
+   ],
+   "source_ids": [
+    "TV-RULES-TS-JUL2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H8",
+   "claim": "A free-plan account can compete on equal terms in the live edition.",
+   "prediction": "Free-plan participants receive the same market data as paid participants.",
+   "test": "Read the real-time data clause (section 06) of the live rules.",
+   "status": "refuted",
+   "evidence": [
+    "Rules: free-plan users 'who were not previously active users of TradingView's paid services will not be provided with the Competition Real-Time Data by reason of their participation in the Competition.'",
+    "Rules: after subscribing, 'access to the Competition Real-Time Data will then be granted within twenty-four (24) hours'.",
+    "They may register and are prize-eligible, but they trade without competition real-time data unless they subscribe or trial."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H9",
+   "claim": "The leverage-implied upper bound on initial account notional is $5,000,000 before per-symbol caps and whole-contract constraints.",
+   "prediction": "The starting balance multiplied by stated futures leverage equals $5,000,000.",
+   "test": "Recompute starting_balance_virtual_usd × futures_leverage_ratio from the live rules.",
+   "status": "supported",
+   "evidence": [
+    "'The preset balance size for the Paper Trading Competition Account is 250,000 virtual USD. Leverage for futures: 20:1.'",
+    "Computed upper bound: 250,000 x 20 = 5,000,000 USD. Actual initial deployment can be lower because of position caps and whole-contract quantities.",
+    "Corollary (computed): an adverse move of 250,000 / 5,000,000 = 5.00% on a hypothetical fully deployed $5,000,000 notional equals the entire starting balance. Equivalently 1/20 = 5%, the inverse of the stated leverage."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H10",
+   "claim": "The captured live leaderboard frontiers are point-in-time values that move during the edition; at 2026-09-16T21:39:34Z, ranks 50, 100, and 250 displayed +457.64%, +384.08%, and +249.48%.",
+   "prediction": "A later same-day capture can differ from an earlier capture because the rules allow leaderboard updates during the contest.",
+   "test": "Compare data/live_contest_snapshot.json with the earlier same-day rows archived in research/evidence/TV-CONTEST-AMP-SEP2026.md.",
+   "status": "supported",
+   "evidence": [
+    "Current captured rows: rank 50 +457.64% / +$1,144,096.25; rank 100 +384.08% / +$960,203.50; rank 250 +249.48% / +$623,689.00.",
+    "Tier boundaries: rank 25 +578.89%, rank 26 +569.30%, rank 50 +457.64%, rank 51 +454.33%.",
+    "Earlier same-day archived rank-250 values were lower, demonstrating snapshot drift.",
+    "The public page displays only ranks through 250 even though rules award up to 300 potential prizes; no public rank-300 threshold is claimed."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H11",
+   "claim": "The leaderboard's displayed $ profit equals 250,000 x (displayed %)/100 up to the rounding of the percentage to two decimals — the % and $ columns are one number, not two.",
+   "prediction": "Every captured dollar value lies within $12.50 of 250,000 × displayed_pct/100, the maximum error caused by rounding percentage to two decimals.",
+   "test": "Recompute all seven rows in data/live_contest_snapshot.json.",
+   "status": "supported",
+   "evidence": [
+    "Rank 1 difference $0.00; rank 25 $7.50; rank 26 $10.00; rank 50 $3.75; rank 51 $12.50; rank 100 $3.50; rank 250 $11.00.",
+    "Every difference is within the inclusive $12.50 rounding bound."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H12",
+   "claim": "Winning returns vary substantially across the captured editions; this sample does not establish a universal win number or prove that asset class caused the difference.",
+   "prediction": "The observed completed-champion range spans both sub-1.3x and above-10x outcomes.",
+   "test": "Compare all completed #1 records in data/verified_explosive_returns.json by edition and asset-class label; exclude the in-progress live row from final-winner conclusions.",
+   "status": "supported",
+   "evidence": [
+    "Captured completed stock champions: 1.1758x and 1.299x.",
+    "Captured completed futures champion maximum: 53.2072x.",
+    "Observed association is not causation: editions also differ in balance, leverage, caps, instruments, duration, and field behavior. No normalized volatility or causal model has been run."
+   ],
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-RESULTS-BENBERNANKE1",
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H13",
+   "claim": "The brief's volatile-stock list is a historical research reference for future stock-edition work, not an actionable instrument set in the live futures contest; future eligibility must be rechecked.",
+   "prediction": "Every one of the 20 stock records cites market_data_vendor sources only, and none of those 20 symbols appears in the 94-instrument permitted universe of the live September 2026 edition.",
+   "test": "Inspect the source tier of every record in data/volatile_stocks.json and intersect its symbols against data/contest_universe.json.",
+   "status": "supported",
+   "evidence": [
+    "All 20 volatile_stocks.json records cite YAHOO-* market_data_vendor source_ids; scripts/verify.py forbids any non-vendor source for stock evidence (check_volatile_stocks.source_tier).",
+    "None of the 20 stock symbols (ENPH, AMD, MARA, CVNA, GME, RIOT, SHOP, NVAX, APP, PLUG, MSTR, NIO, PLTR, AMC, SMCI, HOOD, TSLA, NVDA, COIN, PTON) appears in contest_universe.json (94 futures instruments, 0 equities).",
+    "TradingView's official March 2026 Magnificent Seven stock-edition rules used a different, seven-stock NASDAQ universe. That confirms eligibility is edition-specific; it does not establish that this 20-stock list will be eligible later."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-CONTEST-MAG7-MAR2026"
+   ]
+  },
+  {
+   "id": "H14",
+   "claim": "A Donchian channel breakout with EMA-trend and ATR-expansion filters (model S1) earns a positive walk-forward median net profit on daily bars across the capturable contest universe.",
+   "prediction": "Across non-overlapping 30-day walk-forward windows on every captured symbol with >=150 bars, the pooled median net profit is positive (>$0) at zero cost, survives removal of the best symbol and best window, and nearby channel lengths (15, 25) keep it positive.",
+   "test": "scripts/run_backtests.py (engine intel-1) simulated S1 on 11 captured symbols (231 windows, 2024-09-17 to 2026-09-17 vendor daily bars, run stamp 2026-09-17T03:15:40+00:00) per research/strategy/testing-plan.md; verdicts follow the pre-registered falsification rules.",
+   "status": "refuted",
+   "evidence": [
+    "Pooled median net profit at zero cost is $0.0 (mean $11,400.80 is driven by outliers); 14.72% of 231 windows were positive.",
+    "Only 74 closed trades total (56 long, 18 short); 3 of 231 windows reached >=5x (best: COMEX:SI1! 2025-12-08->2026-01-06, 7.3872x on a single trade; the other two are NYMEX:CL1! 6.5076x and 7.1851x, also single-trade), 0 reached >=10x.",
+    "Concentration checks fail: excluding the best symbol or the best window flips the pooled median non-positive; per-symbol medians are $0.0.",
+    "Sensitivity grid (zero cost): channel15 -> 80 trades, 14.72% positive; channel25 -> 74 trades, 14.72% positive; initial fixed sizing -> 74 trades. All medians $0.0.",
+    "Adding CME:BTC1! (captured 2026-09-17T03:15:40Z, 504 sessions) did not change the verdict or the set of >=5x windows."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H15",
+   "claim": "An EMA impulse continuation entry (fast EMA crossing/holding above slow EMA with ATR expansion, model S2) earns a positive walk-forward median net profit on daily bars.",
+   "prediction": "Pooled median net profit across all captured-symbol walk-forward windows is positive at zero cost and stays positive after moderate costs ($1.50/side + 5% ATR slippage) and at nearby EMA pairs (15x40, 25x60).",
+   "test": "scripts/run_backtests.py simulated S2 on the same 11 symbols / 231 windows (run stamp 2026-09-17T03:15:40+00:00) with the pre-registered cost and sensitivity protocol.",
+   "status": "refuted",
+   "evidence": [
+    "Pooled median net profit at zero cost is $0.0 and the mean is negative (-$2,475.13); only 7.36% of 231 windows were positive.",
+    "30 closed trades in 231 windows; 0 windows reached >=5x (best window CME_MINI:NQ1! 2025-02-11->2025-03-12 at 1.8722x).",
+    "Moderate-cost median $0.0 (mean -$3,376.81); high-cost median $0.0 (mean -$4,275.87).",
+    "Sensitivity grid (zero cost): ema15x40 -> median $0.0 (29 trades), ema25x60 -> median $0.0 (38 trades); concentration checks fail on symbol and window removal."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H16",
+   "claim": "Entering on a Bollinger-band squeeze release (bandwidth at a 50-bar low then expansion, model S3) captures the volatility expansions that follow squeezes, earning a positive walk-forward median net profit on daily bars.",
+   "prediction": "Pooled median net profit across captured-symbol walk-forward windows is positive at zero cost, and the trade count is large enough for the declared bootstrap confidence interval.",
+   "test": "scripts/run_backtests.py simulated S3 on the same 11 symbols / 231 windows (run stamp 2026-09-17T03:15:40+00:00); squeeze-release signals on daily bars are rare, so the sample-size rule applies.",
+   "status": "refuted",
+   "evidence": [
+    "Only 5 closed trades in 231 windows (1.3% of windows positive); the pre-registered rule rejects a bootstrap CI on 5 trades.",
+    "Pooled median net profit at zero cost is $0.0 (mean $132.58); 0 windows reached >=5x (best NYMEX:NG1! 2026-06-17->2026-07-16 at 1.158x).",
+    "Sensitivity grid (zero cost): band_length 15 -> median $0.0 (5 trades), band_length 25 -> median $0.0 (9 trades).",
+    "S3's signal is too rare on daily bars to be a leaderboard strategy inside 30-day windows; intraday data would be required to re-test it meaningfully."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H17",
+   "claim": "Within the capturable universe, the instruments whose historical 30-day moves most exceed the move needed to match the last publicly visible leaderboard rank (rank 250; cash prizes end at rank 50) are the full-size energy and metals contracts (CL1!, HO1!, RB1!, SI1!, PL1!), because their modeled initial notional hits the leverage cap, while micro contracts and ETH1! are structurally priced out.",
+   "prediction": "Ranking captured symbols by (best 30-day up move) / (favorable move needed to reach the $623,689 rank-250 target from the modeled initial notional) puts full-size CL/HO/RB/SI/PL at the top, NG1! near the middle despite the highest volatility, and QM1!/ETH1! at the bottom.",
+   "test": "data/volatility_intelligence.json (written by scripts/run_backtests.py alongside the backtests) computed annualized volatility, ATR(14), best 30-day up/down moves and the rank-250 requirement per symbol from the same vendor daily bars.",
+   "status": "supported",
+   "evidence": [
+    "Needed vs delivered (favorable move needed -> best 30d up move, rank-250 target $623,689 from the 2026-09-16 snapshot): CL1! 12.7%->58.4%, HO1! 12.9%->78.2%, SI1! 12.8%->64.7%, RB1! 18.4%->66.7%, PL1! 27.9%->50.3% - each historically delivered 1.8x-6.1x its requirement inside one 30-day window.",
+    "NG1! needed 86.3% (margin-limited notional $722,750) and historically delivered 140.4% (ratio 1.63); QM1! (needed 121.8%) and ETH1! (needed 517.7%) are structurally priced out (ratios 0.48 / 0.14).",
+    "New in this run: CME:BTC1! (captured 2026-09-17T03:15:40Z) needed 163.9% against a best 30-day up move of 48.8% (ratio 0.30) - its 1-contract cap x multiplier x price leaves a $380,425 modeled notional, far below the rank-250 requirement.",
+    "This is simulation arithmetic on vendor data (upper envelope of what history offered), not a forecast and not a backtest of a tradable strategy."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-CONTEST-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H18",
+   "claim": "The public leaderboard frontier (ranks 1/50/100/250) of the live AMP Futures September 2026 edition is non-stationary during the contest: by the third capture (~19.5 hours after the first) all four frontier P/L values had risen and three of the four had changed holders.",
+   "prediction": "Capture 3 (2026-09-17T16:56:00Z) shows strictly higher realized P/L at ranks 1, 50, 100 and 250 than capture 1 (2026-09-16T21:39:34Z).",
+   "test": "Comparison of capture 1 vs capture 3 in data/frontier_history.json; every value quoted verbatim from the official contest page (evidence TV-CONTEST-AMP-SEP2026.md, TV-CONTEST-AMP-SEP2026-2026-09-17.md, TV-CONTEST-AMP-SEP2026-2026-09-17-R3.md).",
+   "status": "supported",
+   "evidence": [
+    "Rank 1: +$2,303,725.00 (+921.49%) -> +$2,335,125.00 (+934.05%): +$31,400.00 (+12.56 pp), same holder (leonardo22_romano).",
+    "Rank 50: +$1,144,096.25 (+457.64%) -> +$1,247,897.00 (+499.16%): +$103,800.75 (+41.52 pp), holder changed twice (chandu0342 -> RIA-JANGHU -> rajgaurav009).",
+    "Rank 100: +$960,203.50 (+384.08%) -> +$999,892.85 (+399.96%): +$39,689.35 (+15.88 pp), holder changed twice (yeyuliuguang -> msm223034 -> wowlass63).",
+    "Rank 250: +$623,689.00 (+249.48%) -> +$655,069.50 (+262.03%): +$31,380.50 (+12.55 pp), holder changed (luaguiar -> mrchrissmithl143).",
+    "Displayed participants rose 93,527 -> 93,702 -> 95,709 (+2,182 total) over the same window while registration remained open until 2026-09-23 08:00 UTC.",
+    "The 3-hour quiet between captures 1 and 2 (rank 1 and 250 frozen) did not generalize: during the US trading day all four frontiers moved up. The P/L required to hold any given public rank is a rising moving target, and no captured value is a final threshold."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026-R2",
+    "TV-CONTEST-AMP-SEP2026-R3"
+   ]
+  },
+  {
+   "id": "H19",
+   "claim": "The last cash-prize rank (50) sits far above the last publicly visible rank (250): holding rank 50 required roughly 90% more realized P/L than holding rank 250 at the third capture, and the actual last-prize frontier (rank 300) is not observable on the public board.",
+   "prediction": "At capture 3, (rank-50 P/L - rank-250 P/L) / rank-250 P/L > 0.9.",
+   "test": "Arithmetic on capture 3 of data/frontier_history.json: (1,247,897.00 - 655,069.50) / 655,069.50; prize tiers from official rules section 09.",
+   "status": "supported",
+   "evidence": [
+    "Capture 3: rank 50 +$1,247,897.00 (+499.16%) vs rank 250 +$655,069.50 (+262.03%): rank 50 requires $592,827.50 (90.5%) more realized P/L than rank 250.",
+    "Cash prizes end at rank 50 (ranks 26-50 at $400 each); ranks 51-300 receive 3-month subscriptions (official rules section 09). The public leaderboard exposes only ranks 1-250, so the P/L actually required for rank 300 - the real last prize - is unobservable (IR-06).",
+    "Practical reading: a strategy aimed at any cash prize must target well above the rank-250 frontier, and the gap is widening as the contest progresses (H18)."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R3",
+    "TV-RULES-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026-R3"
+   ]
+  },
+  {
+   "id": "H20",
+   "claim": "The public live leaderboard is corrected over time, not append-only: between capture 3 (2026-09-17T16:56:00Z) and capture 4 (2026-09-17T19:04:00Z) the displayed rank-50 frontier DECREASED from +$1,247,897.00 to +$1,244,313.50 while ranks 100 and 250 rose and rank 1 was unchanged; the exact row value previously displayed at rank 50 (rajgaurav009 +$1,247,897.00) re-appeared at rank 49.",
+   "prediction": "Capture 4 rank-50 realized P/L is strictly lower than capture 3 rank-50 realized P/L, and the capture-3 rank-50 row value appears verbatim (same trader, same percentage, same dollars) at rank 49 in capture 4.",
+   "test": "Row-by-row comparison of captures 3 and 4 in data/frontier_history.json plus the full-board rows 45-116 re-read verbatim from the official contest page (TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md).",
+   "status": "supported",
+   "evidence": [
+    "Rank 50: +$1,247,897.00 (+499.16%) -> +$1,244,313.50 (+497.73%): -$3,583.50 (-1.4334 pp); holder changed from rajgaurav009 (now at rank 49 with the identical value pair) to Nikola_Ng.",
+    "Realized P/L on closed positions cannot shrink for a still-registered account; the net effect is exactly one fewer row ahead of the tracked row, and the most parsimonious explanation is one removal from the board ranked 1-48 at capture 3 (disqualification or board correction; official rules sections 05, 09 and especially 16 reserve at-any-time disqualification rights and the official pages publish no board-change log).",
+    "Control rows behaved normally over the same 2.1-hour window: rank 1 unchanged ($2,335,125.00, same holder), rank 100 +$12,309.65 (new holder JeremyTradezzz; capture-3 holder wowlass63 slid to rank 103), rank 250 +$2,235.50 (new holder NxSChadha).",
+    "Consequence for strategy: a captured frontier value is not a ratchet floor; the P/L needed for any rank at contest end cannot be read off as 'minimum observed so far' in either direction."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R3",
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4"
+   ]
+  },
+  {
+   "id": "H21",
+   "claim": "Every tracked public frontier's average realized-P/L accumulation rate since the competition start is positive and quantified, so a static lead decays: from 2026-09-01T08:00:00Z to capture 4 (2026-09-17T19:04:00Z, 16.4611 days) the displayed frontiers averaged $141,857.07/day (rank 1), $75,591.10/day (rank 50), $61,490.53/day (rank 100) and $39,930.78/day (rank 250).",
+   "prediction": "Each of the four capture-4 frontier values divided by the 16.4611 elapsed days is positive, and the rank-50 average rate exceeds the rank-250 average rate.",
+   "test": "Division of capture-4 realized P/L in data/frontier_history.json by elapsed days computed from data/contest_config.json dates; constant-rate scenario = value x (29.1667 total contest days / 16.4611 elapsed days); scenario arithmetic only, not a forecast.",
+   "status": "supported",
+   "evidence": [
+    "Average rates over 16.4611 elapsed days: rank 1 $141,857.07/day; rank 50 $75,591.10/day; rank 100 $61,490.53/day; rank 250 $39,930.78/day. All positive; mid-board rates sit far above the board edge, so the gap between cash ranks and the public edge is structural (H19).",
+    "Time remaining at capture 4: 12.7056 days to the 2026-09-30 12:00 UTC deadline; registration stays open for 5.5389 more days (until 2026-09-23 08:00 UTC), about 43.6% of the remaining window, so newly joining participants can still push the board upward during that part of it.",
+    "Constant-rate scenario values at contest end (arithmetic equalities, NOT forecasts): rank 1 ~$4,137,497.89; rank 50 ~$2,204,740.42; rank 100 ~$1,793,473.89; rank 250 ~$1,164,647.74. H18/H20 show the true path is non-stationary and even correctable downward, so these scenario numbers bound nothing.",
+    "Practical reading for a leaderboard-placement attempt: the entry threshold keeps rising on average, so deferring entry raises the required final P/L; the 5 active UTC days qualification can be satisfied any time before the deadline."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4"
+   ]
+  },
+  {
+   "id": "H22",
+   "claim": "Frontier drift is rank-heterogeneous: inside one short interval some tracked ranks can be completely static while others advance, so the displayed board is not one moving level and 'the frontier' has no single rate.",
+   "prediction": "Between capture 4 (2026-09-17T19:04:00Z) and capture 5 (2026-09-17T20:58:00Z) at least one tracked rank is unchanged to the cent while at least one other tracked rank rises.",
+   "test": "Diff the four tracked rank values of captures 4 and 5 in data/frontier_history.json and re-identify the displaced rows by their exact displayed values.",
+   "status": "supported",
+   "evidence": [
+    "Ranks 1 and 50 byte-identical across the 1.90-hour interval: leonardo22_romano +$2,335,125.00 and Nikola_Ng +$1,244,313.50 (0.00 change), while rank 100 rose +$2,747.50 (JeremyTradezzz +$1,012,202.50 -> nynyyynn54 +$1,014,950.00) and rank 250 rose +$3,454.50 (NxSChadha +$657,305.00 -> mrchrissmithl143 +$660,759.50).",
+    "Row identity proves which boundary moved: capture-4's rank-100 row re-appeared verbatim at rank 101 and capture-3's rank-100 row (wowlass63 +$999,892.85) at rank 105, so one new row entered between rank 50 and rank 100 while the cash-prize edge did not move at all.",
+    "This is the first observed interval in which the rank-50 cash edge was static while lower tracked frontiers rose; it does not contradict H18/H20, which show the path is non-stationary and even correctable downward, and it means a static edge is not evidence that entry is 'still cheap'.",
+    "Practical consequence: any placement plan must be re-priced against the latest capture, not against a single measured rate; the frontier tracker's deltas are the only honest measure of what changed."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R5",
+    "TV-RULES-AMP-SEP2026-R5"
+   ]
+  },
+  {
+   "id": "H23",
+   "claim": "The cash-prize level is arithmetically reachable from a fresh account inside the remaining window, but only at a strictly positive compounded daily rate that must hold every day: at capture 5 the rank-50 level is 5.9773x the starting balance, so a new 250,000 account needs +15.2122%/day compounded for the 12.6264 days left, equal to a 0.7606%/day underlying move at the rules' 20:1 leverage.",
+   "prediction": "Re-deriving from data/contest_config.json and data/frontier_history.json yields a positive required daily compound rate for every tracked rank, and an adverse full-exposure move smaller than 5% of the underlying is enough to erase the entire starting balance.",
+   "test": "Deterministic arithmetic in scripts/leaderboard_lab.py -> data/leaderboard_lab.json: required daily compound = (balance multiple)^(1/remaining days) - 1; underlying equivalent = rate / 20; ruin arithmetic = 100% / 20x leverage; cross-checked by scripts/verify.py against the capture and config files.",
+   "status": "supported",
+   "evidence": [
+    "Required daily compounding from the 2026-09-17T20:58:00Z capture (12.6264 days left): rank 1 +20.3236%/day, rank 50 +15.2122%/day, rank 100 +13.7017%/day, rank 250 +10.7815%/day. Underlying equivalents at 20:1: 1.0162% / 0.7606% / 0.6851% / 0.5391% per day.",
+    "Balance-multiple targets over the same window: 5x needs +13.5946%/day (0.6797% underlying), 10x +20.0050%/day (1.0002%), 20x +26.7770%/day (1.3389%), 50x +36.3192%/day (1.8160%), 100x +44.0119%/day (2.2006%); at an illustrative +1% underlying day with full reinvestment, 5x takes 9 unbroken winning days and 100x takes 26.",
+    "Exposure arithmetic: maximum initial notional is $5,000,000 (250,000 x 20), so 1% of underlying is $50,000 = 20% of the starting balance; a 2.5% adverse move erases half the balance and a 5% adverse move erases all of it. The rules forbid resetting the account (section 08), so the required path admits no full-exposure loss day.",
+    "Reality check from this repository's own tests: the three pre-registered models are refuted with $0.0 pooled median net profit across 231 windows (H14-H16), so no tested strategy has produced any positive daily compounding, let alone the unbroken sequence above. The arithmetic shows what the prize costs; it is not evidence that it can be earned.",
+    "Cross-check: the rank-50 level (5.9773x) is above 14 of the 15 completed-edition champion records; only BenBernanke1's 53.2072x is higher (cross-edition context only)."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R5",
+    "TV-RULES-AMP-SEP2026-R5",
+    "TV-THELEAP-LANDING-R5"
+   ]
+  },
+  {
+   "id": "H24",
+   "claim": "Complete frontier stasis for the tracked ranks can extend beyond the first interval while the participant count keeps rising: between capture 5 (20:58Z) and capture 6 (21:27Z) all four tracked P/L values were byte-identical while participants rose 96,236 -> 96,268 (+32).",
+   "prediction": "Capture 6 rank-1, rank-50, rank-100 and rank-250 realized P/L are exactly equal to capture-5 values, and participant count is strictly higher.",
+   "test": "Direct equality diff of the four tracked rows in data/frontier_history.json captures 5 vs 6 and participant count comparison, plus landing-page hero cross-check.",
+   "status": "supported",
+   "evidence": [
+    "All four tracked rows byte-identical to the cent: leonardo22_romano +$2,335,125.00 (+934.05%), Nikola_Ng +$1,244,313.50 (+497.73%), nynyyynn54 +$1,014,950.00 (+405.98%), mrchrissmithl143 +$660,759.50 (+264.30%).",
+    "Participants: contest 96,236 -> 96,268 (+32, +0.03%); landing hero 96,230 -> 96,263 (+33); async gap at capture 6 is 5 participants (IR-09).",
+    "Together with H22 (rank-heterogeneous rise in 1.90 h) and H20 (correction-driven fall), this completes a same-day catalogue of three distinct board behaviours in 0.48-19.5 h windows: heterogeneous rise, correction-driven fall, and uniform stasis. None of the three is a reliable predictor of the next interval.",
+    "Practical reading: a static high board is not evidence that the required final P/L has stopped rising (registration remains open until 2026-09-23 08:00 UTC), and inflow of new participants does not mechanically move the tracked frontier every hour."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R6",
+    "TV-RULES-AMP-SEP2026-R6",
+    "TV-THELEAP-LANDING-R6"
+   ]
+  },
+  {
+   "id": "H25",
+   "claim": "The cash-prize cutoff (Rank 50) exhibits punctuated threshold acceleration: between capture 6 (21:27 UTC) and capture 7 (23:08 UTC), the Rank 50 cutoff rose +$111,303.63 (+44.52 pp of initial balance) in 1.68 hours, elevating the required fresh-account compounding rate from 15.24%/day to 15.99%/day.",
+   "prediction": "Capture 7 rank-50 threshold is strictly higher than capture 6, and the required daily compound rate over the remaining 12.54 days increases accordingly.",
+   "test": "Direct delta computation of rank-50 realized P/L between capture 6 ($1,244,313.50) and capture 7 ($1,355,617.13) in data/frontier_history.json, and recomputation of the daily compound formula in data/leaderboard_lab.json.",
+   "status": "supported",
+   "evidence": [
+    "Rank 50 rose from Nikola_Ng (+$1,244,313.50 / +497.73%) to Greed027 (+$1,355,617.13 / +542.25%), an absolute increase of +$111,303.63 in 1.68 hours.",
+    "Rank 100 also rose +$76,695.00 ($1,014,950.00 to $1,091,645.00) and Rank 250 rose +$38,065.50 ($660,759.50 to $698,825.00), confirming broad upward movement across the board.",
+    "Fresh-account compounding requirement to reach Rank 50 equity ($1,605,617.13 / 6.4225x) over the remaining 12.536 days rose from 15.24%/day to 15.99%/day (+0.75%/day increase).",
+    "This confirms IR-25: leaderboard threshold advances in punctuated bursts as participants liquidate winning positions."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R7",
+    "TV-RULES-AMP-SEP2026-R7",
+    "TV-THELEAP-LANDING-R7"
+   ]
+  },
+  {
+   "id": "H26",
+   "claim": "High-notional energy and metals futures (HO1!, CL1!, SI1!, RB1!) remain the only capturable universe instruments capable of delivering the updated Rank 50 cash-prize hurdle (requiring +27.1% to +39.7% favorable underlying moves vs 58%-78% historical 30-day vendor peaks).",
+   "prediction": "At the new Rank 50 threshold ($1,355,617.13), only instruments with initial notional >= .4M have historical 30-day price moves strictly greater than the required percentage move at maximum allowable position size.",
+   "test": "Cross-check between data/initial_capacity.json modeled notional, data/volatility_intelligence.json best 30-day moves, and the new Rank 50 P/L target.",
+   "status": "supported",
+   "evidence": [
+    "HO1! (.998M initial notional) requires +27.12% favorable move vs +78.36% best historical 30d move (delivery ratio 2.89x).",
+    "CL1! (.789M initial notional) requires +28.31% favorable move vs +58.82% best historical 30d move (delivery ratio 2.08x).",
+    "SI1! (.638M initial notional) requires +29.23% favorable move vs +65.02% best historical 30d move (delivery ratio 2.22x).",
+    "RB1! (.414M initial notional) requires +39.71% favorable move vs +71.07% best historical 30d move (delivery ratio 1.79x).",
+    "All other 90 instruments (including NG1!, BTC1!, ETH1!, equity index micros) either have insufficient notional (<$2.5M) or lower historical moves than the required threshold at starting capital."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R7",
+    "TV-RULES-AMP-SEP2026-R7",
+    "YAHOO-FUTURES-CHART",
+    "TV-QUOTE-HO1",
+    "TV-QUOTE-CL1",
+    "TV-QUOTE-SI1",
+    "TV-QUOTE-RB1"
+   ]
+  },
+  {
+   "id": "H27",
+   "claim": "Paper-simulated pursuit of explosive 10x-100x competition targets requires multi-trade intraday pyramiding and reinvestment strategies (models S4-S6), because single-contract daily-bar trend systems (S1-S3) produce median net profit of $0.00 across walk-forward windows.",
+   "prediction": "Daily-bar indicators produce insufficient trade frequency (<5 qualifying trades in 30 days) and zero positive median return, whereas intraday multi-entry pyramiding can theoretically scale notional exposure as equity compounds.",
+   "test": "Evaluation of data/backtest_results.json walk-forward metrics for S1-S3 against the compounding requirements derived in data/target_lab.json.",
+   "status": "supported",
+   "evidence": [
+    "In data/backtest_results.json, S1 (Donchian Breakout), S2 (EMA Impulse), and S3 (Squeeze Momentum) all yielded $0.00 median net profit across 1,845 walk-forward window evaluations due to daily whipsaw and low trade density.",
+    "To achieve 10x ($2.5M equity) or 100x ($25M equity) from $250k in ~12.5 days requires compounding rates of 20.18%/day and 44.52%/day respectively.",
+    "Fixed initial contract sizing without compounding cannot scale past the single-position ceiling; intraday reinvestment and pyramiding during momentum bursts are mathematically required to chase top-tier outcomes."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R7",
+    "TV-RULES-AMP-SEP2026-R7",
+    "TV-RESULTS-BENBERNANKE1"
+   ]
+  },
+  {
    "id": "H28",
    "claim": "On daily bars, contrarian fade models produce higher best-case single-edition multiples than trend-following baselines under identical shadow-competition rules and identical captured prices.",
    "prediction": "In a shadow season of 30-calendar-day editions, the best single-edition multiple among contrarian usernames exceeds the best among trend baselines, and contrarian models account for all participant-editions at or above 5x.",
@@ -519,6 +519,35 @@
     "TV-RULES-AMP-SEP2026",
     "YAHOO-FUTURES-CHART"
    ]
+  },
+  {
+   "id": "H31",
+   "claim": "Intraday bars for the volatile-equity pool can only be captured through CI with chunked requests, relay fallback and an explicit per-interval time budget: the research sandbox has no route to the market-data vendor at all, and datacenter runner IP ranges are rate limited (HTTP 429) for large or rapid requests, so an unbounded sweep of the slowest interval starves the rest of the capture.",
+   "prediction": "A sandbox-side request to the vendor fails at the transport layer; a runner-side unbounded 15-minute sweep does not finish inside the job timeout and commits nothing, while the same script with chunking plus relay fallback plus --time-budget-seconds stores validated bars.",
+   "test": "Compare the sandbox fetch attempt, the GitHub-Actions capture runs (step-level statuses via the REST API), and the artifact a bounded lane produced. Verify every stored bar against the vendor's reported symbol/granularity and the OHLC invariants in intel/intraday.py, so 'captured' means validated.",
+   "status": "supported",
+   "evidence": [
+    "The research sandbox cannot reach query1.finance.yahoo.com or the artifact blob host at all (shell egress is allowlisted to the package index and api.github.com); the same page-fetch transport does return 15-minute and hourly payloads, which is how the endpoint contract was established.",
+    "Run 35378480898 (primary capture lane, unbounded) sat inside its 15-minute step from 18:09Z until the 120-minute job timeout without committing anything, and its queued successors could not start.",
+    "Run 35380480860 (bounded lane, --time-budget-seconds per interval, separate concurrency group) completed successfully and uploaded a non-empty capture artifact, which is the direct contrast the prediction calls for.",
+    "Bars are validated before storage (vendor-reported symbol, granularity, timezone and OHLC invariants) and re-validated offline by intel/intraday.py, so a relay that returns the wrong instrument fails loudly rather than producing a plausible series."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H32",
+   "claim": "On 15-minute and hourly bars, session-boundary gaps that fill do so early in the session, and the execution-latency cost of delaying a decision by one to three bars is larger than the median gap edge - so an intraday gap strategy on this pool cannot be validated with daily bars, and any published intraday edge has to be reported net of the measured latency cost.",
+   "prediction": "Median bars-to-fill for filled session gaps is small relative to session length; the median absolute next-open move in basis points is materially smaller than the p90 absolute move; and the k-bar-delay series (k = 1, 2, 3, 5) shows the edge decaying, not growing, in k.",
+   "test": "Run scripts/run_intraday_study.py on the committed captures and read gap_fill (per-symbol and bucket rows) plus execution_latency.by_kind_interval: gap fill rates and median bars-to-fill against session length, and the median/mean k-bar-delay moves in bps.",
+   "status": "untested",
+   "evidence": [
+    "Register opened in the eleventh pass. The measuring instrument (scripts/run_intraday_study.py), its self-checking gap accounting and the offline audit are in place; the number this hypothesis needs is withheld until the vendor capture is committed, and no value is asserted here in advance of the data."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
   }
-  ]
+ ]
 }
