@@ -369,10 +369,23 @@ def import_performance_summary(path: str) -> ImportedReport:
     for row in rows:
         if len(row) < 2:
             continue
-        key = METRIC_ALIASES.get(normalize_label(row[0]), normalize_label(row[0]))
+        label = normalize_label(row[0])
+        key = METRIC_ALIASES.get(label, label)
         value = _parse_float(row[1])
         if value is not None:
+            if key == label and label not in METRIC_ALIASES.values():
+                report.warnings.append(
+                    f"unrecognised metric label {row[0]!r} kept verbatim under {key!r}")
             report.metrics[key] = value
+        elif row[1].strip():
+            report.warnings.append(
+                f"metric {row[0]!r} carries the unparsable value {row[1]!r} (gated export?)")
+    if not report.metrics:
+        raise ImportError_(
+            f"{path}: the file has no recognisable Performance Summary metrics "
+            "(a Strategy Report export whose values are gated or unparsable must be reviewed by "
+            "hand, not silently imported as an empty report)"
+        )
     return report
 
 

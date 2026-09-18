@@ -112,13 +112,24 @@ def fill_limit_order(bars: Sequence, decision_index: int, level: float,
     """
     for i in range(decision_index + 1, len(bars)):
         bar = bars[i]
-        crossed_in_gap = (bar.open >= level) if direction == "long" else (bar.open <= level)
-        if crossed_in_gap and not (bar.low <= level <= bar.high):
-            return Fill(index=i, price=float(bar.open),
-                        reason="limit-crossed-in-gap -> next bar open (documented gap rule)")
-        if bar.low <= level <= bar.high:
-            return Fill(index=i, price=float(level),
-                        reason="limit-inside-bar-range (documented no-intrabar-gap rule)")
+        # A limit only fills when the market reaches its level. If the level is crossed during
+        # the gap between bars (the bar OPENS beyond the level, in the direction that crosses
+        # it: at or below a long limit, at or above a short limit) the documented gap rule fills
+        # the order at the opening price of the bar after the gap instead of at the level.
+        if direction == "long":
+            if bar.open <= level:
+                return Fill(index=i, price=float(bar.open),
+                            reason="limit-crossed-in-gap -> next bar open (documented gap rule)")
+            if bar.low <= level:
+                return Fill(index=i, price=float(level),
+                            reason="limit-inside-bar-range (documented no-intrabar-gap rule)")
+        else:
+            if bar.open >= level:
+                return Fill(index=i, price=float(bar.open),
+                            reason="limit-crossed-in-gap -> next bar open (documented gap rule)")
+            if bar.high >= level:
+                return Fill(index=i, price=float(level),
+                            reason="limit-inside-bar-range (documented no-intrabar-gap rule)")
     return None
 
 
