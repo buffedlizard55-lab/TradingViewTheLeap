@@ -36,7 +36,10 @@ fi
 # remote branch and retry once: captures are additive per series, so taking the remote
 # first and re-applying local changes keeps every stored file that was already verified.
 echo "::notice::push rejected - rebasing onto origin/${GITHUB_REF_NAME} and retrying"
-if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
+# -X theirs during a rebase keeps OUR (newest) capture for any file both sides touched: a
+# conflicting data/intraday_index.json is resolved in favour of the run that just fetched it,
+# and a later --only-failed run tops up anything the other run had and this one did not.
+if git pull --rebase --autostash -X theirs origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
   echo "::notice::committed to ${GITHUB_REF_NAME} at $(git rev-parse --short HEAD) after rebase: $message"
 else
   echo "::warning::push failed for: $message (a later step will retry)"

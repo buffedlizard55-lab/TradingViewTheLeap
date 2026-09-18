@@ -13,6 +13,13 @@ name: Capture intraday market data
 # Dispatch inputs let a single interval be captured on its own, which is how a partial
 # top-up is done after a rate-limited run:
 #   gh workflow run capture-intraday.yml -f interval=1h
+#
+# Interval order matters. The steps run long daily bars first, then hourly, then 15-minute:
+# daily is the cheapest (fewest requests per symbol) and the most valuable (it is what the
+# stock division's season arithmetic is built on), so a run that gets rate limited part-way
+# through still commits usable data. Every step is also bounded by --time-budget-seconds and
+# commits on its own, because the vendor caps requests per runner IP range: an unbounded
+# 15-minute sweep alone can occupy the whole job and commit nothing.
 
 on:
   workflow_dispatch:
@@ -80,17 +87,18 @@ jobs:
       - name: Compile check
         run: python3 -m py_compile scripts/fetch_intraday.py
 
-      - name: Capture 15-minute bars (20-stock volatile pool, last ~60 days)
-        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '15m'
+      - name: Capture long daily bars (20-stock volatile pool, ~10 years)
+        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '1d'
         continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          python3 scripts/fetch_intraday.py --interval 15m ${{ steps.plan.outputs.extra }} \
-            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5
+          python3 scripts/fetch_intraday.py --interval 1d ${{ steps.plan.outputs.extra }} \
+            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5 \
+            --time-budget-seconds 900
           bash .github/scripts/commit_capture.sh \
-            "capture: 15-minute bars for the volatile stock pool (automated)" \
+            "capture: long daily bars for the volatile stock pool (automated)" \
             data/intraday data/intraday_index.json
 
       - name: Capture hourly bars (20 stocks + 20 futures, last ~730 days)
@@ -102,22 +110,23 @@ jobs:
         run: |
           python3 scripts/fetch_intraday.py --interval 1h ${{ steps.plan.outputs.extra }} \
             --futures-hourly --out-dir data/intraday --index data/intraday_index.json \
-            --pacing-seconds 0.5
+            --pacing-seconds 0.5 --time-budget-seconds 1500
           bash .github/scripts/commit_capture.sh \
             "capture: hourly bars for stocks and futures (automated)" \
             data/intraday data/intraday_index.json
 
-      - name: Capture long daily bars (20-stock volatile pool, ~10 years)
-        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '1d'
+      - name: Capture 15-minute bars (20-stock volatile pool, last ~60 days)
+        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '15m'
         continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          python3 scripts/fetch_intraday.py --interval 1d ${{ steps.plan.outputs.extra }} \
-            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5
+          python3 scripts/fetch_intraday.py --interval 15m ${{ steps.plan.outputs.extra }} \
+            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5 \
+            --time-budget-seconds 1500
           bash .github/scripts/commit_capture.sh \
-            "capture: long daily bars for the volatile stock pool (automated)" \
+            "capture: 15-minute bars for the volatile stock pool (automated)" \
             data/intraday data/intraday_index.json
 
       - name: Capture summary (fails the job only if nothing at all was captured)
