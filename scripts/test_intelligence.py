@@ -40,12 +40,11 @@ class IntelligenceReportTests(unittest.TestCase):
         self.assertEqual(sorted(users), sorted(expected))
         self.assertEqual(len(users), len(set(users)))
 
-    def test_finite_shadow_result_does_not_claim_ten_x(self):
+    def test_shadow_target_flags_match_recomputed_results(self):
         d = self.report["model_comparison"]["decision"]
-        self.assertFalse(d["any_shadow_10x"])
-        self.assertFalse(d["any_shadow_20x"])
-        self.assertFalse(d["any_shadow_50x"])
-        self.assertFalse(d["any_shadow_100x"])
+        for multiple in (10, 20, 50, 100):
+            self.assertEqual(d[f"any_shadow_{multiple}x"],
+                             self.competition["target_summary"][f"ge_{multiple}x"] > 0)
         self.assertIn("forecast", d["interpretation"])
 
 

@@ -121,7 +121,7 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
 <p class="note">Every order above is a <strong>market order at the next bar open</strong> of that
 series, sized from the official rule constants at the last captured close
 ({esc(exec_summary["_meta"]["sizing_note"])}). <code>Signal bar</code> is the session whose close
-produced the order; the fill is the following bar's open, which has not happened yet.</p>"""
+produced the order; the hypothetical fill is the following bar's open, which is not present in this capture. It may already have occurred in real time.</p>"""
     else:
         table = ('<p class="note">No top-ranked username has an order pending at the next bar '
                  'open on the latest captured bar. The mechanical entry conditions are listed '
@@ -133,7 +133,7 @@ produced the order; the fill is the following bar's open, which has not happened
     stamp = exec_summary["_meta"]["generated_utc"]
     pending = exec_summary["_meta"]["pending_order_count"]
     return f"""<div class="callout good" style="border-left-width: 6px;">
-<h3>UPCOMING ORDERS — MECHANICALLY DERIVED FROM THE TOP-RANKED SIMULATED STRATEGIES</h3>
+<h3>HISTORICAL CANDIDATES — NOT RELEASED FOR EXECUTION</h3>
 <p><strong>{number_or_dash(pending)} order(s)</strong> would be placed at the next bar open by the
 top-ranked usernames of the repository's own paper competitions, replayed from their frozen
 parameters on the committed vendor bars as of <code>{esc(stamp)}</code>. This is the explicit,
@@ -157,7 +157,8 @@ computed here — the site deliberately shows nothing rather than a placeholder.
     divisions = stock_comp["divisions"]
     cards = []
     for name, label in (("daily", "Daily division (multi-season)"),
-                        ("hourly", "Hourly division (multi-season, intraday)")):
+                        ("hourly", "Hourly division (multi-season, intraday)"),
+                        ("15minute", "15-minute division (multi-season, intraday)")):
         div = divisions.get(name) or {}
         if not div.get("leaderboard"):
             cards.append(f'<div class="card"><h3>{esc(label)}</h3>'
@@ -206,20 +207,13 @@ execution latency inside the simulation, not an assumed number.</p>
     bound = stock_comp.get("official_rule_bound", {}).get("summary") or {}
     bound_block = ""
     if bound:
-        bound_block = f"""<h3>Official-rule arithmetic ceiling (the placement hypothesis)</h3>
-<p class="lead">The Magnificent Seven rules page — the only stocks-edition rule set TradingView
-publishes in this repository's evidence — grants <strong>1:1 leverage</strong> and caps a position
-at <strong>50 units per instrument</strong>. With a 100,000 virtual balance, the arithmetic
-ceiling on an edition is therefore small, and the site computes it from the captured prices
-rather than asserting it.</p>
-<div class="callout info"><p>Across {number_or_dash(bound.get("editions_evaluated", 0))} editions, holding
-every pool symbol at the 50-unit cap simultaneously and applying the best favourable excursion
-any single name actually made inside that edition, the largest arithmetic ceiling observed is
-<strong>{number_or_dash(bound.get("max_edition_multiple_observed_bound"))}x</strong>
-(edition starting {esc(str(bound.get("max_edition_multiple_bound_start")))}) —
-5x reachable: <strong>{str(bound.get("five_x_reachable"))}</strong>,
-10x reachable: <strong>{str(bound.get("ten_x_reachable"))}</strong>.</p>
-<p class="note">{esc(bound.get("method", ""))}</p></div>"""
+        bound_block = f"""<h3>Single-hold scenario — not a competition return ceiling</h3>
+<p>Applying the historical stock-edition sizing constants to the captured subset yields a
+largest single-hold scenario of <strong>{number_or_dash(bound.get("max_edition_multiple_observed_bound"))}x</strong>
+across {number_or_dash(bound.get("editions_evaluated", 0))} editions.
+This does not bound repeated trading, short selling or compounding and does not establish
+whether 5x–100x competition returns are achievable. Coverage is incomplete.</p>
+<p class="note">{esc(bound.get("method", ""))}</p>"""
 
     cf = stock_comp.get("counterfactual_20x") or {}
     cf_block = ""
@@ -241,7 +235,7 @@ any single name actually made inside that edition, the largest arithmetic ceilin
                     f'outcome.</p><ul>{"".join(lines)}</ul></div>')
 
     return f"""<section id="stocksdivision"><h2>Volatile-stock division (our own multi-season competition)</h2>
-<p class="lead">The 20-stock volatile pool competes in its own multi-season paper competition under
+<p class="lead">The captured subset of the intended 20-stock volatile pool competes in our paper competition under
 two rule profiles: the official stocks-edition constants (primary) and a declared 20:1
 counterfactual. Usernames, frozen model parameters and every edition's ranking are in
 <code>data/stock_competition_results.json</code>; the engine is the same one the futures division
@@ -661,7 +655,17 @@ are labeled separately.</p>
 """)
 
     # Executive Summary
-    add(f"""<section id="exec-summary"><h2>Executive Summary &mdash; Recommended Upcoming Trades</h2>
+    add(f"""<section id="exec-summary"><h2>Executive Summary &mdash; Upcoming Paper Trades</h2>
+<div class="callout high"><h3>PLACE NO NEW TRADES FROM THIS PAGE — RESEARCH ONLY</h3>
+<p>Official-source pricing and authenticated TradingView fill validation are not complete.
+The historical rankings below are exploratory, not a verified current order queue.
+Only {sum(r.get("status") == "captured" and r.get("interval") == "1d" for r in load("data/intraday_index.json")["captures"])}
+stock daily series are currently captured in the legacy index; the intended pool has 20 names.
+Missing prices are never synthesized. The stock pool is our own experiment, not the eligible
+universe of the current futures-only Leap contest.</p>
+<p><a href="research/implementation_review.md">Three-pass audit and remaining blockers</a> ·
+<a href="https://docs.alpaca.markets/us/docs/about-market-data-api">Official free-feed documentation</a> ·
+<a href="https://www.tradingview.com/support/solutions/43000613680-how-to-export-strategy-data/">Official export documentation</a></p></div>
 {render_exec_orders(exec_summary, stock_comp)}
 <p class="lead">Explicit and obvious upcoming trade setups derived from the top-ranked usernames
 of this repository's own simulated strategy competitions. Every card and every matrix cell below is

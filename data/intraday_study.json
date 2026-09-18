@@ -1,0 +1,109 @@
+{
+ "_meta": {
+  "kind": "intraday_study",
+  "description": "Deterministic measurement of (1) intra-session gap fills and (2) execution latency cost, computed only from the committed canonical vendor captures under the selected index. Provider coverage is described by source_metadata; these are vendor bars, not exchange prints, and no claim is made that any participant could have transacted at these prices.",
+  "engine": "intraday-study-1",
+  "generated_utc": "2026-09-18T21:49:22+00:00",
+  "source_index": "data/intraday_index.json",
+  "source_metadata": {
+   "kind": "intraday_capture_index",
+   "description": "Provenance index for the canonicalised intraday and long daily captures under data/intraday/. Each record lists every chunk's exact vendor request, the raw response SHA-256 and byte length, the transport that delivered it, and the SHA-256 of the stored canonical file. Yahoo Finance is a market_data_vendor tier source, not an exchange, a regulator, or the contest organiser.",
+   "script": "scripts/fetch_intraday.py",
+   "script_version": "3",
+   "interval_spec": {
+    "15m": {
+     "period1": "2026-07-21T00:00:00Z",
+     "period2": "2026-09-19T00:00:00Z",
+     "chunk_days": 15
+    },
+    "1h": {
+     "period1": "2024-09-21T00:00:00Z",
+     "period2": "2026-09-18T00:00:00Z",
+     "chunk_days": 180
+    },
+    "1d": {
+     "period1": "2016-01-01T00:00:00Z",
+     "period2": "2026-09-19T00:00:00Z",
+     "chunk_days": 3650
+    }
+   },
+   "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-18; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately.",
+   "rounding_decimals": 5,
+   "fetched_at_utc": "2026-09-18T21:49:22+00:00",
+   "capture_environment": "github-actions",
+   "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35398650536",
+   "direct_rate_limited": true,
+   "direct_429_count": 2,
+   "symbol_count": 20,
+   "captured_count": 1,
+   "failed_count": 6,
+   "not_attempted_count": 13,
+   "elapsed_seconds": 1070.4,
+   "captured_by_interval": {
+    "1d": 1
+   },
+   "equity_symbols": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
+    "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
+    "MSTR",
+    "NIO",
+    "PLTR",
+    "AMC",
+    "SMCI",
+    "HOOD",
+    "TSLA",
+    "NVDA",
+    "COIN",
+    "PTON"
+   ],
+   "futures_symbols": [],
+   "provenance_note": "Re-run scripts/fetch_intraday.py --only-failed in a networked environment to top up. The offline verifier audits these files without network access: it re-validates every OHLC invariant, re-checks each stored SHA-256 against the index, and re-derives the intraday study. Records with status 'failed' carry the error text and must be retried."
+  },
+  "script": "scripts/run_intraday_study.py",
+  "price_source": "data/intraday_index.json",
+  "intervals_studied": [],
+  "gap_buckets": [
+   "lt_0.25_atr",
+   "0.25_0.5_atr",
+   "0.5_1.0_atr",
+   "1.0_2.0_atr",
+   "ge_2.0_atr"
+  ],
+  "latency_steps_bars": [
+   1,
+   2,
+   3,
+   5
+  ],
+  "methodology": [
+   "Session = UTC calendar date, NOT a verified exchange-session calendar. Regular US equity hours vary with daylight saving time; extended-hours data may cross UTC dates. Futures UTC boundaries do not equal CME sessions. These observations must not be labelled official opening-auction gaps.",
+   "Gap = session_open - prior_session_close, both read from stored bars.",
+   "Gap scale = ATR(14) of session-aggregated bars (open first bar, high/low of the session, close of the last bar) at the prior session; gap_atr = gap / ATR.",
+   "Filled = the session traded back through the prior session close (gap up: session low <= prior close; gap down: session high >= prior close).",
+   "Latency = price change from the decision bar's close to the fill bar's open (default engine semantics) or to a later bar's close, in basis points of the decision close. Positive = the fill is above the decision close."
+  ],
+  "assumptions": [
+   "Adjustments and feed coverage come from source_metadata. Alpaca captures use split adjustment and IEX; legacy Yahoo captures may contain split gaps. Neither feed is an independently verified executable quote.",
+   "The requested dates and actual capture endpoints determine coverage. No retention entitlement is inferred for other providers.",
+   "No transaction costs, borrow costs or liquidity limits are applied to the latency measurement; it is a price-distance measurement only."
+  ],
+  "not_a_forecast": true
+ },
+ "coverage": [],
+ "gap_fill": {
+  "aggregate_by_kind": {},
+  "buckets": [],
+  "per_symbol": []
+ },
+ "execution_latency": {
+  "by_kind_interval": []
+ }
+}

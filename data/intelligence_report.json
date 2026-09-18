@@ -140,9 +140,9 @@
       ],
       "captured_series": 20,
       "failed_series": 0,
-      "intraday_captured_series": 0,
-      "intraday_captured_bars": 0,
-      "intraday_index_stamp": null,
+      "intraday_captured_series": 1,
+      "intraday_captured_bars": 2693,
+      "intraday_index_stamp": "2026-09-18T21:49:22+00:00",
       "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary."
     },
     "repository_simulation": {
@@ -196,47 +196,50 @@
     },
     {
       "workstream": "intraday vendor captures (15m / 1h / long 1d) for the volatile pool",
-      "status": "blocked_or_unrun",
+      "status": "captured",
       "evidence": [
+        "data/intraday_index.json",
         "scripts/fetch_intraday.py",
         "intel/intraday.py",
-        "research/evidence/YAHOO-INTRADAY-CAPTURE.md",
-        ".github/workflows/capture-intraday.yml"
+        "research/evidence/YAHOO-INTRADAY-CAPTURE.md"
       ],
-      "next_step": "The capture workflow has not committed data/intraday_index.json yet; dispatch .github/workflows/capture-intraday.yml (the repository sandbox has no egress to the vendor).",
+      "next_step": "Top up any series the vendor rate-limited (scripts/fetch_intraday.py --only-failed) and re-run the study after each capture.",
       "detail": {
-        "captured_series": 0,
-        "by_interval": {},
-        "captured_bar_total": 0,
-        "failed_or_not_attempted": 0,
-        "index": null,
-        "index_stamp": null,
-        "vendor_rate_limited_direct": null,
+        "captured_series": 1,
+        "by_interval": {
+          "1d": 1
+        },
+        "captured_bar_total": 2693,
+        "failed_or_not_attempted": 19,
+        "index": "data/intraday_index.json",
+        "index_stamp": "2026-09-18T21:49:22+00:00",
+        "vendor_rate_limited_direct": true,
         "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
       }
     },
     {
       "workstream": "intra-session gap fill and execution latency (our own measurement)",
-      "status": "blocked_or_unrun",
+      "status": "completed_with_caveats",
       "evidence": [
-        "scripts/run_intraday_study.py",
-        "intel/intraday.py"
+        "data/intraday_study.json",
+        "scripts/run_intraday_study.py"
       ],
-      "next_step": "Run scripts/run_intraday_study.py once data/intraday_index.json exists."
+      "next_step": "Extend the latency measurement with the vendor's own bid/ask or with a second vendor before drawing conclusions about real slippage."
     },
     {
       "workstream": "volatile-stock division of the paper competition (20 usernames)",
-      "status": "blocked_or_unrun",
+      "status": "completed_with_caveats",
       "evidence": [
+        "data/stock_competition_results.json",
         "data/competition/stock_roster.json",
         "intel/stock_strategies.py",
         "scripts/run_stock_competition.py"
       ],
-      "next_step": "Run scripts/run_stock_competition.py once the intraday captures exist.",
+      "next_step": "Add an out-of-sample season on bars captured after this run; the current division is fitted to one finite vendor window.",
       "detail": {
         "roster_usernames": 20,
-        "artifact": null,
-        "primary_profile": false,
+        "artifact": "data/stock_competition_results.json",
+        "primary_profile": true,
         "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
       }
     },
@@ -252,7 +255,8 @@
         "pending_order_count": 2,
         "divisions": [
           "futures",
-          "stocks_daily"
+          "stocks_daily",
+          "stocks_hourly"
         ],
         "sizing_note": "Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price."
       }
@@ -314,25 +318,25 @@
           "EuphoriaEarl",
           "FadeThePanic"
         ],
-        "best_single_edition_multiple_max": 7.239835,
-        "best_single_edition_multiple_median": 3.774751,
-        "latest_edition_multiple_median": 0.984663,
+        "best_single_edition_multiple_max": 12.153088,
+        "best_single_edition_multiple_median": 3.503437,
+        "latest_edition_multiple_median": 0.959494,
         "participant_editions_ge_5x": 1,
-        "participant_editions_ge_10x": 0,
-        "ruined_editions": 3,
-        "positive_season_participants": 1,
+        "participant_editions_ge_10x": 1,
+        "ruined_editions": 5,
+        "positive_season_participants": 2,
         "latest_leaders": [
           {
             "username": "FadeThePanic",
-            "multiple": 1.557963
-          },
-          {
-            "username": "EuphoriaEarl",
-            "multiple": 0.984663
+            "multiple": 2.097531
           },
           {
             "username": "CapitulationKate",
             "multiple": 0.959494
+          },
+          {
+            "username": "EuphoriaEarl",
+            "multiple": 0.937563
           }
         ]
       },
@@ -346,9 +350,9 @@
           "GapGhost",
           "GapGoblin"
         ],
-        "best_single_edition_multiple_max": 4.140646,
-        "best_single_edition_multiple_median": 2.749875,
-        "latest_edition_multiple_median": 2.392173,
+        "best_single_edition_multiple_max": 3.142041,
+        "best_single_edition_multiple_median": 2.290892,
+        "latest_edition_multiple_median": 2.050873,
         "participant_editions_ge_5x": 0,
         "participant_editions_ge_10x": 0,
         "ruined_editions": 4,
@@ -356,11 +360,11 @@
         "latest_leaders": [
           {
             "username": "GapGoblin",
-            "multiple": 2.87241
+            "multiple": 2.88029
           },
           {
             "username": "GapGhost",
-            "multiple": 1.911935
+            "multiple": 1.221456
           }
         ]
       },
@@ -374,8 +378,8 @@
           "BandFadeBella",
           "ReversalRaja"
         ],
-        "best_single_edition_multiple_max": 2.472331,
-        "best_single_edition_multiple_median": 1.736166,
+        "best_single_edition_multiple_max": 2.001483,
+        "best_single_edition_multiple_median": 1.500741,
         "latest_edition_multiple_median": 1.0,
         "participant_editions_ge_5x": 0,
         "participant_editions_ge_10x": 0,
@@ -402,12 +406,12 @@
           "ClimaxCarla",
           "ExhaustionEd"
         ],
-        "best_single_edition_multiple_max": 6.283905,
-        "best_single_edition_multiple_median": 3.764298,
+        "best_single_edition_multiple_max": 7.571212,
+        "best_single_edition_multiple_median": 4.405452,
         "latest_edition_multiple_median": 1.162343,
         "participant_editions_ge_5x": 1,
         "participant_editions_ge_10x": 0,
-        "ruined_editions": 4,
+        "ruined_editions": 3,
         "positive_season_participants": 1,
         "latest_leaders": [
           {
@@ -431,17 +435,17 @@
           "PanicPyramider",
           "SqueezeSpark"
         ],
-        "best_single_edition_multiple_max": 6.766678,
-        "best_single_edition_multiple_median": 5.646364,
+        "best_single_edition_multiple_max": 7.711824,
+        "best_single_edition_multiple_median": 6.828382,
         "latest_edition_multiple_median": 1.0,
-        "participant_editions_ge_5x": 2,
+        "participant_editions_ge_5x": 3,
         "participant_editions_ge_10x": 0,
-        "ruined_editions": 1,
+        "ruined_editions": 3,
         "positive_season_participants": 2,
         "latest_leaders": [
           {
             "username": "ContrarianQueen",
-            "multiple": 1.135037
+            "multiple": 1.113086
           },
           {
             "username": "PanicPyramider",
@@ -462,8 +466,8 @@
         "usernames": [
           "TrendTina"
         ],
-        "best_single_edition_multiple_max": 1.579365,
-        "best_single_edition_multiple_median": 1.579365,
+        "best_single_edition_multiple_max": 1.578842,
+        "best_single_edition_multiple_median": 1.578842,
         "latest_edition_multiple_median": 0.951189,
         "participant_editions_ge_5x": 0,
         "participant_editions_ge_10x": 0,
@@ -526,19 +530,19 @@
     "kind_contrast": {
       "contrarian": {
         "participants": 12,
-        "best_single_edition_multiple": 7.239835,
-        "best_season_multiple": 0.550988,
-        "median_best_edition_multiple": 3.865279,
-        "participant_editions_ge_5x": 4,
-        "participant_editions_ge_10x": 0,
-        "ruined_editions": 13,
-        "season_positive_participants": 5
+        "best_single_edition_multiple": 12.153088,
+        "best_season_multiple": 0.550071,
+        "median_best_edition_multiple": 3.288238,
+        "participant_editions_ge_5x": 5,
+        "participant_editions_ge_10x": 1,
+        "ruined_editions": 16,
+        "season_positive_participants": 6
       },
       "baseline": {
         "participants": 3,
         "best_single_edition_multiple": 1.881351,
-        "best_season_multiple": 0.332271,
-        "median_best_edition_multiple": 1.579365,
+        "best_season_multiple": 0.345924,
+        "median_best_edition_multiple": 1.578842,
         "participant_editions_ge_5x": 0,
         "participant_editions_ge_10x": 0,
         "ruined_editions": 0,
@@ -546,9 +550,9 @@
       }
     },
     "decision": {
-      "best_contrarian_single_edition_multiple": 7.239835,
+      "best_contrarian_single_edition_multiple": 12.153088,
       "best_baseline_single_edition_multiple": 1.881351,
-      "any_shadow_10x": false,
+      "any_shadow_10x": true,
       "any_shadow_20x": false,
       "any_shadow_50x": false,
       "any_shadow_100x": false,
@@ -557,19 +561,21 @@
   },
   "coverage": {
     "intraday_capture": {
-      "captured_series": 0,
-      "by_interval": {},
-      "captured_bar_total": 0,
-      "failed_or_not_attempted": 0,
-      "index": null,
-      "index_stamp": null,
-      "vendor_rate_limited_direct": null,
+      "captured_series": 1,
+      "by_interval": {
+        "1d": 1
+      },
+      "captured_bar_total": 2693,
+      "failed_or_not_attempted": 19,
+      "index": "data/intraday_index.json",
+      "index_stamp": "2026-09-18T21:49:22+00:00",
+      "vendor_rate_limited_direct": true,
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },
     "stock_division": {
       "roster_usernames": 20,
-      "artifact": null,
-      "primary_profile": false,
+      "artifact": "data/stock_competition_results.json",
+      "primary_profile": true,
       "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
     },
     "latest_official_frontier_capture": "2026-09-18T02:27:00Z",

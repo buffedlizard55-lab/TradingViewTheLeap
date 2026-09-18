@@ -68,3 +68,11 @@ serve: site
 
 clean:
 	rm -f index.html .nojekyll
+
+# Free official-provider research route. Exits blocked (2) if secrets unavailable.
+# No third-party relay, no paid data, and no replacement of legacy artifacts.
+.PHONY: official-bars
+official-bars:
+	python3 scripts/fetch_official_bars.py
+	python3 scripts/run_intraday_study.py --index data/official_bars/index.json --out data/official_bars/study.json
+	python3 scripts/run_stock_competition.py --index data/official_bars/index.json --out data/official_bars/competition.json

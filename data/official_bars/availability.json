@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "fetched_at_utc": "2026-09-18T22:31:46.424998+00:00",
+    "provider": "Alpaca",
+    "feed": "iex",
+    "adjustment": "split",
+    "source_tier": "official_provider_api",
+    "limitation": "IEX-only, split-adjusted research prices; not consolidated executable quotes",
+    "documentation": "https://docs.alpaca.markets/us/reference/stockbars",
+    "status": "blocked",
+    "reason": "Alpaca Basic API credentials unavailable; no network request or fabricated bars"
+  },
+  "captures": []
+}

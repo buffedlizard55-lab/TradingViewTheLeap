@@ -46,7 +46,7 @@ EDITION_CALENDAR_DAYS = 30      # mirrors the official Sep 1 -> Sep 30 window
 MIN_EDITION_SESSIONS = 15       # a shorter shared window is discarded
 SEASON_STEP_CALENDAR_DAYS = 30  # non-overlapping editions
 
-ENGINE_VERSION = "intel-competition-1"
+ENGINE_VERSION = "intel-competition-2"
 
 
 @dataclass(frozen=True)
@@ -185,12 +185,13 @@ def run_participant_edition(
             total += q * pos["last_open"] * spec.contract_multiplier
         return total
 
-    def close_position(sym: str, pos: dict, exit_index: int, exit_slip_pts: float) -> None:
+    def close_position(sym: str, pos: dict, exit_index: int, exit_slip_pts: float,
+                       at_close: bool = False) -> None:
         """exit_index: full-series bar index of the exit bar (auto-close uses the slice's last bar)."""
         nonlocal realized, equity, long_trades, short_trades
         spec = spec_by_symbol[sym]
         exit_bar = spec.bars[exit_index]
-        exit_raw = exit_bar.close
+        exit_raw = exit_bar.close if at_close else exit_bar.open
         for t in pos["tranches"]:
             d = sign(pos["dir"])
             raw = d * (exit_raw - t["entry_raw"]) * spec.contract_multiplier * t["qty"]
@@ -326,8 +327,9 @@ def run_participant_edition(
         pos = positions[sym]
         last_full_i = starts[sym] + len(slices[sym]) - 1
         dl = decisions.get(sym) or []
-        exit_atr = dl[-1].atr if dl else 0.0
-        close_position(sym, pos, last_full_i, scenario.slippage_atr_fraction * exit_atr)
+        known = [d for d in dl if d.index <= last_full_i]
+        exit_atr = known[-1].atr if known else 0.0
+        close_position(sym, pos, last_full_i, scenario.slippage_atr_fraction * exit_atr, at_close=True)
 
     result = EditionResult(
         realized_pnl_usd=realized,
@@ -395,7 +397,7 @@ def model_params_label(model: str, variant: str | None) -> str:
 # captured data so the two engines cannot silently diverge.
 # ===========================================================================
 
-DIVISION_ENGINE_VERSION = "intel-competition-2"
+DIVISION_ENGINE_VERSION = "intel-competition-3"
 
 
 @dataclass(frozen=True)
@@ -513,6 +515,10 @@ def run_participant_window(
     - `control_symbol`, when given, opens one maximum-size long in that symbol at the first
       bar of the window and holds it to the auto-close (the B1 control).
     """
+    if not isinstance(latency_bars, int) or isinstance(latency_bars, bool) or latency_bars < 0:
+        raise ValueError("latency_bars must be a nonnegative integer")
+    if not 0 < deployment <= 1:
+        raise ValueError("deployment must be in (0, 1]")
     equity = profile.starting_balance
     realized = 0.0
     ruined = False
@@ -599,11 +605,12 @@ def run_participant_window(
         add_tranches += 1
         active_days.add(day)
 
-    def close_position(sym: str, pos: dict, exit_index: int, exit_slip_pts: float) -> None:
+    def close_position(sym: str, pos: dict, exit_index: int, exit_slip_pts: float,
+                       at_close: bool = False) -> None:
         nonlocal realized, equity, long_trades, short_trades
         spec = spec_by_symbol[sym]
         exit_bar = spec.bars[exit_index]
-        exit_raw = exit_bar.close
+        exit_raw = exit_bar.close if at_close else exit_bar.open
         for tranche in pos["tranches"]:
             direction = sign(pos["dir"])
             gross = direction * (exit_raw - tranche["entry_raw"]) * spec.contract_multiplier * tranche["qty"]
@@ -742,8 +749,9 @@ def run_participant_window(
     for sym in sorted(positions):
         pos = positions[sym]
         decision_list = decisions.get(sym) or []
-        exit_atr = decision_list[-1].atr if decision_list else 0.0
-        close_position(sym, pos, last_full_i[sym], scenario.slippage_atr_fraction * exit_atr)
+        known = [d for d in decision_list if d.index <= last_full_i[sym]]
+        exit_atr = known[-1].atr if known else 0.0
+        close_position(sym, pos, last_full_i[sym], scenario.slippage_atr_fraction * exit_atr, at_close=True)
 
     result = EditionResult(
         realized_pnl_usd=realized,
@@ -769,7 +777,7 @@ def max_edition_multiple_bound(
     max_favorable_move: float,
     instruments: int | None = None,
 ) -> dict:
-    """Arithmetic ceiling on an edition's multiple under a rule profile.
+    """Single-hold scenario arithmetic; NOT a ceiling on repeated trading.
 
     With a per-instrument cap of C units, a starting balance B, buying power L and a
     list of live prices, the maximum notional a participant can hold is
@@ -778,7 +786,7 @@ def max_edition_multiple_bound(
 
     If every held instrument then moves favourably by `max_favorable_move` (a fraction,
     e.g. 1.0 = +100%), realized P/L is at most N * move, so the edition multiple is at
-    most 1 + N * move / B. This is an upper bound: it assumes simultaneous maximum size
+    most 1 + N * move / B for this one holding period only. It assumes simultaneous maximum size
     in every instrument and a frictionless exit at the extreme.
     """
     if not prices:

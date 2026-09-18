@@ -167,6 +167,8 @@ def main() -> int:
     sync_models()
     print("=== step 3: re-derive the placement arithmetic ===")
     run_placement_lab()
+    print("=== re-derive futures competition after engine changes ===")
+    run_script("run_competition.py")
     intraday_steps()
     tv_benchmark_step()
     print("=== step 8: rebuild intelligence report ===")

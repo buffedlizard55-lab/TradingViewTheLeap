@@ -1,3 +1,12 @@
+> **2026-09-18 audit:** Official intraday acquisition is credential-blocked; the legacy
+> stock dataset contains only ENPH daily history, not the full 20-stock pool.
+> No authenticated TradingView exports are available. Do not treat historical
+> candidates as current orders. See [the three-pass review](research/implementation_review.md)
+> for fixes, verified official links, test results and next-session priorities.
+>
+> New free-provider route: `make official-bars` (direct Alpaca IEX; authorized
+> environment credentials required; no paid data or relay fallback).
+
 # TradingView The Leap — evidence-first research lab
 
 A reproducible research layer for TradingView's **The Leap** paper-trading competition. The project

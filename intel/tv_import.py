@@ -25,12 +25,12 @@ they are. Instead it:
 4. records the SHA-256 of the file it read, the exact header, the row count, and every
    rejected row, so a reviewer can audit the import line by line.
 
-EXACTLY ONE AUTHENTICITY GUARD
-------------------------------
-A file is treated as a REAL export only if its path does not contain "fixture" or
-"synthetic". Fixtures exist so the pipeline can be proven to work end to end without a real
-export; they are reported with ``is_fixture: true`` and must never be quoted as TradingView
-data.
+AUTHENTICITY LIMITATION
+----------------------
+A filename and a SHA-256 establish neither origin nor account authentication.
+Non-fixture CSVs are unverified imports, not authenticated TradingView evidence.
+Fixtures are labelled for parser tests only. No cryptographic attestation is
+provided by this importer.
 
 NO NETWORK ACCESS, NO CREDENTIALS
 ---------------------------------
@@ -45,6 +45,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import math
 import os
 import re
 from dataclasses import dataclass, field
@@ -206,7 +207,8 @@ def _parse_float(text: str) -> Optional[float]:
         return None
     text = text.replace("%", "")
     try:
-        return float(text)
+        value = float(text)
+        return value if math.isfinite(value) else None
     except ValueError:
         return None
 

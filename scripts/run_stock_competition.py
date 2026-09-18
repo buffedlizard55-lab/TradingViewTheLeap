@@ -135,6 +135,7 @@ def decisions_for_model(series_map: dict[str, Series], model: str, variant: str 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--index", default="data/intraday_index.json")
     ap.add_argument("--stamp", default=None)
     ap.add_argument("--out", default="data/stock_competition_results.json")
     ap.add_argument("--daily-start", default=DEFAULT_DAILY_START)
@@ -152,7 +153,7 @@ def main() -> int:
         what scripts/verify.py requires.
         """
         stamps = []
-        for rel, keys in (("data/intraday_index.json", ("fetched_at_utc",)),
+        for rel, keys in ((args.index, ("fetched_at_utc",)),
                           ("data/market_history_index.json", ("fetched_at_utc",)),
                           ("data/competition_results.json", ("generated_utc",))):
             path = os.path.join(ROOT, rel)
@@ -169,7 +170,7 @@ def main() -> int:
     started = time.time()
 
     try:
-        index = load_index()
+        index = load_index(args.index)
         captures = load_all(index)
     except IntradayError as exc:
         print(f"::error::{exc}", flush=True)
@@ -180,7 +181,13 @@ def main() -> int:
 
     daily_series = build_series(captures, "1d", lambda s: s)
     hourly_series = build_series(captures, "1h", lambda s: s)
-    if not daily_series and not hourly_series:
+    quarter_hour_series = build_series(captures, "15m", lambda s: s)
+    series_divisions = (("daily", daily_series), ("hourly", hourly_series),
+                        ("15minute", quarter_hour_series))
+    for _, series_map in series_divisions:
+        for symbol in set(series_map) - set(pool):
+            del series_map[symbol]
+    if not any(series for _, series in series_divisions):
         print("::error::no eligible stock series captured", flush=True)
         return 1
 
@@ -194,7 +201,7 @@ def main() -> int:
             username=row["username"],
             model=row["model"],
             variant=row.get("variant"),
-            pool=tuple(s for s in row["pool"] if s in daily_series or s in hourly_series),
+            pool=tuple(s for s in row["pool"] if any(s in series for _, series in series_divisions)),
         ))
     usernames = [p.username for p in participants]
     if len(usernames) != len(set(usernames)):
@@ -374,7 +381,7 @@ def main() -> int:
                  "editions_ge_2x": r["editions_ge_2x"]} for r in rows]
 
     divisions: dict[str, dict] = {}
-    for name, series_map in (("daily", daily_series), ("hourly", hourly_series)):
+    for name, series_map in series_divisions:
         if not series_map:
             divisions[name] = {"status": "no_captured_series"}
             continue
@@ -396,6 +403,8 @@ def main() -> int:
                                  primary.min_active_days)
         part_doc = season_aggregates(editions, latest_doc, primary)
         divisions[name] = {
+            "coverage_complete": set(series_map) == set(pool),
+            "missing_symbols": sorted(set(pool) - set(series_map)),
             "profile": primary.profile_id,
             "eligible_symbols": sorted(series_map),
             "bars_per_symbol": {s: len(series_map[s].bars) for s in sorted(series_map)},
@@ -416,7 +425,7 @@ def main() -> int:
 
     # ---- counterfactual 20:1 runs on the most recent editions only ----
     counterfactual_doc: dict[str, dict] = {}
-    for name, series_map in (("daily", daily_series), ("hourly", hourly_series)):
+    for name, series_map in series_divisions:
         if not series_map or divisions.get(name, {}).get("status"):
             continue
         windows = windows_for(series_map, args.daily_start if name == "daily" else None)[:-1]
@@ -443,7 +452,7 @@ def main() -> int:
 
     # ---- latency sensitivity: same editions, delayed fills ----
     latency_doc: dict[str, list] = {}
-    for name, series_map in (("daily", daily_series), ("hourly", hourly_series)):
+    for name, series_map in series_divisions:
         if not series_map or divisions.get(name, {}).get("status"):
             continue
         windows = windows_for(series_map, args.daily_start if name == "daily" else None)[:-1]
@@ -525,14 +534,17 @@ def main() -> int:
                 "session close, all of them held at the official 50-unit cap simultaneously "
                 "(notional capped by balance x leverage = 100,000 x 1), and every one of them "
                 "moving by the largest favourable excursion any single pool name actually made "
-                "inside that same window. This is an upper bound on a frictionless, "
-                "clairvoyant, maximum-size participant, computed from the captured bars."
+                "inside that same window. This is a single-hold long-only scenario, NOT an "
+                "upper bound on repeated trading, short selling or compounding. "
+                "It cannot establish whether 5x or 10x is reachable in a competition."
             ),
             "editions_evaluated": len(bound_rows),
             "max_edition_multiple_observed_bound": worst["max_edition_multiple"],
             "max_edition_multiple_bound_start": worst["start_date"],
-            "five_x_reachable": any(r["max_edition_multiple"] >= 5 for r in bound_rows),
-            "ten_x_reachable": any(r["max_edition_multiple"] >= 10 for r in bound_rows),
+            "single_hold_scenario_ge_5x": any(r["max_edition_multiple"] >= 5 for r in bound_rows),
+            "single_hold_scenario_ge_10x": any(r["max_edition_multiple"] >= 10 for r in bound_rows),
+            "coverage_complete": set(daily_series) == set(pool),
+            "missing_symbols": sorted(set(pool) - set(daily_series)),
             "profile": primary.profile_id,
         }
 
@@ -571,7 +583,8 @@ def main() -> int:
             "primary_scenario": PRIMARY_SCENARIO,
             "primary_profile": PRIMARY_PROFILE,
             "counterfactual_profile": COUNTERFACTUAL_PROFILE,
-            "price_source": "data/intraday_index.json + data/intraday/*.json (Yahoo Finance, daily and hourly)",
+            "price_source": args.index,
+            "source_metadata": index.get("_meta", {}),
             "rules_source": "data/contest_config.json + the rule profiles transcribed in intel/competition.py",
             "roster_source": "data/competition/stock_roster.json",
             "pool_source": "data/volatile_stocks.json (20-stock volatile pool)",

@@ -150,8 +150,8 @@ class EngineTests(unittest.TestCase):
         ]}
         res = run_participant_edition(dec, slices, starts, {"TEST:X1!": spec},
                                       COST_SCENARIOS["zero"])
-        # entry fills index 2 open (100), exit decision at index 3 close fills index 4 open (110)
-        self.assertAlmostEqual(res.realized_pnl_usd, (110.0 - 100.0) * 10.0, places=6)
+        # entry fills index 2 open (100), exit decision at index 3 close fills index 4 open (120)
+        self.assertAlmostEqual(res.realized_pnl_usd, (120.0 - 100.0) * 10.0, places=6)
         self.assertEqual(res.trades, 1)
         self.assertEqual(res.active_days, 2)
 
