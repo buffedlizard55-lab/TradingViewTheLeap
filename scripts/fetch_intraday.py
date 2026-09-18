@@ -104,7 +104,13 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 )
 
-SCRIPT_VERSION = "2"
+# 1 -> first intraday capture path.
+# 2 -> chunked requests, relay fallback with a sticky preference, per-chunk provenance,
+#      explicit not_attempted records, --time-budget-seconds / --max-series.
+# 3 -> stored bytes are EXACTLY the digested bytes (no trailing newline): the offline loader
+#      re-hashes the file on disk, so a writer that appends a newline makes every capture fail
+#      its own integrity check. Found by the eleventh-pass audit before any capture was adopted.
+SCRIPT_VERSION = "3"
 ROUNDING_DECIMALS = 5
 
 
@@ -436,11 +442,13 @@ def main() -> int:
             "bar_count": len(bars),
             "bars": bars,
         }
+        # The stored file must be EXACTLY the bytes that stored_sha256 digests: the offline
+        # loader (intel/intraday.py) re-hashes the file on disk and refuses a mismatch, so no
+        # trailing newline is appended here.
         stored_text = json.dumps(document, separators=(",", ":"))
         filename = stored_filename(key, interval)
         with open(os.path.join(ROOT, args.out_dir, filename), "w", encoding="utf-8") as fh:
             fh.write(stored_text)
-            fh.write("\n")
         records.append({
             "symbol": key,
             "yahoo_ticker": yahoo,
