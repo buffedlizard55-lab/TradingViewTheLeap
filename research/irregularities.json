@@ -8,7 +8,7 @@
       "medium",
       "low"
     ],
-    "count": 25,
+    "count": 26,
     "reverified_utc": "2026-09-17",
     "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
     "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
@@ -353,8 +353,8 @@
       "id": "IR-25",
       "severity": "low",
       "title": "Intermittent Leaderboard Threshold Acceleration (Surge vs Stasis Dynamics)",
-      "detail": "Leaderboard progression is non-linear and punctuated: after complete frontier stasis across captures 5->6 (20:58Z to 21:27Z), capture 7 (23:08Z) revealed sharp upward threshold acceleration across ranks 50 to 250 in 1.68 hours (Rank 50 rose +11,303.63, Rank 100 rose +6,695.00, Rank 250 rose +8,065.50), while Rank 1 remained unchanged at ,335,125.00 (+934.05%). Participants rose 96,268 -> 96,344 (+76), demonstrating that leaderboard progression happens in punctuated bursts as participants close batches of winning trades near session closes.",
-      "observed": "Capture 6 to 7 (2026-09-17T21:27:00Z to 2026-09-17T23:08:00Z): Rank 50 rose +11,303.63 (+44.52%), Rank 100 rose +6,695.00 (+30.68%), Rank 250 rose +8,065.50 (+15.23%), while Rank 1 was unchanged. Registered participant count grew +76.",
+      "detail": "Leaderboard progression is non-linear and punctuated: after complete frontier stasis across captures 5->6 (20:58Z to 21:27Z), capture 7 (23:08Z) revealed sharp upward threshold acceleration across ranks 50 to 250 in 1.68 hours (Rank 50 rose +$111,303.63, Rank 100 rose +$76,695.00, Rank 250 rose +$38,065.50), while Rank 1 remained unchanged at $2,335,125.00 (+934.05%). Participants rose 96,268 -> 96,344 (+76), demonstrating that leaderboard progression happens in punctuated bursts as participants close batches of winning trades near session closes.",
+      "observed": "Capture 6 to 7 (2026-09-17T21:27:00Z to 2026-09-17T23:08:00Z): Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp), while Rank 1 was unchanged. Registered participant count grew +76.",
       "expected_by_brief": "Leaderboard frontiers would advance smoothly or continuously throughout the day.",
       "source_ids": [
         "TV-CONTEST-AMP-SEP2026-R7",
@@ -362,6 +362,18 @@
       ],
       "resolution": "Record the punctuated surge behavior in data/frontier_history.json and hypotheses (H25), recomputing required daily compound rates from the latest capture.",
       "linked_hypothesis": "H25"
-    }
+    },
+   {
+    "id": "IR-26",
+    "severity": "medium",
+    "title": "Shell-expansion corruption event in research text fields ($0/$2 and other $-token losses)",
+    "detail": "Several research files written on 2026-09-17 contained dollar amounts and shell artifacts consistent with double-quoted shell expansion: '$0.00' became '/bin/bash.00' ($0 expanded to the shell name), and '$'-prefixed amounts lost their '$' and leading digits where a positional parameter was empty ('$2.5M'->'.5M', '$25M'->'5M', '$250k'->'50k', '$1,244,313.50'->',244,313.50', '$111,303.63'->'+11,303.63', '$2,335,125.00'->',335,125.00'). The numeric suffixes were preserved, so every value was uniquely reconstructable from capture-7 evidence (research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md) and from data/frontier_history.json; all were restored and a verifier check (leaked_shell_text) now scans published text for the '/bin/bash' and '(.5M' signatures.",
+    "observed": "Affected fields found and fixed in this pass: hypotheses.json H27 ('/bin/bash.00' twice, '(.5M', '(5M', 'from 50k'), H25 ('+11,303.63', '(,244,313.50)', '(,355,617.13)', '(,605,617.13', '+6,695.00 (,014,950.00 to ,091,645.00)', '+8,065.50 (60,759.50 to 98,825.00)'), H26 ('(<.5M)'), irregularities.json IR-25 (four amounts), sources.json TV-CONTEST-AMP-SEP2026-R7 note (three amounts). Rendered index.html regenerated from the fixed registers.",
+    "resolution": "Fixed in this pass (2026-09-17 eighth pass). Every restored value cross-checked against capture-7 frontier rows: rank 50 $1,244,313.50->$1,355,617.13 (+$111,303.63), rank 100 $1,014,950.00->$1,091,645.00 (+$76,695.00), rank 250 $660,759.50->$698,825.00 (+$38,065.50), rank 50 equity multiple 6.4225x = $1,605,617.13. scripts/verify.py now fails on leaked shell signatures.",
+    "linked_hypothesis": "H27",
+    "source_ids": [
+     "TV-CONTEST-AMP-SEP2026-R7"
+    ]
+   }
   ]
 }

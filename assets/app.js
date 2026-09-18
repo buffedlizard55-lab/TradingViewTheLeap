@@ -170,6 +170,7 @@
 
   function init() {
     bindTable("ret-q", null, "ret-table", "ret-count", null);
+    bindTable("shadow-q", null, "shadow-table", "shadow-count", null);
     bindTable("vs-q", null, "vs-table", "vs-count", "vs-thresh");
     bindTable("ml-q", "ml-class", "ml-table", "ml-count", null);
     bindTable("un-q", "un-ex", "un-table", "un-count", null);

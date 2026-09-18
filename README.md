@@ -8,6 +8,49 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
+## September 17 eighth pass: OUR OWN SHADOW COMPETITION (usernames, contrarian strategies, real captured prices)
+
+This session delivered the project's core new asset: **the repository's own paper competition** —
+15 usernames competing on real captured price data under the official rule constants, built to
+test which strategy archetypes can actually chase the 5x-100x placement targets.
+
+- **New engine + artifact:** [`intel/competition.py`](intel/competition.py) (portfolio engine:
+  fresh $250,000 per participant per edition, 20:1 buying power, whole contracts, official §08
+  caps, realized-P/L ranking, end-of-edition auto-close, terminal ruin) run by
+  [`scripts/run_competition.py`](scripts/run_competition.py) into
+  [`data/competition_results.json`](data/competition_results.json): 24 non-overlapping
+  30-calendar-day season editions + 1 latest-edition live mirror (2026-08-19..09-17) on a shared
+  union calendar of the 11 eligible captured futures (≥150 sessions each), at moderate cost
+  ($1.50/side + 5% ATR slippage) with a zero-cost robustness run.
+- **New contrarian strategy library:** [`intel/contrarian.py`](intel/contrarian.py) — C1
+  capitulation reversal, C2 gap fade, C3 band-pierce reversion, C4 exhaustion-bar reversal, C5
+  capitulation pyramider (contrarian entry + full-reinvestment adds). Parameters frozen before
+  any run; S1-S3 trend baselines reuse `intel/strategy.py` unchanged.
+- **Roster (usernames):** [`data/competition/roster.json`](data/competition/roster.json) — 12
+  contrarian participants (FadeThePanic, CapitulationKate, EuphoriaEarl, GapGhost, GapGoblin,
+  BandFadeBella, ReversalRaja, ExhaustionEd, ClimaxCarla, PanicPyramider, SqueezeSpark,
+  ContrarianQueen) + 3 trend baselines (TrendTina, MomentumMoe, SqueezeSam), each bound to a
+  frozen model/variant and instrument pool.
+- **Results (honest):** season champion by realized P/L is `ContrarianQueen`
+  (+$2,806,899.58/24 editions); best single edition **7.24x** (FadeThePanic, E19) — all four
+  ≥5x editions were contrarian vs zero for baselines (supported as **H28**); GapGoblin is the
+  most consistent winner (7/24 zero-cost editions + the latest edition at 2.87x, **H29**); but
+  13/360 participant-editions ended ruined and the best season multiple is only 0.55x (**H30**):
+  explosive single-edition outcomes exist, and the official no-reset rule makes harvesting them
+  survivorship-bound. No participant reached 10x on daily bars in any edition.
+- **Corruption event found and fixed (IR-26, medium):** dollar amounts in previously committed
+  research text had been mangled by shell expansion (`$0.00` → `/bin/bash.00`, `$2.5M` → `.5M`,
+  `$1,244,313.50` → `,244,313.50`, `+$111,303.63` → `+11,303.63`, …) in H25/H26/H27, IR-25 and a
+  sources.json note. Every value was uniquely reconstructable from capture-7 evidence and
+  restored; the verifier now fails on leaked shell signatures and the self-test proves it fires.
+- **Verifier extended:** `check_competition()` re-derives every aggregate, re-diffs rule
+  constants against the official transcription, re-validates roster variants against the frozen
+  parameter library, re-derives eligibility from raw captures, and re-runs the engine
+  requiring byte-identical output. **415 checks passed / 0 failed**, all 52 mutation scenarios
+  fire (`--self-test`), unittest suite green, site rebuilt in sync.
+- Site: new **Shadow comp** section (season leaderboard by username with live filter,
+  latest-edition leaderboard, C1-C5 model cards, assumptions).
+
 ## September 17 seventh pass: seventh frontier capture (board surge), dynamic placement arithmetic + live UI lab
 
 On 2026-09-17 (~23:08 UTC) all three official pages were fetched again and verified line by line

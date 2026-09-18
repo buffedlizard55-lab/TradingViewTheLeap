@@ -30,6 +30,11 @@ def money(value, decimals: int = 2) -> str:
     return f"${value:,.{decimals}f}"
 
 
+def smoney(value, decimals: int = 2) -> str:
+    """Signed money: Unicode minus before the symbol for negatives."""
+    return ("−$" if value < 0 else "$") + f"{abs(value):,.{decimals}f}"
+
+
 def number(value, decimals: int | None = None) -> str:
     if decimals is not None:
         return f"{value:,.{decimals}f}"
@@ -77,6 +82,7 @@ def build() -> str:
     backtests = load("data/backtest_results.json")
     vol_intel = load("data/volatility_intelligence.json")
     placement = load("data/leaderboard_lab.json")
+    competition = load("data/competition_results.json")
 
     sources = source_registry["sources"]
     source_by_id = {s["source_id"]: s for s in sources}
@@ -141,6 +147,7 @@ are labeled separately.</p>
 <li><a href="#intelligence">Market data</a></li>
 <li><a href="#strategies">Strategies</a></li>
 <li><a href="#backtests">Backtest lab</a></li>
+<li><a href="#competition">Shadow comp</a></li>
 <li><a href="#returns">Contest returns</a></li>
 <li><a href="#stocks">Stock history</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
@@ -667,6 +674,89 @@ extreme windows can still exist. Engine re-runs are byte-verified by the offline
 <p class="file-links"><a href="data/backtest_results.json">Full results (JSON)</a>
 <a href="research/strategy/testing-plan.md">Testing protocol</a>
 <a href="intel/">Engine source (intel/)</a></p></section>""")
+
+    # Shadow competition (the repository's own paper competition)
+    comp = competition
+    comp_meta = comp["_meta"]
+    comp_models = comp["models"]
+    comp_board = comp["leaderboard"]
+    comp_latest = comp["latest_edition"]
+    comp_ts = comp["target_summary"]
+    comp_contrast = comp["kind_contrast"]
+    champ = comp_board[0]
+    latest_leader = comp_latest["leader"]
+    season_editions = comp_meta["season_editions"]
+
+    add(f"""<section id="competition"><h2>Shadow competition — our own usernames on real captured prices</h2>
+<p class="lead">The repository's own paper competition: {number(len(comp['roster']))} usernames
+({number(sum(1 for r in comp['roster'] if r['kind'] == 'contrarian'))} contrarian, {number(sum(1 for r in comp['roster'] if r['kind'] == 'baseline'))} trend baselines)
+compete on the captured vendor daily bars with a fresh {money(cfg['starting_balance_virtual_usd'], 0)} account per edition,
+under the official rule constants ({number(cfg['futures_leverage_ratio'], 0)}:1 buying power, whole contracts, official section 08 caps,
+realized-P/L ranking, end-of-edition auto-close, no resets). Season = {number(season_editions)} non-overlapping
+30-calendar-day editions across the full capture history; LATEST mirrors the in-progress September edition's window length.</p>
+<div class="callout high"><h3>What this is and is not</h3>
+<p>These are THIS REPOSITORY's simulated usernames, ranked by THIS REPOSITORY's engine
+(<code>{esc(comp_meta['engine'])}</code>) on vendor-tier front-month continuous futures
+(unadjusted rolls). It is NOT the official The Leap leaderboard, NOT TradingView Paper Trading
+output, and NOT a prediction. The official live board is tracked separately in
+<a href="#frontier">Live frontier</a>.</p></div>
+<div class="grid cols-4">
+<div class="card"><h3>Season champion</h3><div class="stat accent">{esc(champ['username'])}</div><div class="note">by total realized P/L over {number(season_editions)} editions: {money(champ['season_realized_pnl_usd'], 0)}</div></div>
+<div class="card"><h3>Latest edition winner</h3><div class="stat accent">{esc(latest_leader['username'])}</div><div class="note">{esc(comp_latest['start_date'])} → {esc(comp_latest['end_date'])}: {money(latest_leader['realized_pnl_usd'], 0)} ({number(latest_leader['equity_multiple'], 2)}x)</div></div>
+<div class="card"><h3>Best single edition</h3><div class="stat accent">{number(comp_contrast['contrarian']['best_single_edition_multiple'], 2)}x</div><div class="note">best contrarian edition multiple ({number(comp_contrast['baseline']['best_single_edition_multiple'], 2)}x best baseline)</div></div>
+<div class="card"><h3>Editions ≥ 5x / ruined</h3><div class="stat accent">{number(comp_ts['ge_5x'])} / {number(comp_ts['ruined_participant_editions'])}</div><div class="note">participant-editions at {esc(comp_meta['primary_scenario'])} cost (of {number(comp_ts['participant_editions'])})</div></div>
+</div>
+<div class="controls"><input id="shadow-q" type="search" placeholder="Filter username, strategy, model…" aria-label="Filter shadow leaderboard"><span id="shadow-count" class="count"></span></div>
+<div class="table-wrap"><table id="shadow-table"><thead><tr><th class="num">Season rank</th><th>Username</th><th>Kind</th><th>Strategy</th><th>Variant</th><th class="num">Season realized P/L</th><th class="num">Season multiple</th><th class="num">Best edition</th><th class="num">Editions ≥5x</th><th class="num">Ruined editions</th></tr></thead><tbody>""")
+    for row in comp_board:
+        agg = next(a for a in comp["participants"] if a["username"] == row["username"])
+        search = f"{row['username']} {agg['model']} {agg['model_name']} {agg['variant'] or 'default'} {agg['kind']}".lower()
+        pill = "ok" if agg["kind"] == "contrarian" else "mut"
+        add(f"""<tr data-shadow="{esc(row['username'])}" data-search="{esc(search)}"><td class="num">{number(row['season_rank'])}</td>
+<td class="sym">{esc(row['username'])}</td><td><span class="pill {pill}">{esc(agg['kind'])}</span></td>
+<td>{esc(agg['model'])} — {esc(agg['model_name'])}</td><td>{esc(agg['variant'] or 'default')}</td>
+<td class="num">{smoney(row['season_realized_pnl_usd'], 0)}</td>
+<td class="num">{number(row['season_multiple'], 4)}x</td>
+<td class="num{' up' if row['best_edition_multiple'] >= 5 else ''}">{number(row['best_edition_multiple'], 2)}x</td>
+<td class="num">{number(row['editions_ge_5x'])}</td>
+<td class="num{' down' if agg['ruined_editions'] else ''}">{number(agg['ruined_editions'])}</td></tr>""")
+    add("</tbody></table></div>")
+    add(f"""<div class="callout"><h3>Season vs single-edition: what the numbers say</h3>
+<p>Contrarian fade models produced the only explosive editions — best {number(comp_contrast['contrarian']['best_single_edition_multiple'], 2)}x in 30 calendar days
+on daily bars versus {number(comp_contrast['baseline']['best_single_edition_multiple'], 2)}x for the trend baselines, with {number(comp_ts['users_reaching_5x_any_edition'])} of
+{number(len(comp_board))} usernames reaching ≥5x at least once. But full 20:1 deployment with no stops also ruined
+{number(comp_ts['ruined_participant_editions'])} participant-editions outright, so season compounding collapses for almost everyone
+(best season multiple on the board: {number(max(r['season_multiple'] for r in comp_board), 4)}x). That is the project's core finding in miniature:
+explosive single-edition outcomes exist in the captured data, and the contest's no-reset rule makes harvesting them
+survivorship-bound, not strategy-bound alone.</p></div>
+<h3>Latest edition leaderboard ({esc(comp_latest['start_date'])} → {esc(comp_latest['end_date'])}, {esc(comp_meta['primary_scenario'])} cost)</h3>
+<div class="table-wrap"><table id="shadow-latest"><thead><tr><th class="num">Rank</th><th>Username</th><th class="num">Realized P/L</th><th class="num">Multiple</th><th class="num">Trades</th><th class="num">Active days</th><th class="num">Min 5 active days</th><th class="num">Margin-breach bars</th></tr></thead><tbody>""")
+    for row in comp_latest["rows"][:10]:
+        add(f"""<tr><td class="num">{number(row['rank'])}</td><td class="sym">{esc(row['username'])}</td>
+<td class="num{' up' if row['realized_pnl_usd'] > 0 else ' down'}">{smoney(row['realized_pnl_usd'], 0)}</td>
+<td class="num">{number(row['equity_multiple'], 3)}x</td><td class="num">{number(row['trades'])}</td>
+<td class="num">{number(row['active_days'])}</td><td class="num">{'yes' if row['meets_min_active_days'] else 'no'}</td>
+<td class="num">{number(row['margin_breach_bars'])}</td></tr>""")
+    add("</tbody></table></div>")
+    add(f"""<h3>Contrarian strategy models (C1–C5) and baselines</h3>
+<div class="grid cols-3">""")
+    for m in comp_models:
+        pill = "ok" if m["kind"] == "contrarian" else "mut"
+        add(f"""<article class="card strategy-card" data-cstrat="{esc(m['model'])}"><div class="model-head"><span class="mono">{esc(m['model'])}</span><span class="pill {pill}">{esc(m['kind'])}</span></div>
+<h3>{esc(m['name'])}</h3><p>{esc(m['claim'])}</p>
+<div class="note">{esc(m['params'])}</div></article>""")
+    add(f"""</div>
+<details class="assumptions"><summary>Simulation assumptions and design</summary><ul>""")
+    for a in comp_meta["assumptions"]:
+        add(f"<li>{esc(a)}</li>")
+    add(f"""<li>Editions share one union calendar of the {number(len(comp_meta['eligible_symbols']))} eligible captured series; LATEST may overlap the final season edition and is excluded from season standings.</li>
+<li>Zero-cost robustness run: zero-cost season leaders by edition wins — {esc('; '.join(f"{u} {n}" for u, n in comp['scenario_zero_leader_wins']))}.</li>
+</ul></details>
+<p class="file-links"><a href="data/competition_results.json">Full results (JSON)</a>
+<a href="data/competition/roster.json">Roster (JSON)</a>
+<a href="intel/competition.py">Engine source</a>
+<a href="intel/contrarian.py">Contrarian models</a></p>
+<p class="note">Artifact stamp: <code>{esc(comp_meta['generated_utc'])}</code> — every run is byte-reproducible from the committed vendor captures via <code>python3 scripts/run_competition.py --stamp {esc(comp_meta['generated_utc'])}</code>; the verifier re-runs exactly that and requires identical output.</p></section>""")
 
     # Contest returns
     add(f"""<section id="returns"><h2>Official simulated contest outcomes</h2>

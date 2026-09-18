@@ -1,4 +1,4 @@
-.PHONY: all verify selftest site serve clean check backtest capture refresh placement
+.PHONY: all verify selftest site serve clean check backtest competition capture refresh placement
 
 all: check
 
@@ -10,6 +10,10 @@ verify:
 
 backtest:
 	python3 scripts/run_backtests.py
+
+# Re-run the shadow competition from the raw captures (deterministic given --stamp).
+competition:
+	python3 scripts/run_competition.py --stamp "$$(python3 -c "import json;print(json.load(open('data/competition_results.json'))['_meta']['generated_utc'])")"
 
 capture:
 	python3 scripts/fetch_market_data.py
