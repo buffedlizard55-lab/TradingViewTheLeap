@@ -82,7 +82,7 @@ class LeaderboardLabTests(unittest.TestCase):
         for target in result["targets"]:
             expected = sum(m >= target["balance_multiple"] for m in multiples)
             self.assertEqual(target["completed_champion_sample_at_or_above"], expected)
-        self.assertEqual(cs["completed_champions_at_or_above_capture5_rank50"], 1)
+        self.assertEqual(cs["completed_champions_at_or_above_latest_rank50"], 1)
 
     def test_daily_equity_path_matches_stated_rate(self):
         # Growth at the stated daily rate must reach the target multiple it was derived from.
@@ -107,7 +107,7 @@ class LeaderboardLabTests(unittest.TestCase):
             self.assertEqual(row["modeled_initial_notional_usd"],
                              capacity[row["symbol"]]["modeled_initial_notional_usd"])
             needed = 100 * rank50_usd / row["modeled_initial_notional_usd"]
-            self.assertAlmostEqual(row["favorable_move_pct_needed_for_capture5_rank50_level"],
+            self.assertAlmostEqual(row["favorable_move_pct_needed_for_latest_rank50_level"],
                                    round_half_up(needed, 6), places=6)
             if row["vendor_history_sessions"] is not None:
                 self.assertEqual(row["vendor_history_sessions"], vol[row["symbol"]]["sessions"])

@@ -28,6 +28,11 @@ jobs:
           python3 scripts/target_lab.py
           git diff --exit-code -- data/target_lab.json
 
+      - name: Rebuild intelligence report
+        run: |
+          python3 scripts/build_intelligence.py
+          git diff --exit-code -- data/intelligence_report.json
+
       - name: Rebuild the site from data
         run: python3 scripts/build_site.py
 
@@ -59,6 +64,7 @@ jobs:
           models = json.load(open("research/strategy/models.json"))
           sources = json.load(open("research/sources/sources.json"))
           frontier = json.load(open("data/frontier_history.json"))
+          intelligence = json.load(open("data/intelligence_report.json"))
           market_idx = json.load(open("data/market_history_index.json"))
           backtests = json.load(open("data/backtest_results.json"))
           vol = json.load(open("data/volatility_intelligence.json"))
@@ -103,8 +109,8 @@ jobs:
           for row in comp["leaderboard"]:
               if row["username"] not in html:
                   probs.append(f'shadow username {row["username"]} missing from page')
-          for required in (cfg["edition_label"], snapshot["_meta"]["captured_at_utc"],
-                           backtests["_meta"]["generated_utc"]):
+          for required in (cfg["edition_label"], frontier["captures"][-1]["captured_at_utc"],
+                           backtests["_meta"]["generated_utc"], intelligence["_meta"]["generated_utc"]):
               if required not in html:
                   probs.append(f"required live-edition value {required!r} missing")
           for m in backtests["models"]:

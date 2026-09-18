@@ -83,18 +83,24 @@ def build() -> str:
     vol_intel = load("data/volatility_intelligence.json")
     placement = load("data/leaderboard_lab.json")
     competition = load("data/competition_results.json")
+    intelligence = load("data/intelligence_report.json")
 
     sources = source_registry["sources"]
     source_by_id = {s["source_id"]: s for s in sources}
     source_url = {sid: item["url"] for sid, item in source_by_id.items()}
-    live_rank = {row["rank"]: row for row in snapshot["leaderboard"]}
+    latest_frontier = frontier_history["captures"][-1]
+    live_rank = {
+        int(rank): {"rank": int(rank), **row}
+        for rank, row in latest_frontier["rows"].items()
+    }
+    latest_frontier_source_id = latest_frontier["source_id"]
     last_visible_rank = cfg["public_leaderboard_last_visible_rank"]
     target_rank = capacity["_meta"]["target_rank"]
     live_return = next(row for row in returns["records"] if row["status"] == "in_progress")
     completed_returns = [row for row in returns["records"] if row["status"] == "final"]
     completed_best = max(completed_returns, key=lambda row: row["return_multiple"])
     exchange_counts = Counter(row["exchange"] for row in universe["instruments"])
-    snapshot_at = snapshot["_meta"]["captured_at_utc"]
+    snapshot_at = latest_frontier["captured_at_utc"]
     captured_syms = [c for c in market_index["captures"] if c.get("status") == "captured"]
 
     out: list[str] = []
@@ -125,7 +131,7 @@ are labeled separately.</p>
 <div class="snapshot-card"><span class="pill ok">live edition</span>
 <strong>{esc(cfg['edition_label'])}</strong>
 <span>Research snapshot</span><code>{esc(snapshot_at)}</code>
-<span>Displayed participants</span><strong>{number(snapshot['participants_displayed'])}</strong>
+<span>Displayed participants</span><strong>{number(latest_frontier['participants_displayed'])}</strong>
 </div></div>
 <div class="badge-row">
 <span class="badge">{number(universe['_meta']['instrument_count'])} eligible futures</span>
@@ -145,6 +151,7 @@ are labeled separately.</p>
 <li><a href="#frontier">Live frontier</a></li>
 <li><a href="#capacity">Capacity</a></li>
 <li><a href="#intelligence">Market data</a></li>
+<li><a href="#intel-status">Intelligence status</a></li>
 <li><a href="#strategies">Strategies</a></li>
 <li><a href="#backtests">Backtest lab</a></li>
 <li><a href="#competition">Shadow comp</a></li>
@@ -203,11 +210,14 @@ no published performance result because no authenticated Strategy Report run was
     # Target arithmetic is deliberately separate from market performance.
     add(f"""<section id="targets"><h2>Return-target lab</h2>
 <p class="lead">What would 5× to 100× actually require? Reproducible arithmetic, not a backtest or a prediction.</p>
-<div class="callout high"><h3>Fresh rules review · 17 September 2026</h3>
-<p>Cash prizes end at rank 50; ranks 51–300 receive subscriptions. The leaderboard and quote inputs
-on this site remain the <strong>{esc(snapshot_at)}</strong> snapshot, not live prices.</p>
+<div class="callout high"><h3>Current official frontier review · {esc(latest_frontier['captured_at_utc'])}</h3>
+<p>Cash prizes end at rank 50; ranks 51–300 receive subscriptions. Frontier values on this page use
+that latest point-in-time leaderboard capture. Capacity and quote arithmetic remain tied to the
+separately labeled baseline snapshot, not live executable prices.</p>
 <p>{link(source_url['TV-RULES-AMP-SEP2026'], 'Official rules §§05, 08–09 ↗')} ·
-<a href="research/evidence/AUDIT-2026-09-17.md">Claim-by-claim review &amp; next-session plan</a></p>
+<a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md">Latest capture evidence</a> ·
+<a href="research/evidence/AUDIT-2026-09-18-PASS9.md">Ninth-pass audit</a> ·
+<a href="research/evidence/AUDIT-2026-09-17.md">Prior claim-by-claim audit</a></p>
 <p>Eligibility and potential identity/prize paperwork cannot be completed from this repository.
 No competition trades have been placed.</p></div>
 <div class="table-wrap"><table><caption>Balance multiples, not profit multiples. Historical counts exclude the in-progress edition.</caption>
@@ -349,8 +359,8 @@ a +1% underlying move per day; an adverse day of the same size removes the same 
 </div>
 </div>
 <div class="callout high"><h3>What the cash-prize level means across the official champion sample</h3>
-<p>{cs['completed_champions_strictly_below_capture5_rank50']} of {cs['completed_records']} completed-edition champions finished
-<em>below</em> the {cs['capture5_rank50_multiple']}× that rank 50 displayed at the latest capture; only the {cs['maximum_completed_multiple']}×
+<p>{cs['completed_champions_strictly_below_latest_rank50']} of {cs['completed_records']} completed-edition champions finished
+<em>below</em> the {cs['latest_rank50_multiple']}× that rank 50 displayed at the latest capture; only the {cs['maximum_completed_multiple']}×
 record sits above it. That is cross-edition context — different rules, different participant counts, and no
 completed edition ran the same instrument set — so it is evidence of what has been published, not a benchmark
 and not a success probability.</p></div>
@@ -363,7 +373,7 @@ and not a success probability.</p></div>
         flag = row['history_contains_a_30d_window_as_large_as_that_requirement']
         flag_txt = "—" if flag is None else ("yes" if flag else "no")
         add(f"<tr><td>{esc(row['symbol'])}</td><td class=\"num\">{money(row['modeled_initial_notional_usd'], 0)}</td>"
-            f"<td class=\"num\">{number(row['favorable_move_pct_needed_for_capture5_rank50_level'], 2)}%</td>"
+            f"<td class=\"num\">{number(row['favorable_move_pct_needed_for_latest_rank50_level'], 2)}%</td>"
             f"<td class=\"num\">{best_txt}</td><td>{flag_txt}</td></tr>")
     add(f"""</tbody></table></div>
 <p class="note">The requirement column is the rank-50 level divided by each instrument's modeled initial
@@ -379,10 +389,11 @@ means the vendor history contained a move that large <em>once</em>; it is not a 
 <div class="note">rank-50 P/L above rank-100 P/L at the latest capture</div></div>
 </div>
 <p><a href="data/leaderboard_lab.json" download>Download placement arithmetic (JSON)</a> ·
-{link(source_url['TV-CONTEST-AMP-SEP2026-R7'], 'Latest leaderboard capture ↗')} ·
-{link(source_url['TV-RULES-AMP-SEP2026-R7'], 'Rules re-verified ↗')} ·
-{link(source_url['TV-THELEAP-LANDING-R7'], 'Champion sample re-verified ↗')} ·
-<a href="research/evidence/AUDIT-2026-09-17-PASS7.md">Seventh-pass audit &amp; next-session plan</a></p>
+{link(source_url[latest_frontier_source_id], 'Latest leaderboard capture ↗')} ·
+{link(source_url['TV-RULES-AMP-SEP2026'], 'Official rules ↗')} ·
+{link(source_url['TV-THELEAP-LANDING'], 'Official landing page ↗')} ·
+<a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md">Eighth-pass capture evidence</a> ·
+<a href="data/intelligence_report.json">Auditable intelligence report (JSON)</a></p>
 <div class="callout critical"><h3>Read this before acting on any number here</h3>
 <p>Cash prizes end at rank 50; ranks 51–300 receive a subscription. Every frontier value is a moving
 point-in-time display that the organiser can correct, and the arithmetic above shows what the level costs —
@@ -426,8 +437,8 @@ various scripts, can trigger a ban. This repository does not automate the compet
 <p class="lead">Selected rows captured at <code>{esc(snapshot_at)}</code>. They can move after capture.
 The percentage/dollar pairs are verifier-checked against the starting balance and display rounding.</p>
 <div class="table-wrap"><table><thead><tr><th>Rank</th><th>Trader</th><th class="num">Realized profit %</th><th class="num">Realized profit $</th><th>Tier at capture</th></tr></thead><tbody>""")
-    for row in snapshot["leaderboard"]:
-        rank = row["rank"]
+    for rank, row in live_rank.items():
+        rank = int(rank)
         tier = next(t for t in cfg["prize_tiers"] if t["from_rank"] <= rank <= t["to_rank"])
         prize = money(tier["cash_usd_each"], 0) if tier["cash_usd_each"] is not None else f"{tier['plan_months_each']}-month plan"
         add(f"<tr><td class=\"num\">{rank}</td><td>{esc(row['trader'])}</td><td class=\"num\">+{number(row['realized_profit_pct'], 2)}%</td><td class=\"num\">+{money(row['realized_profit_usd'])}</td><td>{esc(prize)}</td></tr>")
@@ -568,6 +579,49 @@ at the modeled initial notional, would it have covered the captured rank-{target
 <p class="file-links"><a href="data/market_history_index.json">Capture index (JSON)</a>
 <a href="data/volatility_intelligence.json">Volatility records (JSON)</a></p></section>""")
 
+
+    # Consolidated intelligence and provenance status
+    intel_results = intelligence["model_comparison"]["results"]
+    intel_status = intelligence["status_register"]
+    add(f"""<section id="intel-status"><h2>Intelligence layer — evidence, tests, and blocked work</h2>
+<p class="lead">This register keeps the research layers separate: official TradingView/CME evidence,
+vendor market data, and repository-generated paper simulations. It is a status report, not a signal,
+forecast, or claim that any listed contest trader used one of these models.</p>
+<div class="grid cols-3">
+<div class="card"><h3>Official evidence</h3><div class="stat green">verified</div>
+<div class="note">rules, public leaderboard captures, and displayed participant counts</div></div>
+<div class="card"><h3>Vendor data</h3><div class="stat amber">{number(intelligence['provenance']['market_data_vendor']['captured_series'])} series</div>
+<div class="note">front-month futures; roll and transport caveats remain</div></div>
+<div class="card"><h3>Platform validation</h3><div class="stat red">blocked / unrun</div>
+<div class="note">no authenticated TradingView Strategy Report export</div></div>
+</div>
+<div class="callout high"><h3>Current comparison verdict</h3>
+<p>{esc(intelligence['model_comparison']['decision']['interpretation'])}</p>
+<p><strong>Thresholds reached in the shadow simulation:</strong>
+5× = {number(intelligence['model_comparison']['kind_contrast']['contrarian']['participant_editions_ge_5x'] + intelligence['model_comparison']['kind_contrast']['baseline']['participant_editions_ge_5x'])} participant-editions;
+10× = no; 20× = no; 50× = no; 100× = no.</p></div>
+<h3>Frozen-model comparison by paper usernames</h3>
+<div class="table-wrap"><table id="intel-model-table"><thead><tr><th>Model</th><th>Kind</th><th class="num">Users</th>
+<th class="num">Best single edition</th><th class="num">Median best edition</th><th class="num">≥5× editions</th>
+<th class="num">≥10× editions</th><th class="num">Ruined editions</th><th class="num">Latest median</th></tr></thead><tbody>""")
+    for row in intel_results:
+        kind_cls = "up" if row["kind"] == "contrarian" else ""
+        add(f"""<tr><td class="sym">{esc(row['model'])} — {esc(row['name'])}</td><td>{esc(row['kind'])}</td>
+<td class="num">{number(row['participants'])}</td><td class="num {kind_cls}">{number(row['best_single_edition_multiple_max'], 2)}×</td>
+<td class="num">{number(row['best_single_edition_multiple_median'], 2)}×</td><td class="num">{number(row['participant_editions_ge_5x'])}</td>
+<td class="num">{number(row['participant_editions_ge_10x'])}</td><td class="num">{number(row['ruined_editions'])}</td>
+<td class="num">{number(row['latest_edition_multiple_median'], 2)}×</td></tr>""")
+    add("""</tbody></table></div>
+<h3>Workstream status</h3><div class="table-wrap"><table id="intel-status-table"><thead><tr><th>Workstream</th><th>Status</th><th>Evidence</th><th>Next honest step</th></tr></thead><tbody>""")
+    for item in intel_status:
+        status_cls = "ok" if item["status"] in ("verified", "captured") else ("warn" if "caveat" in item["status"] else "no")
+        evidence = "; ".join(item["evidence"])
+        add(f"<tr><td class=\"sym\">{esc(item['workstream'])}</td><td><span class=\"pill {status_cls}\">{esc(item['status'].replace('_', ' '))}</span></td><td>{esc(evidence)}</td><td>{esc(item['next_step'])}</td></tr>")
+    add(f"""</tbody></table></div>
+<p class="note">Official boundary: the public leaderboard provides displayed P/L and rank, not a reconstructable trade ledger.
+Vendor boundary: the futures files are useful for screening and simulation, not proof of official fills.
+Simulation boundary: the engine uses declared costs, caps, whole contracts, and usernames, but its finite history and
+model assumptions can still produce fragile results. <a href="data/intelligence_report.json">Download the full auditable intelligence report (JSON)</a>.</p></section>""")
 
     # Strategy models
     add(f"""<section id="strategies"><h2>Strategy candidates and test tools</h2>
