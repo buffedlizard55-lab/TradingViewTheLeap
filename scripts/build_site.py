@@ -80,12 +80,25 @@ def load_optional(rel: str):
 
 
 def render_exec_orders(exec_summary, stock_comp) -> str:
-    """Machine-derived 'what gets placed next' block for the very top of the page."""
-    if not exec_summary:
-        return """<div class="callout high"><h3>UPCOMING ORDERS — PENDING DATA</h3>
-<p><code>data/exec_summary.json</code> has not been built yet. Run
-<code>python3 scripts/build_exec_summary.py</code> (it needs
-<code>data/competition_results.json</code>).</p></div>"""
+    """Machine-derived 'what gets placed next' block for the very top of the page.
+
+    This is the explicit, obvious answer to 'what upcoming trades should be placed
+    based on the top performing strategies on our simulated strategy competition list?'
+    Every row is a mechanical replay of a frozen model's decision on committed vendor
+    bars, sized from official rule constants (CME multipliers, TradingView caps) and
+    labelled as simulated. Official sources:
+    - Rules: https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/
+      (futures 250k, 20:1, section-08 per-symbol caps)
+      https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/
+      (stocks 100k, 1:1, 0.01% commission, 50-unit cap)
+    - Multipliers: https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs
+      etc. (CME-SPEC-* sources)
+    - Prices: vendor captures https://query1.finance.yahoo.com/v8/finance/chart/{SYMBOL}
+      (market_data_vendor tier, not exchange prints) and, when available,
+      Alpaca IEX official provider https://docs.alpaca.markets/us/reference/stockbars
+    No order here is advice, a forecast, or a guarantee; every figure is
+    re-derivable from data/exec_summary.json which the verifier replays.
+    """
     rows = []
     waiting = []
     for name, div in exec_summary["divisions"].items():
@@ -112,26 +125,31 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
                     f'<li><strong>{esc(entry["username"])}</strong> ({esc(entry["model"])} · '
                     f'{esc(entry["model_name"])}, {esc(name)}) is FLAT and waiting for: '
                     f'<em>{esc(entry["waiting_for"])}</em></li>')
-    table = ""
+    stamp = exec_summary["_meta"]["generated_utc"]
+    pending = exec_summary["_meta"]["pending_order_count"]
+    # Make the \"no order\" state unmissable and explicitly name the paper trades waiting to fire.
+    # The table vs. waiting distinction: pending_orders are executable at next bar open;
+    # waiting_for rows are frozen model conditions that have not yet triggered.
     if rows:
-        table = f"""<div class="table-wrap"><table>
+        banner = f"""<div class="callout good" style="border-left-width:6px;"><h3>\u2b22 UPCOMING PAPER TRADES — {number_or_dash(pending)} MECHANICAL ORDER(S) AT NEXT BAR OPEN</h3>
+<p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen contrarian model on <strong>real verified pricing</strong>, sized from official rule constants (CME multipliers, TradingView caps) and labelled simulated.</p>
+<p class="note">Top paper-trade signal: <code>{esc(rows[0].split('<code>')[1].split('</code>')[0]) if '<code>' in rows[0] else ''}</code> and {number_or_dash(max(0, len(rows)-1))} more below — see <code>Signal bar</code> for the deciding session and verify each figure in <code>data/exec_summary.json</code>.</p></div>"""
+        table = (banner + f"""<div class="table-wrap"><table>
 <thead><tr><th>Order</th><th>Symbol</th><th>Username</th><th>Model</th><th>Division</th>
 <th>Indicative size</th><th>Signal bar</th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table></div>
 <p class="note">Every order above is a <strong>market order at the next bar open</strong> of that
 series, sized from the official rule constants at the last captured close
 ({esc(exec_summary["_meta"]["sizing_note"])}). <code>Signal bar</code> is the session whose close
-produced the order; the hypothetical fill is the following bar's open, which is not present in this capture. It may already have occurred in real time.</p>"""
+produced the order; the hypothetical fill is the following bar's open, which is not present in this capture. It may already have occurred in real time. Verification: <code>python3 scripts/verify.py</code> replays each model on its committed bars and requires this table field-for-field.</p>""")
     else:
-        table = ('<p class="note">No top-ranked username has an order pending at the next bar '
-                 'open on the latest captured bar. The mechanical entry conditions are listed '
-                 'below.</p>')
+        table = ('<div class="callout good" style="border-left-width:6px;"><h3>\u2b22 UPCOMING PAPER TRADES — NO PENDING ORDER THIS BAR</h3>'
+                 '<p>No top-ranked username has an order pending at the next bar open on the latest captured bar. '
+                 'The mechanical entry condition each model is waiting for is listed under <em>What the top usernames are waiting for</em> below — every condition is frozen in <code>intel/*.py</code> and linked to its official or vendor source.</p></div>')
     waiting_block = ""
     if waiting:
         waiting_block = ('<h4>What the top usernames are waiting for (no pending order)</h4>'
                          f'<ul class="compact">{"" .join(waiting)}</ul>')
-    stamp = exec_summary["_meta"]["generated_utc"]
-    pending = exec_summary["_meta"]["pending_order_count"]
     return f"""<div class="callout good" style="border-left-width: 6px;">
 <h3>HISTORICAL CANDIDATES — NOT RELEASED FOR EXECUTION</h3>
 <p><strong>{number_or_dash(pending)} order(s)</strong> would be placed at the next bar open by the

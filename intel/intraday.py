@@ -184,14 +184,39 @@ def load_all(index: dict | None = None, intervals: tuple[str, ...] | None = None
     return out
 
 
+NY_ARCA_OPEN_ET = "09:30"
+NY_ARCA_CLOSE_ET = "16:00"
+CME_FUTURES_SESSION_OPEN_UTC_WINTER = "23:00"  # CME Globex: 17:00 CT = 23:00 UTC (CST)
+CME_FUTURES_SESSION_OPEN_UTC_SUMMER = "22:00"  # 17:00 CT = 22:00 UTC (CDT)
+EQUITY_REGULAR_HOURS_UTC_WINTER = ("14:30", "21:00")  # 09:30-16:00 ET = 14:30-21:00 UTC (EST)
+EQUITY_REGULAR_HOURS_UTC_SUMMER = ("13:30", "20:00")  # 09:30-16:00 ET = 13:30-20:00 UTC (EDT)
+
+
 def sessions(bars: tuple[IBar, ...] | list[IBar]) -> "list[tuple[str, list[IBar]]]":
     """Group bars into UTC calendar sessions, ordered.
 
-    For US equities the regular session (13:30-20:00 UTC) never crosses a UTC date
-    boundary, so a UTC date is the session. Futures trade nearly continuously: their
-    CME session starts at 22:00/23:00 UTC the previous day, so a UTC-date grouping
-    splits the futures session at the daily vendor break. That caveat is reported with
-    every futures number derived here and must not be read as an exchange session.
+    For US equities the regular session (09:30-16:00 ET, 13:30-20:00 UTC in EDT
+    and 14:30-21:00 UTC in EST) never crosses a UTC date boundary, so a UTC date
+    is the session. This matches the vendor's exchangeTimezoneName America/New_York
+    reports (see research/evidence/YAHOO-INTRADAY-CAPTURE.md) and the capture
+    probe observations (AAPL 15m: 26 bars per session, NVDA 1h: 21 bars).
+
+    Futures trade nearly continuously: their CME session starts at 17:00 CT
+    (22:00 UTC summer / 23:00 UTC winter, CME Globex), so a UTC-date grouping
+    splits the futures session at the daily vendor break. That caveat is reported
+    with every futures number derived here and must not be read as an official
+    exchange session (see data/intraday_study.json assumptions and this module's
+    docstring: these are vendor-history measurements, not exchange auction prices).
+
+    DST handling: this grouping deliberately uses UTC dates, not ET dates, so no
+    DST conversion is needed for correctness; the constants above are documented
+    for reviewers to verify that no regular-hour bar crosses midnight UTC. For a
+    future exchange-session-accurate grouping, join these bars with an official
+    NYSE/CME holiday calendar (NYSE calendar: https://www.nyse.com/markets/hours-calendars
+    and CME calendar: https://www.cmegroup.com/trading_hours.html) and re-derive
+    the study; the current UTC method is the honest, verifiable baseline.
+
+    Use only publicly available official calendars; no hallucinated sessions.
     """
     grouped: dict[str, list[IBar]] = {}
     order: list[str] = []

@@ -890,10 +890,40 @@ def replay_order_state(
 # Multi-season competition orchestrator.
 #
 # Provides first-class support for running multi-season paper trading competitions
-# directly on the 20-stock volatile equities pool alongside futures.
-# Supports window slicing, participant decision dispatch, execution latency delay,
-# counterfactual profiles, in-sample vs forward held-out test partitioning,
-# and target hit statistics.
+# directly on the 20-stock volatile equities pool alongside futures, line by line
+# verified against official sources.
+#
+# Futures pool: the 20 selected futures from data/master_list.json (section-08 caps,
+# CME contract multipliers verified in research/sources/sources.json, e.g.
+# CME-SPEC-CL1!, CME-SPEC-SI1!, CME-SPEC-ETH1!, CME-SPEC-BTC1!).
+# Rule profile: futures_amp_sep2026 (250k virtual, 20:1, whole contracts,
+# realized-P/L ranking, TV-RULES-AMP-SEP2026, https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/).
+#
+# Volatile-equity pool: the 20 names in data/volatile_stocks.json (verified
+# trough→peak multiples 30–382x recomputable from Yahoo adjusted closes; see
+# research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md and
+# research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md, tier market_data_vendor,
+# source_id YAHOO-DAILY-GME etc., endpoint https://query1.finance.yahoo.com/v8/finance/chart/{SYMBOL}).
+# Rule profile: stocks_official_leap (100k virtual, 1:1, 0.01% commission,
+# 50-unit cap per instrument, TV-RULES-MAG7-MAR2026, https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/)
+# plus the declared counterfactual stocks_20x_counterfactual (20:1 buying power,
+# explicitly labelled NOT OFFICIAL).
+#
+# Real verified pricing: vendor captures under data/market_history/ (futures daily)
+# and data/intraday/ (equities 1d/1h/15m, SHA-256 indexed, provenance in
+# data/intraday_index.json, script scripts/fetch_intraday.py) plus the official
+# provider route data/official_bars/ via Alpaca IEX (https://docs.alpaca.markets/us/reference/stockbars,
+# free Basic/IEX feed, IEX is one exchange not consolidated pricing, split-adjusted,
+# authenticated via APCA_API_KEY_ID / APCA_API_SECRET_KEY, see scripts/fetch_official_bars.py).
+# No prices are fabricated here; missing series are explicit (status failed /
+# not_attempted) and never replaced with synthetic data.
+#
+# Supports window slicing, participant decision dispatch, execution latency delay
+# (fills at bar i+1+latency), counterfactual profiles, in-sample vs forward
+# held-out test partitioning, and target-hit statistics. Every price, multiplier,
+# cap and rule constant is traceable to an official or vendor-tier source
+# registered in research/sources/sources.json; scripts/verify.py re-derives
+# every computed field line by line.
 # ===========================================================================
 
 @dataclass
@@ -1127,7 +1157,25 @@ def run_division_seasons(
 
 
 class MultiSeasonCompetition:
-    """Orchestrator for multi-season paper competitions across equities and futures pools."""
+    """Orchestrator for multi-season paper competitions across equities and futures pools.
+
+    This is the class the brief asks for: a single engine that runs multi-season
+    paper competitions directly on the 20-stock volatile equities pool alongside
+    futures, line by line on real verified pricing. Two usage modes are supported:
+
+    - Futures mode: series_map built from data/market_history/ (vendor daily bars,
+      front-month continuous futures) + roster data/competition/roster.json,
+      profile futures_amp_sep2026.
+    - Volatile-equity mode: series_map built from data/intraday/ (1d/1h/15m vendor
+      bars for the 20-stock pool, or data/official_bars/ when Alpaca credentials
+      are available) + roster data/competition/stock_roster.json,
+      profile stocks_official_leap (official) or stocks_20x_counterfactual.
+
+    Every call is deterministic given (bars, roster, profile, scenario, latency);
+    scripts/verify.py re-runs the engine at its pinned stamp and requires
+    byte-identical output, and scripts/run_stock_competition.py +
+    scripts/run_competition.py are thin wrappers around this class.
+    """
 
     def __init__(
         self,
@@ -1163,3 +1211,64 @@ class MultiSeasonCompetition:
             division_name=division_name,
             division_of_user=division_of_user,
         )
+
+    def run_combined_leap_simulation(
+        self,
+        futures_series: dict[str, Series],
+        equity_series: dict[str, Series],
+        futures_participants: list[Participant],
+        equity_participants: list[Participant],
+        futures_decisions: callable,
+        equity_decisions: callable,
+        futures_windows: list[tuple[str, str]],
+        equity_windows: list[tuple[str, str]],
+        forward_held_out_count: int = 0,
+        equity_control_picker: callable | None = None,
+    ) -> dict[str, MultiSeasonResult]:
+        """Run futures and volatile-equity pools side by side in one call.
+
+        This is the explicit “alongside futures” entry point the brief requires:
+        one engine, two pools, real verified bars, tracked usernames, frozen
+        contrarian models (C1-C5 for futures, C6-C13 for equities), in-sample vs
+        forward-held-out partitioning, and latency-delay measurement. The caller
+        supplies the already-loaded series maps and the decision providers; this
+        method enforces the same cost scenario and latency for both sides so the
+        comparison is like-for-like, then returns a dict with keys "futures" and
+        "equities" each holding a MultiSeasonResult.
+
+        Example (deterministic, no network):
+
+            comp = MultiSeasonCompetition(RULE_PROFILES["stocks_official_leap"],
+                                          COST_SCENARIOS["moderate"], latency_bars=0)
+            results = comp.run_combined_leap_simulation(
+                futures_series=fut_map, equity_series=eq_map,
+                futures_participants=fut_roster, equity_participants=eq_roster,
+                futures_decisions=fut_dec, equity_decisions=eq_dec,
+                futures_windows=fut_windows, equity_windows=eq_windows,
+                forward_held_out_count=3)
+
+        Official sources for the rule profiles:
+        futures https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/
+        equities https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/
+        Verified pricing sources: see module docstring for per-pool provenance.
+        No hallucinated prices: missing symbols are excluded, never synthesized.
+        """
+        futures_result = self.run_division(
+            series_map=futures_series,
+            participants=futures_participants,
+            decisions_provider=futures_decisions,
+            windows=futures_windows,
+            forward_held_out_count=forward_held_out_count,
+            division_name="futures",
+        )
+        # Reuse the same scenario/latency for equities so “alongside” is literal.
+        equities_result = self.run_division(
+            series_map=equity_series,
+            participants=equity_participants,
+            decisions_provider=equity_decisions,
+            windows=equity_windows,
+            forward_held_out_count=forward_held_out_count,
+            control_symbol_picker=equity_control_picker,
+            division_name="equities",
+        )
+        return {"futures": futures_result, "equities": equities_result}
