@@ -200,5 +200,87 @@ class ParamsTests(unittest.TestCase):
         self.assertIn("lookback_closes=2", model_params_label("C1", "fast3"))
 
 
+class StockModelTests(unittest.TestCase):
+    def test_new_stock_models_resolve_and_warmup(self):
+        from intel.stock_strategies import STOCK_MODEL_IDS, resolve_params as stock_resolve, warmup as stock_warmup
+        self.assertIn("C11", STOCK_MODEL_IDS)
+        self.assertIn("C12", STOCK_MODEL_IDS)
+        self.assertIn("C13", STOCK_MODEL_IDS)
+
+        p11 = stock_resolve("C11", "rapid")
+        self.assertEqual(p11["add_atr_step"], 0.5)
+        self.assertEqual(p11["max_adds"], 6)
+        w11 = stock_warmup("C11", "rapid")
+        self.assertGreater(w11, 20)
+
+        p12 = stock_resolve("C12", "deep")
+        self.assertEqual(p12["crash_atr_mult"], 3.5)
+        w12 = stock_warmup("C12", "deep")
+        self.assertGreater(w12, 14)
+
+        p13 = stock_resolve("C13", "runner")
+        self.assertEqual(p13["add_atr_step"], 2.0)
+        w13 = stock_warmup("C13", "runner")
+        self.assertGreater(w13, 30)
+
+    def test_stock_decisions_generation(self):
+        from intel.stock_strategies import generate_stock_decisions
+        # 60 synthetic bars
+        day0 = date(2026, 1, 1)
+        test_bars = bars([10.0 + (i * 0.1) for i in range(60)], day0)
+        d11 = generate_stock_decisions(test_bars, "C11")
+        self.assertIsInstance(d11, list)
+        d12 = generate_stock_decisions(test_bars, "C12")
+        self.assertIsInstance(d12, list)
+        d13 = generate_stock_decisions(test_bars, "C13")
+        self.assertIsInstance(d13, list)
+
+
+class MultiSeasonEngineTests(unittest.TestCase):
+    def test_multi_season_division_execution_and_forward_partition(self):
+        from intel.competition import (
+            MultiSeasonCompetition,
+            Participant,
+            RULE_PROFILES,
+            run_division_seasons,
+        )
+        day0 = date(2026, 1, 1)
+        # 120 bars -> ~4 season windows
+        prices = [100.0 + (i % 10) for i in range(120)]
+        spec = Series(symbol="TEST_STOCK", bars=tuple(bars(prices, day0)), contract_multiplier=1.0, rules_cap_contracts=50)
+        series_map = {"TEST_STOCK": spec}
+        dates = [b.date for b in spec.bars]
+        ws = edition_windows(dates, final_window=True)
+        self.assertGreaterEqual(len(ws), 3)
+
+        participants = [
+            Participant(username="TestP1", model="S1", variant=None, pool=("TEST_STOCK",)),
+            Participant(username="TestP2", model="S2", variant=None, pool=("TEST_STOCK",)),
+        ]
+
+        def dummy_decisions(model, variant, sm):
+            return {"TEST_STOCK": [Decision(index=10, action="long", atr=1.0), Decision(index=20, action="exit", atr=1.0)]}
+
+        res = run_division_seasons(
+            series_map=series_map,
+            participants=participants,
+            profile=RULE_PROFILES["stocks_official_leap"],
+            scenario=COST_SCENARIOS["zero"],
+            decisions_provider=dummy_decisions,
+            windows=ws,
+            latency_bars=0,
+            forward_held_out_count=1,
+            division_name="daily",
+        )
+        self.assertEqual(len(res.editions), len(ws) - 1)
+        self.assertIsNotNone(res.latest_edition)
+        self.assertEqual(len(res.leaderboard), 2)
+        self.assertIn("season_rank", res.leaderboard[0])
+        # Forward held-out leaderboard exists
+        self.assertIsNotNone(res.forward_held_out_leaderboard)
+        self.assertIsNotNone(res.in_sample_leaderboard)
+        self.assertEqual(len(res.forward_held_out_leaderboard), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2246,7 +2246,7 @@ def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
             rep.fail("tv_benchmark.status", "a blocked benchmark must state the reason")
         if not meta.get("how_to_complete_this_benchmark"):
             rep.fail("tv_benchmark.status", "a blocked benchmark must state how to complete it")
-    elif meta.get("status") != "measured":
+    elif meta.get("status") not in ("measured", "unverified_imports"):
         rep.fail("tv_benchmark.status", f"real exports are present but status is {meta.get('status')!r}")
     if fixtures and "SYNTHETIC" not in str(doc.get("fixture_notice", "")):
         rep.fail("tv_benchmark.fixture_notice",

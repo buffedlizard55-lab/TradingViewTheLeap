@@ -89,7 +89,7 @@ and not a forecast.</p>
 series, sized from the official rule constants at the last captured close
 (Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price.). <code>Signal bar</code> is the session whose close
 produced the order; the hypothetical fill is the following bar's open, which is not present in this capture. It may already have occurred in real time.</p>
-<h4>What the top usernames are waiting for (no pending order)</h4><ul class="compact"><li><strong>FadeThePanic</strong> (C1 · Capitulation reversal, futures) is FLAT and waiting for: <em>A multi-day collapse (or euphoria run) that stretches price by &gt;=1 ATR over 3 closes with ATR expanding is over-extended and mean-reverts over the next ~10 sessions.</em></li><li><strong>ClimaxCarla</strong> (C4 · Exhaustion-bar reversal, futures) is FLAT and waiting for: <em>A range-expansion exhaustion bar (true range &gt;= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.</em></li><li><strong>VolatilityVera</strong> (B1 · Volatility leader, always long (control), stocks_daily) is FLAT and waiting for: <em>nothing further: this is the buy-and-hold control and it places no timing orders</em></li><li><strong>ClimaxCleo</strong> (C10 · Volume-climax reversal, stocks_daily) is FLAT and waiting for: <em>A session whose range is &gt;=2 ATR with volume &gt;=3x average and a close pinned in the extreme 15% of the range marks a volume climax; the next sessions revert.</em></li><li><strong>EmaEddie</strong> (S2 · S2, stocks_daily) is FLAT and waiting for: <em>Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).</em></li></ul>
+<h4>What the top usernames are waiting for (no pending order)</h4><ul class="compact"><li><strong>FadeThePanic</strong> (C1 · Capitulation reversal, futures) is FLAT and waiting for: <em>A multi-day collapse (or euphoria run) that stretches price by &gt;=1 ATR over 3 closes with ATR expanding is over-extended and mean-reverts over the next ~10 sessions.</em></li><li><strong>ClimaxCarla</strong> (C4 · Exhaustion-bar reversal, futures) is FLAT and waiting for: <em>A range-expansion exhaustion bar (true range &gt;= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.</em></li><li><strong>RocketRider</strong> (C13 · Momentum runner surfer, stocks_daily) is FLAT and waiting for: <em>A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</em></li><li><strong>TurboTad</strong> (C13 · Momentum runner surfer, stocks_daily) is FLAT and waiting for: <em>A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</em></li><li><strong>CrashColossus</strong> (C7 · Capitulation pyramider (equity), stocks_daily) is FLAT and waiting for: <em>A single-session collapse of &gt;=2 ATR on &gt;=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.</em></li><li><strong>SpikeSaber</strong> (C6 · Blow-off spike fade, stocks_daily) is FLAT and waiting for: <em>A &gt;=3-session parabolic advance that stretches at least 2 ATR, prints on &gt;=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.</em></li></ul>
 <p class="lead">Explicit and obvious upcoming trade setups derived from the top-ranked usernames
 of this repository's own simulated strategy competitions. Every card and every matrix cell below is
 rendered field by field from <code>data/exec_summary.json</code>, which is itself re-derived from the
@@ -163,46 +163,61 @@ rule constants at the last captured close; an actual fill happens at the next ba
 not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
 <div class="model-head"><span class="pill purple">Volatile-stock division (official stocks-edition rules)</span>
 <span class="pill ok">SEASON RANK 1</span>
-<span class="pill info">$676.78 season P/L</span>
-<span class="pill mut">best edition 1.043618×</span></div>
-<h3>VolatilityVera — no order due</h3>
-<p><strong>Model:</strong> B1 · Volatility leader, always long (control) · params default</p>
+<span class="pill info">$6,607.11 season P/L</span>
+<span class="pill mut">best edition 1.040192×</span></div>
+<h3>RocketRider — no order due</h3>
+<p><strong>Model:</strong> C13 · Momentum runner surfer (variant aggressive) · params add_atr_step=1.0, hold_bars=10, max_adds=6, volume_mult=2.0</p>
 <p><strong>Rule profile:</strong> stocks_official_leap ·
 <strong>as of last captured bar:</strong> 2026-09-18</p>
-<p><strong>Why this model is here:</strong> Control: hold the pool&#x27;s highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.</p>
+<p><strong>Why this model is here:</strong> A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</p>
 <p class="note">No mechanical order is due at the next bar open.</p>
-<p><strong>Waiting for:</strong> <em>nothing further: this is the buy-and-hold control and it places no timing orders</em></p>
+<p><strong>Waiting for:</strong> <em>A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</em></p>
 <p class="note">Currently flat: no position is open, so the next signal opens one.</p>
 <p class="note">Sizing rule for the next order: no order pending. Indicative sizes use the official
 rule constants at the last captured close; an actual fill happens at the next bar's open, which does
 not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
 <div class="model-head"><span class="pill purple">Volatile-stock division (official stocks-edition rules)</span>
 <span class="pill ok">SEASON RANK 2</span>
-<span class="pill info">$631.06 season P/L</span>
-<span class="pill mut">best edition 1.00526×</span></div>
-<h3>ClimaxCleo — no order due</h3>
-<p><strong>Model:</strong> C10 · Volume-climax reversal · params default</p>
+<span class="pill info">$2,681.31 season P/L</span>
+<span class="pill mut">best edition 1.039122×</span></div>
+<h3>TurboTad — no order due</h3>
+<p><strong>Model:</strong> C13 · Momentum runner surfer (variant runner) · params add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5</p>
 <p><strong>Rule profile:</strong> stocks_official_leap ·
 <strong>as of last captured bar:</strong> 2026-09-18</p>
-<p><strong>Why this model is here:</strong> A session whose range is &gt;=2 ATR with volume &gt;=3x average and a close pinned in the extreme 15% of the range marks a volume climax; the next sessions revert.</p>
+<p><strong>Why this model is here:</strong> A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</p>
 <p class="note">No mechanical order is due at the next bar open.</p>
-<p><strong>Waiting for:</strong> <em>A session whose range is &gt;=2 ATR with volume &gt;=3x average and a close pinned in the extreme 15% of the range marks a volume climax; the next sessions revert.</em></p>
+<p><strong>Waiting for:</strong> <em>A new 30-session high breakout accompanied by &gt;=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).</em></p>
 <p class="note">Currently flat: no position is open, so the next signal opens one.</p>
 <p class="note">Sizing rule for the next order: no order pending. Indicative sizes use the official
 rule constants at the last captured close; an actual fill happens at the next bar's open, which does
 not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
 <div class="model-head"><span class="pill purple">Volatile-stock division (official stocks-edition rules)</span>
 <span class="pill ok">SEASON RANK 3</span>
-<span class="pill info">$386.57 season P/L</span>
-<span class="pill mut">best edition 1.004837×</span></div>
-<h3>EmaEddie — no order due</h3>
-<p><strong>Model:</strong> S2 · S2 · params default</p>
+<span class="pill info">$964.05 season P/L</span>
+<span class="pill mut">best edition 1.004822×</span></div>
+<h3>CrashColossus — no order due</h3>
+<p><strong>Model:</strong> C7 · Capitulation pyramider (equity) (variant patient) · params add_atr_step=2.0, crash_atr_mult=2.5, max_adds=3</p>
 <p><strong>Rule profile:</strong> stocks_official_leap ·
 <strong>as of last captured bar:</strong> 2026-09-18</p>
-<p><strong>Why this model is here:</strong> Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).</p>
+<p><strong>Why this model is here:</strong> A single-session collapse of &gt;=2 ATR on &gt;=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.</p>
 <p class="note">No mechanical order is due at the next bar open.</p>
-<p><strong>Waiting for:</strong> <em>Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).</em></p>
-<div class="table-wrap"><table><thead><tr><th>Open position</th><th>Side</th><th>Since</th><th>Last captured close</th></tr></thead><tbody><tr><td><code>ENPH</code></td><td><span class="pill no">short</span></td><td>2026-07-09</td><td class="num">34.6400</td></tr></tbody></table></div>
+<p><strong>Waiting for:</strong> <em>A single-session collapse of &gt;=2 ATR on &gt;=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.</em></p>
+<p class="note">Currently flat: no position is open, so the next signal opens one.</p>
+<p class="note">Sizing rule for the next order: no order pending. Indicative sizes use the official
+rule constants at the last captured close; an actual fill happens at the next bar's open, which does
+not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
+<div class="model-head"><span class="pill purple">Volatile-stock division (official stocks-edition rules)</span>
+<span class="pill ok">SEASON RANK 22</span>
+<span class="pill info">$-4,165.41 season P/L</span>
+<span class="pill mut">best edition 1.009852×</span></div>
+<h3>SpikeSaber — no order due</h3>
+<p><strong>Model:</strong> C6 · Blow-off spike fade (variant aggressive) · params hold_bars=12, run_atr_mult=1.5, volume_mult=1.5</p>
+<p><strong>Rule profile:</strong> stocks_official_leap ·
+<strong>as of last captured bar:</strong> 2026-09-18</p>
+<p><strong>Why this model is here:</strong> A &gt;=3-session parabolic advance that stretches at least 2 ATR, prints on &gt;=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.</p>
+<p class="note">No mechanical order is due at the next bar open.</p>
+<p><strong>Waiting for:</strong> <em>A &gt;=3-session parabolic advance that stretches at least 2 ATR, prints on &gt;=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.</em></p>
+<div class="table-wrap"><table><thead><tr><th>Open position</th><th>Side</th><th>Since</th><th>Last captured close</th></tr></thead><tbody><tr><td><code>ENPH</code></td><td><span class="pill no">short</span></td><td>2026-09-09</td><td class="num">34.6400</td></tr></tbody></table></div>
 <p class="note">Sizing rule for the next order: no order pending. Indicative sizes use the official
 rule constants at the last captured close; an actual fill happens at the next bar's open, which does
 not exist yet, so a live size would differ.</p></div><div class="card"><h3>Volatile-stock hourly division</h3>
@@ -215,7 +230,7 @@ recomputable from the adjusted closes stored in <code>data/volatile_stocks.json<
 re-derived by <code>scripts/verify.py</code>; each is <strong>window-bounded</strong> (the extremum lies
 inside the documented fetch window) and comes from a market-data vendor, not an exchange or the contest
 organiser. In the repository's own paper division — no risk management, maximum deployment, official
-stocks-edition constants — our own daily division leader right now is <code>VolatilityVera</code> (B1, season P&amp;L $676.78, best edition 1.043618×).</p>
+stocks-edition constants — our own daily division leader right now is <code>RocketRider</code> (C13, season P&amp;L $6,607.11, best edition 1.040192×).</p>
 <p class="note"><a href="research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md">Stock-multiple evidence file</a>
 · <a href="research/evidence/YAHOO-INTRADAY-CAPTURE.md">Intraday capture evidence file</a>
 · <a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/" rel="noopener noreferrer">Official stocks-edition rules ↗</a></p></div>
@@ -265,31 +280,40 @@ has no order due at the next bar open — the model card above states the exact 
 <td class="num">3.142041×</td>
 <td><a href="https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html" rel="noopener noreferrer">source ↗</a></td></tr><tr><td>stocks_daily</td>
 <td class="num"><span class="pill ok">1</span></td>
-<td><strong>VolatilityVera</strong></td>
-<td>B1 · Volatility leader, always long (control)</td>
+<td><strong>RocketRider</strong></td>
+<td>C13 · Momentum runner surfer (aggressive)</td>
 <td class="sym">ENPH</td>
 <td><span class="pill mut">WAITING</span></td>
 <td>no order until the stated condition fires</td>
-<td class="num">$676.78</td>
-<td class="num">1.043618×</td>
+<td class="num">$6,607.11</td>
+<td class="num">1.040192×</td>
 <td>—</td></tr><tr><td>stocks_daily</td>
 <td class="num"><span class="pill ok">2</span></td>
-<td><strong>ClimaxCleo</strong></td>
-<td>C10 · Volume-climax reversal</td>
+<td><strong>TurboTad</strong></td>
+<td>C13 · Momentum runner surfer (runner)</td>
 <td class="sym">ENPH</td>
 <td><span class="pill mut">WAITING</span></td>
 <td>no order until the stated condition fires</td>
-<td class="num">$631.06</td>
-<td class="num">1.00526×</td>
+<td class="num">$2,681.31</td>
+<td class="num">1.039122×</td>
 <td>—</td></tr><tr><td>stocks_daily</td>
 <td class="num"><span class="pill ok">3</span></td>
-<td><strong>EmaEddie</strong></td>
-<td>S2 · S2</td>
+<td><strong>CrashColossus</strong></td>
+<td>C7 · Capitulation pyramider (equity) (patient)</td>
 <td class="sym">ENPH</td>
 <td><span class="pill mut">WAITING</span></td>
 <td>no order until the stated condition fires</td>
-<td class="num">$386.57</td>
-<td class="num">1.004837×</td>
+<td class="num">$964.05</td>
+<td class="num">1.004822×</td>
+<td>—</td></tr><tr><td>stocks_daily</td>
+<td class="num"><span class="pill ok">22</span></td>
+<td><strong>SpikeSaber</strong></td>
+<td>C6 · Blow-off spike fade (aggressive)</td>
+<td class="sym">ENPH</td>
+<td><span class="pill mut">WAITING</span></td>
+<td>no order until the stated condition fires</td>
+<td class="num">$-4,165.41</td>
+<td class="num">1.009852×</td>
 <td><a href="https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&amp;period2=1497484800&amp;interval=1d" rel="noopener noreferrer">source ↗</a></td></tr><tr><td>stocks_hourly</td><td colspan="9" class="note">no_captured_series — </td></tr></tbody></table></div>
 
 <div class="disclaimer"><strong>Simulated experiment notice.</strong> Every row above is a mechanical
@@ -2116,20 +2140,20 @@ uses, verified to reproduce the original futures engine byte-for-byte at zero la
 <div class="grid cols-2"><div class="card">
 <h3>Daily division (multi-season)</h3>
 <p class="note">81 editions · 1
-symbols · stocks_official_leap · 486 participant-editions ·
-mean edition multiple 0.999945x ·
+symbols · stocks_official_leap · 1,863 participant-editions ·
+mean edition multiple 0.999943x ·
 editions ≥2x: 0 · ≥5x: 0 ·
 ≥10x: 0 · ruined: 0</p>
 <div class="table-wrap"><table><thead><tr><th>Rank</th><th>Username</th><th>Model</th>
 <th>Season P/L</th><th>Season ×</th><th>Best edition ×</th><th>Median edition ×</th>
-<th>Editions ≥2x</th></tr></thead><tbody><tr data-srow="VolatilityVera"><td>#1</td><td><code>VolatilityVera</code></td><td>B1</td><td>$676.78</td><td>0.999121x</td><td>1.043618x</td><td>1.000173x</td><td>0</td></tr><tr data-srow="ClimaxCleo"><td>#2</td><td><code>ClimaxCleo</code></td><td>C10</td><td>$631.06</td><td>1.006316x</td><td>1.00526x</td><td>1x</td><td>0</td></tr><tr data-srow="EmaEddie"><td>#3</td><td><code>EmaEddie</code></td><td>S2</td><td>$386.57</td><td>1.00381x</td><td>1.004837x</td><td>1x</td><td>0</td></tr><tr data-srow="GapGremlin"><td>#4</td><td><code>GapGremlin</code></td><td>C8</td><td>$0.00</td><td>1x</td><td>1x</td><td>1x</td><td>0</td></tr><tr data-srow="SqueezeSasha"><td>#5</td><td><code>SqueezeSasha</code></td><td>S3</td><td>$-232.63</td><td>0.997538x</td><td>1.008337x</td><td>1x</td><td>0</td></tr><tr data-srow="DonchianDana"><td>#6</td><td><code>DonchianDana</code></td><td>S1</td><td>$-4,131.11</td><td>0.95923x</td><td>1.004682x</td><td>1x</td><td>0</td></tr></tbody></table></div></div><div class="card"><h3>Hourly division (multi-season, intraday)</h3><p class="note">status: no_captured_series</p></div><div class="card"><h3>15-minute division (multi-season, intraday)</h3><p class="note">status: no_captured_series</p></div></div>
+<th>Editions ≥2x</th></tr></thead><tbody><tr data-srow="RocketRider"><td>#1</td><td><code>RocketRider</code></td><td>C13</td><td>$6,607.11</td><td>1.067188x</td><td>1.040192x</td><td>1x</td><td>0</td></tr><tr data-srow="TurboTad"><td>#2</td><td><code>TurboTad</code></td><td>C13</td><td>$2,681.31</td><td>1.026384x</td><td>1.039122x</td><td>1x</td><td>0</td></tr><tr data-srow="CrashColossus"><td>#3</td><td><code>CrashColossus</code></td><td>C7</td><td>$964.05</td><td>1.00967x</td><td>1.004822x</td><td>1x</td><td>0</td></tr><tr data-srow="VolatilityVera"><td>#4</td><td><code>VolatilityVera</code></td><td>B1</td><td>$676.78</td><td>0.999121x</td><td>1.043618x</td><td>1.000173x</td><td>0</td></tr><tr data-srow="ClimaxCleo"><td>#5</td><td><code>ClimaxCleo</code></td><td>C10</td><td>$631.06</td><td>1.006316x</td><td>1.00526x</td><td>1x</td><td>0</td></tr><tr data-srow="VolumeVortex"><td>#6</td><td><code>VolumeVortex</code></td><td>C10</td><td>$631.06</td><td>1.006316x</td><td>1.00526x</td><td>1x</td><td>0</td></tr><tr data-srow="FadeFiend"><td>#7</td><td><code>FadeFiend</code></td><td>C6</td><td>$628.75</td><td>1.006297x</td><td>1.0036x</td><td>1x</td><td>0</td></tr><tr data-srow="RangeRanger"><td>#8</td><td><code>RangeRanger</code></td><td>C10</td><td>$526.04</td><td>1.00526x</td><td>1.00526x</td><td>1x</td><td>0</td></tr><tr data-srow="EmaEddie"><td>#9</td><td><code>EmaEddie</code></td><td>S2</td><td>$386.57</td><td>1.00381x</td><td>1.004837x</td><td>1x</td><td>0</td></tr><tr data-srow="ExhaustionEcho"><td>#10</td><td><code>ExhaustionEcho</code></td><td>C9</td><td>$268.74</td><td>1.002687x</td><td>1.002687x</td><td>1x</td><td>0</td></tr><tr data-srow="DipDestroyer"><td>#11</td><td><code>DipDestroyer</code></td><td>C12</td><td>$121.86</td><td>1.001219x</td><td>1.001219x</td><td>1x</td><td>0</td></tr><tr data-srow="CrashCrusader"><td>#12</td><td><code>CrashCrusader</code></td><td>C12</td><td>$0.00</td><td>1x</td><td>1x</td><td>1x</td><td>0</td></tr><tr data-srow="GapGremlin"><td>#13</td><td><code>GapGremlin</code></td><td>C8</td><td>$0.00</td><td>1x</td><td>1x</td><td>1x</td><td>0</td></tr><tr data-srow="SqueezeSasha"><td>#14</td><td><code>SqueezeSasha</code></td><td>S3</td><td>$-232.63</td><td>0.997538x</td><td>1.008337x</td><td>1x</td><td>0</td></tr><tr data-srow="SqueezeStorm"><td>#15</td><td><code>SqueezeStorm</code></td><td>C11</td><td>$-587.60</td><td>0.994032x</td><td>1.010554x</td><td>1x</td><td>0</td></tr><tr data-srow="DipDynamo"><td>#16</td><td><code>DipDynamo</code></td><td>C7</td><td>$-634.79</td><td>0.993567x</td><td>1.00746x</td><td>1x</td><td>0</td></tr><tr data-srow="VolSpikeVince"><td>#17</td><td><code>VolSpikeVince</code></td><td>C11</td><td>$-973.55</td><td>0.989965x</td><td>1.018453x</td><td>1x</td><td>0</td></tr><tr data-srow="BlowoffBella"><td>#18</td><td><code>BlowoffBella</code></td><td>C6</td><td>$-1,885.47</td><td>0.981217x</td><td>1.0036x</td><td>1x</td><td>0</td></tr><tr data-srow="ParabolaPasha"><td>#19</td><td><code>ParabolaPasha</code></td><td>C9</td><td>$-3,348.69</td><td>0.966782x</td><td>1.0036x</td><td>1x</td><td>0</td></tr><tr data-srow="ParabolaPiranha"><td>#20</td><td><code>ParabolaPiranha</code></td><td>C9</td><td>$-3,909.02</td><td>0.960983x</td><td>1.022397x</td><td>1x</td><td>0</td></tr><tr data-srow="DonchianDana"><td>#21</td><td><code>DonchianDana</code></td><td>S1</td><td>$-4,131.11</td><td>0.95923x</td><td>1.004682x</td><td>1x</td><td>0</td></tr><tr data-srow="SpikeSaber"><td>#22</td><td><code>SpikeSaber</code></td><td>C6</td><td>$-4,165.41</td><td>0.958868x</td><td>1.009852x</td><td>1x</td><td>0</td></tr><tr data-srow="PanicPremier"><td>#23</td><td><code>PanicPremier</code></td><td>C7</td><td>$-4,857.40</td><td>0.952242x</td><td>1.009813x</td><td>1x</td><td>0</td></tr></tbody></table></div></div><div class="card"><h3>Hourly division (multi-season, intraday)</h3><p class="note">status: no_captured_series</p></div><div class="card"><h3>15-minute division (multi-season, intraday)</h3><p class="note">status: no_captured_series</p></div></div>
 <h3>Execution latency sensitivity (real bars, delayed fills)</h3>
 <p class="note">The same editions re-run with every fill delayed by 1, 2 and 5 bars: the engine
 places the order at the open of bar i+1+L instead of i+1. This is the measured cost of
 execution latency inside the simulation, not an assumed number.</p>
 <div class="table-wrap"><table><thead><tr><th>Division</th><th>Latency (bars)</th><th>Trades</th>
 <th>Mean edition ×</th><th>Median edition ×</th><th>Best edition ×</th></tr></thead>
-<tbody><tr><td>daily</td><td>0</td><td>7</td><td>1.00006x</td><td>1x</td><td>1.01835x</td></tr><tr><td>daily</td><td>1</td><td>7</td><td>1.000066x</td><td>1x</td><td>1.01835x</td></tr><tr><td>daily</td><td>2</td><td>7</td><td>1.000053x</td><td>1x</td><td>1.01835x</td></tr><tr><td>daily</td><td>5</td><td>7</td><td>1.000036x</td><td>1x</td><td>1.01835x</td></tr></tbody></table></div>
+<tbody><tr><td>daily</td><td>0</td><td>16</td><td>0.999828x</td><td>1x</td><td>1.020011x</td></tr><tr><td>daily</td><td>1</td><td>16</td><td>0.99984x</td><td>1x</td><td>1.01835x</td></tr><tr><td>daily</td><td>2</td><td>15</td><td>0.999875x</td><td>1x</td><td>1.01835x</td></tr><tr><td>daily</td><td>5</td><td>13</td><td>0.999875x</td><td>1x</td><td>1.01835x</td></tr></tbody></table></div>
 <h3>Single-hold scenario — not a competition return ceiling</h3>
 <p>Applying the historical stock-edition sizing constants to the captured subset yields a
 largest single-hold scenario of <strong>1.046285x</strong>
@@ -2137,7 +2161,7 @@ across 81 editions.
 This does not bound repeated trading, short selling or compounding and does not establish
 whether 5x–100x competition returns are achievable. Coverage is incomplete.</p>
 <p class="note">For each edition: every pool symbol that traded in the window at its first session close, all of them held at the official 50-unit cap simultaneously (notional capped by balance x leverage = 100,000 x 1), and every one of them moving by the largest favourable excursion any single pool name actually made inside that same window. This is a single-hold long-only scenario, NOT an upper bound on repeated trading, short selling or compounding. It cannot establish whether 5x or 10x is reachable in a competition.</p>
-<h3>Counterfactual 20:1 run (NOT an official rule set)</h3><div class="callout high"><p>No official TradingView rules page grants 20:1 on stocks. This run exists only to separate "signal" from "buying power" in the explosive-return question and must never be read as an achievable contest outcome.</p><ul><li><strong>daily</strong>: 12 editions · best single-edition multiple among participants 1.01835x · editions ≥5x: 0 · ≥10x: 0</li></ul></div>
+<h3>Counterfactual 20:1 run (NOT an official rule set)</h3><div class="callout high"><p>No official TradingView rules page grants 20:1 on stocks. This run exists only to separate "signal" from "buying power" in the explosive-return question and must never be read as an achievable contest outcome.</p><ul><li><strong>daily</strong>: 12 editions · best single-edition multiple among participants 1.020011x · editions ≥5x: 0 · ≥10x: 0</li></ul></div>
 </section><section id="intraday"><h2>Intraday gap fills and execution latency (measured)</h2>
 <p class="lead">Two measurements on the committed vendor captures, no modelling: (1) do session
 gaps fill, and how fast; (2) what does execution latency cost, in basis points of the decision

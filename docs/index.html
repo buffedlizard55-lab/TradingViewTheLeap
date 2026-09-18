@@ -456,7 +456,8 @@ footer a:hover { color: var(--accent); }
 <nav class="nav">
   <div class="container">
     <div class="nav-inner">
-      <a href="#overview" class="active">Overview</a>
+      <a href="#exec-summary" class="active">Upcoming Trades</a>
+      <a href="#overview">Overview</a>
       <a href="#strategies">Strategies</a>
       <a href="#competition">Shadow Competition</a>
       <a href="#leaderboard">Live Frontier</a>
@@ -474,6 +475,93 @@ footer a:hover { color: var(--accent); }
 </nav>
 
 <main class="container">
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="exec-summary">
+  <h2><span class="section-num">00</span>Executive Summary — Upcoming Paper Trades</h2>
+  <p class="section-desc">Machine-derived upcoming trade orders based on top-performing strategies in our simulated strategy competitions. All signals are replayed mechanically from frozen parameters on verified vendor bar captures.</p>
+
+  <div class="callout critical" style="border-left-width: 6px;">
+    <h3>RESEARCH ONLY — NO UNAUTHORIZED LIVE EXECUTION</h3>
+    <p>Official exchange feeds and authenticated TradingView broker-emulator exports are material blockers. The orders below represent the mechanical outputs of our shadow competition models evaluated at the latest captured session close for execution at the next session open. Never risk real capital without personal verification.</p>
+  </div>
+
+  <div class="callout good" style="border-left-color: var(--green); border-left-width: 6px; background: rgba(16, 185, 129, 0.08);">
+    <h3>UPCOMING ORDERS TO BE PLACED AT NEXT BAR OPEN</h3>
+    <p><strong>2 order(s)</strong> are currently due at the next session opening bell based on the top-ranked models in the simulated strategy competition list:</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Order Action</th>
+          <th>Symbol</th>
+          <th>Username</th>
+          <th>Strategy Model</th>
+          <th>Division</th>
+          <th>Indicative Size</th>
+          <th>Signal Bar Close</th>
+          <th>Official Spec Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill warn">exit and reverse to LONG</span></td>
+          <td><code>CME:ETH1!</code></td>
+          <td><strong>ContrarianQueen</strong></td>
+          <td>C5 · Capitulation pyramider (patient)</td>
+          <td>Futures (AMP rules)</td>
+          <td>~1 unit</td>
+          <td>2,422.0000</td>
+          <td><a href="https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs" target="_blank" rel="noopener noreferrer">CME Ether Spec ↗</a></td>
+        </tr>
+        <tr>
+          <td><span class="pill warn">exit (close position)</span></td>
+          <td><code>NYMEX:PL1!</code></td>
+          <td><strong>GapGoblin</strong></td>
+          <td>C2 · Gap fade (tight)</td>
+          <td>Futures (AMP rules)</td>
+          <td>closes position</td>
+          <td>1,789.4000</td>
+          <td><a href="https://www.cmegroup.com/markets/metals/precious/platinum/specs" target="_blank" rel="noopener noreferrer">NYMEX Platinum Spec ↗</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="stats-row" style="margin-top: 20px;">
+    <div class="stat-card">
+      <div class="stat-label">Top Futures Performer</div>
+      <div class="stat-value green">ContrarianQueen</div>
+      <div class="stat-note">$4,459,134.00 season P/L · 7.71× best edition</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Volatile Stock Performer</div>
+      <div class="stat-value accent">RocketRider</div>
+      <div class="stat-note">$6,607.11 season P/L · C13 Momentum runner surfer</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stock Division Runner-Up</div>
+      <div class="stat-value purple">TurboTad</div>
+      <div class="stat-note">$2,681.31 season P/L · C13 Momentum runner surfer</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Explosive Target Objective</div>
+      <div class="stat-value red">5× to 100×</div>
+      <div class="stat-note">Full buying power deployment, zero risk management</div>
+    </div>
+  </div>
+
+  <h4>What the top usernames are waiting for (no pending order):</h4>
+  <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px;">
+    <li><strong>FadeThePanic</strong> (C1 · Capitulation reversal, futures): Flat and waiting for multi-day collapse/euphoria stretching ≥1 ATR over 3 closes with expanding ATR to trigger mean-reversion reversal.</li>
+    <li><strong>ClimaxCarla</strong> (C4 · Exhaustion-bar reversal, futures): Flat and waiting for range-expansion exhaustion bar (true range ≥ 2x ATR with close pinned in extreme quartile).</li>
+    <li><strong>RocketRider</strong> (C13 · Momentum runner surfer, stocks_daily): Flat and waiting for new 30-session high breakout with ≥3x average volume and expanding ATR to deploy 100% buying power and pyramid.</li>
+    <li><strong>TurboTad</strong> (C13 · Momentum runner surfer, stocks_daily): Flat and waiting for 30-session volume surge breakout to enter runner long.</li>
+    <li><strong>CrashColossus</strong> (C7 · Capitulation pyramider, stocks_daily): Flat and waiting for single-session collapse of ≥2 ATR on ≥1.5x volume to buy capitulation and pyramid.</li>
+  </ul>
+</section>
 
 <!-- OVERVIEW -->
 <section id="overview">
@@ -608,6 +696,75 @@ footer a:hover { color: var(--accent); }
         <tr><td class="sym">S3</td><td>Bollinger squeeze</td><td><span class="pill no">refuted</span></td><td class="num">$0</td><td class="num">231</td><td class="num">0</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <h3 style="margin-top: 32px; margin-bottom: 12px;">Volatile Equities Contrarian Strategies (C6–C13)</h3>
+  <p class="section-desc">Designed specifically for our 20-stock volatile equities pool (ENPH, TSLA, NVDA, GME, AMC, MSTR, COIN, PLTR, etc.) aiming for explosive returns over 5× to 100×:</p>
+  <div class="card-grid">
+    <div class="strategy-card">
+      <div class="model-id">C6 · Contrarian Equity</div>
+      <h3>Blow-Off Spike Fade</h3>
+      <span class="pill warn">Short Blow-Offs</span>
+      <p class="claim">A ≥3-session parabolic advance that stretches at least 2 ATR on ≥2x volume is a blow-off, not information; faded over the following ~8 sessions.</p>
+      <div class="params">run_closes=3, run_atr_mult=2.0, volume_mult=2.0, close_tail=0.25, hold_bars=8</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> BlowoffBella, SpikeSaber, FadeFiend</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C7 · Contrarian Equity</div>
+      <h3>Capitulation Pyramider</h3>
+      <span class="pill ok">Dip Pyramider</span>
+      <p class="claim">A single-session collapse of ≥2 ATR on ≥1.5x volume is forced liquidation; buying it and pyramiding every 1 ATR recovery concentrates capital into violent snapbacks.</p>
+      <div class="params">crash_atr_mult=2.0, volume_mult=1.5, add_atr_step=1.0, max_adds=4, hold_bars=20</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> DipDynamo, PanicPremier, CrashColossus</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C8 · Contrarian Equity</div>
+      <h3>Opening Gap-Trap Reversal</h3>
+      <span class="pill info">Intraday Hourly</span>
+      <p class="claim">When the opening hourly bar gaps down ≥1.5 ATR but closes in the upper half of its range, the gap is trapped; fades back toward prior close over next few hours.</p>
+      <div class="params">gap_atr_mult=1.5, reversal_tail=0.5, hold_bars=4</div>
+      <div class="meta"><strong>Tested on:</strong> Intraday hourly bars · <strong>Usernames:</strong> GapGremlin, TrapTamer, SqueezeSage</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C9 · Contrarian Equity</div>
+      <h3>Parabolic Exhaustion Short</h3>
+      <span class="pill no">Mean Reversion Short</span>
+      <p class="claim">A close ≥3 population standard deviations above basis after a ≥15% five-session run is an exhaustion print; reverts toward basis within ~10 sessions.</p>
+      <div class="params">band_length=20, band_deviation=3.0, run_pct=0.15, hold_bars=10</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> ParabolaPasha, ExhaustionEcho, ParabolaPiranha</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C10 · Contrarian Equity</div>
+      <h3>Volume-Climax Reversal</h3>
+      <span class="pill accent">Extreme Volume Reversal</span>
+      <p class="claim">A session with range ≥2 ATR on ≥3x average volume closing in the extreme 15% marks climax exhaustion; the next sessions mean-revert.</p>
+      <div class="params">range_atr_mult=2.0, volume_mult=3.0, close_tail=0.15, hold_bars=6</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> ClimaxCleo, VolumeVortex, RangeRanger</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C11 · Contrarian Equity</div>
+      <h3>Squeeze Breakout Pyramider</h3>
+      <span class="pill ok">Volatility Compression</span>
+      <p class="claim">Extreme volatility compression (20-day stdev ≤ 1.2 ATR) followed by a ≥2.5x volume expansion breakout signals institutional accumulation; pyramids every 1 ATR.</p>
+      <div class="params">squeeze_length=20, volume_mult=2.5, add_atr_step=1.0, max_adds=4, hold_bars=12</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> SqueezeStorm, VolSpikeVince</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C12 · Contrarian Equity</div>
+      <h3>Flash Crash Dip Buyer</h3>
+      <span class="pill accent">Capitulation Snapback</span>
+      <p class="claim">A single-session crash of ≥3.0 ATR on ≥2.0x volume closing in the bottom decile represents forced margin liquidation; buys panic close for snapback.</p>
+      <div class="params">crash_atr_mult=3.0, volume_mult=2.0, close_tail=0.10, hold_bars=5</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> CrashCrusader, DipDestroyer</div>
+    </div>
+    <div class="strategy-card">
+      <div class="model-id">C13 · Contrarian Equity</div>
+      <h3>Momentum Runner Surfer</h3>
+      <span class="pill green">Explosive Runner</span>
+      <p class="claim">New 30-session high breakout on ≥3x volume and expanding ATR indicates explosive runner; enters long with full buying power and aggressive pyramiding for runaway multiples.</p>
+      <div class="params">lookback=30, volume_mult=3.0, add_atr_step=1.5, max_adds=4, hold_bars=14</div>
+      <div class="meta"><strong>Tested on:</strong> Volatile stock pool · <strong>Usernames:</strong> RocketRider (Stock Champion), TurboTad</div>
+    </div>
   </div>
 </section>
 

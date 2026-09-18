@@ -57,6 +57,7 @@ from intel.competition import (  # noqa: E402
     DIVISION_ENGINE_VERSION,
     EDITION_CALENDAR_DAYS,
     MIN_EDITION_SESSIONS,
+    MultiSeasonCompetition,
     RULE_PROFILES,
     SEASON_STEP_CALENDAR_DAYS,
     Participant,
@@ -64,7 +65,9 @@ from intel.competition import (  # noqa: E402
     edition_windows,
     max_edition_multiple_bound,
     model_params_label,
+    run_division_seasons,
     run_participant_window,
+    slices_and_starts,
 )
 from intel.data import Bar  # noqa: E402
 from intel.intraday import IntradayError, load_all, load_index  # noqa: E402
@@ -393,33 +396,35 @@ def main() -> int:
         season_windows, latest_window = windows[:-1], windows[-1]
         if len(season_windows) > args.max_editions:
             season_windows = season_windows[-args.max_editions:]
-        editions = []
-        for n, window in enumerate(season_windows, 1):
-            results = run_edition(series_map, window, primary)
-            editions.append(edition_doc(f"{name[0].upper()}{n:03d}", window, results,
-                                        primary.min_active_days))
-        latest_results = run_edition(series_map, latest_window, primary)
-        latest_doc = edition_doc(f"{name[0].upper()}LATEST", latest_window, latest_results,
-                                 primary.min_active_days)
-        part_doc = season_aggregates(editions, latest_doc, primary)
+        res = run_division_seasons(
+            series_map=series_map,
+            participants=participants,
+            profile=primary,
+            scenario=scenario,
+            decisions_provider=decisions,
+            windows=[*season_windows, latest_window],
+            latency_bars=0,
+            control_symbol_picker=control_symbol_for,
+            division_name=name,
+            division_of_user=division_of,
+        )
         divisions[name] = {
             "coverage_complete": set(series_map) == set(pool),
             "missing_symbols": sorted(set(pool) - set(series_map)),
             "profile": primary.profile_id,
             "eligible_symbols": sorted(series_map),
             "bars_per_symbol": {s: len(series_map[s].bars) for s in sorted(series_map)},
-            "season_editions": len(editions),
-            "first_edition": editions[0]["start_date"] if editions else None,
-            "last_season_end": editions[-1]["end_date"] if editions else None,
+            "season_editions": len(res.editions),
+            "first_edition": res.editions[0]["start_date"] if res.editions else None,
+            "last_season_end": res.editions[-1]["end_date"] if res.editions else None,
             "latest_window": {"start_date": latest_window[0], "end_date": latest_window[1]},
-            "editions": editions,
-            "latest_edition": latest_doc,
-            "participants": sorted(part_doc, key=lambda a: (-a["season_realized_pnl_usd"],
-                                                            a["username"])),
-            "leaderboard": leaderboard_of(part_doc),
-            "target_summary": target_summary(editions),
+            "editions": res.editions,
+            "latest_edition": res.latest_edition,
+            "participants": res.participants,
+            "leaderboard": res.leaderboard,
+            "target_summary": res.target_summary,
         }
-        print(f"[{name}] {len(editions)} season editions on {len(series_map)} symbols; "
+        print(f"[{name}] {len(res.editions)} season editions on {len(series_map)} symbols; "
               f"champion {divisions[name]['leaderboard'][0]['username']} "
               f"${divisions[name]['leaderboard'][0]['season_realized_pnl_usd']:,.2f}", flush=True)
 
