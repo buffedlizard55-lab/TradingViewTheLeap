@@ -29,6 +29,15 @@ fi
 git commit -m "$message"
 if git push origin "HEAD:${GITHUB_REF_NAME}"; then
   echo "::notice::committed to ${GITHUB_REF_NAME} at $(git rev-parse --short HEAD): $message"
+  exit 0
+fi
+
+# A second capture run may have committed while this one was fetching. Rebase onto the
+# remote branch and retry once: captures are additive per series, so taking the remote
+# first and re-applying local changes keeps every stored file that was already verified.
+echo "::notice::push rejected - rebasing onto origin/${GITHUB_REF_NAME} and retrying"
+if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
+  echo "::notice::committed to ${GITHUB_REF_NAME} at $(git rev-parse --short HEAD) after rebase: $message"
 else
   echo "::warning::push failed for: $message (a later step will retry)"
 fi

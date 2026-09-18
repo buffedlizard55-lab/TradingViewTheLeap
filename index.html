@@ -48,6 +48,9 @@ are labeled separately.</p>
 <li><a href="#strategies">Strategies</a></li>
 <li><a href="#backtests">Backtest lab</a></li>
 <li><a href="#competition">Shadow comp</a></li>
+<li><a href="#stocksdivision">Stock division</a></li>
+<li><a href="#intraday">Intraday &amp; latency</a></li>
+<li><a href="#tvbench">Pine vs Python</a></li>
 <li><a href="#returns">Contest returns</a></li>
 <li><a href="#stocks">Stock history</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
@@ -59,153 +62,134 @@ are labeled separately.</p>
 </ul></div></nav>
 <main class="wrap">
 <section id="exec-summary"><h2>Executive Summary &mdash; Recommended Upcoming Trades</h2>
-<p class="lead">Explicit and obvious upcoming trade setups to place based on top-performing usernames and contrarian strategy models on our simulated strategy competition list. These trade recommendations prioritize maximum explosive returns (targeting 5x, 10x, 20x, 50x, 100x multiples) with 20:1 maximum rule leverage and zero risk management constraints on verified official exchange pricing.</p>
-
 <div class="callout good" style="border-left-width: 6px;">
-<h3>EXECUTIVE SUMMARY &middot; TOP PERFORMING COMPETITION TRADE RECOMMENDATIONS</h3>
-<p>To win the paper trading competition, our research indicates that participants must focus aggressively on high-volatility contrarian setups, full leverage deployment (20:1), and pyramiding into favourable moves rather than traditional risk management. Below are the top actionable trade setups derived from our 24-edition simulated paper trading competition and latest live mirror across 15 tracked usernames on official verified exchange data (CME Group, NYMEX, COMEX) and verified stock market sources.</p>
+<h3>UPCOMING ORDERS — MECHANICALLY DERIVED FROM THE TOP-RANKED SIMULATED STRATEGIES</h3>
+<p><strong>2 order(s)</strong> would be placed at the next bar open by the
+top-ranked usernames of the repository's own paper competitions, replayed from their frozen
+parameters on the committed vendor bars as of <code>2026-09-17T23:59:00Z</code>. This is the explicit,
+generated answer to "what should be placed next"; the narrative cards further down explain each
+model. Everything here is a simulation of rules on historical vendor prices — it is not advice
+and not a forecast.</p>
 </div>
+<div class="table-wrap"><table>
+<thead><tr><th>Order</th><th>Symbol</th><th>Username</th><th>Model</th><th>Division</th>
+<th>Indicative size</th><th>Signal bar</th></tr></thead>
+<tbody><tr data-ord="futures"><td><span class="pill warn">exit and reverse to LONG</span></td><td><code>CME:ETH1!</code></td><td>ContrarianQueen</td><td>C5 · Capitulation pyramider</td><td>futures</td><td>~1 units</td><td>2026-09-17</td></tr><tr data-ord="futures"><td><span class="pill warn">exit (close the open position)</span></td><td><code>NYMEX:PL1!</code></td><td>GapGoblin</td><td>C2 · Gap fade</td><td>futures</td><td>closes existing position</td><td>2026-09-17</td></tr></tbody></table></div>
+<p class="note">Every order above is a <strong>market order at the next bar open</strong> of that
+series, sized from the official rule constants at the last captured close
+(Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price.). <code>Signal bar</code> is the session whose close
+produced the order; the fill is the following bar's open, which has not happened yet.</p>
+<h4>What the top usernames are waiting for (no pending order)</h4><ul class="compact"><li><strong>ClimaxCarla</strong> (C4 · Exhaustion-bar reversal, futures) is FLAT and waiting for: <em>A range-expansion exhaustion bar (true range &gt;= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.</em></li></ul>
+<p class="lead">Explicit and obvious upcoming trade setups derived from the top-ranked usernames
+of this repository's own simulated strategy competitions. Every card and every matrix cell below is
+rendered field by field from <code>data/exec_summary.json</code>, which is itself re-derived from the
+frozen model parameters, the committed vendor bars and the official rule constants — the page cannot
+display a number here that the generator did not produce. The brief behind the models is maximum
+simulated return: targets of 5&times;, 10&times;, 20&times;, 50&times; and 100&times;, full
+rule-permitted deployment and no risk management, on paper accounts only. Rules, multipliers and caps
+come from official sources (CME Group contract specifications, TradingView contest rules); prices come
+from vendor captures and are labelled vendor-tier everywhere they appear.</p>
 
-<div class="grid cols-2">
-<div class="card strategy-card" style="border-top: 3px solid var(--green);">
-<div class="model-head"><span class="pill ok">SEASON RANK 1 CHAMPION</span><span class="pill purple">+$2,806,899.58 P/L</span></div>
-<h3>Trade #1: BUY / LONG CME Ether (CME:ETH1!) &amp; Bitcoin (CME:BTC1!)</h3>
-<p><strong>Username:</strong> <code>ContrarianQueen</code> &middot; <strong>Model:</strong> C5 Capitulation Pyramider (patient variant)</p>
-<p><strong>Action / Direction:</strong> <span class="pill ok">BUY / LONG</span> on extreme capitulation drops.</p>
-<p><strong>Entry Trigger Setup:</strong> Capitulation reversal when 3-day close drop &ge; 1.0 ATR(14) with expanding volatility (ATR &gt; 50-day SMA ATR). Pyramids with additional tranches on every +1.5 ATR favourable move.</p>
-<p><strong>Position Sizing &amp; Leverage:</strong> 20:1 buying power ($5,000,000 max initial notional), 50 contracts ETH / 10 contracts BTC / 30 contracts PL. Max 3 add tranches.</p>
-<p><strong>Simulated Provenance:</strong> Season Rank 1 Champion (+$2,806,899.58 P/L, 6.77x peak single-edition multiple across 24 seasons).</p>
-<p><strong>Verified Sources:</strong> <a href="https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs" rel="noopener noreferrer">CME Ether Contract Specs ↗</a> &middot; <a href="https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs" rel="noopener noreferrer">CME Bitcoin Specs ↗</a></p>
-</div>
+<div class="grid cols-2"><div class="card strategy-card">
+<div class="model-head"><span class="pill purple">Futures division (official AMP rules)</span>
+<span class="pill ok">SEASON RANK 1</span>
+<span class="pill info">$2,806,899.58 season P/L</span>
+<span class="pill mut">best edition 6.766678×</span></div>
+<h3>ContrarianQueen — exit and reverse to LONG CME:ETH1!</h3>
+<p><strong>Model:</strong> C5 · Capitulation pyramider (variant patient) · params add_atr_step=1.5, max_adds=3</p>
+<p><strong>Rule profile:</strong> futures_amp_sep2026 ·
+<strong>as of last captured bar:</strong> 2026-09-17</p>
+<p><strong>Why this model is here:</strong> Contrarian capitulation entries followed by full-reinvestment pyramiding every 1 ATR of favourable drift concentrate capital into the rare explosive reversals the placement arithmetic requires.</p>
+<ul class="compact"><li><code>CME:ETH1!</code> — <strong>exit and reverse to LONG</strong> (1 unit(s); market at the next bar open of the same series; signal bar 2026-09-17, close 2,422.0000) <a href="https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs" rel="noopener noreferrer">contract/price source ↗</a></li></ul>
 
-<div class="card strategy-card" style="border-top: 3px solid var(--accent);">
-<div class="model-head"><span class="pill ok">LATEST LIVE MIRROR RANK 1</span><span class="pill info">+$468,102.43 P/L (+2.87x)</span></div>
-<h3>Trade #2: BUY / LONG COMEX Silver (COMEX:SI1!) &amp; Micro Silver (COMEX_MINI:SIL1!)</h3>
-<p><strong>Username:</strong> <code>GapGoblin</code> &middot; <strong>Model:</strong> C2 Gap Fade (tight variant)</p>
-<p><strong>Action / Direction:</strong> <span class="pill ok">BUY / LONG</span> fading overnight down-gaps.</p>
-<p><strong>Entry Trigger Setup:</strong> Fading overnight opening down-gaps exceeding 1.0 ATR(14) back toward the 5-session mean price.</p>
-<p><strong>Position Sizing &amp; Leverage:</strong> Rulebook maximum position limit: 30 contracts SI / 50 contracts SIL. Time-based hold 5 sessions.</p>
-<p><strong>Simulated Provenance:</strong> Rank 1 in Latest Live Edition Mirror (+2.87x / +$468,102.43 P/L in 30 days) &amp; Season Rank 2 (+$1,629,892.12 P/L).</p>
-<p><strong>Verified Sources:</strong> <a href="https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html" rel="noopener noreferrer">COMEX Silver Contract Specs ↗</a> &middot; <a href="https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html" rel="noopener noreferrer">Micro Silver Specs ↗</a></p>
-</div>
+<div class="table-wrap"><table><thead><tr><th>Open position</th><th>Side</th><th>Since</th><th>Last captured close</th></tr></thead><tbody><tr><td><code>NYMEX:NG1!</code></td><td><span class="pill ok">long</span></td><td>2026-01-30</td><td class="num">2.8970</td></tr><tr><td><code>NYMEX:CL1!</code></td><td><span class="pill ok">long</span></td><td>2026-05-08</td><td class="num">102.1900</td></tr><tr><td><code>NYMEX:RB1!</code></td><td><span class="pill no">short</span></td><td>2026-09-09</td><td class="num">3.2388</td></tr><tr><td><code>NYMEX:HO1!</code></td><td><span class="pill no">short</span></td><td>2026-04-23</td><td class="num">4.9823</td></tr><tr><td><code>NYMEX_MINI:QM1!</code></td><td><span class="pill ok">long</span></td><td>2026-05-08</td><td class="num">102.1750</td></tr><tr><td><code>COMEX:SI1!</code></td><td><span class="pill ok">long</span></td><td>2026-03-05</td><td class="num">64.5300</td></tr><tr><td><code>COMEX_MINI:SIL1!</code></td><td><span class="pill ok">long</span></td><td>2026-03-05</td><td class="num">63.7050</td></tr><tr><td><code>NYMEX:PL1!</code></td><td><span class="pill ok">long</span></td><td>2026-09-14</td><td class="num">1,789.4000</td></tr><tr><td><code>CME_MINI:NQ1!</code></td><td><span class="pill no">short</span></td><td>2026-08-04</td><td class="num">29,433.7500</td></tr><tr><td><code>CME:BTC1!</code></td><td><span class="pill ok">long</span></td><td>2026-09-10</td><td class="num">76,480.0000</td></tr><tr><td><code>CME:ETH1!</code></td><td><span class="pill no">short</span></td><td>2026-08-21</td><td class="num">2,422.0000</td></tr></tbody></table></div>
+<p class="note">Sizing rule for the next order: the exit leg closes the position the model already holds; the entry leg is sized by the rule below. Indicative sizes use the official
+rule constants at the last captured close; an actual fill happens at the next bar's open, which does
+not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
+<div class="model-head"><span class="pill purple">Futures division (official AMP rules)</span>
+<span class="pill ok">SEASON RANK 2</span>
+<span class="pill info">$1,629,892.12 season P/L</span>
+<span class="pill mut">best edition 4.140646×</span></div>
+<h3>GapGoblin — exit (close the open position) NYMEX:PL1!</h3>
+<p><strong>Model:</strong> C2 · Gap fade (variant tight) · params gap_atr_mult=1.0</p>
+<p><strong>Rule profile:</strong> futures_amp_sep2026 ·
+<strong>as of last captured bar:</strong> 2026-09-17</p>
+<p><strong>Why this model is here:</strong> An opening gap larger than 1.5 ATR(14) is over-reaction, not information: fading the gap direction captures the close-the-gap drift over ~5 sessions.</p>
+<ul class="compact"><li><code>NYMEX:PL1!</code> — <strong>exit (close the open position)</strong> (closes the existing position; market at the next bar open of the same series; signal bar 2026-09-17, close 1,789.4000) <a href="https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html" rel="noopener noreferrer">contract/price source ↗</a></li></ul>
 
-<div class="card strategy-card" style="border-top: 3px solid var(--red);">
-<div class="model-head"><span class="pill warn">SEASON RANK 3</span><span class="pill purple">+$1,168,973.61 P/L</span></div>
-<h3>Trade #3: SELL / SHORT NYMEX Crude Oil (NYMEX:CL1!) &amp; Gasoline (NYMEX:RB1!)</h3>
-<p><strong>Username:</strong> <code>ClimaxCarla</code> &middot; <strong>Model:</strong> C4 Exhaustion Bar Reversal (loose variant)</p>
-<p><strong>Action / Direction:</strong> <span class="pill no">SELL / SHORT</span> on exhaustion up-bars.</p>
-<p><strong>Entry Trigger Setup:</strong> Liquidation climax up-bar where daily True Range &ge; 1.5 ATR(14) and close is pinned in the top 35% tail of the bar's range.</p>
-<p><strong>Position Sizing &amp; Leverage:</strong> Rulebook maximum position limit: 100 contracts CL / 100 contracts RB. Time-based hold 5 sessions.</p>
-<p><strong>Simulated Provenance:</strong> Season Rank 3 (+$1,168,973.61 P/L, 6.28x peak single-edition return).</p>
-<p><strong>Verified Sources:</strong> <a href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html" rel="noopener noreferrer">NYMEX Crude Oil Specs ↗</a> &middot; <a href="https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html" rel="noopener noreferrer">RBOB Gasoline Specs ↗</a></p>
-</div>
-
-<div class="card strategy-card" style="border-top: 3px solid var(--amber);">
-<div class="model-head"><span class="pill ok">SINGLE-EDITION PEAK CHAMPION (7.24x)</span><span class="pill purple">+$1,561,000 P/L</span></div>
-<h3>Trade #4: SELL / SHORT NYMEX Heating Oil (NYMEX:HO1!) / BUY LONG Natural Gas (NYMEX:NG1!)</h3>
-<p><strong>Username:</strong> <code>FadeThePanic</code> &middot; <strong>Model:</strong> C1 Capitulation Reversal (default variant)</p>
-<p><strong>Action / Direction:</strong> <span class="pill no">SELL / SHORT</span> HO on euphoria runs / <span class="pill ok">BUY / LONG</span> NG on panic drops.</p>
-<p><strong>Entry Trigger Setup:</strong> Multi-day collapse or euphoria run stretching price by &ge; 1.0 ATR over 3 closes with ATR expanding.</p>
-<p><strong>Position Sizing &amp; Leverage:</strong> Rulebook max 100 contracts HO / 50 contracts NG. Time-based hold 10 sessions.</p>
-<p><strong>Simulated Provenance:</strong> Highest single-edition return multiple in entire shadow competition: <strong>7.24x</strong> (+$1,561,000 P/L in Edition 19) &amp; Season Rank 4 (+$627,775.79 P/L).</p>
-<p><strong>Verified Sources:</strong> <a href="https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html" rel="noopener noreferrer">NYMEX Heating Oil Specs ↗</a> &middot; <a href="https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html" rel="noopener noreferrer">Henry Hub Natural Gas Specs ↗</a></p>
-</div>
-</div>
+<div class="table-wrap"><table><thead><tr><th>Open position</th><th>Side</th><th>Since</th><th>Last captured close</th></tr></thead><tbody><tr><td><code>COMEX:SI1!</code></td><td><span class="pill ok">long</span></td><td>2026-09-11</td><td class="num">64.5300</td></tr><tr><td><code>COMEX_MINI:SIL1!</code></td><td><span class="pill ok">long</span></td><td>2026-09-15</td><td class="num">63.7050</td></tr><tr><td><code>NYMEX:PL1!</code></td><td><span class="pill no">short</span></td><td>2026-09-10</td><td class="num">1,789.4000</td></tr></tbody></table></div>
+<p class="note">Sizing rule for the next order: close the open position; no new size. Indicative sizes use the official
+rule constants at the last captured close; an actual fill happens at the next bar's open, which does
+not exist yet, so a live size would differ.</p></div><div class="card strategy-card">
+<div class="model-head"><span class="pill purple">Futures division (official AMP rules)</span>
+<span class="pill ok">SEASON RANK 3</span>
+<span class="pill info">$1,168,973.61 season P/L</span>
+<span class="pill mut">best edition 6.283905×</span></div>
+<h3>ClimaxCarla — no order due</h3>
+<p><strong>Model:</strong> C4 · Exhaustion-bar reversal (variant loose) · params close_tail_fraction=0.35, tr_atr_mult=1.5</p>
+<p><strong>Rule profile:</strong> futures_amp_sep2026 ·
+<strong>as of last captured bar:</strong> 2026-09-17</p>
+<p><strong>Why this model is here:</strong> A range-expansion exhaustion bar (true range &gt;= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.</p>
+<p class="note">No mechanical order is due at the next bar open.</p>
+<p><strong>Waiting for:</strong> <em>A range-expansion exhaustion bar (true range &gt;= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.</em></p>
+<div class="table-wrap"><table><thead><tr><th>Open position</th><th>Side</th><th>Since</th><th>Last captured close</th></tr></thead><tbody><tr><td><code>NYMEX:CL1!</code></td><td><span class="pill no">short</span></td><td>2026-09-11</td><td class="num">102.1900</td></tr><tr><td><code>NYMEX:RB1!</code></td><td><span class="pill no">short</span></td><td>2026-09-11</td><td class="num">3.2388</td></tr></tbody></table></div>
+<p class="note">Sizing rule for the next order: no order pending. Indicative sizes use the official
+rule constants at the last captured close; an actual fill happens at the next bar's open, which does
+not exist yet, so a live size would differ.</p></div><div class="card"><h3>Volatile-stock division (official stocks-edition rules)</h3>
+<p class="note">Status: <strong>not_run</strong> — data/stock_competition_results.json is produced by scripts/run_stock_competition.py after the intraday capture lands (data/intraday_index.json)</p></div></div>
 
 <div class="callout info" style="margin-top: 22px;">
-<h3>STOCK COMPETITION INTELLIGENCE &middot; HIGH-VOLATILITY STOCK OPPORTUNITIES</h3>
-<p>In addition to futures markets, our intelligence layer monitors 20 verified highly volatile equities sourced from verified official endpoints (Yahoo Finance chart API). Historical price data proves that high-beta equities can generate 10x to 382x return multiples during expansion cycles (e.g. <strong>ENPH +382.49x</strong>, <strong>AMD +322.73x</strong>, <strong>MARA +190.22x</strong>, <strong>CVNA +128.62x</strong>, <strong>GME +124.11x</strong>, <strong>TSLA +17.02x</strong>, <strong>NVDA +12.09x</strong>, <strong>MSTR +49.45x</strong>). For stock trading paper competitions, deploying C1 Capitulation Reversals and C5 Pyramiding on these high-volatility stock candidates offers the explosive upside required to win without real-money downside risk.</p>
-</div>
+<h3>VOLATILE-EQUITY POOL &middot; WINDOW-BOUNDED PRICE HISTORY</h3>
+<p>The largest archived trough&rarr;peak multiples in the 20-name pool are <strong>ENPH 382.49×</strong> · <strong>AMD 322.73×</strong> · <strong>MARA 190.22×</strong> · <strong>CVNA 128.62×</strong> · <strong>GME 124.11×</strong> · <strong>RIOT 119.85×</strong> · <strong>SHOP 92.61×</strong> · <strong>NVAX 81.41×</strong>. Each ratio is
+recomputable from the adjusted closes stored in <code>data/volatile_stocks.json</code> and is
+re-derived by <code>scripts/verify.py</code>; each is <strong>window-bounded</strong> (the extremum lies
+inside the documented fetch window) and comes from a market-data vendor, not an exchange or the contest
+organiser. In the repository's own paper division — no risk management, maximum deployment, official
+stocks-edition constants — the stock division has not been run yet — it needs the intraday capture — so no division result is shown here.</p>
+<p class="note"><a href="research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md">Stock-multiple evidence file</a>
+· <a href="research/evidence/YAHOO-INTRADAY-CAPTURE.md">Intraday capture evidence file</a>
+· <a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/" rel="noopener noreferrer">Official stocks-edition rules ↗</a></p></div>
 
-<h3>Upcoming Trade Signal Matrix</h3>
-<p class="note">Summary of all top-performing usernames, strategy models, target instruments, active trade directions, sizing rules, and return provenance from our 24-edition paper trading competition.</p>
-
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Season Rank</th>
-<th>Username</th>
-<th>Strategy Archetype</th>
-<th>Target Symbol</th>
-<th>Action</th>
-<th>Entry Trigger Setup</th>
-<th>Max Position &amp; Leverage Sizing</th>
-<th>Simulated Competition Provenance</th>
-<th>Official Verified Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="hl">
+<h3>Signal matrix &middot; every cell read from the generated artifact</h3>
+<p class="note">Rows are the top-ranked usernames of each division in <code>data/exec_summary.json</code>
+(futures division: the 24-edition season on vendor front-month bars under the official AMP rules; stock
+division: the multi-season paper division on the volatile pool). A "WAITING" row means the frozen model
+has no order due at the next bar open — the model card above states the exact condition it waits for.</p>
+<div class="table-wrap"><table><thead><tr><th>Division</th><th>Rank</th><th>Username</th><th>Model</th>
+<th>Symbols</th><th>Next mechanical order</th><th>Sizing</th><th>Season P/L</th><th>Best edition ×</th>
+<th>Official source links</th></tr></thead><tbody><tr><td>futures</td>
 <td class="num"><span class="pill ok">1</span></td>
-<td class="sym"><strong>ContrarianQueen</strong></td>
-<td>C5 Capitulation Pyramider (patient)</td>
-<td class="sym">CME:ETH1!, CME:BTC1!, NYMEX:PL1!</td>
-<td><span class="pill ok">BUY / LONG</span></td>
-<td>3-day drop &ge; 1.0 ATR with expanding ATR; pyramid adds every +1.5 ATR</td>
-<td class="num">20:1 Buying Power; 50 ETH / 10 BTC / 30 PL contracts max</td>
-<td><strong>+$2,806,899.58 P/L</strong> (Season Rank 1; 6.77x peak single edition)</td>
-<td><a href="https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs" rel="noopener noreferrer">CME Specs ↗</a></td>
-</tr>
-<tr class="hl">
+<td><strong>ContrarianQueen</strong></td>
+<td>C5 · Capitulation pyramider (patient)</td>
+<td class="sym">NYMEX:NG1!, NYMEX:CL1!, NYMEX:RB1!, NYMEX:HO1!, NYMEX_MINI:QM1!, COMEX:SI1!, COMEX_MINI:SIL1!, NYMEX:PL1!, CME_MINI:NQ1!, CME:BTC1!, CME:ETH1!</td>
+<td><span class="pill ok">exit and reverse to LONG</span> <code>CME:ETH1!</code></td>
+<td>1 unit(s) at the last close</td>
+<td class="num">$2,806,899.58</td>
+<td class="num">6.766678×</td>
+<td><a href="https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs" rel="noopener noreferrer">source ↗</a></td></tr><tr><td>futures</td>
 <td class="num"><span class="pill ok">2</span></td>
-<td class="sym"><strong>GapGoblin</strong></td>
-<td>C2 Gap Fade (tight)</td>
-<td class="sym">COMEX:SI1!, COMEX_MINI:SIL1!</td>
-<td><span class="pill ok">BUY / LONG</span></td>
-<td>Fade overnight down-gap &ge; 1.0 ATR(14) back to 5-session mean</td>
-<td class="num">30 SI / 50 SIL contracts max; 5-session hold</td>
-<td><strong>+$1,629,892.12 P/L</strong> (Season Rank 2; <strong>+2.87x Latest Mirror Rank 1</strong>)</td>
-<td><a href="https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html" rel="noopener noreferrer">COMEX Specs ↗</a></td>
-</tr>
-<tr>
-<td class="num"><span class="pill warn">3</span></td>
-<td class="sym"><strong>ClimaxCarla</strong></td>
-<td>C4 Exhaustion Reversal (loose)</td>
+<td><strong>GapGoblin</strong></td>
+<td>C2 · Gap fade (tight)</td>
+<td class="sym">COMEX:SI1!, COMEX_MINI:SIL1!, NYMEX:PL1!</td>
+<td><span class="pill warn">exit (close the open position)</span> <code>NYMEX:PL1!</code></td>
+<td>exit leg: closes the existing position</td>
+<td class="num">$1,629,892.12</td>
+<td class="num">4.140646×</td>
+<td><a href="https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html" rel="noopener noreferrer">source ↗</a></td></tr><tr><td>futures</td>
+<td class="num"><span class="pill ok">3</span></td>
+<td><strong>ClimaxCarla</strong></td>
+<td>C4 · Exhaustion-bar reversal (loose)</td>
 <td class="sym">NYMEX:CL1!, NYMEX:RB1!</td>
-<td><span class="pill no">SELL / SHORT</span></td>
-<td>Liquimax up-bar TR &ge; 1.5 ATR with close in top 35% range tail</td>
-<td class="num">100 CL / 100 RB contracts max; 5-session hold</td>
-<td><strong>+$1,168,973.61 P/L</strong> (Season Rank 3; 6.28x peak single edition)</td>
-<td><a href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html" rel="noopener noreferrer">NYMEX Specs ↗</a></td>
-</tr>
-<tr>
-<td class="num"><span class="pill warn">4</span></td>
-<td class="sym"><strong>FadeThePanic</strong></td>
-<td>C1 Capitulation Reversal (default)</td>
-<td class="sym">NYMEX:HO1!, NYMEX:NG1!</td>
-<td><span class="pill no">SELL / SHORT</span> (HO) / <span class="pill ok">BUY</span> (NG)</td>
-<td>3-day extension &ge; 1.0 ATR with expanding ATR</td>
-<td class="num">100 HO / 50 NG contracts max; 10-session hold</td>
-<td><strong>+$627,775.79 P/L</strong> (Season Rank 4; <strong>7.24x Peak Edition Champion</strong>)</td>
-<td><a href="https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html" rel="noopener noreferrer">NYMEX Specs ↗</a></td>
-</tr>
-<tr>
-<td class="num"><span class="pill mut">5</span></td>
-<td class="sym"><strong>SqueezeSpark</strong></td>
-<td>C5 Capitulation Pyramider (rapid)</td>
-<td class="sym">COMEX:SI1!, COMEX_MINI:SIL1!</td>
-<td><span class="pill ok">BUY / LONG</span></td>
-<td>3-day drop &ge; 1.0 ATR with expanding ATR; rapid pyramid adds (+0.75 ATR)</td>
-<td class="num">30 SI / 50 SIL contracts max; max 6 add tranches</td>
-<td><strong>+$262,355.40 P/L</strong> (Season Rank 5; 3.96x peak single edition)</td>
-<td><a href="https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html" rel="noopener noreferrer">COMEX Specs ↗</a></td>
-</tr>
-<tr>
-<td class="num"><span class="pill mut">12</span></td>
-<td class="sym"><strong>CapitulationKate</strong></td>
-<td>C1 Capitulation Reversal (fast3)</td>
-<td class="sym">NYMEX:PL1!, COMEX:SI1!</td>
-<td><span class="pill ok">BUY / LONG</span></td>
-<td>2-day drop &ge; 1.0 ATR with expanding ATR; 6-session hold</td>
-<td class="num">30 PL contracts max; 6-session hold</td>
-<td><strong>3.77x Peak Single Edition</strong> (Metals reversal specialist)</td>
-<td><a href="https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html" rel="noopener noreferrer">NYMEX Specs ↗</a></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="disclaimer"><strong>Simulated Experiment Notice.</strong> Every trade recommendation above is derived from our paper trading shadow competition simulating frozen strategies on real verified historical price data. Paper trading involves no real financial risk. Past simulated performance is not a forecast of future real-market outcomes. All rules and multipliers are cross-checked line-by-line against official exchange specifications.</div>
+<td><span class="pill mut">WAITING</span></td>
+<td>no order until the stated condition fires</td>
+<td class="num">$1,168,973.61</td>
+<td class="num">6.283905×</td>
+<td><a href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html" rel="noopener noreferrer">source ↗</a> · <a href="https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html" rel="noopener noreferrer">source ↗</a></td></tr><tr><td>stocks_daily</td><td colspan="9" class="note">not_run — data/stock_competition_results.json is produced by scripts/run_stock_competition.py after the intraday capture lands (data/intraday_index.json)</td></tr></tbody></table></div>
+
+<div class="disclaimer"><strong>Simulated experiment notice.</strong> Every row above is a mechanical
+replay of a frozen model on committed vendor history inside a paper competition. No real order has been
+placed, no figure here is a forecast, and none of it is investment advice. The repository's verifier
+re-derives these numbers from the artifacts before the page can be rebuilt.</div>
 </section><section id="overview"><h2>What matters now</h2>
 <p class="lead">A concise read of the current evidence. Live values are snapshots, historical
 champions are simulated outcomes, and stock multiples are real market-price ratios.</p>
@@ -861,7 +845,7 @@ forecast, or claim that any listed contest trader used one of these models.</p>
 <td class="num">1.34×</td><td class="num">0</td>
 <td class="num">0</td><td class="num">0</td>
 <td class="num">1.00×</td></tr></tbody></table></div>
-<h3>Workstream status</h3><div class="table-wrap"><table id="intel-status-table"><thead><tr><th>Workstream</th><th>Status</th><th>Evidence</th><th>Next honest step</th></tr></thead><tbody><tr><td class="sym">official rules and public frontier</td><td><span class="pill ok">verified</span></td><td>data/frontier_history.json; data/contest_config.json; research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md</td><td>Continue point-in-time captures if the moving board is still relevant; do not infer a final cutoff from a displayed row.</td></tr><tr><td class="sym">vendor futures history and volatility screen</td><td><span class="pill ok">captured</span></td><td>data/market_history_index.json; data/volatility_intelligence.json</td><td>Refresh the window and separately validate contract rolls, costs, and intraday execution before using any candidate operationally.</td></tr><tr><td class="sym">independent walk-forward baselines</td><td><span class="pill warn">completed with caveats</span></td><td>data/backtest_results.json; research/strategy/testing-plan.md</td><td>Run frozen holdouts and sensitivity analysis on a new, untouched capture; the current sample is not sufficient to claim generalization.</td></tr><tr><td class="sym">contrarian shadow competition</td><td><span class="pill warn">completed with caveats</span></td><td>data/competition_results.json; data/competition/roster.json; intel/competition.py; intel/contrarian.py</td><td>Add a genuinely out-of-sample season and validate fills against a higher-frequency source; do not optimize to the current vendor window.</td></tr><tr><td class="sym">TradingView Strategy Report / Pine platform validation</td><td><span class="pill no">blocked or unrun</span></td><td>research/strategy/models.json; research/strategy/the-leap-hypothesis-lab.pine</td><td>Requires an authenticated TradingView session and a manually reviewable Strategy Report export; no result is claimed here.</td></tr><tr><td class="sym">official listed-trader strategy attribution</td><td><span class="pill no">blocked by public data</span></td><td>data/frontier_history.json</td><td>Requires public trade-history disclosure or direct participant records; leaderboard P/L alone cannot identify a strategy.</td></tr></tbody></table></div>
+<h3>Workstream status</h3><div class="table-wrap"><table id="intel-status-table"><thead><tr><th>Workstream</th><th>Status</th><th>Evidence</th><th>Next honest step</th></tr></thead><tbody><tr><td class="sym">official rules and public frontier</td><td><span class="pill ok">verified</span></td><td>data/frontier_history.json; data/contest_config.json; research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md</td><td>Continue point-in-time captures if the moving board is still relevant; do not infer a final cutoff from a displayed row.</td></tr><tr><td class="sym">vendor futures history and volatility screen</td><td><span class="pill ok">captured</span></td><td>data/market_history_index.json; data/volatility_intelligence.json</td><td>Refresh the window and separately validate contract rolls, costs, and intraday execution before using any candidate operationally.</td></tr><tr><td class="sym">independent walk-forward baselines</td><td><span class="pill warn">completed with caveats</span></td><td>data/backtest_results.json; research/strategy/testing-plan.md</td><td>Run frozen holdouts and sensitivity analysis on a new, untouched capture; the current sample is not sufficient to claim generalization.</td></tr><tr><td class="sym">contrarian shadow competition</td><td><span class="pill warn">completed with caveats</span></td><td>data/competition_results.json; data/competition/roster.json; intel/competition.py; intel/contrarian.py</td><td>Add a genuinely out-of-sample season and validate fills against a higher-frequency source; do not optimize to the current vendor window.</td></tr><tr><td class="sym">intraday vendor captures (15m / 1h / long 1d) for the volatile pool</td><td><span class="pill no">blocked or unrun</span></td><td>scripts/fetch_intraday.py; intel/intraday.py; research/evidence/YAHOO-INTRADAY-CAPTURE.md; .github/workflows/capture-intraday.yml</td><td>The capture workflow has not committed data/intraday_index.json yet; dispatch .github/workflows/capture-intraday.yml (the repository sandbox has no egress to the vendor).</td></tr><tr><td class="sym">intra-session gap fill and execution latency (our own measurement)</td><td><span class="pill no">blocked or unrun</span></td><td>scripts/run_intraday_study.py; intel/intraday.py</td><td>Run scripts/run_intraday_study.py once data/intraday_index.json exists.</td></tr><tr><td class="sym">volatile-stock division of the paper competition (20 usernames)</td><td><span class="pill no">blocked or unrun</span></td><td>data/competition/stock_roster.json; intel/stock_strategies.py; scripts/run_stock_competition.py</td><td>Run scripts/run_stock_competition.py once the intraday captures exist.</td></tr><tr><td class="sym">executive summary of mechanically-implied upcoming orders</td><td><span class="pill ok">captured</span></td><td>data/exec_summary.json; scripts/build_exec_summary.py</td><td>Re-derive after every capture and after every competition re-run; the sizes are indicative rule-arithmetic, never advice.</td></tr><tr><td class="sym">Pine broker-emulator rules vs the Python fill model</td><td><span class="pill warn">completed with caveats</span></td><td>data/tv_benchmark.json; intel/pine_emulator.py; scripts/tv_benchmark.py</td><td>The rules are encoded from TradingView&#x27;s own Pine documentation and the import path is proven on a synthetic fixture; the numbers are not yet validated against a real platform run.</td></tr><tr><td class="sym">authenticated TradingView Strategy Report import</td><td><span class="pill no">blocked or unrun</span></td><td>intel/tv_import.py; scripts/tv_benchmark.py; research/strategy/models.json; research/strategy/the-leap-hypothesis-lab.pine</td><td>Requires a signed-in TradingView account with Strategy Report export entitlement. The importer (intel/tv_import.py) accepts the official List-of-Trades CSV, the Performance-Summary CSV and the 5-sheet XLSX and fails loudly on gating; drop an export into data/tv_reports/ and re-run scripts/tv_benchmark.py. No figure on this site is claimed to come from a real export.</td></tr><tr><td class="sym">official listed-trader strategy attribution</td><td><span class="pill no">blocked by public data</span></td><td>data/frontier_history.json</td><td>Requires public trade-history disclosure or direct participant records; leaderboard P/L alone cannot identify a strategy.</td></tr></tbody></table></div>
 <p class="note">Official boundary: the public leaderboard provides displayed P/L and rank, not a reconstructable trade ledger.
 Vendor boundary: the futures files are useful for screening and simulation, not proof of official fills.
 Simulation boundary: the engine uses declared costs, caps, whole contracts, and usernames, but its finite history and
@@ -1618,15 +1602,15 @@ visible even after resolution.</p>
 <dt>Resolution</dt><dd>Record the punctuated surge behavior in data/frontier_history.json and hypotheses (H25), recomputing required daily compound rates from the latest capture.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026-R7</a> · <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" rel="noopener noreferrer">TV-RULES-AMP-SEP2026-R7</a></dd></dl></article><article class="hyp" data-severity="medium" data-search="ir-26 medium shell-expansion corruption event in research text fields ($0/$2 and other $-token losses) several research files written on 2026-09-17 contained dollar amounts and shell artifacts consistent with double-quoted shell expansion: &#x27;$0.00&#x27; became &#x27;/bin/bash.00&#x27; ($0 expanded to the shell name), and &#x27;$&#x27;-prefixed amounts lost their &#x27;$&#x27; and leading digits where a positional parameter was empty (&#x27;$2.5m&#x27;-&gt;&#x27;.5m&#x27;, &#x27;$25m&#x27;-&gt;&#x27;5m&#x27;, &#x27;$250k&#x27;-&gt;&#x27;50k&#x27;, &#x27;$1,244,313.50&#x27;-&gt;&#x27;,244,313.50&#x27;, &#x27;$111,303.63&#x27;-&gt;&#x27;+11,303.63&#x27;, &#x27;$2,335,125.00&#x27;-&gt;&#x27;,335,125.00&#x27;). the numeric suffixes were preserved, so every value was uniquely reconstructable from capture-7 evidence (research/evidence/tv-contest-amp-sep2026-2026-09-17-r7.md) and from data/frontier_history.json; all were restored and a verifier check (leaked_shell_text) now scans published text for the &#x27;/bin/bash&#x27; and &#x27;(.5m&#x27; signatures. affected fields found and fixed in this pass: hypotheses.json h27 (&#x27;/bin/bash.00&#x27; twice, &#x27;(.5m&#x27;, &#x27;(5m&#x27;, &#x27;from 50k&#x27;), h25 (&#x27;+11,303.63&#x27;, &#x27;(,244,313.50)&#x27;, &#x27;(,355,617.13)&#x27;, &#x27;(,605,617.13&#x27;, &#x27;+6,695.00 (,014,950.00 to ,091,645.00)&#x27;, &#x27;+8,065.50 (60,759.50 to 98,825.00)&#x27;), h26 (&#x27;(&lt;.5m)&#x27;), irregularities.json ir-25 (four amounts), sources.json tv-contest-amp-sep2026-r7 note (three amounts). rendered index.html regenerated from the fixed registers."><div class="top"><span class="id">IR-26</span><span class="pill info">medium</span><span class="pill mut">open</span><span class="claim">Shell-expansion corruption event in research text fields ($0/$2 and other $-token losses)</span></div>
 <dl><dt>Detail</dt><dd>Several research files written on 2026-09-17 contained dollar amounts and shell artifacts consistent with double-quoted shell expansion: &#x27;$0.00&#x27; became &#x27;/bin/bash.00&#x27; ($0 expanded to the shell name), and &#x27;$&#x27;-prefixed amounts lost their &#x27;$&#x27; and leading digits where a positional parameter was empty (&#x27;$2.5M&#x27;-&gt;&#x27;.5M&#x27;, &#x27;$25M&#x27;-&gt;&#x27;5M&#x27;, &#x27;$250k&#x27;-&gt;&#x27;50k&#x27;, &#x27;$1,244,313.50&#x27;-&gt;&#x27;,244,313.50&#x27;, &#x27;$111,303.63&#x27;-&gt;&#x27;+11,303.63&#x27;, &#x27;$2,335,125.00&#x27;-&gt;&#x27;,335,125.00&#x27;). The numeric suffixes were preserved, so every value was uniquely reconstructable from capture-7 evidence (research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md) and from data/frontier_history.json; all were restored and a verifier check (leaked_shell_text) now scans published text for the &#x27;/bin/bash&#x27; and &#x27;(.5M&#x27; signatures.</dd><dt>Observed</dt><dd>Affected fields found and fixed in this pass: hypotheses.json H27 (&#x27;/bin/bash.00&#x27; twice, &#x27;(.5M&#x27;, &#x27;(5M&#x27;, &#x27;from 50k&#x27;), H25 (&#x27;+11,303.63&#x27;, &#x27;(,244,313.50)&#x27;, &#x27;(,355,617.13)&#x27;, &#x27;(,605,617.13&#x27;, &#x27;+6,695.00 (,014,950.00 to ,091,645.00)&#x27;, &#x27;+8,065.50 (60,759.50 to 98,825.00)&#x27;), H26 (&#x27;(&lt;.5M)&#x27;), irregularities.json IR-25 (four amounts), sources.json TV-CONTEST-AMP-SEP2026-R7 note (three amounts). Rendered index.html regenerated from the fixed registers.</dd>
 <dt>Resolution</dt><dd>Fixed in this pass (2026-09-17 eighth pass). Every restored value cross-checked against capture-7 frontier rows: rank 50 $1,244,313.50-&gt;$1,355,617.13 (+$111,303.63), rank 100 $1,014,950.00-&gt;$1,091,645.00 (+$76,695.00), rank 250 $660,759.50-&gt;$698,825.00 (+$38,065.50), rank 50 equity multiple 6.4225x = $1,605,617.13. scripts/verify.py now fails on leaked shell signatures.</dd><dt>Sources</dt><dd><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">TV-CONTEST-AMP-SEP2026-R7</a></dd></dl></article></section><section id="sources"><h2>Source registry and manual review</h2>
-<p class="lead">All 94 registered sources, their evidence
+<p class="lead">All 95 registered sources, their evidence
 tier, allowed use, captured evidence file, and exact URL. Vendor stock sources also expose both
 endpoint windows independently.</p>
 <div class="controls">
 <input id="src-q" type="search" placeholder="Filter sources by ID, title, publisher, URL…" aria-label="Filter sources">
 <div id="src-thresh" class="thresh">
-<button type="button" class="active" data-tier="">All (94)</button>
+<button type="button" class="active" data-tier="">All (95)</button>
 <button type="button" data-tier="official_primary">Official Primary (70)</button>
-<button type="button" data-tier="market_data_vendor">Market Data Vendor (24)</button>
+<button type="button" data-tier="market_data_vendor">Market Data Vendor (25)</button>
 </div>
 <span id="src-count" class="count"></span>
 </div>
@@ -2006,7 +1990,38 @@ endpoint windows independently.</p>
 <strong>TV-CONTEST-AMP-SEP2026-R8</strong> · The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-18, eighth pass)</summary>
 <p><a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" rel="noopener noreferrer">https://www.tradingview.com/the-leap/amp-futures-september-2026/</a></p>
 <p class="note">TradingView, Inc. · accessed 2026-09-18 · <a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md">captured evidence</a></p>
-<strong>Allowed uses</strong><ul><li>Eighth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,586)</li><li>Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source</li></ul></details></div></section><section id="method"><h2>Method, verification, and limits</h2>
+<strong>Allowed uses</strong><ul><li>Eighth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,586)</li><li>Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source</li></ul></details><details class="source-item" data-tier="market_data_vendor" data-search="yahoo-intraday-chart market_data_vendor yahoo finance v8 chart api — 15-minute, hourly and long daily bars for the 20-stock volatile pool and the contest futures (capture path of scripts/fetch_intraday.py) yahoo finance chart api (market data vendor — not an official exchange or regulator) https://query1.finance.yahoo.com/v8/finance/chart/mara?period1=1757635200&amp;period2=1758240000&amp;interval=15m"><summary><span class="pill warn">market data vendor</span>
+<strong>YAHOO-INTRADAY-CHART</strong> · Yahoo Finance v8 chart API — 15-minute, hourly and long daily bars for the 20-stock volatile pool and the contest futures (capture path of scripts/fetch_intraday.py)</summary>
+<p><a href="https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&amp;period2=1758240000&amp;interval=15m" rel="noopener noreferrer">https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&amp;period2=1758240000&amp;interval=15m</a></p><div class="endpoint-links"><a href="https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&amp;period2=1758240000&amp;interval=15m" rel="noopener noreferrer">15m_window ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1747612800&amp;period2=1758240000&amp;interval=1h" rel="noopener noreferrer">1h_window ↗</a> · <a href="https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1441929600&amp;period2=1758240000&amp;interval=1d" rel="noopener noreferrer">1d_long_window ↗</a></div>
+<p class="note">Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator) · accessed 2026-09-18 · <a href="research/evidence/YAHOO-INTRADAY-CAPTURE.md">captured evidence</a></p>
+<strong>Allowed uses</strong><ul><li>Intra-session gap-fill measurement (does a session gap fill, how many bars does it take) on committed 15-minute and hourly bars</li><li>Execution-latency measurement (next-open and k-bar-delayed fills in basis points of the decision close) for the paper-competition fill model</li><li>Price series for the volatile-stock division of the repository&#x27;s own paper competition (data/stock_competition_results.json)</li><li>Long daily series (~10 years) for the warm-up window of the stock models</li></ul></details></div></section><section id="stocksdivision"><h2>Volatile-stock division</h2>
+<div class="callout warn"><h3>Pending: intraday + long daily captures</h3>
+<p>The equity division needs the vendor captures from <code>scripts/fetch_intraday.py</code>
+(15-minute, hourly and ~10-year daily bars for the 20-stock volatile pool). Until the GitHub
+Actions capture job has stored <code>data/intraday_index.json</code>, no equity number is
+computed here — the site deliberately shows nothing rather than a placeholder.</p></div>
+</section><section id="intraday"><h2>Intraday gap fills and execution latency</h2>
+<div class="callout warn"><p>Pending the intraday capture: <code>data/intraday_study.json</code>
+is produced by <code>scripts/run_intraday_study.py</code> once
+<code>data/intraday_index.json</code> exists.</p></div></section><section id="tvbench"><h2>Pine broker emulator vs Python backtest fills</h2>
+<p class="lead">TradingView publishes the Strategy Report export as a CSV, one tab at a time, and
+documents the broker emulator's fill rules. This section imports any real export committed to
+<code>data/tv_reports/</code>, audits it row by row (observed header, column mapping, SHA-256,
+rejected rows, arithmetic P/L cross-check) and compares each exported fill with the same vendor
+bar and with the Python engine's fill model.</p>
+<div class="callout high"><h3>STATUS: BLOCKED</h3><p>No authenticated TradingView Strategy Report export is present in data/tv_reports/. Producing one requires a signed-in TradingView account with export entitlement (the official support page documents the CSV export button in the Strategy Report). This environment holds no TradingView credentials and does not fabricate platform output, so the Pine-vs-Python fill benchmark cannot be completed from real exports yet.</p><p class="note">How to complete it:</p><ol class="compact"><li>Sign in to TradingView on a plan that includes Strategy Tester export.</li><li>Run the strategy on a chart, open the Strategy Report, and use the Download button on the &#x27;List of Trades&#x27; tab (CSV) - optionally also download the &#x27;Performance Summary&#x27; tab.</li><li>Commit the downloaded CSV to data/tv_reports/ (any filename).</li><li>Re-run: python3 scripts/tv_benchmark.py</li><li>The import audit runs immediately; the fill benchmark additionally needs the symbol, either in the export or in a &lt;stem&gt;.manifest.json beside it.</li></ol></div>
+<div class="callout info"><h3>Documented emulator rules the benchmark tests against</h3>
+<ul class="compact">
+<li><strong>Market order:</strong> Default calculation behavior: the script executes once per bar&#x27;s closing tick, and the broker emulator fills a market order at the open of the following bar.</li>
+<li><strong>Intrabar assumption:</strong> Intrabar assumption: open-&gt;high-&gt;low-&gt;close when the open is closer to the high, open-&gt;low-&gt;high-&gt;close when it is closer to the low; no gaps exist inside a chart bar.</li>
+<li><strong>Gap rule:</strong> Gap rule: if a price-based order&#x27;s level is crossed between bars, the emulator fills at the opening price of the bar following the gap instead of the order&#x27;s price.</li>
+<li>Source: <a href="https://www.tradingview.com/pine-script-docs/concepts/strategies/" rel="noopener noreferrer">Pine Script v6 — Concepts / Strategies ↗</a></li>
+</ul></div>
+<div class="table-wrap"><table><thead><tr><th>Export</th><th>Type</th><th>Fill benchmark</th>
+<th>Trade rows</th><th>Fills compared</th><th>Exact next-open match</th>
+<th>Median |Δ| vs bar open (bps)</th><th>Median |Δ| vs Python fill (bps)</th></tr></thead>
+<tbody><tr><td>data/tv_reports/_fixtures/synthetic_list_of_trades.csv</td><td>fixture</td><td>measured</td><td>12</td><td>12</td><td>0.9167</td><td>0.000</td><td>11.911</td></tr></tbody></table></div>
+<p class="note">Records under &#x27;fixtures&#x27; are SYNTHETIC files written by this repository to prove the import and benchmark code path. They are not TradingView output and their numbers must never be quoted as platform results.</p></section><section id="method"><h2>Method, verification, and limits</h2>
 <p class="lead">The site is deterministic and network-free. Public evidence is captured first;
 the offline verifier then checks provenance and re-derives arithmetic.</p>
 <div class="pipeline"><div><span>1</span><strong>Capture</strong><p>Save official quotations, exact URLs, and access times.</p></div>

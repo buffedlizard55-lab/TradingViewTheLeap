@@ -1,0 +1,114 @@
+name: Capture intraday market data (bounded second lane)
+
+# Second capture lane for the intraday bars.
+#
+# Why it exists: GitHub rate limits this vendor per runner IP range, and a run that keeps
+# retrying relays can occupy the single `capture-intraday` concurrency slot for up to its
+# 120-minute timeout, leaving any queued run waiting. This lane runs the same script with an
+# explicit per-interval time budget (--time-budget-seconds) in a separate concurrency group,
+# so a partial capture can land while the primary lane is still working.
+#
+# It deliberately does NOT commit: the primary lane owns the commit path, and two writers
+# racing on data/intraday_index.json would only produce conflicts. Instead it uploads the
+# captures and the index as an artifact, which is downloaded and reconciled by hand (or by
+# the primary lane's own --only-failed top-up on its next run).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - ".github/workflows/capture-intraday-lane-b.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: capture-intraday-lane-b-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    name: Bounded intraday capture (artifact only, no commit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Vendor reachability probe (annotations only)
+        continue-on-error: true
+        run: |
+          for host in query1 query2; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 \
+              -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" \
+              "https://${host}.finance.yahoo.com/v8/finance/chart/NVDA?range=5d&interval=15m" || echo "curl-error")
+            echo "::notice::lane-b probe ${host}.finance.yahoo.com -> HTTP ${code}"
+          done
+
+      - name: Compile check
+        run: python3 -m py_compile scripts/fetch_intraday.py
+
+      - name: Capture long daily bars first (smallest request count, most useful)
+        continue-on-error: true
+        env:
+          CAPTURE_ENV: github-actions-lane-b
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 scripts/fetch_intraday.py --interval 1d \
+            --out-dir data/intraday --index data/intraday_index.json \
+            --pacing-seconds 0.5 --time-budget-seconds 1500
+
+      - name: Capture hourly bars (stocks + futures)
+        continue-on-error: true
+        env:
+          CAPTURE_ENV: github-actions-lane-b
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          EXTRA=""
+          if [ -f data/intraday_index.json ]; then EXTRA="--only-failed"; else EXTRA="--futures-hourly"; fi
+          python3 scripts/fetch_intraday.py --interval 1h $EXTRA \
+            --out-dir data/intraday --index data/intraday_index.json \
+            --pacing-seconds 0.5 --time-budget-seconds 2400
+
+      - name: Capture 15-minute bars (vendor retention is roughly 60 days)
+        continue-on-error: true
+        env:
+          CAPTURE_ENV: github-actions-lane-b
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          EXTRA=""
+          if [ -f data/intraday_index.json ]; then EXTRA="--only-failed"; fi
+          python3 scripts/fetch_intraday.py --interval 15m $EXTRA \
+            --out-dir data/intraday --index data/intraday_index.json \
+            --pacing-seconds 0.5 --time-budget-seconds 2400
+
+      - name: Capture summary
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import json, os
+          if not os.path.exists("data/intraday_index.json"):
+              print("::warning::lane-b stored no index")
+              raise SystemExit(0)
+          idx = json.load(open("data/intraday_index.json"))
+          meta = idx["_meta"]
+          ok = [c for c in idx["captures"] if c["status"] == "captured"]
+          bad = [c for c in idx["captures"] if c["status"] != "captured"]
+          print(f"::notice::lane-b captured={len(ok)} failed={len(bad)} by_interval={meta['captured_by_interval']} direct_rate_limited={meta['direct_rate_limited']}")
+          for c in bad:
+              print(f"::warning::lane-b {c['symbol']} [{c['interval']}] {c.get('error','')[:160]}")
+          PY
+
+      - name: Upload captures as artifact (the lane's only output)
+        uses: actions/upload-artifact@v4
+        with:
+          name: intraday-captures-lane-b
+          path: |
+            data/intraday
+            data/intraday_index.json
+          retention-days: 30
+          if-no-files-found: warn

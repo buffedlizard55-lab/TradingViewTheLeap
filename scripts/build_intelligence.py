@@ -33,6 +33,54 @@ def build_report() -> dict:
     sources = load("research/sources/sources.json")
     frontier = load("data/frontier_history.json")
 
+    # Optional artifacts: present once the capture-intraday workflow has committed bars and
+    # the derived builders have run in a networked environment. Absence is recorded as a
+    # blocked workstream, never silently smoothed over.
+    def load_if_present(rel: str):
+        path = ROOT / rel
+        if not path.exists():
+            return None
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    intraday_index = load_if_present("data/intraday_index.json")
+    intraday_study = load_if_present("data/intraday_study.json")
+    stock_competition = load_if_present("data/stock_competition_results.json")
+    stock_roster = load_if_present("data/competition/stock_roster.json")
+    exec_summary = load_if_present("data/exec_summary.json")
+    tv_benchmark = load_if_present("data/tv_benchmark.json")
+
+    intraday_captured = []
+    if intraday_index:
+        intraday_captured = [c for c in intraday_index["captures"] if c.get("status") == "captured"]
+    intraday_missing = []
+    if intraday_index:
+        intraday_missing = [c for c in intraday_index["captures"] if c.get("status") != "captured"]
+    intraday_cover = {
+        "captured_series": len(intraday_captured),
+        "by_interval": intraday_index["_meta"].get("captured_by_interval") if intraday_index else {},
+        "captured_bar_total": sum(c.get("bar_count", 0) for c in intraday_captured),
+        "failed_or_not_attempted": len(intraday_missing),
+        "index": "data/intraday_index.json" if intraday_index else None,
+        "index_stamp": intraday_index["_meta"].get("fetched_at_utc") if intraday_index else None,
+        "vendor_rate_limited_direct": intraday_index["_meta"].get("direct_rate_limited")
+        if intraday_index else None,
+        "boundary": (
+            "Vendor intraday prints, not exchange data and not contest fills. The study measures "
+            "price distances on these bars (did a session gap fill, what a delayed fill cost); it "
+            "makes no claim that a participant could transact at these prices."
+        ),
+    }
+    stock_division = {
+        "roster_usernames": len(stock_roster["participants"]) if stock_roster else 0,
+        "artifact": "data/stock_competition_results.json" if stock_competition else None,
+        "primary_profile": intraday_index is not None and stock_roster is not None,
+        "boundary": (
+            "Repository-generated usernames and outcomes on vendor equity bars under the official "
+            "stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView "
+            "participants, not observed contest results."
+        ),
+    }
+
     by_user = {p["username"]: p for p in competition["participants"]}
     latest_rows = {r["username"]: r for r in competition["latest_edition"]["rows"]}
     model_defs = {m["model"]: m for m in competition["models"]}
@@ -108,7 +156,10 @@ def build_report() -> dict:
                 "source_ids": sorted(vendor_sources),
                 "captured_series": len(captured),
                 "failed_series": len(failed),
-                "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills.",
+                "intraday_captured_series": intraday_cover["captured_series"],
+                "intraday_captured_bars": intraday_cover["captured_bar_total"],
+                "intraday_index_stamp": intraday_cover["index_stamp"],
+                "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary.",
             },
             "repository_simulation": {
                 "status": "reproducible_paper_simulation",
@@ -145,10 +196,83 @@ def build_report() -> dict:
                 "next_step": "Add a genuinely out-of-sample season and validate fills against a higher-frequency source; do not optimize to the current vendor window.",
             },
             {
-                "workstream": "TradingView Strategy Report / Pine platform validation",
+                "workstream": "intraday vendor captures (15m / 1h / long 1d) for the volatile pool",
+                "status": "captured" if intraday_index else "blocked_or_unrun",
+                "evidence": (["data/intraday_index.json", "scripts/fetch_intraday.py", "intel/intraday.py",
+                              "research/evidence/YAHOO-INTRADAY-CAPTURE.md"]
+                             if intraday_index else
+                             ["scripts/fetch_intraday.py", "intel/intraday.py",
+                              "research/evidence/YAHOO-INTRADAY-CAPTURE.md",
+                              ".github/workflows/capture-intraday.yml"]),
+                "next_step": ("Top up any series the vendor rate-limited (scripts/fetch_intraday.py "
+                              "--only-failed) and re-run the study after each capture."
+                              if intraday_index else
+                              "The capture workflow has not committed data/intraday_index.json yet; "
+                              "dispatch .github/workflows/capture-intraday.yml (the repository sandbox "
+                              "has no egress to the vendor)."),
+                "detail": intraday_cover,
+            },
+            {
+                "workstream": "intra-session gap fill and execution latency (our own measurement)",
+                "status": "completed_with_caveats" if intraday_study else "blocked_or_unrun",
+                "evidence": (["data/intraday_study.json", "scripts/run_intraday_study.py"]
+                             if intraday_study else ["scripts/run_intraday_study.py", "intel/intraday.py"]),
+                "next_step": ("Extend the latency measurement with the vendor's own bid/ask or with "
+                              "a second vendor before drawing conclusions about real slippage."
+                              if intraday_study else
+                              "Run scripts/run_intraday_study.py once data/intraday_index.json exists."),
+            },
+            {
+                "workstream": "volatile-stock division of the paper competition (20 usernames)",
+                "status": ("completed_with_caveats" if stock_competition and stock_division["roster_usernames"]
+                           else "blocked_or_unrun"),
+                "evidence": (["data/stock_competition_results.json", "data/competition/stock_roster.json",
+                              "intel/stock_strategies.py", "scripts/run_stock_competition.py"]
+                             if stock_competition else
+                             ["data/competition/stock_roster.json", "intel/stock_strategies.py",
+                              "scripts/run_stock_competition.py"]),
+                "next_step": ("Add an out-of-sample season on bars captured after this run; the current "
+                              "division is fitted to one finite vendor window."
+                              if stock_competition else
+                              "Run scripts/run_stock_competition.py once the intraday captures exist."),
+                "detail": stock_division,
+            },
+            {
+                "workstream": "executive summary of mechanically-implied upcoming orders",
+                "status": "captured" if exec_summary else "blocked_or_unrun",
+                "evidence": (["data/exec_summary.json", "scripts/build_exec_summary.py"]
+                             if exec_summary else ["scripts/build_exec_summary.py"]),
+                "next_step": ("Re-derive after every capture and after every competition re-run; the "
+                              "sizes are indicative rule-arithmetic, never advice."
+                              if exec_summary else "Run scripts/build_exec_summary.py."),
+                "detail": ({
+                    "pending_order_count": exec_summary["_meta"]["pending_order_count"],
+                    "divisions": exec_summary["_meta"]["divisions"],
+                    "sizing_note": exec_summary["_meta"]["sizing_note"],
+                } if exec_summary else {}),
+            },
+            {
+                "workstream": "Pine broker-emulator rules vs the Python fill model",
+                "status": "completed_with_caveats" if tv_benchmark else "blocked_or_unrun",
+                "evidence": (["data/tv_benchmark.json", "intel/pine_emulator.py", "scripts/tv_benchmark.py"]
+                             if tv_benchmark else ["intel/pine_emulator.py", "scripts/tv_benchmark.py"]),
+                "next_step": ("The rules are encoded from TradingView's own Pine documentation and the "
+                              "import path is proven on a synthetic fixture; the numbers are not yet "
+                              "validated against a real platform run."
+                              if tv_benchmark else "Run scripts/tv_benchmark.py."),
+                "detail": ({
+                    "status": tv_benchmark["_meta"]["status"],
+                    "real_exports_found": tv_benchmark["_meta"]["real_exports_found"],
+                    "fixture_exports_found": tv_benchmark["_meta"]["fixture_exports_found"],
+                } if tv_benchmark else {}),
+            },
+            {
+                "workstream": "authenticated TradingView Strategy Report import",
                 "status": "blocked_or_unrun",
-                "evidence": ["research/strategy/models.json", "research/strategy/the-leap-hypothesis-lab.pine"],
-                "next_step": "Requires an authenticated TradingView session and a manually reviewable Strategy Report export; no result is claimed here.",
+                "evidence": ["intel/tv_import.py", "scripts/tv_benchmark.py",
+                             "research/strategy/models.json",
+                             "research/strategy/the-leap-hypothesis-lab.pine"],
+                "next_step": "Requires a signed-in TradingView account with Strategy Report export entitlement. The importer (intel/tv_import.py) accepts the official List-of-Trades CSV, the Performance-Summary CSV and the 5-sheet XLSX and fails loudly on gating; drop an export into data/tv_reports/ and re-run scripts/tv_benchmark.py. No figure on this site is claimed to come from a real export.",
             },
             {
                 "workstream": "official listed-trader strategy attribution",
@@ -174,6 +298,8 @@ def build_report() -> dict:
             },
         },
         "coverage": {
+            "intraday_capture": intraday_cover,
+            "stock_division": stock_division,
             "latest_official_frontier_capture": latest_frontier["captured_at_utc"],
             "latest_official_participants_displayed": latest_frontier["participants_displayed"],
             "vendor_captured_symbols": sorted(c["tradingview_symbol"] for c in captured),

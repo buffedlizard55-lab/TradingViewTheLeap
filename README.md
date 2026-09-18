@@ -8,18 +8,87 @@ returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
 
-## September 18 tenth pass: EXECUTIVE SUMMARY — Recommended Upcoming Competition Trades
+## September 18 eleventh pass: generated executive summary, intraday pipeline, stock division, Pine-vs-Python benchmark
 
-This session delivered the top-level **Executive Summary** section placed at the very top of the site (`index.html`), explicitly highlighting actionable trade setups for paper trading competitions based on top-performing strategy models and usernames:
+This pass removed the hand-written executive-summary block and replaced it with generated,
+verifier-audited content, and added the four research pipelines the brief asked for.
 
-- **Executive Summary at Very Top of Site:** Features explicit trade recommendations derived from our 24-edition paper trading shadow competition (15 tracked usernames, 11 verified futures markets, 20 verified volatile stock records) to target explosive paper trading returns (5x–100x multiples) using maximum allowable 20:1 leverage and zero risk management constraints.
-- **Actionable Trade Setup Cards & Matrix Table:**
-  1. **`ContrarianQueen` (Model C5 Capitulation Pyramider [patient] — Season Rank 1 Champion, +$2,806,899.58 P/L):** **BUY / LONG CME Ether (`CME:ETH1!`) & Bitcoin (`CME:BTC1!`)** on 3-day capitulation drops >= 1.0 ATR with expanding volatility; pyramid additions every +1.5 ATR.
-  2. **`GapGoblin` (Model C2 Gap Fade [tight] — Latest Live Mirror Rank 1 Champion, +$468,102.43 P/L in 30 days):** **BUY / LONG COMEX Silver (`COMEX:SI1!`) & Micro Silver (`COMEX_MINI:SIL1!`)** fading overnight down-gaps > 1.0 ATR back toward 5-session mean.
-  3. **`ClimaxCarla` (Model C4 Exhaustion Reversal [loose] — Season Rank 3, +$1,168,973.61 P/L):** **SELL / SHORT NYMEX Crude Oil (`NYMEX:CL1!`) & Gasoline (`NYMEX:RB1!`)** on liquidation climax up-bars (TR >= 1.5 ATR, close in top 35% range tail).
-  4. **`FadeThePanic` (Model C1 Capitulation Reversal [default] — Peak Single Edition Champion 7.24x, +$1,561,000 P/L):** **SELL / SHORT NYMEX Heating Oil (`NYMEX:HO1!`)** / **BUY LONG Natural Gas (`NYMEX:NG1!`)** on multi-day extension >= 1.0 ATR.
-  5. **Stock Competition Intelligence:** Highlights 20 verified high-beta volatile stock opportunities (ENPH 382x, AMD 322x, MARA 190x, CVNA 128x, GME 124x, TSLA 17x, NVDA 12x, MSTR 49x) with exact historical trough/peak window provenance for stock paper trading competitions.
-- **Verification & Audit:** Full multi-pass line-by-line verification in [`research/evidence/AUDIT-2026-09-18-PASS10.md`](research/evidence/AUDIT-2026-09-18-PASS10.md); 371 verifier checks passed / 0 failed; zero hallucinations.
+- **Executive summary is now machine-derived, not hand-typed.** `scripts/build_exec_summary.py`
+  replays the frozen model parameters of the top-ranked usernames on the committed vendor bars and
+  emits `data/exec_summary.json`: pending orders (exit / reverse / entry, with the signal bar and the
+  resulting position state), open positions, and — for every top-ranked model with no order due — the
+  exact condition it is waiting for. `scripts/build_site.py` renders that artifact field by field at
+  the very top of the page. The previous hardcoded cards, the "Upcoming Trade Signal Matrix" table and
+  the unattested `$` figures they carried are gone; a CI assertion now fails the build if any
+  exec-summary row or symbol is missing from the page, and a banned-string guard fails it if the
+  hardcoded block reappears. At this commit the artifact reports **2 pending orders**
+  (`ContrarianQueen` C5: exit-and-reverse to long `CME:ETH1!`; `GapGoblin` C2: exit `NYMEX:PL1!`) and
+  `ClimaxCarla` C4 flat and waiting for its exhaustion-bar condition. The stock division shows
+  `not_run` until the intraday capture lands — the page says so instead of inventing a row.
+- **Intraday capture pipeline (15-minute, hourly, ~10-year daily).** `scripts/fetch_intraday.py` is
+  driven by `.github/workflows/capture-intraday.yml` (the repository sandbox has no egress to the
+  vendor): it chunks every request window, records the raw-response SHA-256 and byte length of every
+  chunk, disables direct calls after repeated HTTP 429s, falls back to public relays, and records a
+  partial capture explicitly (`failed` / `not_attempted` with the error text, plus counters in the
+  index) rather than silently storing less. `.github/workflows/derive-intraday.yml` then re-derives
+  the study, the stock division, the exec summary, the benchmark and the site, and commits them.
+- **Intra-session gap fills and execution latency are measured, not assumed.**
+  `scripts/run_intraday_study.py` -> `data/intraday_study.json` reports, per asset class and per gap
+  bucket, how often a session gap filled, how many bars that took, and what a delayed fill costs in
+  basis points of the decision close (next open, session-boundary open, and 1/2/3/5-bar delays). Both
+  the study and `intel/intraday.py` state the vendor-price boundary in their own metadata.
+- **Volatile-stock division of our own competition.** `intel/stock_strategies.py`,
+  `data/competition/stock_roster.json` (20 usernames) and `scripts/run_stock_competition.py` run
+  multi-season paper editions on the 20-stock volatile pool under both the official stocks-edition
+  constants (`stocks_official_leap`: 100,000 virtual, 1:1, 0.01% commission, 50-unit cap on seven
+  instruments) and a declared 20:1 counterfactual, plus a latency sweep (fills delayed by 1/2/5 bars)
+  and an arithmetic ceiling on what the official rules can possibly return.
+- **Pine broker emulator vs the Python fill model.** `intel/pine_emulator.py` encodes TradingView's
+  own documented broker-emulator rules (fills from chart data after the bar closes, the
+  open→high→low→close intrabar path assumption, no intrabar gaps on price-based orders, gap
+  crossings filling at the next open, `use_bar_magnifier` switching to lower-timeframe OHLC) and
+  `intel/tv_import.py` accepts the official Strategy Report exports (List-of-Trades CSV,
+  Performance-Summary CSV, 5-sheet XLSX) with a strict per-row audit: observed header, column
+  mapping, SHA-256, rejected rows with reasons, and a recomputed entry/exit arithmetic cross-check.
+  `scripts/tv_benchmark.py` -> `data/tv_benchmark.json` currently reports status **blocked** for real
+  exports (this environment holds no TradingView credentials and does not fabricate platform output)
+  while the import/benchmark path is proven end to end on a labelled synthetic fixture; the blocked
+  record states exactly how to complete it. No figure on the site is claimed to come from a real
+  export.
+- **Verification.** `scripts/verify.py` grew four checks (intraday captures + study, stock division,
+  executive summary, TV benchmark) that re-hash every stored file, re-validate every bar through the
+  study's own loader, re-run each builder at its pinned stamp and require field-for-field equality,
+  re-derive the study's aggregates from its bucket rows, recompute the benchmark medians from its
+  per-fill rows, and cross-check the exec summary against the competition artifact. Current result:
+  **378 verifier checks passed, 0 failed** and **436 self-test checks passed, 0 failed** (see
+  "Verify and build" below; the numbers are re-run at each commit).
+
+## September 18 tenth pass: EXECUTIVE SUMMARY at the top of the site
+
+This pass moved the "what should be placed next" answer to the very top of `index.html` and gave it
+its own data pipeline.
+
+- **Executive summary at the very top of the page.** The first section of the site is
+  `#exec-summary`, headed "Executive Summary — Recommended Upcoming Trades", and the first block
+  inside it is the machine-derived pending-order table. It is rendered from
+  `data/exec_summary.json` (engine `exec-summary-1`), which lists the top-ranked usernames of each
+  division, their frozen model and parameters, their ranking evidence, their open positions, their
+  pending orders and what they are waiting for.
+- **How it is derived.** `scripts/build_exec_summary.py` replays the frozen contrarian models on the
+  committed vendor bars, groups each decision into an exit / entry / reverse order, and sizes each
+  entry leg from the official rule constants at the last captured close. Indicative sizes are
+  labelled as indicative: the fill would happen at the next bar's open, which does not exist when the
+  artifact is built.
+- **What it says at this commit.** Two orders are due at the next bar open (`ContrarianQueen` C5
+  exit-and-reverse to long `CME:ETH1!` and `GapGoblin` C2 exit `NYMEX:PL1!`), `ClimaxCarla` C4 is
+  flat and waiting for its exhaustion-bar condition, and the volatile-stock division row reports
+  `not_run` until the intraday capture is committed.
+- **Honesty boundary carried in the artifact.** `not_a_forecast: true`, an explicit paper-trading
+  note, and a sizing note that separates official rule arithmetic from live fills. The page renders
+  those notes verbatim, and `scripts/verify.py` fails if a pending order lacks a size rule, if an
+  exit leg carries a size, or if the declared pending-order count disagrees with the rows.
+- **Verification:** the current numbers are in the eleventh-pass section above and in
+  [`research/evidence/AUDIT-2026-09-18-PASS10.md`](research/evidence/AUDIT-2026-09-18-PASS10.md).
 
 ## September 18 ninth pass: R8 official frontier + auditable intelligence layer
 
@@ -450,6 +519,16 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `scripts/leaderboard_lab.py` | Deterministic placement/prize arithmetic from contest config + latest captures (no market data) |
 | `scripts/build_intelligence.py` | Deterministic provenance/status and model-comparison report builder |
 | `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
+| `data/intraday/` + `data/intraday_index.json` | Intraday (15m/1h) and long daily (1d) vendor captures for the volatile pool: per-chunk request window, transport, raw-response SHA-256/bytes and stored-file SHA-256 |
+| `data/intraday_study.json` | Measured intra-session gap fills and execution-latency cost (basis points of the decision close) |
+| `data/competition/stock_roster.json` + `data/stock_competition_results.json` | Volatile-stock division: 20 usernames, frozen stock models, multi-season editions, latency sweep, official-rule ceiling, 20:1 counterfactual |
+| `data/exec_summary.json` | Machine-derived pending orders / open positions / waiting-for table rendered at the very top of the page |
+| `data/tv_reports/` + `data/tv_benchmark.json` | TradingView Strategy Report imports (real exports if committed, labelled synthetic fixtures otherwise) and the Pine-vs-Python fill comparison |
+| `intel/intraday.py`, `intel/stock_strategies.py` | Offline intraday loader/validator (SHA-256 re-verify, OHLC invariants, sessions, ATR) and the frozen stock-model library |
+| `intel/pine_emulator.py`, `intel/tv_import.py` | Documented Pine broker-emulator fill rules and the strict Strategy Report importer |
+| `scripts/fetch_intraday.py` | CI-side intraday vendor capture (chunking, relay fallback, per-chunk digests, explicit partial-capture records) |
+| `scripts/run_intraday_study.py`, `scripts/run_stock_competition.py`, `scripts/build_exec_summary.py`, `scripts/tv_benchmark.py` | The four intraday-era builders, all deterministic under `--stamp` |
+| `.github/workflows/capture-intraday.yml`, `.github/workflows/derive-intraday.yml` | Capture the bars, then re-derive and commit the study, division, exec summary, benchmark and site |
 
 ## Verify and build
 
@@ -462,21 +541,33 @@ python3 scripts/build_intelligence.py
 python3 scripts/build_site.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/build_intelligence.py scripts/run_backtests.py
+# new in the eleventh pass (all deterministic under --stamp):
+python3 scripts/run_intraday_study.py        # needs data/intraday_index.json (CI capture)
+python3 scripts/run_stock_competition.py     # needs data/intraday_index.json
+python3 scripts/build_exec_summary.py
+python3 scripts/tv_benchmark.py
 ```
 
-After the raw captures change (CI or manual `scripts/fetch_market_data.py`), re-derive the
-downstream artifacts in one step:
+After the raw captures change (CI or manual `scripts/fetch_market_data.py`,
+`scripts/fetch_intraday.py`), re-derive the downstream artifacts in one step:
 
 ```bash
-python3 scripts/refresh_artifacts.py   # re-run backtests, placement lab, intelligence report, models.json, rebuild site
+python3 scripts/refresh_artifacts.py   # backtests, placement lab, models.json, intraday study,
+                                       # stock division, exec summary, TV benchmark, intelligence, site
+make derived intraday stocks exec tvbench   # same steps as individual targets
 ```
 
-Current audit result:
+Current audit result (re-run at this commit):
 
 ```text
-verify:    369 passed, 0 failed, 1 warning
-self-test: 421 passed, 0 failed, 1 warning
+verify:    378 passed, 0 failed, 4 warnings
+self-test: 436 passed, 0 failed, 4 warnings
 ```
+
+Three of the four warnings are the deliberate "artifact not produced yet" notes for the intraday
+capture, the intraday study and the stock division while the capture workflow is still running; the
+fourth is the recorded COMEX:SIC1! vendor-vs-quote delta below. The intraday-dependent checks turn
+strict (and the warnings disappear) as soon as `data/intraday_index.json` is committed.
 
 The single verify warning is recorded for review: a 2.09% vendor-vs-quote delta on the newly
 listed COMEX:SIC1! (front-contract month and capture time may differ; tracked as IR-22).
@@ -490,9 +581,15 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 
 ## Important limitations and remaining work
 
-- **TradingView platform validation is still `not_run`.** The daily-bar simulation is independent
-  arithmetic, not a TradingView Strategy Report; the platform requires an authenticated chart
-  session this environment does not have.
+- **Authenticated TradingView Strategy Report import is still `blocked`, and nothing is claimed
+  from it.** `intel/tv_import.py` parses the official export formats and `scripts/tv_benchmark.py`
+  audits them row by row, but a real Strategy Report can only be produced from a signed-in account
+  with export entitlement (Plus/Premium). This environment holds no TradingView credentials and does
+  not fabricate platform output, so `data/tv_benchmark.json` reports `blocked` with the exact
+  completion steps, and the measured numbers it does show come from a **labelled synthetic fixture**
+  written by this repository (never presented as a real export). The documented broker-emulator rules
+  in `intel/pine_emulator.py` are transcribed from TradingView's own Pine Script documentation, not
+  from a platform run of our models.
 - **S1/S2/S3 are refuted on daily bars only.** Intraday bars could change signal frequency
   (S3 in particular fires too rarely on daily bars); no licensed intraday history is stored here.
 - **Nine selected symbols are newly listed on the vendor with a single session each**
@@ -521,8 +618,19 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 - **Placement arithmetic is a requirement, not a route.** `data/leaderboard_lab.json` shows what the
   cash-prize level costs (+15.21%/day compounded at capture 5, with no losing day at full exposure);
   it contains no strategy that produces it, and the three tested models have a $0.0 pooled median.
-- **No intraday evidence.** Every capture is a daily bar; the contest is decided by hour-level
-  realized P/L, and no licensed intraday history is stored.
+- **Intraday evidence is vendor-tier and still arriving.** The capture workflow stores 15-minute and
+  hourly bars for the 20-stock volatile pool (and hourly futures) with per-chunk digests, so the
+  gap-fill and latency questions are measured rather than assumed — but the captures are vendor
+  prints, not exchange data and not contest fills, the 15-minute window is limited by vendor
+  retention (roughly 60 days), the runner IP range is rate limited (partial captures are recorded as
+  such), and no bid/ask, queue position or borrow cost is available at this granularity. Slippage on
+  the session-boundary fill is therefore measured as a *price distance*, not as an executed fill.
+- **The stock division is fitted to one finite vendor window.** Its seasons are contiguous slices of
+  the same captured history, so "multi-season" is not out-of-sample; the latency sweep and the
+  official-rule arithmetic ceiling are shown next to the results precisely because a single-edition
+  multiple is not an expected return. The 20:1 counterfactual is declared as *not* an official rule
+  set: no published TradingView stocks-edition page grants 20:1, and its results must never be read
+  as achievable.
 - **Capacity coverage is partial.** 20 of the 94 eligible futures carry verified multipliers, prices
   and caps, and only 11 of those have usable vendor history; the other 74 are transcribed (rules and
   caps) but not modelled.

@@ -143,7 +143,29 @@ def main() -> int:
     ap.add_argument("--counterfactual-editions", type=int, default=12)
     ap.add_argument("--latency-editions", type=int, default=6)
     args = ap.parse_args()
-    stamp = args.stamp or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    def default_stamp() -> str:
+        """Newest input capture stamp, so an un-stamped run still reproduces exactly.
+
+        The engine is deterministic given (bars, roster, rules); only the timestamp is
+        environmental. Pinning it to the capture index (and the futures/competition
+        artifacts that the exec summary reads) keeps every rerun byte-identical, which is
+        what scripts/verify.py requires.
+        """
+        stamps = []
+        for rel, keys in (("data/intraday_index.json", ("fetched_at_utc",)),
+                          ("data/market_history_index.json", ("fetched_at_utc",)),
+                          ("data/competition_results.json", ("generated_utc",))):
+            path = os.path.join(ROOT, rel)
+            if not os.path.exists(path):
+                continue
+            with open(path, encoding="utf-8") as fh:
+                meta = json.load(fh).get("_meta", {})
+            for key in keys:
+                if meta.get(key):
+                    stamps.append(meta[key])
+        return max(stamps) if stamps else "unknown"
+
+    stamp = args.stamp or default_stamp()
     started = time.time()
 
     try:

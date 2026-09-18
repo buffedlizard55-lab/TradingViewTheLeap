@@ -13,7 +13,18 @@ This is the single command that keeps the repository internally consistent after
    ``data/leaderboard_lab.json``).
 4. Rebuild the deterministic intelligence/provenance report (``scripts/build_intelligence.py`` ->
    ``data/intelligence_report.json``).
-5. Rebuild the GitHub Pages document (``scripts/build_site.py`` -> root ``index.html``).
+5. Re-derive everything that depends on the intraday captures *when they exist*:
+   the gap-fill / execution-latency study (``scripts/run_intraday_study.py`` ->
+   ``data/intraday_study.json``), the volatile-stock division
+   (``scripts/run_stock_competition.py`` -> ``data/stock_competition_results.json``) and the
+   mechanical upcoming-order summary (``scripts/build_exec_summary.py`` ->
+   ``data/exec_summary.json``). Missing captures skip these steps with a printed reason
+   instead of failing or inventing data.
+6. Re-run the TradingView export benchmark (``scripts/tv_benchmark.py`` ->
+   ``data/tv_benchmark.json``); it reports ``blocked`` while no real export is committed.
+7. Rebuild the deterministic intelligence/provenance report
+   (``scripts/build_intelligence.py`` -> ``data/intelligence_report.json``).
+8. Rebuild the GitHub Pages document (``scripts/build_site.py`` -> root ``index.html``).
 
 The offline verifier (``scripts/verify.py``) re-runs step 1 with the committed stamp and requires
 byte-identical artifacts, so after this script runs the repository is back to a green state with
@@ -90,6 +101,39 @@ def run_placement_lab() -> None:
         raise SystemExit(f"leaderboard_lab.py failed with exit code {proc.returncode}")
 
 
+def run_script(script: str, *args: str) -> None:
+    proc = subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", script), *args],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    sys.stdout.write(proc.stdout)
+    if proc.returncode != 0:
+        sys.stderr.write(proc.stderr)
+        raise SystemExit(f"{script} failed with exit code {proc.returncode}")
+
+
+def intraday_steps() -> None:
+    """Re-derive everything that depends on data/intraday/ (skipped when absent)."""
+    index = os.path.join(ROOT, "data", "intraday_index.json")
+    if not os.path.exists(index):
+        print("no data/intraday_index.json yet - the intraday capture workflow has not "
+              "committed bars, so the intraday study and the stock division are skipped")
+        return
+    print("=== step 4: intraday gap-fill / latency study ===")
+    run_script("run_intraday_study.py")
+    print("=== step 5: volatile-stock division (multi-season) ===")
+    run_script("run_stock_competition.py")
+    print("=== step 6: executive-summary orders ===")
+    run_script("build_exec_summary.py")
+
+
+def tv_benchmark_step() -> None:
+    print("=== step 7: TradingView export benchmark (blocked when no real export is present) ===")
+    run_script("tv_benchmark.py")
+
+
 def build_intelligence() -> None:
     proc = subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", "build_intelligence.py")],
@@ -123,9 +167,11 @@ def main() -> int:
     sync_models()
     print("=== step 3: re-derive the placement arithmetic ===")
     run_placement_lab()
-    print("=== step 4: rebuild intelligence report ===")
+    intraday_steps()
+    tv_benchmark_step()
+    print("=== step 8: rebuild intelligence report ===")
     build_intelligence()
-    print("=== step 5: rebuild index.html ===")
+    print("=== step 9: rebuild index.html ===")
     build_site()
     print("done. Run 'python3 scripts/verify.py' to confirm the repository is green.")
     return 0

@@ -1,4 +1,4 @@
-.PHONY: all verify selftest site serve clean check backtest competition capture refresh placement
+.PHONY: all verify selftest site serve clean check backtest competition capture refresh placement intraday stocks tvbench exec derived
 
 all: check
 
@@ -30,6 +30,26 @@ selftest:
 # Re-derive the placement/prize arithmetic from contest config + captures.
 placement:
 	python3 scripts/leaderboard_lab.py
+
+# Intraday captures -> measured gap-fill + execution-latency study.
+intraday:
+	python3 scripts/run_intraday_study.py
+
+# 20-stock volatile pool: our own multi-season paper division (futures roster untouched).
+stocks:
+	python3 scripts/run_stock_competition.py
+
+# Pine broker-emulator vs Python fill benchmark (blocked while no real export is committed).
+tvbench:
+	python3 scripts/tv_benchmark.py
+
+# Mechanical "what would be placed next" table rendered at the top of the site.
+exec:
+	python3 scripts/build_exec_summary.py
+
+# Everything downstream of every capture, in dependency order, skipping absent inputs.
+derived:
+	python3 scripts/refresh_artifacts.py
 
 site:
 	python3 scripts/target_lab.py
