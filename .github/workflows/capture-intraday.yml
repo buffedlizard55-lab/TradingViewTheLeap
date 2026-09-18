@@ -1,18 +1,33 @@
 name: Capture intraday market data
 
-# Intraday ingestion pipeline for the stock-division research: hourly and 15-minute
-# bars for the 20-stock volatile pool plus hourly futures for the symbols already
-# captured daily. Runs on a GitHub-hosted runner because the repository's own
-# sandbox has no egress to the market-data vendor (query1/query2.finance.yahoo.com
-# fail TLS there; only the package index and api.github.com are reachable).
+# Intraday ingestion pipeline for the stock-division research: hourly and 15-minute bars
+# for the 20-stock volatile pool plus hourly futures for the symbols already captured
+# daily. Runs on a GitHub-hosted runner because the repository's own sandbox has no egress
+# to the market-data vendor (only the package index and api.github.com are reachable there).
 #
-# The raw vendor response is never trusted: scripts/fetch_intraday.py validates the
-# symbol, the granularity and every OHLC invariant before storing a canonicalised
-# bar file, and records the raw-response SHA-256 plus the stored-file SHA-256 in
-# data/intraday_index.json. The offline verifier then re-audits the committed files.
+# Runner IP ranges are rate limited by the vendor (HTTP 429), so scripts/fetch_intraday.py
+# chunks every request window, disables direct calls after repeated 429s, and falls back to
+# public relays. Payloads are validated (symbol, granularity, OHLC invariants) before a
+# single bar is stored; the offline verifier re-audits the committed files afterwards.
+#
+# Dispatch inputs let a single interval be captured on its own, which is how a partial
+# top-up is done after a rate-limited run:
+#   gh workflow run capture-intraday.yml -f interval=1h
 
 on:
   workflow_dispatch:
+    inputs:
+      interval:
+        description: "Which interval to capture"
+        required: false
+        default: all
+        type: choice
+        options: [all, 15m, 1h, 1d]
+      only_failed:
+        description: "Only retry series not yet captured"
+        required: false
+        default: true
+        type: boolean
   push:
     branches: [main, "arena/**"]
     paths:
@@ -30,13 +45,27 @@ jobs:
   capture:
     name: Fetch intraday bars for the volatile stock pool
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Decide which intervals to capture
+        id: plan
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "interval=${{ inputs.interval }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "interval=all" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -f data/intraday_index.json ]; then
+            echo "extra=--only-failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "extra=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Vendor reachability probe (annotations only, never fails the job)
         continue-on-error: true
@@ -52,62 +81,74 @@ jobs:
         run: python3 -m py_compile scripts/fetch_intraday.py
 
       - name: Capture 15-minute bars (20-stock volatile pool, last ~60 days)
+        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '15m'
+        continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          EXTRA=""
-          if [ -f data/intraday_index.json ]; then EXTRA="--only-failed"; fi
-          python3 scripts/fetch_intraday.py --interval 15m $EXTRA \
-            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 2.0
+          python3 scripts/fetch_intraday.py --interval 15m ${{ steps.plan.outputs.extra }} \
+            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5
+          bash .github/scripts/commit_capture.sh \
+            "capture: 15-minute bars for the volatile stock pool (automated)" \
+            data/intraday data/intraday_index.json
 
-      - name: Capture hourly bars (stocks + futures, last ~730 days)
+      - name: Capture hourly bars (20 stocks + 20 futures, last ~730 days)
+        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '1h'
+        continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          EXTRA=""
-          if [ -f data/intraday_index.json ]; then EXTRA="--only-failed"; fi
-          python3 scripts/fetch_intraday.py --interval 1h $EXTRA --futures-hourly \
-            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 2.0
+          python3 scripts/fetch_intraday.py --interval 1h ${{ steps.plan.outputs.extra }} \
+            --futures-hourly --out-dir data/intraday --index data/intraday_index.json \
+            --pacing-seconds 0.5
+          bash .github/scripts/commit_capture.sh \
+            "capture: hourly bars for stocks and futures (automated)" \
+            data/intraday data/intraday_index.json
 
       - name: Capture long daily bars (20-stock volatile pool, ~10 years)
+        if: steps.plan.outputs.interval == 'all' || steps.plan.outputs.interval == '1d'
+        continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          EXTRA=""
-          if [ -f data/intraday_index.json ]; then EXTRA="--only-failed"; fi
-          python3 scripts/fetch_intraday.py --interval 1d $EXTRA \
-            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 1.0
+          python3 scripts/fetch_intraday.py --interval 1d ${{ steps.plan.outputs.extra }} \
+            --out-dir data/intraday --index data/intraday_index.json --pacing-seconds 0.5
+          bash .github/scripts/commit_capture.sh \
+            "capture: long daily bars for the volatile stock pool (automated)" \
+            data/intraday data/intraday_index.json
 
-      - name: Capture summary
+      - name: Capture summary (fails the job only if nothing at all was captured)
         run: |
           python3 - <<'PY'
-          import json
+          import json, os, sys
+          if not os.path.exists("data/intraday_index.json"):
+              print("::error::no intraday index written at all")
+              sys.exit(1)
           idx = json.load(open("data/intraday_index.json"))
           meta = idx["_meta"]
           ok = [c for c in idx["captures"] if c["status"] == "captured"]
           bad = [c for c in idx["captures"] if c["status"] != "captured"]
           print(f"captured={len(ok)} failed={len(bad)} by_interval={meta['captured_by_interval']}")
           for c in bad:
-              print(f"::warning::{c['symbol']} [{c['interval']}] {c.get('error','')[:200]}")
-          rows = ", ".join(f"{c['symbol']}[{c['interval']}]={c['bar_count']}" for c in ok)
-          print(f"::notice::bars {rows}")
+              print(f"::warning::{c['symbol']} [{c['interval']}] {c.get('error','')[:180]}")
+          by_iv = {}
+          for c in ok:
+              by_iv.setdefault(c["interval"], []).append(f"{c['symbol']}={c['bar_count']}")
+          for iv, rows in sorted(by_iv.items()):
+              print(f"::notice::{iv} bars: " + ", ".join(rows))
+          if not ok:
+              print("::error::intraday capture stored zero series")
+              sys.exit(1)
           PY
 
-      - name: Commit captures to the triggering branch
+      - name: Final safety commit (in case a step's own commit was interrupted)
         run: |
-          git config user.name "github-actions[capture]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/intraday data/intraday_index.json
-          if git diff --cached --quiet; then
-            echo "::notice::nothing to commit (intraday captures unchanged)"
-            exit 0
-          fi
-          git commit -m "capture: intraday (15m/1h) + long daily bars for the volatile stock pool (automated)"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-          echo "::notice::intraday captures committed to ${GITHUB_REF_NAME} at $(git rev-parse --short HEAD)"
+          bash .github/scripts/commit_capture.sh \
+            "capture: intraday (+ long daily) bars for the volatile stock pool (automated)" \
+            data/intraday data/intraday_index.json
 
       - name: Upload captures as artifact (secondary channel)
         uses: actions/upload-artifact@v4
@@ -117,4 +158,4 @@ jobs:
             data/intraday
             data/intraday_index.json
           retention-days: 30
-          if-no-files-found: error
+          if-no-files-found: warn

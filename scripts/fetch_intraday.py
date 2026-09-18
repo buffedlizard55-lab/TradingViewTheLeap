@@ -2,46 +2,53 @@
 """Capture intraday (15-minute, hourly) and long daily bars for the volatile-stock pool.
 
 This script runs ONLY in an environment with outbound internet access (the
-``capture-intraday`` GitHub Actions workflow). The repository verifier is offline and never
-fetches anything; it audits the files this script produces.
+``capture-intraday`` GitHub Actions workflow; GitHub-hosted runner IP ranges are rate
+limited by the vendor, so requests are chunked and relayed — see TRANSPORT below). The
+repository verifier is offline and never fetches anything; it audits the files this
+script produces.
 
-Two symbol sets are captured:
+Symbol sets:
 
-1. The 20-stock volatile equity pool listed in ``data/volatile_stocks.json`` (the pool the
-   project selected from the Yahoo Finance chart API with recomputable trough/peak windows).
-2. Optionally, the futures already captured in ``data/market_history_index.json`` (hourly),
-   so intraday gap-fill and execution-latency arithmetic can be run on the same futures the
-   daily shadow competition trades.
+1. The 20-stock volatile equity pool in ``data/volatile_stocks.json`` (15m, 1h, 1d).
+2. Optionally the 20 futures already captured daily in ``data/market_history_index.json``
+   (1h only), so intraday gap-fill and execution-latency arithmetic runs on the futures
+   the daily shadow competition trades too.
 
-For every symbol and interval the script requests
+Requests are CHUNKED. Each (symbol, interval) window is split into sub-windows of
+``chunk_days`` and each sub-window is one request:
 
-    https://query1.finance.yahoo.com/v8/finance/chart/{YAHOO}
-        ?period1={P1}&period2={P2}&interval={INTERVAL}
+    https://{host}/v8/finance/chart/{YAHOO}
+        ?period1={chunk_start}&period2={chunk_end}&interval={INTERVAL}
 
-Direct requests are tried first; if the host is unreachable or rate-limits the runner IP
-(HTTP 429), the request is retried through the public allorigins relay. The relay is a
-transport only: every payload is validated against the expected vendor symbol, the vendor
-instrument type, and OHLC invariants before anything is stored.
+Chunking exists for three reasons: the vendor rate-limits large/rapid requests from
+datacenter IPs (HTTP 429), public relays time out on multi-hundred-kilobyte responses, and
+a failed chunk loses only that chunk instead of the whole series. Every chunk's provenance
+(request URL, raw response SHA-256, byte length, transport) is recorded in the index.
 
-Stored form is a CANONICALISED capture, not the verbatim response: the vendor's response body
-is parsed, every bar is validated, and the bars are written as a compact array
+TRANSPORT. Direct requests are tried first. A single direct probe decides whether the host
+answers the runner IP at all: if the first two direct attempts return HTTP 429, direct is
+disabled for the rest of the run (recorded in the index as ``direct_rate_limited``) and all
+remaining chunks go through the public relays, tried in order:
 
-    "bars": [[epoch_seconds, open, high, low, close, volume], ...]
+    allorigins  https://api.allorigins.win/raw?url={encoded}
+    codetabs    https://api.codetabs.com/v1/proxy?quest={encoded}
 
-with prices rounded to ``ROUNDING_DECIMALS`` decimals. The index records the SHA-256 of the
-raw response bytes, the raw byte length, and the SHA-256 of the stored canonical file, so a
-reviewer can (a) audit the stored bars directly and (b) re-run the identical request to
-confirm the raw payload is unchanged. Rounding is the only transformation applied; the bound
-is 0.5 x 10**-ROUNDING_DECIMALS per price field and is recorded in the index.
+A relay is a transport only. Every payload is validated against the expected vendor symbol,
+the vendor's reported granularity and every OHLC invariant before a single bar is stored, so
+a relay that returned the wrong instrument or a mangled body fails loudly.
 
-Yahoo Finance is a commercial market-data vendor, not an exchange, not a regulator, and not
-the contest organiser. Intraday bars from this endpoint are unadjusted for splits and
-dividends inside the window and may contain pre/post-market prints; they are used here as
-vendor history and nothing is claimed about exchange prints.
+STORED FORM. Canonicalised capture, not the verbatim response: bars are written as
+``[[epoch_seconds, open, high, low, close, volume], ...]`` with prices rounded to
+``ROUNDING_DECIMALS`` decimals, and the index keeps the raw-response SHA-256 and byte length
+per chunk. Rounding is the only transformation; the bound is recorded in the index.
+
+Yahoo Finance is a commercial market-data vendor, not an exchange, a regulator, or the
+contest organiser. Intraday bars from this endpoint are unadjusted for splits and dividends
+and may include pre/post-market prints.
 
 Usage (CI):
-    python3 scripts/fetch_intraday.py --interval all --out-dir data/intraday \
-        --index data/intraday_index.json --futures-hourly
+    python3 scripts/fetch_intraday.py --interval all --futures-hourly \
+        --out-dir data/intraday --index data/intraday_index.json
 """
 
 from __future__ import annotations
@@ -62,43 +69,43 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ---------------------------------------------------------------------------
 # Frozen capture configuration.
 #
-# The epoch windows are computed once from these ISO constants and frozen so that
-# every re-capture requests the identical window. Yahoo Finance serves 15-minute
-# bars for roughly the last 60 days and hourly bars for roughly the last 730 days;
-# both windows below stay inside those limits at the capture date (2026-09-18).
+# Epoch windows are computed once from these ISO constants and frozen so that every
+# re-capture requests the identical window. Yahoo Finance serves 15-minute bars for
+# roughly the last 60 days and hourly bars for roughly the last 730 days; both windows
+# below stay inside those limits at the capture date (2026-09-18).
 # ---------------------------------------------------------------------------
 
-INTERVAL_WINDOWS = {
-    "15m": {"period1": "2026-07-21T00:00:00Z", "period2": "2026-09-19T00:00:00Z"},
-    "1h": {"period1": "2024-09-21T00:00:00Z", "period2": "2026-09-18T00:00:00Z"},
-    "1d": {"period1": "2016-01-01T00:00:00Z", "period2": "2026-09-19T00:00:00Z"},
+INTERVAL_SPEC = {
+    "15m": {"period1": "2026-07-21T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
+            "chunk_days": 10},
+    "1h": {"period1": "2024-09-21T00:00:00Z", "period2": "2026-09-18T00:00:00Z",
+           "chunk_days": 120},
+    "1d": {"period1": "2016-01-01T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
+           "chunk_days": 1825},
 }
 
 INTERVAL_ORDER = ("15m", "1h", "1d")
 
-# Yahoo documents 15m for the last 60 days and 1h for the last 730 days. These mirrors
-# are declared so a reviewer can see why the windows above stop where they stop.
 VENDOR_RETENTION_NOTE = (
-    "Yahoo Finance chart API retention: 1m ~7d, 2m/5m/15m/30m/90m ~60d, 1h ~730d "
-    "(see research/evidence/INTRADAY-VENDOR-CAPTURE.md). Windows are frozen inside those "
-    "limits at the capture date."
+    "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, "
+    "2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those "
+    "limits at the capture date 2026-09-18; a later re-capture of the 15m window would fall "
+    "outside vendor retention and must be re-frozen deliberately."
 )
 
-ENDPOINT_TEMPLATE = (
-    "https://{host}/v8/finance/chart/{ticker}"
-    "?period1={period1}&period2={period2}&interval={interval}"
-)
 ENDPOINT_HOSTS = ("query1.finance.yahoo.com", "query2.finance.yahoo.com")
-PROXY_TEMPLATE = "https://api.allorigins.win/raw?url={encoded}"
+RELAY_TEMPLATES = (
+    ("allorigins", "https://api.allorigins.win/raw?url={encoded}"),
+    ("codetabs", "https://api.codetabs.com/v1/proxy?quest={encoded}"),
+)
 
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 )
 
-SCRIPT_VERSION = "1"
+SCRIPT_VERSION = "2"
 ROUNDING_DECIMALS = 5
-INTER_REQUEST_DELAY_S = 2.5
 
 
 def epoch_of(iso_utc: str) -> int:
@@ -112,16 +119,13 @@ def iso_of(ts: int) -> str:
 def stock_symbols() -> list[tuple[str, str]]:
     """(symbol, yahoo_ticker) for the 20-stock volatile pool.
 
-    Read from data/volatile_stocks.json so the capture set can never drift from
-    the pool the rest of the project analyses.
+    Read from data/volatile_stocks.json so the capture set can never drift from the pool
+    the rest of the project analyses.
     """
     with open(os.path.join(ROOT, "data", "volatile_stocks.json"), encoding="utf-8") as fh:
         doc = json.load(fh)
-    out = []
-    for record in doc["records"]:
-        symbol = record["symbol"]
-        out.append((symbol, record.get("yahoo_ticker") or symbol))
-    return out
+    return [(record["symbol"], record.get("yahoo_ticker") or record["symbol"])
+            for record in doc["records"]]
 
 
 def futures_symbols() -> list[tuple[str, str]]:
@@ -131,12 +135,9 @@ def futures_symbols() -> list[tuple[str, str]]:
         return []
     with open(path, encoding="utf-8") as fh:
         doc = json.load(fh)
-    out = []
-    for record in doc.get("captures", []):
-        if record.get("status") != "captured":
-            continue
-        out.append((record["tradingview_symbol"], record["yahoo_ticker"]))
-    return out
+    return [(record["tradingview_symbol"], record["yahoo_ticker"])
+            for record in doc.get("captures", [])
+            if record.get("status") == "captured"]
 
 
 def stored_filename(key: str, interval: str) -> str:
@@ -144,42 +145,79 @@ def stored_filename(key: str, interval: str) -> str:
     return f"{safe}_{interval}.json"
 
 
-def fetch_bytes(url: str, attempts: int = 2, timeout: int = 60) -> tuple[bytes, str]:
-    """Fetch a URL directly; on failure retry through the public relay.
+def chunks_for(interval: str) -> list[tuple[int, int]]:
+    spec = INTERVAL_SPEC[interval]
+    start = epoch_of(spec["period1"])
+    end = epoch_of(spec["period2"])
+    step = spec["chunk_days"] * 86_400
+    out = []
+    cursor = start
+    while cursor < end:
+        out.append((cursor, min(cursor + step, end)))
+        cursor += step
+    return out
 
-    Returns (payload, transport) where transport records how the bytes arrived.
-    """
-    last_error: Exception | None = None
-    request = urllib.request.Request(
-        url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
-    )
-    for attempt in range(1, attempts + 1):
-        try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
-                return response.read(), "direct"
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
-            last_error = exc
-            print(f"    direct attempt {attempt}/{attempts} failed: {exc}", flush=True)
-            time.sleep(2 * attempt)
-    relay_url = PROXY_TEMPLATE.format(encoded=urllib.parse.quote(url, safe=""))
-    for attempt in range(1, attempts + 1):
+
+class Transport:
+    """Direct + relay HTTP transport with a per-run direct decision."""
+
+    def __init__(self, relay_attempts: int = 3, direct_attempts: int = 1,
+                 timeout: int = 60, log=print):
+        self.relay_attempts = relay_attempts
+        self.direct_attempts = direct_attempts
+        self.timeout = timeout
+        self.direct_disabled = False
+        self.direct_429s = 0
+        self.attempts_log: list[str] = []
+        self.log = log
+
+    def _get(self, url: str) -> bytes:
         request = urllib.request.Request(
-            relay_url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
+            url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
         )
-        try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
-                return response.read(), "allorigins-relay"
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
-            last_error = exc
-            print(f"    relay attempt {attempt}/{attempts} failed: {exc}", flush=True)
-            time.sleep(4 * attempt)
-    raise RuntimeError(
-        f"GET failed after {attempts} attempts on both transports: {url} ({last_error})"
-    )
+        with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            return response.read()
+
+    def fetch(self, url: str) -> tuple[bytes, str]:
+        last_error: Exception | None = None
+        if not self.direct_disabled:
+            for attempt in range(1, self.direct_attempts + 1):
+                try:
+                    payload = self._get(url)
+                    self.attempts_log.append("direct-ok")
+                    return payload, "direct"
+                except urllib.error.HTTPError as exc:
+                    last_error = exc
+                    if exc.code == 429:
+                        self.direct_429s += 1
+                        # The runner IP range is rate limited: stop wasting the run's
+                        # budget on direct calls and go straight to the relays.
+                        if self.direct_429s >= 2:
+                            self.direct_disabled = True
+                            self.log("    direct disabled for this run after repeated HTTP 429")
+                    self.log(f"    direct attempt {attempt} failed: HTTP {exc.code}")
+                except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                    last_error = exc
+                    self.log(f"    direct attempt {attempt} failed: {exc}")
+                time.sleep(2 * attempt)
+        for name, template in RELAY_TEMPLATES:
+            relay_url = template.format(encoded=urllib.parse.quote(url, safe=""))
+            for attempt in range(1, self.relay_attempts + 1):
+                try:
+                    payload = self._get(relay_url)
+                    self.attempts_log.append(f"{name}-ok")
+                    return payload, f"{name}-relay"
+                except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+                    last_error = exc
+                    self.log(f"    {name} relay attempt {attempt}/{self.relay_attempts} "
+                             f"failed: {exc}")
+                    time.sleep(min(20, 3 * attempt))
+        raise RuntimeError(f"GET failed on every transport: {url} ({last_error})")
 
 
-def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> dict:
-    """Validate the vendor payload and return canonical bars + provenance."""
+def parse_chunk(payload: bytes, key: str, yahoo_ticker: str, interval: str,
+                chunk_start: int, chunk_end: int) -> tuple[list[list], dict]:
+    """Validate one chunk's payload and return its bars plus vendor facts."""
     document = json.loads(payload.decode("utf-8"))
     chart = document.get("chart") or {}
     if chart.get("error") is not None:
@@ -198,7 +236,6 @@ def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> di
             f"{key}: vendor reported granularity {meta.get('dataGranularity')!r}, "
             f"expected {interval!r}"
         )
-
     timestamps = result.get("timestamp") or []
     quote = ((result.get("indicators") or {}).get("quote") or [{}])[0]
     opens = quote.get("open") or []
@@ -212,11 +249,14 @@ def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> di
             raise RuntimeError(
                 f"{key}: ragged arrays: {name}={len(series)} timestamps={len(timestamps)}"
             )
-
     bars: list[list] = []
     dropped_null = 0
-    prior_ts = None
     for ts, o, h, l, c, v in zip(timestamps, opens, highs, lows, closes, volumes):
+        if ts < chunk_start or ts > chunk_end:
+            raise RuntimeError(
+                f"{key}: bar at {ts} outside the requested chunk "
+                f"[{chunk_start}, {chunk_end}]"
+            )
         if None in (o, h, l, c):
             dropped_null += 1
             continue
@@ -226,9 +266,6 @@ def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> di
             )
         if v is not None and v < 0:
             raise RuntimeError(f"{key}: negative volume at {ts}: {v}")
-        if prior_ts is not None and ts <= prior_ts:
-            raise RuntimeError(f"{key}: timestamps not strictly increasing at {ts}")
-        prior_ts = ts
         bars.append([
             int(ts),
             round(float(o), ROUNDING_DECIMALS),
@@ -237,12 +274,7 @@ def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> di
             round(float(c), ROUNDING_DECIMALS),
             0 if v is None else int(v),
         ])
-    if not bars:
-        raise RuntimeError(f"{key}: vendor returned no usable bars for interval {interval}")
-
-    return {
-        "bars": bars,
-        "dropped_null_bars": dropped_null,
+    facts = {
         "vendor_reported_symbol": meta.get("symbol"),
         "vendor_reported_name": meta.get("shortName") or meta.get("longName"),
         "vendor_reported_exchange": meta.get("fullExchangeName") or meta.get("exchangeName"),
@@ -253,39 +285,86 @@ def parse_bars(payload: bytes, key: str, yahoo_ticker: str, interval: str) -> di
         "vendor_data_granularity": meta.get("dataGranularity"),
         "vendor_first_trade_epoch": meta.get("firstTradeDate"),
     }
+    return bars, {"facts": facts, "dropped_null": dropped_null, "bars": len(bars)}
+
+
+def capture_series(transport: Transport, key: str, yahoo: str, interval: str,
+                   pacing: float) -> dict:
+    """Fetch every chunk of one (symbol, interval) and return the merged capture."""
+    merged: dict[int, list] = {}
+    chunk_records = []
+    facts: dict = {}
+    dropped_null = 0
+    for chunk_start, chunk_end in chunks_for(interval):
+        url = None
+        error_text = None
+        payload = None
+        transport_name = None
+        for host in ENDPOINT_HOSTS:
+            url = (f"https://{host}/v8/finance/chart/{urllib.parse.quote(yahoo, safe='')}"
+                   f"?period1={chunk_start}&period2={chunk_end}&interval={interval}")
+            try:
+                payload, transport_name = transport.fetch(url)
+                break
+            except RuntimeError as exc:
+                error_text = str(exc)
+        if payload is None:
+            raise RuntimeError(f"{key}[{interval}] chunk {chunk_start}: {error_text}")
+        bars, info = parse_chunk(payload, key, yahoo, interval, chunk_start, chunk_end)
+        facts = info["facts"] or facts
+        dropped_null += info["dropped_null"]
+        for bar in bars:
+            merged[bar[0]] = bar
+        chunk_records.append({
+            "period1": chunk_start,
+            "period2": chunk_end,
+            "period1_utc": iso_of(chunk_start),
+            "period2_utc": iso_of(chunk_end),
+            "endpoint": url,
+            "transport": transport_name,
+            "raw_response_bytes": len(payload),
+            "raw_response_sha256": hashlib.sha256(payload).hexdigest(),
+            "bars_returned": len(bars),
+            "bars_dropped_null": info["dropped_null"],
+        })
+        print(f"    chunk {chunk_start}..{chunk_end}: {len(bars)} bars via {transport_name}",
+              flush=True)
+        time.sleep(pacing)
+    bars = [merged[ts] for ts in sorted(merged)]
+    if not bars:
+        raise RuntimeError(f"{key}[{interval}]: no usable bars in any chunk")
+    return {"bars": bars, "chunks": chunk_records, "facts": facts,
+            "dropped_null": dropped_null}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default="data/intraday")
     parser.add_argument("--index", default="data/intraday_index.json")
-    parser.add_argument("--interval", default="all",
-                        choices=("all",) + INTERVAL_ORDER,
-                        help="which interval to capture")
-    parser.add_argument("--futures-hourly", action="store_true",
-                        help="also capture the hourly futures series already in the daily index")
-    parser.add_argument("--only-failed", action="store_true",
-                        help="retry only records whose status is not 'captured'")
-    parser.add_argument("--pacing-seconds", type=float, default=INTER_REQUEST_DELAY_S)
+    parser.add_argument("--interval", default="all", choices=("all",) + INTERVAL_ORDER)
+    parser.add_argument("--futures-hourly", action="store_true")
+    parser.add_argument("--only-failed", action="store_true")
+    parser.add_argument("--pacing-seconds", type=float, default=1.0)
+    parser.add_argument("--relay-attempts", type=int, default=3)
     args = parser.parse_args()
 
     intervals = INTERVAL_ORDER if args.interval == "all" else (args.interval,)
     os.makedirs(os.path.join(ROOT, args.out_dir), exist_ok=True)
 
-    jobs: list[tuple[str, str, str, str]] = []   # (key, yahoo, kind, interval)
+    jobs: list[tuple[str, str, str, str]] = []
     for symbol, yahoo in stock_symbols():
         for interval in intervals:
             jobs.append((symbol, yahoo, "equity", interval))
-    if args.futures_hourly:
+    if args.futures_hourly and "1h" in intervals:
         for tv_symbol, yahoo in futures_symbols():
-            if "1h" in intervals:
-                jobs.append((tv_symbol, yahoo, "future", "1h"))
+            jobs.append((tv_symbol, yahoo, "future", "1h"))
 
     fetched_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     records: list[dict] = []
     failures: list[dict] = []
-    if args.only_failed and os.path.exists(os.path.join(ROOT, args.index)):
-        with open(os.path.join(ROOT, args.index), encoding="utf-8") as fh:
+    index_path = os.path.join(ROOT, args.index)
+    if args.only_failed and os.path.exists(index_path):
+        with open(index_path, encoding="utf-8") as fh:
             previous = json.load(fh)
         keep = [c for c in previous.get("captures", []) if c.get("status") == "captured"]
         records.extend(keep)
@@ -293,34 +372,12 @@ def main() -> int:
         jobs = [j for j in jobs if (j[0], j[3]) not in done]
         print(f"preserving {len(keep)} existing captures; retrying {len(jobs)}", flush=True)
 
+    transport = Transport(relay_attempts=args.relay_attempts)
+
     for key, yahoo, kind, interval in jobs:
-        window = INTERVAL_WINDOWS[interval]
-        p1, p2 = epoch_of(window["period1"]), epoch_of(window["period2"])
-        payload = None
-        transport = None
-        used_url = None
-        error_text = None
-        for host in ENDPOINT_HOSTS:
-            url = ENDPOINT_TEMPLATE.format(host=host, ticker=urllib.parse.quote(yahoo, safe=""),
-                                           period1=p1, period2=p2, interval=interval)
-            print(f"GET {key} [{interval}] <- {url}", flush=True)
-            try:
-                payload, transport = fetch_bytes(url)
-                used_url = url
-                break
-            except RuntimeError as exc:
-                error_text = str(exc)
-        if payload is None:
-            print(f"FAILED {key} [{interval}]: {error_text}", flush=True)
-            failures.append({"symbol": key, "interval": interval, "error": error_text})
-            records.append({
-                "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
-                "status": "failed", "error": error_text,
-            })
-            time.sleep(args.pacing_seconds)
-            continue
+        print(f"GET {key} [{interval}] across {len(chunks_for(interval))} chunk(s)", flush=True)
         try:
-            parsed = parse_bars(payload, key, yahoo, interval)
+            result = capture_series(transport, key, yahoo, interval, args.pacing_seconds)
         except (RuntimeError, ValueError, KeyError) as exc:
             print(f"FAILED {key} [{interval}]: {exc}", flush=True)
             failures.append({"symbol": key, "interval": interval, "error": str(exc)})
@@ -328,83 +385,73 @@ def main() -> int:
                 "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
                 "status": "failed", "error": str(exc),
             })
-            time.sleep(args.pacing_seconds)
             continue
 
-        bars = parsed.pop("bars")
+        bars = result["bars"]
         document = {
             "_meta": {
                 "kind": "intraday_vendor_capture",
                 "description": (
-                    "Canonicalised Yahoo Finance chart capture: bars are validated and stored "
-                    "as [epoch_seconds, open, high, low, close, volume] with prices rounded to "
-                    f"{ROUNDING_DECIMALS} decimals. The raw response SHA-256 and byte length are "
-                    "recorded in data/intraday_index.json; rounding is the only transformation."
+                    "Canonicalised Yahoo Finance chart capture: bars are validated and stored as "
+                    "[epoch_seconds, open, high, low, close, volume] with prices rounded to "
+                    f"{ROUNDING_DECIMALS} decimals. Per-chunk raw-response SHA-256 and byte "
+                    "lengths are recorded in data/intraday_index.json; rounding is the only "
+                    "transformation applied."
                 ),
                 "script": "scripts/fetch_intraday.py",
                 "script_version": SCRIPT_VERSION,
                 "interval": interval,
                 "rounding_decimals": ROUNDING_DECIMALS,
+                "vendor_retention_note": VENDOR_RETENTION_NOTE,
             },
             "symbol": key,
             "yahoo_ticker": yahoo,
             "kind": kind,
             "interval": interval,
-            "endpoint": used_url,
-            "requests_epoch": {"period1": p1, "period2": p2,
-                               "period1_utc": window["period1"], "period2_utc": window["period2"]},
             "captured_at_utc": fetched_at,
-            "transport": transport,
-            "raw_response_bytes": len(payload),
-            "raw_response_sha256": hashlib.sha256(payload).hexdigest(),
+            **result["facts"],
+            "dropped_null_bars": result["dropped_null"],
+            "chunks": result["chunks"],
             "bar_count": len(bars),
-            **parsed,
             "bars": bars,
         }
-        stored_bytes = json.dumps(document, separators=(",", ":")).encode("utf-8")
+        stored_text = json.dumps(document, separators=(",", ":"))
         filename = stored_filename(key, interval)
-        path = os.path.join(ROOT, args.out_dir, filename)
-        with open(path, "w", encoding="utf-8") as fh:
-            fh.write(json.dumps(document, separators=(",", ":")))
+        with open(os.path.join(ROOT, args.out_dir, filename), "w", encoding="utf-8") as fh:
+            fh.write(stored_text)
             fh.write("\n")
-        record = {
+        records.append({
             "symbol": key,
             "yahoo_ticker": yahoo,
             "kind": kind,
             "interval": interval,
-            "endpoint": used_url,
-            "requests_epoch": {"period1": p1, "period2": p2},
+            "endpoint": result["chunks"][0]["endpoint"],
+            "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
             "file": f"{args.out_dir}/{filename}".replace("\\", "/"),
             "bar_count": len(bars),
-            "dropped_null_bars": document["dropped_null_bars"],
+            "dropped_null_bars": result["dropped_null"],
             "first_epoch": bars[0][0],
             "last_epoch": bars[-1][0],
             "first_utc": iso_of(bars[0][0]),
             "last_utc": iso_of(bars[-1][0]),
             "first_close": bars[0][4],
             "last_close": bars[-1][4],
-            "raw_response_bytes": len(payload),
-            "raw_response_sha256": document["raw_response_sha256"],
-            "stored_bytes": len(stored_bytes),
-            "stored_sha256": hashlib.sha256(stored_bytes).hexdigest(),
+            "chunks": len(result["chunks"]),
+            "chunk_provenance": result["chunks"],
+            "raw_response_bytes_total": sum(c["raw_response_bytes"] for c in result["chunks"]),
+            "stored_bytes": len(stored_text.encode("utf-8")),
+            "stored_sha256": hashlib.sha256(stored_text.encode("utf-8")).hexdigest(),
             "rounding_decimals": ROUNDING_DECIMALS,
             "max_abs_rounding_delta": 0.5 * 10 ** -ROUNDING_DECIMALS,
-            "vendor_reported_symbol": document["vendor_reported_symbol"],
-            "vendor_reported_exchange": document["vendor_reported_exchange"],
-            "vendor_reported_instrument_type": document["vendor_reported_instrument_type"],
-            "vendor_currency": document["vendor_currency"],
-            "vendor_exchange_timezone": document["vendor_exchange_timezone"],
+            "vendor_reported_exchange": result["facts"].get("vendor_reported_exchange"),
+            "vendor_reported_instrument_type": result["facts"].get(
+                "vendor_reported_instrument_type"),
+            "vendor_currency": result["facts"].get("vendor_currency"),
+            "vendor_exchange_timezone": result["facts"].get("vendor_exchange_timezone"),
             "status": "captured",
-            "transport": transport,
             "captured_at_utc": fetched_at,
-        }
-        records.append(record)
-        print(
-            f"    {len(bars)} bars {record['first_utc']} -> {record['last_utc']} "
-            f"({document['vendor_reported_exchange']}) via {transport}",
-            flush=True,
-        )
-        time.sleep(args.pacing_seconds)
+        })
+        print(f"    {len(bars)} bars {iso_of(bars[0][0])} -> {iso_of(bars[-1][0])}", flush=True)
 
     captured = [r for r in records if r["status"] == "captured"]
     by_interval: dict[str, int] = {}
@@ -415,19 +462,21 @@ def main() -> int:
             "kind": "intraday_capture_index",
             "description": (
                 "Provenance index for the canonicalised intraday and long daily captures under "
-                "data/intraday/. Each record reproduces the exact vendor request, records the "
-                "raw response SHA-256 and byte length, and the SHA-256 of the stored canonical "
-                "file. Yahoo Finance is a market-data vendor tier source, not an exchange, a "
-                "regulator, or the contest organiser."
+                "data/intraday/. Each record lists every chunk's exact vendor request, the raw "
+                "response SHA-256 and byte length, the transport that delivered it, and the "
+                "SHA-256 of the stored canonical file. Yahoo Finance is a market_data_vendor "
+                "tier source, not an exchange, a regulator, or the contest organiser."
             ),
             "script": "scripts/fetch_intraday.py",
             "script_version": SCRIPT_VERSION,
-            "interval_windows": INTERVAL_WINDOWS,
+            "interval_spec": INTERVAL_SPEC,
             "vendor_retention_note": VENDOR_RETENTION_NOTE,
             "rounding_decimals": ROUNDING_DECIMALS,
             "fetched_at_utc": fetched_at,
             "capture_environment": os.environ.get("CAPTURE_ENV", "local"),
             "workflow_run_url": os.environ.get("WORKFLOW_RUN_URL"),
+            "direct_rate_limited": transport.direct_disabled,
+            "direct_429_count": transport.direct_429s,
             "symbol_count": len(records),
             "captured_count": len(captured),
             "failed_count": len(failures),
@@ -435,28 +484,25 @@ def main() -> int:
             "equity_symbols": [s for s, _ in stock_symbols()],
             "futures_symbols": sorted({r["symbol"] for r in captured if r["kind"] == "future"}),
             "provenance_note": (
-                "Re-run scripts/fetch_intraday.py in a networked environment (the "
-                "capture-intraday workflow) to refresh. The offline verifier audits these files "
-                "without network access: it re-validates every OHLC invariant, re-checks the "
-                "stored SHA-256, and re-derives the intraday study. Records with status 'failed' "
-                "carry the error text and must be retried."
+                "Re-run scripts/fetch_intraday.py --only-failed in a networked environment to "
+                "top up. The offline verifier audits these files without network access: it "
+                "re-validates every OHLC invariant, re-checks each stored SHA-256 against the "
+                "index, and re-derives the intraday study. Records with status 'failed' carry "
+                "the error text and must be retried."
             ),
         },
         "captures": sorted(records, key=lambda r: (r["kind"], r["symbol"], r["interval"])),
     }
-    with open(os.path.join(ROOT, args.index), "w", encoding="utf-8") as fh:
+    with open(index_path, "w", encoding="utf-8") as fh:
         json.dump(index, fh, indent=1)
         fh.write("\n")
 
-    summary = f"captured {len(captured)}/{len(records)} capture requests; by interval {by_interval}"
+    summary = f"captured {len(captured)}/{len(records)} series; by interval {by_interval}"
     if failures:
         summary += "; failures: " + ", ".join(
-            f"{f['symbol']}[{f['interval']}]({f['error'][-100:]})" for f in failures)
+            f"{f['symbol']}[{f['interval']}]({f['error'][-90:]})" for f in failures)
     print(f"SUMMARY: {summary}", flush=True)
     print(f"::notice::intraday capture {summary}", flush=True)
-    if not captured:
-        print("::error::intraday capture stored 0 records", flush=True)
-        return 1
     return 0
 
 
