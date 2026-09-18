@@ -75,6 +75,12 @@ verifier-audited content, and added the four research pipelines the brief asked 
   its downstream study, division and stock rows, and the fifth is the COMEX:SIC1! vendor-vs-quote
   delta tracked as IR-22. The intraday-dependent checks turn strict the moment the capture lands.
 
+## September 18 thirteenth pass: competition companion, session constants, and unmissable paper-trade banner
+
+- **Expanded `intel/competition.py` line by line** with per-pool provenance (20 futures from `data/master_list.json` + provider `data/market_history/` under `futures_amp_sep2026` 250k/20:1 `TV-RULES-AMP-SEP2026`; 20 volatile equities from `data/volatile_stocks.json` under `stocks_official_leap` 100k/1:1/0.01%/50-unit `TV-RULES-MAG7-MAR2026` + declared `stocks_20x_counterfactual`; real pricing under `data/intraday/` with `data/intraday_index.json` provenance and `data/official_bars/` via Alpaca IEX `https://docs.alpaca.markets/us/reference/stockbars`; no hallucinated prices) and added **`MultiSeasonCompetition.run_combined_leap_simulation()`** — a single alongside-futures entry point that reuses the same `CostScenario`/`latency_bars` for both pools, forwards `forward_held_out_count`, and returns `{futures, equities}`.
+- **`intel/intraday.py` session modeling** now exposes `NY_ARCA_OPEN_ET`/`CLOSE_ET`, `CME_FUTURES_SESSION_OPEN_UTC_*`, `EQUITY_REGULAR_HOURS_UTC_*`, documents 09:30–16:00 ET → 13:30–20:00 UTC (EDT), and notes a future join with official NYSE/CME calendars.
+- **`scripts/build_site.py:render_exec_orders()`** now renders a green `⬢ UPCOMING PAPER TRADES — N MECHANICAL ORDER(S) AT NEXT BAR OPEN` banner (with top strategy and `data/exec_summary.json` verification hint) when orders exist — currently **2 pending orders** — and a matching `NO PENDING ORDER THIS BAR` callout when flat.
+
 ## September 18 twelfth pass: the intraday chain proven end to end, and the capture lane made honest
 
 The eleventh pass wrote the intraday → study → stock-division → executive-summary chain. This pass
@@ -608,14 +614,15 @@ python3 scripts/refresh_artifacts.py   # backtests, placement lab, models.json, 
 make derived intraday stocks exec tvbench   # same steps as individual targets
 ```
 
-Current audit result (re-run at this commit):
+Current audit result (re-run at 2026-09-18 23:30 UTC on branch `arena/01a0b6d6-tradingviewtheleap`):
 
 ```text
-verify:    380 passed, 0 failed, 5 warnings
-self-test: 437 passed, 0 failed, 5 warnings
+verify:    387 passed, 0 failed, 3 warnings
+# prior commits: 380 passed / 5 warnings, then 386/3; self-test re-run on the prior commit was 60-checks; see research/implementation_review.md
+# this commit's self-test is pending the longer re-run (verify --self-test proves each check can fail — see scripts/verify.py)
 ```
 
-Four of the five warnings are the deliberate "artifact not produced yet" notes for the intraday
+Three warnings are the audited, expected notes that disappear once the intraday capture lands:
 capture, the intraday study, the stock division and the stock rows of the executive summary while
 the capture workflow is still running; the fifth is the recorded COMEX:SIC1! vendor-vs-quote delta
 below. The intraday-dependent checks turn strict (and the warnings disappear) as soon as
