@@ -1416,7 +1416,7 @@ def check_competition(rep: Report, cfg: dict, master: dict, source_ids: dict) ->
 
     if meta.get("kind") != "own_shadow_competition_simulation":
         rep.fail("competition.kind", f"unexpected kind {meta.get('kind')!r}")
-    if meta.get("engine") != "intel-competition-1":
+    if meta.get("engine") != "intel-competition-2":
         rep.fail("competition.engine", f"unexpected engine {meta.get('engine')!r}")
     if meta.get("not_a_forecast") is not True or roster["_meta"].get("not_a_forecast") is not True:
         rep.fail("competition.not_a_forecast", "artifact and roster must declare not_a_forecast: true")
@@ -1993,7 +1993,7 @@ def check_stock_competition(rep: Report, source_ids: dict) -> None:
     meta = doc.get("_meta", {})
     if meta.get("kind") != "own_stock_competition_simulation":
         rep.fail("stock_competition.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
-    if meta.get("engine") != "intel-competition-2":
+    if meta.get("engine") != "intel-competition-3":
         rep.fail("stock_competition.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
     if meta.get("not_a_forecast") is not True:
         rep.fail("stock_competition.honesty", "artifact must declare not_a_forecast: true")
@@ -2114,9 +2114,9 @@ def check_stock_competition(rep: Report, source_ids: dict) -> None:
             rep.fail("stock_competition.bound",
                      f"official_rule_bound max multiple {bound.get('max_edition_multiple_observed_bound')} "
                      f"!= re-derived {worst}")
-        if bound.get("five_x_reachable") != any(r["max_edition_multiple"] >= 5 for r in rows):
+        if bound.get("single_hold_scenario_ge_5x") != any(r["max_edition_multiple"] >= 5 for r in rows):
             rep.fail("stock_competition.bound", "five_x_reachable disagrees with the per-edition bounds")
-        if bound.get("ten_x_reachable") != any(r["max_edition_multiple"] >= 10 for r in rows):
+        if bound.get("single_hold_scenario_ge_10x") != any(r["max_edition_multiple"] >= 10 for r in rows):
             rep.fail("stock_competition.bound", "ten_x_reachable disagrees with the per-edition bounds")
     missing = sorted(usernames - covered)
     if missing and (doc.get("divisions") or {}):

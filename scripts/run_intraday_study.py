@@ -235,16 +235,17 @@ def latency_summary(values: list[float]) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--index", default="data/intraday_index.json")
     parser.add_argument("--stamp", default=None, help="pin generated_utc for reproducibility")
     parser.add_argument("--out", default="data/intraday_study.json")
     args = parser.parse_args()
     if args.stamp:
         stamp = args.stamp
     else:
-        stamp = (load_index().get("_meta") or {}).get("fetched_at_utc") or "unknown"
+        stamp = (load_index(args.index).get("_meta") or {}).get("fetched_at_utc") or "unknown"
 
     try:
-        index = load_index()
+        index = load_index(args.index)
         captures = load_all(index)
     except IntradayError as exc:
         print(f"::error::{exc}", flush=True)
@@ -344,24 +345,25 @@ def main() -> int:
             "description": (
                 "Deterministic measurement of (1) intra-session gap fills and (2) execution "
                 "latency cost, computed only from the committed canonical vendor captures under "
-                "data/intraday/. Yahoo Finance is a market_data_vendor tier source: these are "
+                "the selected index. Provider coverage is described by source_metadata; these are "
                 "vendor bars, not exchange prints, and no claim is made that any participant "
                 "could have transacted at these prices."
             ),
             "engine": "intraday-study-1",
             "generated_utc": stamp,
+            "source_index": args.index,
+            "source_metadata": index.get("_meta", {}),
             "script": "scripts/run_intraday_study.py",
-            "price_source": "data/intraday_index.json + data/intraday/*.json",
+            "price_source": args.index,
             "intervals_studied": [i for i in ("15m", "1h") if any(
                 c["interval"] == i for c in coverage)],
             "gap_buckets": [name for _, _, name in GAP_BUCKETS],
             "latency_steps_bars": list(LATENCY_STEPS),
             "methodology": [
-                "Session = UTC calendar date of the bar timestamp. For US equities the regular "
-                "session (13:30-20:00 UTC) never crosses a UTC date, so this equals the trading "
-                "session. For futures a UTC date splits the CME session at the vendor's daily "
-                "break; futures numbers here are therefore 'UTC-day boundary' numbers and are "
-                "labelled that way, not exchange sessions.",
+                "Session = UTC calendar date, NOT a verified exchange-session calendar. "
+                "Regular US equity hours vary with daylight saving time; extended-hours data "
+                "may cross UTC dates. Futures UTC boundaries do not equal CME sessions. "
+                "These observations must not be labelled official opening-auction gaps.",
                 "Gap = session_open - prior_session_close, both read from stored bars.",
                 "Gap scale = ATR(14) of session-aggregated bars (open first bar, high/low of the "
                 "session, close of the last bar) at the prior session; gap_atr = gap / ATR.",
@@ -372,12 +374,11 @@ def main() -> int:
                 "decision close. Positive = the fill is above the decision close.",
             ],
             "assumptions": [
-                "Vendor intraday series are not adjusted for splits or dividends inside the "
-                "capture window; a split inside the window would appear as a large gap.",
-                "Yahoo intraday bars may include extended-hours prints depending on the "
-                "instrument; the capture stores what the vendor returned.",
-                "15-minute captures cover roughly the last 60 days, hourly captures roughly the "
-                "last 730 days (vendor retention); sample sizes differ by interval.",
+                "Adjustments and feed coverage come from source_metadata. Alpaca captures "
+                "use split adjustment and IEX; legacy Yahoo captures may contain split gaps. "
+                "Neither feed is an independently verified executable quote.",
+                "The requested dates and actual capture endpoints determine coverage. "
+                "No retention entitlement is inferred for other providers.",
                 "No transaction costs, borrow costs or liquidity limits are applied to the "
                 "latency measurement; it is a price-distance measurement only.",
             ],

@@ -74,6 +74,8 @@ def load_bars_for(symbol: str) -> tuple[list[Bar], str]:
                               symbol.replace(":", "_").replace("!", "") + ".json")
     if os.path.exists(daily_path):
         candidates.append(("market_history", daily_path))
+    if len(candidates) > 1:
+        raise ImportError_("Ambiguous bar interval: multiple captures exist; explicit interval mapping required")
     for kind, path in candidates:
         if kind == "market_history":
             bars = load_series(symbol)
@@ -102,11 +104,11 @@ def index_of_timestamp(bars: list[Bar], stamp: str) -> int | None:
             continue
         epoch = int(parsed.timestamp())
         exact = next((i for i, b in enumerate(bars) if b.ts == epoch), None)
-        if exact is not None:
+        if exact is not None and len(text) != 10:
             return exact
         date_text = parsed.date().isoformat()
         same_day = [i for i, b in enumerate(bars) if b.date == date_text]
-        if same_day:
+        if len(same_day) == 1 and len(text) == 10:
             return same_day[0]
         candidates.append(date_text)
     return None
@@ -119,6 +121,7 @@ def benchmark_report(report, scenario: CostScenario, interval_filter: str | None
         "sha256": report.sha256,
         "kind": report.kind,
         "is_fixture": report.is_fixture,
+        "authentication_status": "synthetic_fixture" if report.is_fixture else "unverified_origin",
         "header_observed": report.header,
         "column_map": report.column_map,
         "symbol": report.symbol,
@@ -284,8 +287,9 @@ def main() -> int:
                                     "reason": str(exc)})
 
     if real_records:
-        status = "measured"
-        blocked_reason = None
+        status = "unverified_imports"
+        blocked_reason = ("CSV origin is not authenticated by filename or hash. "
+                          "Any fill comparisons are diagnostic only; failed imports are not measurements.")
     else:
         status = "blocked"
         blocked_reason = (

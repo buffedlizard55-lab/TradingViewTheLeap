@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -96,13 +97,16 @@ def _validate_bars(raw_bars: list, symbol: str, interval: str) -> tuple[IBar, ..
         if not isinstance(row, list) or len(row) != 6:
             raise IntradayError(f"{symbol}[{interval}]: malformed bar row {row!r}")
         ts, o, h, l, c, v = row
-        if not all(isinstance(x, (int, float)) for x in (ts, o, h, l, c, v)):
+        if not all(isinstance(x, (int, float)) and not isinstance(x, bool)
+                   and math.isfinite(x) for x in (ts, o, h, l, c, v)):
             raise IntradayError(f"{symbol}[{interval}]: non-numeric bar row {row!r}")
         if not (h >= max(o, c) and l <= min(o, c) and h >= l and min(o, c) > 0):
             raise IntradayError(
                 f"{symbol}[{interval}]: OHLC invariant violated at {ts}: "
                 f"o={o} h={h} l={l} c={c}"
             )
+        if ts != int(ts) or ts < 0 or v != int(v):
+            raise IntradayError(f"{symbol}[{interval}]: non-integral timestamp or volume")
         if v < 0:
             raise IntradayError(f"{symbol}[{interval}]: negative volume at {ts}")
         if prior_ts is not None and ts <= prior_ts:

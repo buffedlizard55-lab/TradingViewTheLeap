@@ -3,3 +3,7 @@ __pycache__/
 *.pyo
 .DS_Store
 .pytest_cache/
+# Licensed provider responses stay local pending redistribution review.
+data/official_bars/raw/
+.env
+.env.*
