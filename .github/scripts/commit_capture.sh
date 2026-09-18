@@ -12,10 +12,30 @@ set -uo pipefail
 message="$1"
 shift
 
+# Never commit data/intraday_index.json unless it records at least one captured series. The
+# rest of the repository treats the presence of that file as "captures exist" (the verifier
+# applies its strict intraday checks, the derive workflow runs the study, the site renders the
+# stock divisions), so an index holding nothing but failures would turn a vendor outage into a
+# red build. A zero-capture attempt is recorded in data/intraday_capture_report.json instead,
+# which the diagnostics step commits on every run.
+skip_index=0
+for path in "$@"; do
+  if [ "$path" = "data/intraday_index.json" ] && [ -f "$path" ]; then
+    captured=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['_meta'].get('captured_count',0))" "$path" 2>/dev/null || echo 0)
+    if [ "${captured:-0}" -le 0 ]; then
+      skip_index=1
+      echo "::warning::data/intraday_index.json records 0 captured series - not committing it (see data/intraday_capture_report.json)"
+    fi
+  fi
+done
+
 git config user.name "github-actions[capture]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
 for path in "$@"; do
+  if [ "$skip_index" = "1" ] && [ "$path" = "data/intraday_index.json" ]; then
+    continue
+  fi
   if [ -e "$path" ]; then
     git add "$path"
   fi

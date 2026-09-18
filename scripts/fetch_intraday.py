@@ -405,12 +405,19 @@ def main() -> int:
         print(f"GET {key} [{interval}] across {len(chunks_for(interval))} chunk(s)", flush=True)
         try:
             result = capture_series(transport, key, yahoo, interval, args.pacing_seconds)
-        except (RuntimeError, ValueError, KeyError) as exc:
-            print(f"FAILED {key} [{interval}]: {exc}", flush=True)
-            failures.append({"symbol": key, "interval": interval, "error": str(exc)})
+        except Exception as exc:                      # noqa: BLE001 - see the note below
+            # Deliberately broad. A rate-limited vendor or a relay that answers with an HTML
+            # error page raises types that are not worth enumerating (JSONDecodeError,
+            # UnicodeDecodeError, HTTPError, socket timeouts, ...), and an escaping exception
+            # kills the whole run BEFORE the index is written: the workflow then commits
+            # nothing and reports a green step, which is exactly how two capture runs were lost
+            # on 2026-09-18. One series failing must never cost the other nineteen.
+            detail = f"{type(exc).__name__}: {exc}"
+            print(f"FAILED {key} [{interval}]: {detail}", flush=True)
+            failures.append({"symbol": key, "interval": interval, "error": detail})
             records.append({
                 "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
-                "status": "failed", "error": str(exc),
+                "status": "failed", "error": detail,
             })
             continue
 
@@ -544,6 +551,7 @@ def main() -> int:
     with open(index_path, "w", encoding="utf-8") as fh:
         json.dump(index, fh, indent=1)
         fh.write("\n")
+    print(f"wrote {args.index} ({len(records)} records, {len(captured)} captured)", flush=True)
 
     summary = f"captured {len(captured)}/{len(records)} series; by interval {by_interval}"
     if failures:
