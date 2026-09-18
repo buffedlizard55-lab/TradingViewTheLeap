@@ -60,11 +60,49 @@ verifier-audited content, and added the four research pipelines the brief asked 
   study's own loader, re-run each builder at its pinned stamp and require field-for-field equality,
   re-derive the study's aggregates from its bucket rows, recompute the benchmark medians from its
   per-fill rows, and cross-check the exec summary against the competition artifact. Current result:
-  **379 verifier checks passed, 0 failed** and **437 self-test checks passed, 0 failed** (see
+  **380 verifier checks passed, 0 failed** and **437 self-test checks passed, 0 failed** (see
   "Verify and build" below; the numbers are re-run at each commit). Five warnings, all recorded:
   four are the deliberate "artifact not produced yet" notes for the unlanded intraday capture and
   its downstream study, division and stock rows, and the fifth is the COMEX:SIC1! vendor-vs-quote
   delta tracked as IR-22. The intraday-dependent checks turn strict the moment the capture lands.
+
+## September 18 twelfth pass: the intraday chain proven end to end, and the capture lane made honest
+
+The eleventh pass wrote the intraday → study → stock-division → executive-summary chain. This pass
+proved it actually runs, before the vendor capture existed, and fixed everything that proof broke.
+
+- **The chain was proved with generated bars in the exact writer format** (20 pool symbols ×
+  15m/1h/1d), then the generated files were deleted — they are not committed and no figure derived
+  from them appears anywhere in this repository. Running it end to end found five defects that would
+  each have stopped the chain the moment real bars landed: a trailing newline written *after* the
+  stored digest was computed (which would have made the loader reject **every** capture), a
+  series-level raw digest the loader required but neither writer wrote, a non-existent `Series`
+  keyword in the stock-division engine, C6–C10 parameter resolution pointed at the futures table, and
+  the executive summary sending the roster's `B1` control and `S1`–`S3` baselines into the
+  equity-only generator. Also fixed: the stock division's ranking was a fixed five rows while
+  recommendations reach rank 7 (the page could name a username its own ranking did not show), and the
+  study's gap accounting now closes as an explicit identity instead of assuming `sessions − 1`.
+- **Two real bugs found by the new unit tests.** `fill_limit_order()` fabricated fills — a bar
+  *opening above* a long limit was treated as a gap crossing, so limits the market never reached
+  filled anyway, while a genuine gap-through did not fill. Both directions now follow the documented
+  rule, with regression tests. A gated Performance Summary that exposed no usable values used to
+  import as an empty report; it now raises.
+- **The capture lane reported green steps while committing nothing.** Both causes are logged as
+  IR-27: fetch and commit shared one shell step (GitHub runs it with `-e`, so a failed fetch aborted
+  the step before its commit helper ran, under `continue-on-error`), and the per-series catch was too
+  narrow — a relay answering with an HTML error page killed the run *before* the provenance index was
+  written. The lane now separates fetch from commit (a failed commit fails the job), tees every fetch
+  into `data/intraday_capture_report.json`, posts its own evidence as a commit comment through
+  `.github/scripts/capture_diagnostics.py` (run logs and artifacts live on a host this sandbox cannot
+  reach), runs cheapest-and-most-valuable interval first with `--time-budget-seconds` caps, cancels
+  superseded runs instead of letting them hold the only slot for two hours, and refuses to commit an
+  index that records zero captured series — measured locally, such an index turns 379/0 into
+  380/2 and aborts the derive chain.
+- **Register and audit.** H31 (supported) records the capture-path finding with the runs it came
+  from; H32 is registered as the falsifiable intraday gap-fill/latency prediction and deliberately
+  left `untested`, because the number it needs does not exist until real bars are committed. The
+  hypothesis table gains an Untested filter so a registered-but-unmeasured claim is visible. See
+  [`research/evidence/AUDIT-2026-09-18-PASS12.md`](research/evidence/AUDIT-2026-09-18-PASS12.md).
 
 ## September 18 tenth pass: EXECUTIVE SUMMARY at the top of the site
 
@@ -531,7 +569,8 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `intel/pine_emulator.py`, `intel/tv_import.py` | Documented Pine broker-emulator fill rules and the strict Strategy Report importer |
 | `scripts/fetch_intraday.py` | CI-side intraday vendor capture (chunking, relay fallback, per-chunk digests, explicit partial-capture records) |
 | `scripts/run_intraday_study.py`, `scripts/run_stock_competition.py`, `scripts/build_exec_summary.py`, `scripts/tv_benchmark.py` | The four intraday-era builders, all deterministic under `--stamp` |
-| `.github/workflows/capture-intraday.yml`, `.github/workflows/derive-intraday.yml` | Capture the bars, then re-derive and commit the study, division, exec summary, benchmark and site |
+| `.github/workflows/capture-intraday.yml`, `.github/workflows/capture-intraday-lane-b.yml`, `.github/workflows/derive-intraday.yml`, `.github/scripts/commit_capture.sh`, `.github/scripts/capture_diagnostics.py` | Capture the bars (bounded, resumable, cheapest interval first), publish what each run did as a commit comment and `data/intraday_capture_report.json`, then re-derive and commit the study, division, exec summary, benchmark and site |
+| `research/evidence/AUDIT-2026-09-18-PASS12.md` | Twelfth-pass audit: the end-to-end proof of the intraday chain, the defects it exposed, and the capture-lane investigation (IR-27) |
 
 ## Verify and build
 
@@ -563,7 +602,7 @@ make derived intraday stocks exec tvbench   # same steps as individual targets
 Current audit result (re-run at this commit):
 
 ```text
-verify:    379 passed, 0 failed, 5 warnings
+verify:    380 passed, 0 failed, 5 warnings
 self-test: 437 passed, 0 failed, 5 warnings
 ```
 
@@ -584,6 +623,13 @@ The verifier also re-runs the backtest orchestrator with a pinned stamp and requ
 artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 
 ## Important limitations and remaining work
+
+**Intraday capture status (updated in the twelfth pass).** The capture lane now commits on its own,
+publishes a diagnostics report for every run, and refuses to commit an index that records zero
+captured series — but the branch still carries **no** `data/intraday/` as of this commit, so the
+intraday study, the volatile-stock division and the stock rows of the executive summary cannot be
+derived yet and the verifier reports them as deliberate "not produced yet" warnings. Nothing in this
+repository substitutes a guess for those numbers, and H32 stays `untested` until they exist.
 
 - **Authenticated TradingView Strategy Report import is still `blocked`, and nothing is claimed
   from it.** `intel/tv_import.py` parses the official export formats and `scripts/tv_benchmark.py`
