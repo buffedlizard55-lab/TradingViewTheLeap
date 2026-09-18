@@ -1327,6 +1327,253 @@ def check_volatile_stocks(rep: Report, source_ids: dict) -> None:
             rep.ok(f"volatile_stocks threshold {key}: {t['count']} = {', '.join(want)}")
 
 
+def check_competition(rep: Report, cfg: dict, master: dict, source_ids: dict) -> None:
+    """Audit the shadow-competition artifact by deterministically re-running the engine.
+
+    Re-derives every aggregate from the per-edition rows, re-checks every rule
+    constant against data/contest_config.json, re-validates the roster against
+    the frozen parameter library and the captured eligible universe, and then
+    re-runs scripts/run_competition.py from the raw captures and requires
+    byte-identical output.
+    """
+    import subprocess
+    import tempfile
+
+    doc = _load_or_fail(rep, "data/competition_results.json", "competition.present")
+    roster = _load_or_fail(rep, "data/competition/roster.json", "competition.roster_present")
+    if doc is None or roster is None:
+        return
+    meta = doc["_meta"]
+
+    if meta.get("kind") != "own_shadow_competition_simulation":
+        rep.fail("competition.kind", f"unexpected kind {meta.get('kind')!r}")
+    if meta.get("engine") != "intel-competition-1":
+        rep.fail("competition.engine", f"unexpected engine {meta.get('engine')!r}")
+    if meta.get("not_a_forecast") is not True or roster["_meta"].get("not_a_forecast") is not True:
+        rep.fail("competition.not_a_forecast", "artifact and roster must declare not_a_forecast: true")
+
+    # Rules constants must mirror the official config transcription.
+    rules = doc["rules"]
+    for key in ("starting_balance_virtual_usd", "futures_leverage_ratio",
+                "ranking_metric", "end_of_competition_auto_close",
+                "account_reset_allowed", "minimum_active_days"):
+        if rules.get(key) != cfg.get(key):
+            rep.fail("competition.rules", f"rules.{key} {rules.get(key)!r} != contest config {cfg.get(key)!r}")
+    for sid in rules.get("source_ids", []):
+        if sid not in source_ids:
+            rep.fail("competition.rules_source", f"unregistered source {sid}")
+
+    # Roster integrity: unique usernames; models known; variants resolvable;
+    # every pool symbol eligible; eligibility equals captured >=150-session series.
+    roster_rows = roster["participants"]
+    usernames = [r["username"] for r in roster_rows]
+    if len(usernames) != len(set(usernames)):
+        rep.fail("competition.roster", "duplicate usernames in roster")
+    if roster["_meta"].get("participant_count") != len(roster_rows):
+        rep.fail("competition.roster_count", "roster _meta participant_count mismatch")
+    known_models = {"C1", "C2", "C3", "C4", "C5", "S1", "S2", "S3"}
+    sys.path.insert(0, ROOT)
+    from intel.contrarian import resolve_params  # noqa: E402
+    for row in roster_rows:
+        if row["model"] not in known_models:
+            rep.fail("competition.roster_model", f"{row['username']}: unknown model {row['model']}")
+            continue
+        try:
+            resolve_params(row["model"], row.get("variant"))
+        except ValueError as exc:
+            rep.fail("competition.roster_variant", f"{row['username']}: {exc}")
+        if not row.get("pool"):
+            rep.fail("competition.roster_pool", f"{row['username']}: empty pool")
+        for sym in row["pool"]:
+            if sym not in meta["eligible_symbols"]:
+                rep.fail("competition.roster_pool", f"{row['username']}: pool symbol {sym} not eligible")
+
+    master_symbols = {e["symbol"] for e in master["entries"]}
+    market_idx = load("data/market_history_index.json")
+    rederived_eligible = sorted(
+        c["tradingview_symbol"] for c in market_idx["captures"]
+        if c.get("status") == "captured" and c.get("sessions_valid", 0) >= 150
+    )
+    if sorted(meta["eligible_symbols"]) != rederived_eligible:
+        rep.fail("competition.eligible", "eligible_symbols != captured series with >=150 sessions")
+    if any(s not in master_symbols for s in meta["eligible_symbols"]):
+        rep.fail("competition.eligible_master", "an eligible symbol is not on the master list")
+
+    edition_rows = doc["editions"]
+    if meta["season_editions"] != len(edition_rows):
+        rep.fail("competition.edition_count", "_meta.season_editions != len(editions)")
+    edition_ids = [e["edition_id"] for e in edition_rows]
+    if edition_ids != [f"E{n:02d}" for n in range(1, len(edition_rows) + 1)]:
+        rep.fail("competition.edition_ids", "edition ids must be contiguous E01..Enn")
+    balance = cfg["starting_balance_virtual_usd"]
+
+    def check_rows(rows: list, label: str) -> None:
+        seen = set()
+        keys = [(-r["realized_pnl_usd"], r["username"]) for r in rows]
+        if keys != sorted(keys):
+            rep.fail("competition.sort", f"{label}: rows not sorted by realized P/L desc, username asc")
+        for i, r in enumerate(rows, 1):
+            if r.get("rank") != i:
+                rep.fail("competition.ranks", f"{label}: rank {r.get('rank')} != {i}")
+            if r["username"] in seen:
+                rep.fail("competition.dupe_user", f"{label}: {r['username']} appears twice")
+            seen.add(r["username"])
+            if not approx(1.0 + r["realized_pnl_usd"] / balance, r["equity_multiple"], 5e-5):
+                rep.fail("competition.math", f"{label} {r['username']}: multiple != 1+pnl/{balance:,.0f}")
+            expected_buckets = [m for m in (5.0, 10.0, 20.0, 50.0, 100.0) if r["equity_multiple"] >= m]
+            if r["multiple_buckets"] != expected_buckets:
+                rep.fail("competition.buckets", f"{label} {r['username']}: bucket list wrong")
+            if r["meets_min_active_days"] != (r["active_days"] >= cfg["minimum_active_days"]):
+                rep.fail("competition.active_days", f"{label} {r['username']}: min-active-days flag wrong")
+
+    all_usernames = set(usernames)
+    for ed in edition_rows:
+        check_rows(ed["rows"], ed["edition_id"])
+        if set(r["username"] for r in ed["rows"]) != all_usernames:
+            rep.fail("competition.edition_roster", f"{ed['edition_id']}: rows do not cover the roster exactly")
+        top = ed["rows"][0]
+        if ed["leader"]["username"] != top["username"] or not approx(
+                ed["leader"]["realized_pnl_usd"], top["realized_pnl_usd"], 0.005):
+            rep.fail("competition.leader", f"{ed['edition_id']}: leader != first row")
+    check_rows(doc["latest_edition"]["rows"], "LATEST")
+    if doc["latest_edition"]["edition_id"] != "LATEST":
+        rep.fail("competition.latest_id", "latest edition id must be LATEST")
+    if doc["latest_edition"]["start_date"] <= edition_rows[-1]["start_date"] and \
+            doc["latest_edition"]["end_date"] == edition_rows[-1]["end_date"]:
+        rep.warn("competition.latest_overlap: LATEST coincides with the final season edition window")
+    if {a["username"] for a in doc["participants"]} != all_usernames:
+        rep.fail("competition.participants_roster", "participant aggregates do not cover the roster exactly")
+
+    # Aggregates must re-derive from the edition rows.
+    model_by_user = {r["username"]: r["model"] for r in roster_rows}
+    participants_by_user = {a["username"]: a for a in doc["participants"]}
+    for agg in doc["participants"]:
+        per = []
+        ok = True
+        for ed in edition_rows:
+            row = next((r for r in ed["rows"] if r["username"] == agg["username"]), None)
+            if row is None:
+                rep.fail("competition.aggregates",
+                         f"{agg['username']}: missing from {ed['edition_id']} rows")
+                ok = False
+                break
+            per.append(row)
+        if not ok:
+            continue
+        checks = (
+            ("editions_played", len(per)),
+            ("ruined_editions", sum(1 for r in per if r["ruined"])),
+            ("negative_editions", sum(1 for r in per if r["equity_multiple"] < 0)),
+            ("editions_ge_5x", sum(1 for r in per if r["equity_multiple"] >= 5)),
+            ("editions_ge_10x", sum(1 for r in per if r["equity_multiple"] >= 10)),
+            ("editions_ge_20x", sum(1 for r in per if r["equity_multiple"] >= 20)),
+            ("editions_ge_50x", sum(1 for r in per if r["equity_multiple"] >= 50)),
+            ("editions_ge_100x", sum(1 for r in per if r["equity_multiple"] >= 100)),
+            ("total_trades", sum(r["trades"] for r in per)),
+            ("total_add_tranches", sum(r["add_tranches"] for r in per)),
+            ("editions_meeting_min_active_days",
+             sum(1 for r in per if r["meets_min_active_days"])),
+        )
+        for key, expected in checks:
+            if agg.get(key) != expected:
+                rep.fail("competition.aggregates", f"{agg['username']}: {key} {agg.get(key)} != {expected}")
+        if not approx(agg["season_realized_pnl_usd"], round(sum(r["realized_pnl_usd"] for r in per), 2), 0.011):
+            rep.fail("competition.aggregates", f"{agg['username']}: season P/L mismatch")
+        product = 1.0
+        for r in per:
+            product *= max(r["equity_multiple"], 0.0)
+        if not approx(agg["season_multiple"], round(product, 6), 1e-4):
+            rep.fail("competition.aggregates", f"{agg['username']}: season multiple mismatch")
+        if agg["best_edition_multiple"] != round(max(r["equity_multiple"] for r in per), 6):
+            rep.fail("competition.aggregates", f"{agg['username']}: best edition multiple mismatch")
+
+    lb = doc["leaderboard"]
+    lb_keys = [(-r["season_realized_pnl_usd"], r["username"]) for r in lb]
+    if lb_keys != sorted(lb_keys):
+        rep.fail("competition.sort", "leaderboard not sorted by season P/L desc, username asc")
+    if [r["season_rank"] for r in lb] != list(range(1, len(lb) + 1)):
+        rep.fail("competition.ranks", "season ranks not contiguous from 1")
+    if {r["username"] for r in lb} != all_usernames:
+        rep.fail("competition.leaderboard_roster", "leaderboard usernames != roster")
+    for row in lb:
+        agg = participants_by_user.get(row["username"])
+        if agg is None:
+            continue  # the set-equality check above already fired
+        if row["season_realized_pnl_usd"] != agg["season_realized_pnl_usd"]:
+            rep.fail("competition.leaderboard_math", f"{row['username']}: leaderboard P/L != participant aggregate")
+        if row["season_rank"] != agg["season_rank"]:
+            rep.fail("competition.leaderboard_math", f"{row['username']}: rank mismatch")
+
+    # Target summary re-derivation.
+    pe = [r for ed in edition_rows for r in ed["rows"]]
+    ts = doc["target_summary"]
+    if ts["participant_editions"] != len(pe):
+        rep.fail("competition.target_summary", "participant_editions count mismatch")
+    for mult, key in ((5, "ge_5x"), (10, "ge_10x"), (20, "ge_20x"), (50, "ge_50x"), (100, "ge_100x")):
+        if ts[key] != sum(1 for r in pe if r["equity_multiple"] >= mult):
+            rep.fail("competition.target_summary", f"{key} count mismatch")
+    if ts["ruined_participant_editions"] != sum(1 for r in pe if r["ruined"]):
+        rep.fail("competition.target_summary", "ruined count mismatch")
+
+    # Kind contrast re-derivation.
+    for kind_key in ("contrarian", "baseline"):
+        block = doc["kind_contrast"][kind_key]
+        kinds = {"contrarian": {"C1", "C2", "C3", "C4", "C5"}, "baseline": {"S1", "S2", "S3"}}[kind_key]
+        subset = [a for a in doc["participants"]
+                  if model_by_user.get(a["username"]) in kinds]
+        if block["participants"] != len(subset):
+            rep.fail("competition.kind_contrast", f"{kind_key}: participant count mismatch")
+        if subset and block["best_single_edition_multiple"] != round(
+                max(a["best_edition_multiple"] for a in subset), 6):
+            rep.fail("competition.kind_contrast", f"{kind_key}: best single edition multiple mismatch")
+
+    # No shell-corruption artifacts may leak into any published text. Text that
+    # deliberately documents the IR-26 corruption event quotes the signatures;
+    # a match is allowed only when an explicit documentation marker precedes it.
+    corruption_re = re.compile(r"/bin/bash\.00|\(\.5M\b")
+    doc_markers = ("became", "→", "->", "expanded", "signature", "signatures",
+                   "leaked_shell_text", "IR-26", "restored")
+
+    def has_undocumented_signature(text: str) -> bool:
+        for m in corruption_re.finditer(text):
+            window = text[max(0, m.start() - 200):m.start()]
+            if not any(marker in window for marker in doc_markers):
+                return True
+        return False
+
+    leak_paths = ["README.md", "index.html",
+                  "research/hypotheses/hypotheses.json", "research/irregularities.json"]
+    for rel in leak_paths:
+        text = read(rel)
+        if has_undocumented_signature(text):
+            rep.fail("leaked_shell_text", f"{rel} contains shell-expanded corruption ($0/$2 artifacts)")
+    for label, payload in (("data/competition_results.json", doc),
+                           ("data/competition/roster.json", roster)):
+        text = json.dumps(payload)
+        if has_undocumented_signature(text):
+            rep.fail("leaked_shell_text", f"{label} contains shell-expanded corruption ($0/$2 artifacts)")
+
+    # Deterministic re-run from the raw captures must reproduce the artifact exactly.
+    stamp = meta["generated_utc"]
+    with tempfile.TemporaryDirectory() as tmp:
+        proc = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "scripts", "run_competition.py"),
+             "--stamp", stamp, "--out-dir", tmp],
+            capture_output=True, text=True, timeout=900)
+        if proc.returncode != 0:
+            rep.fail("competition.rerun", f"engine re-run failed: {proc.stderr[-400:]}")
+        else:
+            fresh_path = os.path.join(tmp, "competition_results.json")
+            with open(fresh_path, encoding="utf-8") as fh_:
+                fresh = json.load(fh_)
+            if fresh != doc:
+                rep.fail("competition.determinism",
+                         "committed artifact differs from a deterministic re-run from the raw captures")
+    champions = doc["leaderboard"][:3]
+    rep.ok("shadow competition re-derived from raw captures: "
+           + ", ".join(f"#{c['season_rank']} {c['username']}" for c in champions))
+
+
 def check_no_unsourced_numbers(rep: Report) -> None:
     """Guard against the failure mode this project exists to prevent: a number with no source."""
     ml = load("data/master_list.json")
@@ -1534,6 +1781,26 @@ def self_test(rep: Report) -> None:
     def vol_flag(v): v["records"][0]["note_if_best_move_exceeds_rank250_requirement"] = \
         not v["records"][0]["note_if_best_move_exceeds_rank250_requirement"]
 
+    def corrupt_comp(fn):
+        c = copy.deepcopy(load("data/competition_results.json"))
+        fn(c)
+        return "data/competition_results.json", c
+
+    def corrupt_comp_roster(fn):
+        r = copy.deepcopy(load("data/competition/roster.json"))
+        fn(r)
+        return "data/competition/roster.json", r
+
+    def comp_pnl(c): c["participants"][0]["season_realized_pnl_usd"] += 1.0
+    def comp_rules(c): c["rules"]["starting_balance_virtual_usd"] = 1.0
+    def comp_lb_order(c):
+        c["leaderboard"][0], c["leaderboard"][1] = c["leaderboard"][1], c["leaderboard"][0]
+    def comp_eligible(c): c["_meta"]["eligible_symbols"] = c["_meta"]["eligible_symbols"][:-1]
+    def comp_stray(c): c["stray_field"] = True
+    def comp_leak(c): c["models"][0]["claim"] = "median net profit of /bin/bash.00 (corrupted)"
+    def roster_ghost(r): r["participants"][0]["username"] = "GhostUser"
+    def roster_variant(r): r["participants"][0]["variant"] = "does-not-exist"
+
     bad_master_csv = copy.deepcopy(master_csv_rows)
     bad_master_csv[0]["max_open_position_contracts"] = "999"
 
@@ -1609,6 +1876,22 @@ def self_test(rep: Report) -> None:
          lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
         ("backtest.vol_flag", corrupt_vol(vol_flag),
          lambda r: check_backtests(r, cfg, snap, ml, source_ids)),
+        ("competition.aggregates", corrupt_comp(comp_pnl),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.rules", corrupt_comp(comp_rules),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.sort", corrupt_comp(comp_lb_order),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.eligible", corrupt_comp(comp_eligible),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.determinism", corrupt_comp(comp_stray),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("leaked_shell_text", corrupt_comp(comp_leak),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.leaderboard_roster", corrupt_comp_roster(roster_ghost),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
+        ("competition.roster_variant", corrupt_comp_roster(roster_variant),
+         lambda r: check_competition(r, cfg, ml, source_ids)),
     ]
     # the null-multiplier flag check: strip the multiplier AND its flag from an entry
     m = copy.deepcopy(ml)
@@ -1652,6 +1935,7 @@ def main() -> int:
     check_market_history(rep, source_ids, snap, master)
     check_volatile_stocks(rep, source_ids)
     check_backtests(rep, cfg, snap, master, source_ids)
+    check_competition(rep, cfg, master, source_ids)
     check_strategy_models(rep, cfg, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)

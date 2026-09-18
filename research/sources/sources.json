@@ -1603,7 +1603,7 @@
       "accessed_utc": "2026-09-17",
       "used_for": [
         "Seventh timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,344)",
-        "Observation of major threshold acceleration: Rank 50 rose +11,303.63 (+44.52%), Rank 100 rose +6,695.00 (+30.68%), Rank 250 rose +8,065.50 (+15.23%) in 1.68 hours (H25)",
+        "Observation of major threshold acceleration: Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp) in 1.68 hours (H25)",
         "Participants hero async check: landing 96,336 vs contest 96,344 (IR-09)"
       ],
       "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md",

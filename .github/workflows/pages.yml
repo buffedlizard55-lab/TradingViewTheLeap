@@ -91,6 +91,18 @@ jobs:
           n_verdicts = len(re.findall(r'data-verdict="', html))
           if n_verdicts != len(backtests["models"]):
               probs.append(f"backtest cards {n_verdicts} != {len(backtests['models'])}")
+          comp = json.load(open("data/competition_results.json"))
+          n_shadow = len(re.findall(r'data-shadow="', html))
+          if n_shadow != len(comp["leaderboard"]):
+              probs.append(f"shadow leaderboard rows {n_shadow} != {len(comp['leaderboard'])}")
+          n_cstrat = len(re.findall(r'data-cstrat="', html))
+          if n_cstrat != len(comp["models"]):
+              probs.append(f"shadow model cards {n_cstrat} != {len(comp['models'])}")
+          if comp["_meta"]["generated_utc"] not in html:
+              probs.append("shadow-competition stamp missing from page")
+          for row in comp["leaderboard"]:
+              if row["username"] not in html:
+                  probs.append(f'shadow username {row["username"]} missing from page')
           for required in (cfg["edition_label"], snapshot["_meta"]["captured_at_utc"],
                            backtests["_meta"]["generated_utc"]):
               if required not in html:

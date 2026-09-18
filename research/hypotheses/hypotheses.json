@@ -2,9 +2,9 @@
   "_meta": {
     "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
     "generated_utc": "2026-09-16",
-    "hypothesis_count": 27,
+    "hypothesis_count": 30,
     "reverified_utc": "2026-09-17",
-    "reverification_note": "2026-09-17 sixth pass (~21:27Z): H24 (complete frontier stasis while participant count rises) added and supported on capture 6; H22/H23 unchanged. All frontier and champion numbers re-derived by scripts/verify.py including the new data/leaderboard_lab.json artifact."
+    "reverification_note": "2026-09-17 eighth pass (shadow-competition session): H28-H30 added and supported from data/competition_results.json; H25/H26/H27 restored from a shell-expansion corruption event (see IR-26). All frontier and champion numbers re-derived by scripts/verify.py including the shadow-competition artifact."
   },
   "hypotheses": [
     {
@@ -416,14 +416,14 @@
     },
     {
       "id": "H25",
-      "claim": "The cash-prize cutoff (Rank 50) exhibits punctuated threshold acceleration: between capture 6 (21:27 UTC) and capture 7 (23:08 UTC), the Rank 50 cutoff rose +11,303.63 (+44.52% of initial balance) in 1.68 hours, elevating the required fresh-account compounding rate from 15.24%/day to 15.99%/day.",
+      "claim": "The cash-prize cutoff (Rank 50) exhibits punctuated threshold acceleration: between capture 6 (21:27 UTC) and capture 7 (23:08 UTC), the Rank 50 cutoff rose +$111,303.63 (+44.52 pp of initial balance) in 1.68 hours, elevating the required fresh-account compounding rate from 15.24%/day to 15.99%/day.",
       "prediction": "Capture 7 rank-50 threshold is strictly higher than capture 6, and the required daily compound rate over the remaining 12.54 days increases accordingly.",
-      "test": "Direct delta computation of rank-50 realized P/L between capture 6 (,244,313.50) and capture 7 (,355,617.13) in data/frontier_history.json, and recomputation of the daily compound formula in data/leaderboard_lab.json.",
+      "test": "Direct delta computation of rank-50 realized P/L between capture 6 ($1,244,313.50) and capture 7 ($1,355,617.13) in data/frontier_history.json, and recomputation of the daily compound formula in data/leaderboard_lab.json.",
       "status": "supported",
       "evidence": [
-        "Rank 50 rose from Nikola_Ng (+,244,313.50 / +497.73%) to Greed027 (+,355,617.13 / +542.25%), an absolute increase of +11,303.63 in 1.68 hours.",
-        "Rank 100 also rose +6,695.00 (,014,950.00 to ,091,645.00) and Rank 250 rose +8,065.50 (60,759.50 to 98,825.00), confirming broad upward movement across the board.",
-        "Fresh-account compounding requirement to reach Rank 50 equity (,605,617.13 / 6.4225x) over the remaining 12.536 days rose from 15.24%/day to 15.99%/day (+0.75%/day increase).",
+        "Rank 50 rose from Nikola_Ng (+$1,244,313.50 / +497.73%) to Greed027 (+$1,355,617.13 / +542.25%), an absolute increase of +$111,303.63 in 1.68 hours.",
+        "Rank 100 also rose +$76,695.00 ($1,014,950.00 to $1,091,645.00) and Rank 250 rose +$38,065.50 ($660,759.50 to $698,825.00), confirming broad upward movement across the board.",
+        "Fresh-account compounding requirement to reach Rank 50 equity ($1,605,617.13 / 6.4225x) over the remaining 12.536 days rose from 15.24%/day to 15.99%/day (+0.75%/day increase).",
         "This confirms IR-25: leaderboard threshold advances in punctuated bursts as participants liquidate winning positions."
       ],
       "source_ids": [
@@ -435,7 +435,7 @@
     {
       "id": "H26",
       "claim": "High-notional energy and metals futures (HO1!, CL1!, SI1!, RB1!) remain the only capturable universe instruments capable of delivering the updated Rank 50 cash-prize hurdle (requiring +27.1% to +39.7% favorable underlying moves vs 58%-78% historical 30-day vendor peaks).",
-      "prediction": "At the new Rank 50 threshold (,355,617.13), only instruments with initial notional >= .4M have historical 30-day price moves strictly greater than the required percentage move at maximum allowable position size.",
+      "prediction": "At the new Rank 50 threshold ($1,355,617.13), only instruments with initial notional >= .4M have historical 30-day price moves strictly greater than the required percentage move at maximum allowable position size.",
       "test": "Cross-check between data/initial_capacity.json modeled notional, data/volatility_intelligence.json best 30-day moves, and the new Rank 50 P/L target.",
       "status": "supported",
       "evidence": [
@@ -443,7 +443,7 @@
         "CL1! (.789M initial notional) requires +28.31% favorable move vs +58.82% best historical 30d move (delivery ratio 2.08x).",
         "SI1! (.638M initial notional) requires +29.23% favorable move vs +65.02% best historical 30d move (delivery ratio 2.22x).",
         "RB1! (.414M initial notional) requires +39.71% favorable move vs +71.07% best historical 30d move (delivery ratio 1.79x).",
-        "All other 90 instruments (including NG1!, BTC1!, ETH1!, equity index micros) either have insufficient notional (<.5M) or lower historical moves than the required threshold at starting capital."
+        "All other 90 instruments (including NG1!, BTC1!, ETH1!, equity index micros) either have insufficient notional (<$2.5M) or lower historical moves than the required threshold at starting capital."
       ],
       "source_ids": [
         "TV-CONTEST-AMP-SEP2026-R7",
@@ -457,13 +457,13 @@
     },
     {
       "id": "H27",
-      "claim": "Paper-simulated pursuit of explosive 10x-100x competition targets requires multi-trade intraday pyramiding and reinvestment strategies (models S4-S6), because single-contract daily-bar trend systems (S1-S3) produce median net profit of /bin/bash.00 across walk-forward windows.",
+      "claim": "Paper-simulated pursuit of explosive 10x-100x competition targets requires multi-trade intraday pyramiding and reinvestment strategies (models S4-S6), because single-contract daily-bar trend systems (S1-S3) produce median net profit of $0.00 across walk-forward windows.",
       "prediction": "Daily-bar indicators produce insufficient trade frequency (<5 qualifying trades in 30 days) and zero positive median return, whereas intraday multi-entry pyramiding can theoretically scale notional exposure as equity compounds.",
       "test": "Evaluation of data/backtest_results.json walk-forward metrics for S1-S3 against the compounding requirements derived in data/target_lab.json.",
       "status": "supported",
       "evidence": [
-        "In data/backtest_results.json, S1 (Donchian Breakout), S2 (EMA Impulse), and S3 (Squeeze Momentum) all yielded /bin/bash.00 median net profit across 1,845 walk-forward window evaluations due to daily whipsaw and low trade density.",
-        "To achieve 10x (.5M equity) or 100x (5M equity) from 50k in ~12.5 days requires compounding rates of 20.18%/day and 44.52%/day respectively.",
+        "In data/backtest_results.json, S1 (Donchian Breakout), S2 (EMA Impulse), and S3 (Squeeze Momentum) all yielded $0.00 median net profit across 1,845 walk-forward window evaluations due to daily whipsaw and low trade density.",
+        "To achieve 10x ($2.5M equity) or 100x ($25M equity) from $250k in ~12.5 days requires compounding rates of 20.18%/day and 44.52%/day respectively.",
         "Fixed initial contract sizing without compounding cannot scale past the single-position ceiling; intraday reinvestment and pyramiding during momentum bursts are mathematically required to chase top-tier outcomes."
       ],
       "source_ids": [
@@ -471,6 +471,54 @@
         "TV-RULES-AMP-SEP2026-R7",
         "TV-RESULTS-BENBERNANKE1"
       ]
-    }
+    },
+    {
+   "id": "H28",
+   "claim": "On daily bars, contrarian fade models produce higher best-case single-edition multiples than trend-following baselines under identical shadow-competition rules and identical captured prices.",
+   "prediction": "In a shadow season of 30-calendar-day editions, the best single-edition multiple among contrarian usernames exceeds the best among trend baselines, and contrarian models account for all participant-editions at or above 5x.",
+   "test": "Run data/competition_results.json season (moderate cost): compare kind_contrast.contrarian vs kind_contrast.baseline aggregates and count editions_ge_5x by kind.",
+   "status": "supported",
+   "evidence": [
+    "Best single-edition multiple: contrarian 7.239835x (FadeThePanic, E19 2026-03-11..2026-04-09) vs baseline 1.881351x (MomentumMoe); median best-edition multiple 3.865279x (contrarian) vs 1.579365x (baseline).",
+    "4 participant-editions reached >=5x, all contrarian (FadeThePanic 7.24x, ContrarianQueen 6.77x, ClimaxCarla 6.28x, PanicPyramider 5.65x — four of the top four places in E19); baselines produced zero editions >=5x.",
+    "The four >=5x editions each ran 21 sessions and required +8.59% to +9.89% compounded per day, unbroken — consistent with the placement arithmetic in data/leaderboard_lab.json (a fresh account needs +15.99%/day to match the captured rank-50 level over the 12.5 remaining days of the live edition)."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H29",
+   "claim": "Tight-threshold gap fading (C2, gap_atr_mult=1.0) on metals is the most consistent contrarian edge in the captured window: it wins editions outright rather than only producing occasional spikes.",
+   "prediction": "The GapGoblin roster entry wins the largest number of season editions at zero cost and wins the latest (live-mirror) edition at moderate cost.",
+   "test": "Count scenario_zero_season_leaders wins per username in data/competition_results.json and read the latest_edition leader.",
+   "status": "supported",
+   "evidence": [
+    "GapGoblin won 7 of 24 zero-cost season editions (next best: ClimaxCarla 3, FadeThePanic 3).",
+    "GapGoblin won the LATEST edition (2026-08-19..2026-09-17, 21 sessions) at +$468,102.43 (2.87241x) moderate cost.",
+    "GapGoblin's season realized P/L is +$1,629,892.12 (season rank 2 of 15) despite 3 ruined editions — the entry threshold is frequent enough to compound, unlike single-signal models."
+   ],
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-RULES-AMP-SEP2026"
+   ]
+  },
+  {
+   "id": "H30",
+   "claim": "Under the official 20:1 buying power with no risk management, full-deployment contrarian entries convert strategy edge into ruin at season scale: single-edition explosions do not survive compounding across a 24-edition season.",
+   "prediction": "Across 360 participant-editions, a material share end ruined (equity <= 0) or gap through below -100% equity, and the best season multiple (product of edition multiples) stays far below the best single-edition multiple.",
+   "test": "Read target_summary and participant aggregates in data/competition_results.json: ruined and negative edition counts, best season_multiple vs best_edition_multiple.",
+   "status": "supported",
+   "evidence": [
+    "13 of 360 participant-editions ended ruined (equity <= 0) and 20 participant-editions realized below -100% (gap-through possible because the engine counts but does not simulate margin liquidation).",
+    "Best season multiple on the board is 0.550988x (ReversalRaja) versus a best single-edition multiple of 7.239835x — season compounding destroyed ~13x of best-case edge.",
+    "Season champion by realized P/L (ContrarianQueen, +$2,806,899.58 over 24 editions) still has a 0.000173x season multiple: USD-sum ranking rewards repeated participation, multiple-product ranking shows near-total ruin."
+   ],
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "YAHOO-FUTURES-CHART"
+   ]
+  }
   ]
 }
