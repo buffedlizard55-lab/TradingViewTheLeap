@@ -29,6 +29,7 @@
    },
    "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-18; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately.",
    "rounding_decimals": 5,
+   "vendor_source_id": "YAHOO-INTRADAY-CHART",
    "fetched_at_utc": "2026-09-18T21:49:22+00:00",
    "capture_environment": "github-actions",
    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35398650536",

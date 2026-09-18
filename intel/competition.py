@@ -884,3 +884,282 @@ def replay_order_state(
         "last_bar_index": len(bars) - 1,
         "last_bar_date": bars[-1].date if bars else None,
     }
+
+
+# ===========================================================================
+# Multi-season competition orchestrator.
+#
+# Provides first-class support for running multi-season paper trading competitions
+# directly on the 20-stock volatile equities pool alongside futures.
+# Supports window slicing, participant decision dispatch, execution latency delay,
+# counterfactual profiles, in-sample vs forward held-out test partitioning,
+# and target hit statistics.
+# ===========================================================================
+
+@dataclass
+class MultiSeasonResult:
+    """Complete output of a multi-season competition division."""
+    editions: list[dict]
+    latest_edition: dict
+    participants: list[dict]
+    leaderboard: list[dict]
+    target_summary: dict
+    in_sample_leaderboard: list[dict] | None = None
+    forward_held_out_leaderboard: list[dict] | None = None
+    forward_held_out_count: int = 0
+
+
+def slices_and_starts(
+    pool_symbols: tuple[str, ...] | list[str],
+    series_map: dict[str, Series],
+    window: tuple[str, str],
+) -> tuple[dict[str, list[Bar]], dict[str, int]]:
+    """Slice series bars into the given date window and return start indices."""
+    start, end = window
+    slices, starts = {}, {}
+    for symbol in pool_symbols:
+        if symbol not in series_map:
+            continue
+        bars = list(series_map[symbol].bars)
+        idxs = [i for i, b in enumerate(bars) if start <= b.date <= end]
+        if not idxs:
+            continue
+        slices[symbol] = [bars[i] for i in idxs]
+        starts[symbol] = idxs[0]
+    return slices, starts
+
+
+def run_division_seasons(
+    series_map: dict[str, Series],
+    participants: list[Participant],
+    profile: RuleProfile,
+    scenario: CostScenario,
+    decisions_provider: callable,
+    windows: list[tuple[str, str]],
+    latency_bars: int = 0,
+    control_symbol_picker: callable | None = None,
+    forward_held_out_count: int = 0,
+    min_active_days: int | None = None,
+    division_name: str = "daily",
+    division_of_user: dict[str, str] | None = None,
+) -> MultiSeasonResult:
+    """Run paper competition seasons across windows for all participants."""
+    import statistics
+
+    if min_active_days is None:
+        min_active_days = profile.min_active_days
+
+    if len(windows) < 2:
+        raise ValueError("At least 2 windows (at least one season + latest) required")
+
+    season_windows = windows[:-1]
+    latest_window = windows[-1]
+
+    def run_one_window(window: tuple[str, str], ed_id: str) -> dict:
+        results = {}
+        for p in participants:
+            pool_symbols = tuple(s for s in p.pool if s in series_map)
+            if not pool_symbols:
+                continue
+            slices, starts = slices_and_starts(pool_symbols, series_map, window)
+            if not slices:
+                continue
+            control = None
+            if p.model == "B1" and control_symbol_picker:
+                control = control_symbol_picker(pool_symbols, series_map, window)
+                if control is None:
+                    continue
+            dec = {} if p.model == "B1" else decisions_provider(p.model, p.variant, series_map)
+            results[p.username] = run_participant_window(
+                dec, slices, starts, series_map, profile, scenario,
+                latency_bars=latency_bars, control_symbol=control,
+            )
+
+        rows = []
+        for username, r in results.items():
+            rows.append({
+                "username": username,
+                "realized_pnl_usd": round(r.realized_pnl_usd, 2),
+                "equity_multiple": round(r.equity_multiple, 6),
+                "trades": r.trades,
+                "active_days": r.active_days,
+                "meets_min_active_days": r.active_days >= min_active_days,
+                "ruined": r.ruined,
+                "add_tranches": r.add_tranches,
+                "long_trades": r.long_trades,
+                "short_trades": r.short_trades,
+                "skipped_entries": r.skipped_entries,
+                "expired_orders": getattr(r, "expired_orders", 0),
+                "margin_breach_bars": r.margin_breach_bars,
+                "max_drawdown_usd": round(r.max_drawdown_usd, 2),
+                "multiple_buckets": r.multiple_buckets,
+            })
+        rows.sort(key=lambda row: (-row["realized_pnl_usd"], row["username"]))
+        for i, row in enumerate(rows, 1):
+            row["rank"] = i
+
+        return {
+            "edition_id": ed_id,
+            "start_date": window[0],
+            "end_date": window[1],
+            "participants": len(rows),
+            "leader": {
+                "username": rows[0]["username"],
+                "realized_pnl_usd": rows[0]["realized_pnl_usd"],
+                "equity_multiple": rows[0]["equity_multiple"],
+            } if rows else None,
+            "rows": rows,
+        }
+
+    editions = []
+    prefix = division_name[0].upper() if division_name else "E"
+    for n, window in enumerate(season_windows, 1):
+        editions.append(run_one_window(window, f"{prefix}{n:03d}"))
+
+    latest_doc = run_one_window(latest_window, f"{prefix}LATEST")
+
+    def aggregate_participants(edition_list: list[dict]) -> list[dict]:
+        from .contrarian import MODEL_NAMES as FUTURES_NAMES
+        out = []
+        for p in participants:
+            per = [next((r for r in ed["rows"] if r["username"] == p.username), None)
+                   for ed in edition_list]
+            per = [r for r in per if r is not None]
+            if not per:
+                continue
+            season_mult = 1.0
+            for row in per:
+                season_mult *= max(row["equity_multiple"], 0.0)
+            latest_row = next((r for r in latest_doc["rows"] if r["username"] == p.username), None)
+
+            try:
+                from .stock_strategies import MODEL_NAMES as STOCK_NAMES, MODEL_KIND as STOCK_KINDS
+                m_name = STOCK_NAMES.get(p.model) or FUTURES_NAMES.get(p.model, p.model)
+                m_kind = STOCK_KINDS.get(p.model, "baseline")
+            except Exception:
+                m_name = FUTURES_NAMES.get(p.model, p.model)
+                m_kind = "baseline"
+
+            user_div = (division_of_user.get(p.username, division_name)
+                        if division_of_user else division_name)
+
+            out.append({
+                "username": p.username,
+                "division": user_div,
+                "kind": m_kind,
+                "model": p.model,
+                "model_name": m_name,
+                "variant": p.variant,
+                "params_label": model_params_label(p.model, p.variant),
+                "pool": list(p.pool),
+                "editions_played": len(per),
+                "ruined_editions": sum(1 for r in per if r["ruined"]),
+                "negative_editions": sum(1 for r in per if r["equity_multiple"] < 0),
+                "season_realized_pnl_usd": round(sum(r["realized_pnl_usd"] for r in per), 2),
+                "season_multiple": round(season_mult, 6),
+                "best_edition_multiple": round(max(r["equity_multiple"] for r in per), 6),
+                "worst_edition_multiple": round(min(r["equity_multiple"] for r in per), 6),
+                "editions_ge_2x": sum(1 for r in per if r["equity_multiple"] >= 2),
+                "editions_ge_5x": sum(1 for r in per if r["equity_multiple"] >= 5),
+                "editions_ge_10x": sum(1 for r in per if r["equity_multiple"] >= 10),
+                "editions_ge_20x": sum(1 for r in per if r["equity_multiple"] >= 20),
+                "median_edition_multiple": round(statistics.median(r["equity_multiple"] for r in per), 6),
+                "total_trades": sum(r["trades"] for r in per),
+                "total_add_tranches": sum(r["add_tranches"] for r in per),
+                "editions_meeting_min_active_days": sum(1 for r in per if r["meets_min_active_days"]),
+                "latest_edition_rank": latest_row["rank"] if latest_row else None,
+                "latest_edition_multiple": latest_row["equity_multiple"] if latest_row else None,
+            })
+        return out
+
+    def make_leaderboard(p_docs: list[dict]) -> list[dict]:
+        rows = sorted(p_docs, key=lambda a: (-a["season_realized_pnl_usd"], a["username"]))
+        for i, row in enumerate(rows, 1):
+            row["season_rank"] = i
+        return [{
+            "season_rank": r["season_rank"],
+            "username": r["username"],
+            "division": r.get("division", division_name),
+            "model": r["model"],
+            "season_realized_pnl_usd": r["season_realized_pnl_usd"],
+            "season_multiple": r["season_multiple"],
+            "best_edition_multiple": r["best_edition_multiple"],
+            "median_edition_multiple": r["median_edition_multiple"],
+            "editions_ge_2x": r["editions_ge_2x"],
+        } for r in rows]
+
+    part_docs = aggregate_participants(editions)
+    leaderboard = make_leaderboard(part_docs)
+
+    all_rows = [r for ed in editions for r in ed["rows"]]
+    targets = {
+        "participant_editions": len(all_rows),
+        "ge_1.1x": sum(1 for r in all_rows if r["equity_multiple"] >= 1.1),
+        "ge_2x": sum(1 for r in all_rows if r["equity_multiple"] >= 2),
+        "ge_5x": sum(1 for r in all_rows if r["equity_multiple"] >= 5),
+        "ge_10x": sum(1 for r in all_rows if r["equity_multiple"] >= 10),
+        "ge_20x": sum(1 for r in all_rows if r["equity_multiple"] >= 20),
+        "ge_50x": sum(1 for r in all_rows if r["equity_multiple"] >= 50),
+        "ge_100x": sum(1 for r in all_rows if r["equity_multiple"] >= 100),
+        "ruined_participant_editions": sum(1 for r in all_rows if r["ruined"]),
+        "mean_equity_multiple": round(statistics.fmean(r["equity_multiple"] for r in all_rows), 6) if all_rows else None,
+        "median_equity_multiple": round(statistics.median(r["equity_multiple"] for r in all_rows), 6) if all_rows else None,
+    }
+
+    in_sample_lb = None
+    fwd_lb = None
+    if forward_held_out_count > 0 and len(editions) > forward_held_out_count:
+        in_sample_eds = editions[:-forward_held_out_count]
+        fwd_eds = editions[-forward_held_out_count:]
+        in_sample_lb = make_leaderboard(aggregate_participants(in_sample_eds))
+        fwd_lb = make_leaderboard(aggregate_participants(fwd_eds))
+
+    return MultiSeasonResult(
+        editions=editions,
+        latest_edition=latest_doc,
+        participants=sorted(part_docs, key=lambda a: (-a["season_realized_pnl_usd"], a["username"])),
+        leaderboard=leaderboard,
+        target_summary=targets,
+        in_sample_leaderboard=in_sample_lb,
+        forward_held_out_leaderboard=fwd_lb,
+        forward_held_out_count=forward_held_out_count,
+    )
+
+
+class MultiSeasonCompetition:
+    """Orchestrator for multi-season paper competitions across equities and futures pools."""
+
+    def __init__(
+        self,
+        profile: RuleProfile,
+        scenario: CostScenario,
+        latency_bars: int = 0,
+    ):
+        self.profile = profile
+        self.scenario = scenario
+        self.latency_bars = latency_bars
+
+    def run_division(
+        self,
+        series_map: dict[str, Series],
+        participants: list[Participant],
+        decisions_provider: callable,
+        windows: list[tuple[str, str]],
+        forward_held_out_count: int = 0,
+        control_symbol_picker: callable | None = None,
+        division_name: str = "daily",
+        division_of_user: dict[str, str] | None = None,
+    ) -> MultiSeasonResult:
+        return run_division_seasons(
+            series_map=series_map,
+            participants=participants,
+            profile=self.profile,
+            scenario=self.scenario,
+            decisions_provider=decisions_provider,
+            windows=windows,
+            latency_bars=self.latency_bars,
+            control_symbol_picker=control_symbol_picker,
+            forward_held_out_count=forward_held_out_count,
+            division_name=division_name,
+            division_of_user=division_of_user,
+        )

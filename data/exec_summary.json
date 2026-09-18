@@ -304,101 +304,224 @@
    "ranking": [
     {
      "season_rank": 1,
+     "username": "RocketRider",
+     "season_realized_pnl_usd": 6607.11,
+     "best_edition_multiple": 1.040192
+    },
+    {
+     "season_rank": 2,
+     "username": "TurboTad",
+     "season_realized_pnl_usd": 2681.31,
+     "best_edition_multiple": 1.039122
+    },
+    {
+     "season_rank": 3,
+     "username": "CrashColossus",
+     "season_realized_pnl_usd": 964.05,
+     "best_edition_multiple": 1.004822
+    },
+    {
+     "season_rank": 4,
      "username": "VolatilityVera",
      "season_realized_pnl_usd": 676.78,
      "best_edition_multiple": 1.043618
     },
     {
-     "season_rank": 2,
+     "season_rank": 5,
      "username": "ClimaxCleo",
      "season_realized_pnl_usd": 631.06,
      "best_edition_multiple": 1.00526
     },
     {
-     "season_rank": 3,
+     "season_rank": 6,
+     "username": "VolumeVortex",
+     "season_realized_pnl_usd": 631.06,
+     "best_edition_multiple": 1.00526
+    },
+    {
+     "season_rank": 7,
+     "username": "FadeFiend",
+     "season_realized_pnl_usd": 628.75,
+     "best_edition_multiple": 1.0036
+    },
+    {
+     "season_rank": 8,
+     "username": "RangeRanger",
+     "season_realized_pnl_usd": 526.04,
+     "best_edition_multiple": 1.00526
+    },
+    {
+     "season_rank": 9,
      "username": "EmaEddie",
      "season_realized_pnl_usd": 386.57,
      "best_edition_multiple": 1.004837
     },
     {
-     "season_rank": 4,
+     "season_rank": 10,
+     "username": "ExhaustionEcho",
+     "season_realized_pnl_usd": 268.74,
+     "best_edition_multiple": 1.002687
+    },
+    {
+     "season_rank": 11,
+     "username": "DipDestroyer",
+     "season_realized_pnl_usd": 121.86,
+     "best_edition_multiple": 1.001219
+    },
+    {
+     "season_rank": 12,
+     "username": "CrashCrusader",
+     "season_realized_pnl_usd": 0.0,
+     "best_edition_multiple": 1.0
+    },
+    {
+     "season_rank": 13,
      "username": "GapGremlin",
      "season_realized_pnl_usd": 0.0,
      "best_edition_multiple": 1.0
     },
     {
-     "season_rank": 5,
+     "season_rank": 14,
      "username": "SqueezeSasha",
      "season_realized_pnl_usd": -232.63,
      "best_edition_multiple": 1.008337
+    },
+    {
+     "season_rank": 15,
+     "username": "SqueezeStorm",
+     "season_realized_pnl_usd": -587.6,
+     "best_edition_multiple": 1.010554
+    },
+    {
+     "season_rank": 16,
+     "username": "DipDynamo",
+     "season_realized_pnl_usd": -634.79,
+     "best_edition_multiple": 1.00746
+    },
+    {
+     "season_rank": 17,
+     "username": "VolSpikeVince",
+     "season_realized_pnl_usd": -973.55,
+     "best_edition_multiple": 1.018453
+    },
+    {
+     "season_rank": 18,
+     "username": "BlowoffBella",
+     "season_realized_pnl_usd": -1885.47,
+     "best_edition_multiple": 1.0036
+    },
+    {
+     "season_rank": 19,
+     "username": "ParabolaPasha",
+     "season_realized_pnl_usd": -3348.69,
+     "best_edition_multiple": 1.0036
+    },
+    {
+     "season_rank": 20,
+     "username": "ParabolaPiranha",
+     "season_realized_pnl_usd": -3909.02,
+     "best_edition_multiple": 1.022397
+    },
+    {
+     "season_rank": 21,
+     "username": "DonchianDana",
+     "season_realized_pnl_usd": -4131.11,
+     "best_edition_multiple": 1.004682
+    },
+    {
+     "season_rank": 22,
+     "username": "SpikeSaber",
+     "season_realized_pnl_usd": -4165.41,
+     "best_edition_multiple": 1.009852
     }
    ],
    "recommendations": [
     {
-     "username": "VolatilityVera",
+     "username": "RocketRider",
      "division": "stocks_daily",
-     "model": "B1",
-     "model_name": "Volatility leader, always long (control)",
-     "variant": null,
-     "params_label": "default",
+     "model": "C13",
+     "model_name": "Momentum runner surfer",
+     "variant": "aggressive",
+     "params_label": "add_atr_step=1.0, hold_bars=10, max_adds=6, volume_mult=2.0",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 676.78,
+     "season_realized_pnl_usd": 6607.11,
      "season_rank": 1,
-     "best_edition_multiple": 1.043618,
-     "entry_condition": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
+     "best_edition_multiple": 1.040192,
+     "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "as_of_last_bar": "2026-09-18",
      "open_positions": [],
      "pending_orders": [],
-     "waiting_for": "nothing further: this is the buy-and-hold control and it places no timing orders",
-     "strategy_kind": "buy_and_hold_control",
-     "symbols_watched": [
-      "ENPH"
-     ]
-    },
-    {
-     "username": "ClimaxCleo",
-     "division": "stocks_daily",
-     "model": "C10",
-     "model_name": "Volume-climax reversal",
-     "variant": null,
-     "params_label": "default",
-     "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 631.06,
-     "season_rank": 2,
-     "best_edition_multiple": 1.00526,
-     "entry_condition": "A session whose range is >=2 ATR with volume >=3x average and a close pinned in the extreme 15% of the range marks a volume climax; the next sessions revert.",
-     "as_of_last_bar": "2026-09-18",
-     "open_positions": [],
-     "pending_orders": [],
-     "waiting_for": "A session whose range is >=2 ATR with volume >=3x average and a close pinned in the extreme 15% of the range marks a volume climax; the next sessions revert.",
+     "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
       "ENPH"
      ]
     },
     {
-     "username": "EmaEddie",
+     "username": "TurboTad",
      "division": "stocks_daily",
-     "model": "S2",
-     "model_name": "S2",
-     "variant": null,
-     "params_label": "default",
+     "model": "C13",
+     "model_name": "Momentum runner surfer",
+     "variant": "runner",
+     "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 386.57,
+     "season_realized_pnl_usd": 2681.31,
+     "season_rank": 2,
+     "best_edition_multiple": 1.039122,
+     "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "as_of_last_bar": "2026-09-18",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH"
+     ]
+    },
+    {
+     "username": "CrashColossus",
+     "division": "stocks_daily",
+     "model": "C7",
+     "model_name": "Capitulation pyramider (equity)",
+     "variant": "patient",
+     "params_label": "add_atr_step=2.0, crash_atr_mult=2.5, max_adds=3",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 964.05,
      "season_rank": 3,
-     "best_edition_multiple": 1.004837,
-     "entry_condition": "Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).",
+     "best_edition_multiple": 1.004822,
+     "entry_condition": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "as_of_last_bar": "2026-09-18",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH"
+     ]
+    },
+    {
+     "username": "SpikeSaber",
+     "division": "stocks_daily",
+     "model": "C6",
+     "model_name": "Blow-off spike fade",
+     "variant": "aggressive",
+     "params_label": "hold_bars=12, run_atr_mult=1.5, volume_mult=1.5",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": -4165.41,
+     "season_rank": 22,
+     "best_edition_multiple": 1.009852,
+     "entry_condition": "A >=3-session parabolic advance that stretches at least 2 ATR, prints on >=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.",
      "as_of_last_bar": "2026-09-18",
      "open_positions": [
       {
        "symbol": "ENPH",
        "side": "short",
-       "since": "2026-07-09",
+       "since": "2026-09-09",
        "last_close": 34.64
       }
      ],
      "pending_orders": [],
-     "waiting_for": "Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).",
+     "waiting_for": "A >=3-session parabolic advance that stretches at least 2 ATR, prints on >=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
       "ENPH"
