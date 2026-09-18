@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Leap Research Lab — Strategies, Intelligence & Competition Tracker</title>
+<meta name="description" content="Evidence-first research platform for TradingView's The Leap paper trading competition. Real verified data, contrarian strategies, shadow competition with tracked usernames, and placement arithmetic.">
+<meta name="keywords" content="TradingView, The Leap, paper trading, competition, futures, strategies, contrarian, shadow competition">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg-card: #111827;
+  --bg-card-hover: #1a2332;
+  --bg-surface: #0d1117;
+  --border: #1e293b;
+  --border-accent: #3b82f6;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.15);
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.15);
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.15);
+  --amber: #f59e0b;
+  --amber-glow: rgba(245, 158, 11, 0.15);
+  --purple: #8b5cf6;
+  --purple-glow: rgba(139, 92, 246, 0.15);
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #60a5fa; }
+
+/* Header */
+.hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 60px 0 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.badge.live { background: var(--green-glow); border-color: rgba(16, 185, 129, 0.3); color: var(--green); }
+.badge.live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #fff 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 800px;
+  margin-top: 12px;
+  line-height: 1.7;
+}
+
+/* Navigation */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+.nav-inner {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 0;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav a {
+  display: block;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.nav a:hover, .nav a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all 0.3s;
+}
+.stat-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-value.accent { color: var(--accent); }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-value.amber { color: var(--amber); }
+.stat-value.purple { color: var(--purple); }
+.stat-note {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* Sections */
+section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border);
+}
+section:last-child { border-bottom: none; }
+h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+h2 .section-num {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--accent);
+  margin-right: 8px;
+}
+.section-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 800px;
+  margin-bottom: 24px;
+}
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead { background: var(--bg-surface); }
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+  color: var(--text);
+}
+tr:hover td { background: rgba(59, 130, 246, 0.03); }
+.num { text-align: right; font-family: var(--mono); font-size: 12px; }
+.sym { font-family: var(--mono); font-weight: 500; color: var(--accent); font-size: 12px; }
+
+/* Pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.pill.ok { background: var(--green-glow); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+.pill.warn { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+.pill.no { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+.pill.info { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
+.pill.purple { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card p { font-size: 13px; color: var(--text-muted); }
+.card .meta { font-size: 11px; color: var(--text-dim); margin-top: 12px; }
+
+/* Callout */
+.callout {
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 16px 0;
+  border-left: 4px solid;
+}
+.callout.info { background: var(--accent-glow); border-color: var(--accent); }
+.callout.good { background: var(--green-glow); border-color: var(--green); }
+.callout.warn { background: var(--amber-glow); border-color: var(--amber); }
+.callout.critical { background: var(--red-glow); border-color: var(--red); }
+.callout h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+.callout p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.callout ul { padding-left: 20px; margin-top: 8px; }
+.callout li { font-size: 13px; color: var(--text-muted); margin: 4px 0; }
+
+/* Strategy cards */
+.strategy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.3s;
+}
+.strategy-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.strategy-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.strategy-card .model-id {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.strategy-card .claim {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.strategy-card .params {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* Source links */
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  transition: all 0.2s;
+}
+.source-link:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Search/Filter */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+.search-box input {
+  flex: 1;
+  max-width: 400px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box input:focus { border-color: var(--accent); }
+.search-box input::placeholder { color: var(--text-dim); }
+.filter-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+.filter-btn {
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Footer */
+footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+footer p { font-size: 12px; color: var(--text-dim); }
+footer .links { display: flex; justify-content: center; gap: 24px; margin-top: 12px; }
+footer a { font-size: 12px; color: var(--text-muted); }
+footer a:hover { color: var(--accent); }
+
+/* Disclaimer */
+.disclaimer {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.disclaimer strong { color: var(--red); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .card-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.4rem; }
+  .nav a { padding: 12px 12px; font-size: 12px; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container hero-content">
+    <div class="badge-row">
+      <span class="badge live">LIVE · AMP Futures September 2026</span>
+      <span class="badge">94 Eligible Futures</span>
+      <span class="badge">15 Shadow Competition Usernames</span>
+      <span class="badge">96,707 Participants</span>
+    </div>
+    <h1>The Leap Research Lab</h1>
+    <p class="subtitle">Evidence-first strategies, real verified data, and a shadow competition for TradingView's paper trading contest. Every number is sourced. No hallucinations.</p>
+    <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+      <a class="source-link" href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" target="_blank">📜 Official Rules ↗</a>
+      <a class="source-link" href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" target="_blank">🏆 Live Leaderboard ↗</a>
+      <a class="source-link" href="https://www.tradingview.com/the-leap/" target="_blank">🏠 Landing Page ↗</a>
+      <a class="source-link" href="https://github.com/buffedlizard55-lab/TradingViewTheLeap" target="_blank">📂 Source Repository ↗</a>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#overview" class="active">Overview</a>
+      <a href="#strategies">Strategies</a>
+      <a href="#competition">Shadow Competition</a>
+      <a href="#leaderboard">Live Frontier</a>
+      <a href="#placement">Placement Math</a>
+      <a href="#targets">Return Targets</a>
+      <a href="#capacity">Capacity Screen</a>
+      <a href="#volatility">Volatility Intel</a>
+      <a href="#champions">Champions</a>
+      <a href="#stocks">Stock History</a>
+      <a href="#universe">Universe</a>
+      <a href="#sources">Sources</a>
+      <a href="#method">Method</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2><span class="section-num">01</span>What Matters Now</h2>
+  <p class="section-desc">A concise read of the current evidence. Live values are snapshots, historical champions are simulated outcomes, and stock multiples are real market-price ratios.</p>
+  
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Live Rank 1</div>
+      <div class="stat-value accent">10.34×</div>
+      <div class="stat-note">+934.05% · $2,335,125 realized P/L</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last Cash Rank (50)</div>
+      <div class="stat-value amber">6.52×</div>
+      <div class="stat-note">+552.16% · $1,380,404 at latest capture</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Completed Champion</div>
+      <div class="stat-value green">53.21×</div>
+      <div class="stat-note">BenBernanke1 · CME edition · official record</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Captured ≥100× Outcomes</div>
+      <div class="stat-value red">0</div>
+      <div class="stat-note">unattested in this sample, not proven impossible</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Shadow Competition</div>
+      <div class="stat-value purple">15</div>
+      <div class="stat-note">usernames · 12 contrarian · 3 trend baselines</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Shadow Edition</div>
+      <div class="stat-value accent">7.24×</div>
+      <div class="stat-note">FadeThePanic · E19 · contrarian capitulation</div>
+    </div>
+  </div>
+
+  <div class="callout critical">
+    <h3>The finish line, in numbers</h3>
+    <p>The last cash-prize rank (50) displayed <strong>6.52×</strong> the starting balance at the latest capture. A fresh 250,000 account would need <strong>+16.33% per day, compounded without a single losing day</strong> for the ~12.4 days left. At the rules' 20:1 maximum exposure that is only 0.82% of underlying move per day — and one 5% adverse day at that exposure erases the whole balance.</p>
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠ Scope.</strong> This project concerns a virtual-money paper trading competition. It is not investment advice, a return forecast, or evidence that any historical result will repeat. TradingView and CME Group are not affiliated with this repository. Every number is sourced from verified official pages or vendor-tier market data.
+  </div>
+</section>
+
+<!-- STRATEGIES -->
+<section id="strategies">
+  <h2><span class="section-num">02</span>Contrarian Strategy Library</h2>
+  <p class="section-desc">Five unique contrarian strategies (C1–C5) designed for maximum explosive paper returns. Each is pre-registered, parameter-frozen, and simulated on real captured vendor prices. These target the rare explosive reversals that the placement arithmetic requires — no risk management, maximum simulated return.</p>
+
+  <div class="card-grid">
+    <div class="strategy-card">
+      <div class="model-id">C1 · Contrarian</div>
+      <h3>Capitulation Reversal</h3>
+      <span class="pill ok">Best: 7.24×</span>
+      <p class="claim">A multi-day collapse (or euphoria run) that stretches price by ≥1 ATR over 3 closes with ATR expanding is over-extended and mean-reverts over the next ~10 sessions.</p>
+      <div class="params">lookback=3, extension_atr_mult=1.0, atr_baseline=50, atr_expansion=1.05, hold_bars=10</div>
+      <div class="meta">
+        <strong>Evidence:</strong> Best single edition 7.24× (FadeThePanic, E19). 4 editions ≥5× in shadow competition.<br>
+        <strong>Source:</strong> <a href="data/competition_results.json">competition_results.json</a>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="model-id">C2 · Contrarian</div>
+      <h3>Gap Fade</h3>
+      <span class="pill ok">Consistent winner</span>
+      <p class="claim">An opening gap larger than 1.5 ATR(14) is over-reaction, not information: fading the gap direction captures the close-the-gap drift over ~5 sessions.</p>
+      <div class="params">gap_atr_mult=1.5, hold_bars=5</div>
+      <div class="meta">
+        <strong>Evidence:</strong> GapGoblin most consistent: 7/24 zero-cost editions + latest at 2.87×. Energy and metals show large overnight gaps.<br>
+        <strong>Source:</strong> <a href="data/volatility_intelligence.json">volatility_intelligence.json</a>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="model-id">C3 · Contrarian</div>
+      <h3>Band-Pierce Reversion</h3>
+      <span class="pill info">Metals specialist</span>
+      <p class="claim">A close outside the 2-sigma band that re-enters the 1-sigma zone the next session marks the impulse as exhausted; price reverts toward the basis.</p>
+      <div class="params">band_length=20, band_deviation=2.0, reentry_deviation=1.0, hold_bars=5</div>
+      <div class="meta">
+        <strong>Best instruments:</strong> COMEX:SI1!, COMEX_MINI:SIL1! (silver), NYMEX:CL1!, NYMEX:NG1!<br>
+        <strong>Source:</strong> <a href="intel/contrarian.py">intel/contrarian.py</a>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="model-id">C4 · Contrarian</div>
+      <h3>Exhaustion-Bar Reversal</h3>
+      <span class="pill warn">Energy focus</span>
+      <p class="claim">A range-expansion exhaustion bar (true range ≥ 2× ATR with close pinned in extreme quartile) marks liquidation climax; the next sessions revert.</p>
+      <div class="params">tr_atr_mult=2.0, close_tail_fraction=0.25, hold_bars=5</div>
+      <div class="meta">
+        <strong>Best instruments:</strong> NYMEX:NG1! (natural gas), NYMEX:CL1!, NYMEX:RB1!<br>
+        <strong>Source:</strong> <a href="intel/contrarian.py">intel/contrarian.py</a>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="model-id">C5 · Contrarian</div>
+      <h3>Capitulation Pyramider</h3>
+      <span class="pill purple">Season champion</span>
+      <p class="claim">Contrarian capitulation entries followed by full-reinvestment pyramiding every 1 ATR of favourable drift concentrate capital into the rare explosive reversals the placement arithmetic requires.</p>
+      <div class="params">lookback=3, extension_atr=1.0, add_atr_step=1.0, max_adds=4</div>
+      <div class="meta">
+        <strong>Evidence:</strong> ContrarianQueen (C5 patient) = season champion (+$2.8M realized). Full 20:1 deployment concentrates into rare winners.<br>
+        <strong>Source:</strong> <a href="data/competition_results.json">competition_results.json</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <h3>Why contrarian over trend?</h3>
+    <p>All three trend baselines (S1 Donchian breakout, S2 EMA impulse, S3 Bollinger squeeze) were <strong>refuted</strong> on daily bars: pooled median net profit $0.00 across 231 walk-forward windows. The contrarian models exploit mean-reversion after extreme moves — exactly the kind of explosive price action the competition's 20:1 leverage can convert into 5×–7× multiples in a single 30-day edition.</p>
+    <p><strong>Verified:</strong> <a href="data/backtest_results.json">backtest_results.json</a> · <a href="research/strategy/testing-plan.md">testing-plan.md</a></p>
+  </div>
+
+  <h3 style="margin-top: 24px; margin-bottom: 12px;">Baselines (for comparison)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Kind</th><th>Verdict</th><th class="num">Median $/window</th><th class="num">Windows</th><th class="num">≥5×</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sym">S1</td><td>Donchian breakout</td><td><span class="pill no">refuted</span></td><td class="num">$0</td><td class="num">231</td><td class="num">3</td></tr>
+        <tr><td class="sym">S2</td><td>EMA impulse</td><td><span class="pill no">refuted</span></td><td class="num">$0</td><td class="num">231</td><td class="num">0</td></tr>
+        <tr><td class="sym">S3</td><td>Bollinger squeeze</td><td><span class="pill no">refuted</span></td><td class="num">$0</td><td class="num">231</td><td class="num">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SHADOW COMPETITION -->
+<section id="competition">
+  <h2><span class="section-num">03</span>Shadow Competition — Usernames Tracked</h2>
+  <p class="section-desc">15 usernames compete on real captured vendor daily bars with fresh $250,000 per edition, 20:1 buying power, whole contracts, official position caps, realized-P/L ranking, and end-of-edition auto-close. Season = 24 non-overlapping 30-day editions.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Season Champion</div>
+      <div class="stat-value accent">ContrarianQueen</div>
+      <div class="stat-note">+$2,806,900 total realized P/L over 24 editions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Single Edition</div>
+      <div class="stat-value green">7.24×</div>
+      <div class="stat-note">FadeThePanic (C1) · Edition 19</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Most Consistent</div>
+      <div class="stat-value purple">GapGoblin</div>
+      <div class="stat-note">7/24 zero-cost editions won + latest at 2.87×</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ruined Editions</div>
+      <div class="stat-value red">13/360</div>
+      <div class="stat-note">participant-editions ended at equity ≤ 0</div>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input type="search" id="comp-search" placeholder="Filter by username, model, kind..." oninput="filterComp()">
+  </div>
+
+  <div class="table-wrap">
+    <table id="comp-table">
+      <thead>
+        <tr>
+          <th class="num">Rank</th>
+          <th>Username</th>
+          <th>Kind</th>
+          <th>Strategy</th>
+          <th>Variant</th>
+          <th class="num">Season P/L</th>
+          <th class="num">Best Edition</th>
+          <th class="num">≥5×</th>
+          <th class="num">Ruined</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-search="contrarianqueen c5 contrarian"><td class="num">1</td><td class="sym">ContrarianQueen</td><td><span class="pill purple">contrarian</span></td><td>C5 — Pyramider</td><td>patient</td><td class="num" style="color:var(--green)">+$2,806,900</td><td class="num">4.79×</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr data-search="gapgoblin c2 contrarian"><td class="num">2</td><td class="sym">GapGoblin</td><td><span class="pill purple">contrarian</span></td><td>C2 — Gap fade</td><td>tight</td><td class="num" style="color:var(--green)">+$976,116</td><td class="num">3.86×</td><td class="num">0</td><td class="num">2</td></tr>
+        <tr data-search="fadethepanic c1 contrarian"><td class="num">3</td><td class="sym">FadeThePanic</td><td><span class="pill purple">contrarian</span></td><td>C1 — Capitulation</td><td>default</td><td class="num" style="color:var(--green)">+$766,157</td><td class="num" style="color:var(--green)">7.24×</td><td class="num">2</td><td class="num">2</td></tr>
+        <tr data-search="reversalraja c3 contrarian"><td class="num">4</td><td class="sym">ReversalRaja</td><td><span class="pill purple">contrarian</span></td><td>C3 — Band pierce</td><td>wideband</td><td class="num" style="color:var(--green)">+$300,988</td><td class="num">4.14×</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr data-search="exhaustioned c4 contrarian"><td class="num">5</td><td class="sym">ExhaustionEd</td><td><span class="pill purple">contrarian</span></td><td>C4 — Exhaustion bar</td><td>default</td><td class="num" style="color:var(--green)">+$222,028</td><td class="num">3.45×</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr data-search="bandfadebella c3 contrarian"><td class="num">6</td><td class="sym">BandFadeBella</td><td><span class="pill purple">contrarian</span></td><td>C3 — Band pierce</td><td>default</td><td class="num" style="color:var(--green)">+$180,608</td><td class="num">2.95×</td><td class="num">0</td><td class="num">1</td></tr>
+        <tr data-search="climaxcarla c4 contrarian"><td class="num">7</td><td class="sym">ClimaxCarla</td><td><span class="pill purple">contrarian</span></td><td>C4 — Exhaustion bar</td><td>loose</td><td class="num" style="color:var(--green)">+$127,689</td><td class="num">2.82×</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr data-search="squeezespark c5 contrarian"><td class="num">8</td><td class="sym">SqueezeSpark</td><td><span class="pill purple">contrarian</span></td><td>C5 — Pyramider</td><td>rapid</td><td class="num" style="color:var(--green)">+$51,384</td><td class="num">4.39×</td><td class="num">1</td><td class="num">2</td></tr>
+        <tr data-search="capitulationkate c1 contrarian"><td class="num">9</td><td class="sym">CapitulationKate</td><td><span class="pill purple">contrarian</span></td><td>C1 — Capitulation</td><td>fast3</td><td class="num" style="color:var(--green)">+$15,858</td><td class="num">3.22×</td><td class="num">0</td><td class="num">3</td></tr>
+        <tr data-search="trendtina s1 baseline"><td class="num">10</td><td class="sym">TrendTina</td><td><span class="pill info">baseline</span></td><td>S1 — Donchian</td><td>default</td><td class="num" style="color:var(--green)">+$10,458</td><td class="num">2.18×</td><td class="num">0</td><td class="num">1</td></tr>
+        <tr data-search="momentummoe s2 baseline"><td class="num">11</td><td class="sym">MomentumMoe</td><td><span class="pill info">baseline</span></td><td>S2 — EMA impulse</td><td>default</td><td class="num" style="color:var(--red)">−$18,432</td><td class="num">1.44×</td><td class="num">0</td><td class="num">1</td></tr>
+        <tr data-search="gapghost c2 contrarian"><td class="num">12</td><td class="sym">GapGhost</td><td><span class="pill purple">contrarian</span></td><td>C2 — Gap fade</td><td>default</td><td class="num" style="color:var(--red)">−$30,218</td><td class="num">3.07×</td><td class="num">0</td><td class="num">1</td></tr>
+        <tr data-search="panicpyramider c5 contrarian"><td class="num">13</td><td class="sym">PanicPyramider</td><td><span class="pill purple">contrarian</span></td><td>C5 — Pyramider</td><td>default</td><td class="num" style="color:var(--red)">−$50,298</td><td class="num">4.69×</td><td class="num">1</td><td class="num">1</td></tr>
+        <tr data-search="euphoriaearl c1 contrarian"><td class="num">14</td><td class="sym">EuphoriaEarl</td><td><span class="pill purple">contrarian</span></td><td>C1 — Capitulation</td><td>deep</td><td class="num" style="color:var(--red)">−$237,846</td><td class="num">2.45×</td><td class="num">0</td><td class="num">2</td></tr>
+        <tr data-search="squeezesam s3 baseline"><td class="num">15</td><td class="sym">SqueezeSam</td><td><span class="pill info">baseline</span></td><td>S3 — Squeeze</td><td>default</td><td class="num" style="color:var(--red)">−$250,000</td><td class="num">1.00×</td><td class="num">0</td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <h3>Key finding: single-edition vs season</h3>
+    <p>Contrarian fade models produced the only explosive editions — best 7.24× in 30 calendar days on daily bars versus 1.88× for the trend baselines. But full 20:1 deployment with no stops also ruined participant-editions outright, so season compounding collapses for almost everyone (best season multiple: 0.55×). <strong>Explosive single-edition outcomes exist; harvesting them is survivorship-bound.</strong></p>
+  </div>
+</section>
+
+<!-- LIVE FRONTIER -->
+<section id="leaderboard">
+  <h2><span class="section-num">04</span>Live Leaderboard Frontier</h2>
+  <p class="section-desc">Official leaderboard captures at ranks 1, 50, 100, 250. These are moving point-in-time snapshots — the board can rise, fall, or freeze.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Participants</div>
+      <div class="stat-value accent">96,707</div>
+      <div class="stat-note">as of Sep 18, 2026 live fetch</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Days Remaining</div>
+      <div class="stat-value amber">~12.4</div>
+      <div class="stat-note">deadline: 2026-09-30 12:00 UTC</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Registration Closes</div>
+      <div class="stat-value green">Sep 23</div>
+      <div class="stat-note">2026-09-23 08:00 UTC</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th class="num">Rank</th><th>Trader</th><th class="num">Profit %</th><th class="num">Profit $</th><th>Prize Tier</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1</td><td>leonardo22_romano</td><td class="num">+934.05%</td><td class="num">+$2,335,125.00</td><td>$10,000</td></tr>
+        <tr><td class="num">2</td><td>youcanttrickme</td><td class="num">+929.89%</td><td class="num">+$2,324,723.00</td><td>$7,000</td></tr>
+        <tr><td class="num">3</td><td>HappyLittleTrades</td><td class="num">+826.37%</td><td class="num">+$2,065,935.50</td><td>$6,000</td></tr>
+        <tr><td class="num">50</td><td>(latest capture)</td><td class="num">+552.16%</td><td class="num">+$1,380,404.00</td><td>$400</td></tr>
+        <tr><td class="num">100</td><td>chandu0342</td><td class="num">+449.24%</td><td class="num">+$1,123,096.25</td><td>3-month plan</td></tr>
+        <tr><td class="num">250</td><td>Jatpo</td><td class="num">+286.02%</td><td class="num">+$715,045.00</td><td>3-month plan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="section-desc" style="font-size: 12px; margin-top: 12px;">
+    Sources: <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" target="_blank">Official leaderboard</a> · 
+    <a href="data/frontier_history.json">frontier_history.json</a> (8 timestamped captures) · 
+    <a href="research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md">Latest evidence</a>
+  </p>
+</section>
+
+<!-- PLACEMENT MATH -->
+<section id="placement">
+  <h2><span class="section-num">05</span>Placement Arithmetic</h2>
+  <p class="section-desc">What each prize rank costs and what reaching it would require. Arithmetic only — not a forecast or strategy result.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Target</th><th class="num">Ending Balance</th><th class="num">Net Profit Needed</th><th class="num">Daily Compound</th><th class="num">Underlying at 20:1</th><th class="num">Winning Days at +1%</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>5×</strong></td><td class="num">$1,250,000</td><td class="num">+$1,000,000</td><td class="num" style="color:var(--amber)">+13.86%/day</td><td class="num">0.69%/day</td><td class="num">9</td></tr>
+        <tr><td><strong>10×</strong></td><td class="num">$2,500,000</td><td class="num">+$2,250,000</td><td class="num" style="color:var(--amber)">+20.41%/day</td><td class="num">1.02%/day</td><td class="num">13</td></tr>
+        <tr><td><strong>20×</strong></td><td class="num">$5,000,000</td><td class="num">+$4,750,000</td><td class="num" style="color:var(--red)">+27.33%/day</td><td class="num">1.37%/day</td><td class="num">17</td></tr>
+        <tr><td><strong>50×</strong></td><td class="num">$12,500,000</td><td class="num">+$12,250,000</td><td class="num" style="color:var(--red)">+37.10%/day</td><td class="num">1.85%/day</td><td class="num">22</td></tr>
+        <tr><td><strong>100×</strong></td><td class="num">$25,000,000</td><td class="num">+$24,750,000</td><td class="num" style="color:var(--red)">+44.98%/day</td><td class="num">2.25%/day</td><td class="num">26</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout critical">
+    <h3>Maximum exposure cuts both ways</h3>
+    <p>At the rules' maximum $5,000,000 notional, a 1% underlying move is $50,000 — 20% of the starting balance. A 5% adverse move erases the entire $250,000 balance. The rules forbid resetting the account (section 08). No tested strategy has produced the unbroken sequence the arithmetic asks for.</p>
+  </div>
+
+  <p style="font-size: 12px; color: var(--text-dim);">
+    Source: <a href="data/leaderboard_lab.json">leaderboard_lab.json</a> · 
+    <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" target="_blank">Official rules §08</a>
+  </p>
+</section>
+
+<!-- RETURN TARGETS -->
+<section id="targets">
+  <h2><span class="section-num">06</span>Return Target Analysis</h2>
+  <p class="section-desc">Balance multiples vs what has been historically achieved across all completed Leap editions.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Target</th><th class="num">Required P/L</th><th class="num">Champions Above</th><th>Context</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>5×</td><td class="num">+$1,000,000</td><td class="num">1/15</td><td>BenBernanke1 (53.21×) is the only champion above 5× in the completed sample</td></tr>
+        <tr><td>10×</td><td class="num">+$2,250,000</td><td class="num">1/15</td><td>Same single champion. No other completed edition reached 10×</td></tr>
+        <tr><td>20×</td><td class="num">+$4,750,000</td><td class="num">1/15</td><td>Still only BenBernanke1's 53.21×</td></tr>
+        <tr><td>50×</td><td class="num">+$12,250,000</td><td class="num">1/15</td><td>CME edition had 59,187 participants with different rules</td></tr>
+        <tr><td>100×</td><td class="num">+$24,750,000</td><td class="num">0/15</td><td>Unattested in this sample — not proven impossible</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 12px; color: var(--text-dim);">Source: <a href="data/verified_explosive_returns.json">verified_explosive_returns.json</a> · 15 completed #1 records from the official landing page</p>
+</section>
+
+<!-- CAPACITY SCREEN -->
+<section id="capacity">
+  <h2><span class="section-num">07</span>Instrument Capacity Screen</h2>
+  <p class="section-desc">Which futures have enough notional capacity at the starting balance to deliver the required moves. Ranked by the percentage move needed to match the rank-50 cash-prize level ($1.38M).</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th class="num">Modeled Notional</th><th class="num">Move for Rank 50</th><th class="num">Best 30d Move</th><th>Delivers?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sym">NYMEX:HO1!</td><td class="num">$4,830,290</td><td class="num">28.58%</td><td class="num">78.22%</td><td><span class="pill ok">✓ 3.04×</span></td></tr>
+        <tr><td class="sym">COMEX:SI1!</td><td class="num">$4,869,000</td><td class="num">28.35%</td><td class="num">64.74%</td><td><span class="pill ok">✓ 2.53×</span></td></tr>
+        <tr><td class="sym">NYMEX:CL1!</td><td class="num">$4,916,640</td><td class="num">28.08%</td><td class="num">58.37%</td><td><span class="pill ok">✓ 2.31×</span></td></tr>
+        <tr><td class="sym">NYMEX:RB1!</td><td class="num">$3,394,860</td><td class="num">40.66%</td><td class="num">66.69%</td><td><span class="pill ok">✓ 1.82×</span></td></tr>
+        <tr><td class="sym">CME_MINI:NQ1!</td><td class="num">$4,681,080</td><td class="num">29.49%</td><td class="num">20.11%</td><td><span class="pill no">✗ 0.76×</span></td></tr>
+        <tr><td class="sym">NYMEX:PL1!</td><td class="num">$2,232,375</td><td class="num">61.84%</td><td class="num">50.30%</td><td><span class="pill no">✗ 0.90×</span></td></tr>
+        <tr><td class="sym">NYMEX:NG1!</td><td class="num">$722,750</td><td class="num">190.99%</td><td class="num">140.41%</td><td><span class="pill no">✗ 0.82×</span></td></tr>
+        <tr><td class="sym">CME:BTC1!</td><td class="num">$380,425</td><td class="num">362.86%</td><td class="num">48.79%</td><td><span class="pill no">✗ 0.30×</span></td></tr>
+        <tr><td class="sym">CME:ETH1!</td><td class="num">$120,475</td><td class="num">1145.80%</td><td class="num">71.81%</td><td><span class="pill no">✗ 0.07×</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 12px; color: var(--text-dim);">
+    Source: <a href="data/leaderboard_lab.json">leaderboard_lab.json</a> · 
+    Contract specs from <a href="https://www.cmegroup.com/" target="_blank">CME Group</a> · 
+    Quotes from <a href="https://www.tradingview.com/" target="_blank">TradingView</a>
+  </p>
+</section>
+
+<!-- VOLATILITY INTEL -->
+<section id="volatility">
+  <h2><span class="section-num">08</span>Volatility Intelligence</h2>
+  <p class="section-desc">Realized volatility metrics from captured vendor daily bars. Best 30-day move is the largest close-to-extreme move inside any overlapping window — an upper envelope, not a forecast.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th class="num">Ann. Vol</th><th class="num">Best 30d Up</th><th class="num">Best 30d Down</th><th class="num">Windows ≥25% Up</th><th class="num">Largest Gap</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sym">NYMEX:NG1!</td><td class="num">87.5%</td><td class="num" style="color:var(--green)">+140.4%</td><td class="num" style="color:var(--red)">−89.0%</td><td class="num">12</td><td class="num">49.8%</td></tr>
+        <tr><td class="sym">NYMEX:HO1!</td><td class="num">46.2%</td><td class="num" style="color:var(--green)">+78.2%</td><td class="num" style="color:var(--red)">−64.5%</td><td class="num">8</td><td class="num">14.9%</td></tr>
+        <tr><td class="sym">CME:ETH1!</td><td class="num">70.2%</td><td class="num" style="color:var(--green)">+71.8%</td><td class="num" style="color:var(--red)">−61.3%</td><td class="num">6</td><td class="num">19.6%</td></tr>
+        <tr><td class="sym">NYMEX:RB1!</td><td class="num">38.7%</td><td class="num" style="color:var(--green)">+66.7%</td><td class="num" style="color:var(--red)">−56.4%</td><td class="num">6</td><td class="num">14.1%</td></tr>
+        <tr><td class="sym">COMEX:SI1!</td><td class="num">53.0%</td><td class="num" style="color:var(--green)">+64.7%</td><td class="num" style="color:var(--red)">−55.7%</td><td class="num">6</td><td class="num">31.3%</td></tr>
+        <tr><td class="sym">NYMEX:CL1!</td><td class="num">45.7%</td><td class="num" style="color:var(--green)">+58.4%</td><td class="num" style="color:var(--red)">−52.8%</td><td class="num">4</td><td class="num">16.4%</td></tr>
+        <tr><td class="sym">NYMEX:PL1!</td><td class="num">45.3%</td><td class="num" style="color:var(--green)">+50.3%</td><td class="num" style="color:var(--red)">−43.0%</td><td class="num">3</td><td class="num">19.0%</td></tr>
+        <tr><td class="sym">CME:BTC1!</td><td class="num">45.8%</td><td class="num" style="color:var(--green)">+48.8%</td><td class="num" style="color:var(--red)">−41.2%</td><td class="num">2</td><td class="num">13.4%</td></tr>
+        <tr><td class="sym">CME_MINI:NQ1!</td><td class="num">21.8%</td><td class="num" style="color:var(--green)">+20.1%</td><td class="num" style="color:var(--red)">−22.4%</td><td class="num">0</td><td class="num">11.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 12px; color: var(--text-dim);">
+    Source: <a href="data/volatility_intelligence.json">volatility_intelligence.json</a> · 
+    Vendor tier: <a href="https://query1.finance.yahoo.com/" target="_blank">Yahoo Finance</a> (front-month continuous, unadjusted rolls)
+  </p>
+</section>
+
+<!-- CHAMPIONS -->
+<section id="champions">
+  <h2><span class="section-num">09</span>Official Champion History</h2>
+  <p class="section-desc">Completed #1 outcomes from TradingView's official landing page. Return multiple = 1 + published net-profit percentage / 100.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Edition</th><th>Assets</th><th>Winner</th><th class="num">Participants</th><th class="num">Net Profit</th><th class="num">Multiple</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TradeStation Jul 2026</td><td>Futures</td><td>Me-tis</td><td class="num">107,677</td><td class="num">+155.95%</td><td class="num"><strong>2.56×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-tradestation-july-2026-60266/" target="_blank">↗</a></td></tr>
+        <tr><td>Forex Jun 2026</td><td>Forex</td><td>Minitrader91</td><td class="num">60,141</td><td class="num">+91.87%</td><td class="num"><strong>1.92×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-forex-edition-59492/" target="_blank">↗</a></td></tr>
+        <tr><td>Crypto May 2026</td><td>Crypto</td><td>Manishh_jain92</td><td class="num">39,363</td><td class="num">+271.78%</td><td class="num"><strong>3.72×</strong></td><td><a href="https://www.tradingview.com/blog/en/winners-of-the-leap-crypto-series-58603/" target="_blank">↗</a></td></tr>
+        <tr><td>Stocks Mar 2026</td><td>Stocks</td><td>prodigy5284</td><td class="num">41,301</td><td class="num">+17.58%</td><td class="num"><strong>1.18×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-magnificent-seven-results-57868/" target="_blank">↗</a></td></tr>
+        <tr><td>Crypto Feb 2026</td><td>Crypto</td><td>vasu_adiraju</td><td class="num">49,466</td><td class="num">+114.61%</td><td class="num"><strong>2.15×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-crypto-edition-results-57323/" target="_blank">↗</a></td></tr>
+        <tr><td>Eurex Feb 2026</td><td>Futures</td><td>JoshTrades_ICT</td><td class="num">55,871</td><td class="num">+124.24%</td><td class="num"><strong>2.24×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-by-eurex-has-come-to-a-close-56951/" target="_blank">↗</a></td></tr>
+        <tr><td>Christmas Dec 2025</td><td>Stocks</td><td>kgougakis</td><td class="num">71,342</td><td class="num">+29.90%</td><td class="num"><strong>1.30×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-christmas-edition-is-over-55806/" target="_blank">↗</a></td></tr>
+        <tr><td>TradeStation Nov 2025</td><td>Futures</td><td>apsudnay</td><td class="num">82,042</td><td class="num">+148.51%</td><td class="num"><strong>2.49×</strong></td><td><a href="https://www.tradingview.com/blog/en/the-leap-co-marketed-with-tradestation-comes-to-an-end-55603/" target="_blank">↗</a></td></tr>
+        <tr><td>TradeStation Jun 2025</td><td>Futures</td><td>BitK77</td><td class="num">54,870</td><td class="num">+111.92%</td><td class="num"><strong>2.12×</strong></td><td><a href="https://www.tradingview.com/blog/en/tradingview-leap-by-tradestation-results-52831/" target="_blank">↗</a></td></tr>
+        <tr><td>Pepperstone Apr 2025</td><td>Multi-asset</td><td>ICT_Hispanohablantes</td><td class="num">36,965</td><td class="num">+308.07%</td><td class="num"><strong>4.08×</strong></td><td><a href="https://www.tradingview.com/blog/en/tradingview-leap-by-pepperstone-winners-52062/" target="_blank">↗</a></td></tr>
+        <tr style="background: rgba(59,130,246,0.05);"><td>CME Feb 2025</td><td>Futures</td><td>BenBernanke1</td><td class="num">59,187</td><td class="num">+5,220.72%</td><td class="num" style="color:var(--green)"><strong>53.21×</strong></td><td><a href="https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/" target="_blank">↗</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 12px; color: var(--text-dim);">
+    Source: <a href="https://www.tradingview.com/the-leap/" target="_blank">Official landing page</a> · 
+    <a href="data/verified_explosive_returns.json">verified_explosive_returns.json</a>
+  </p>
+</section>
+
+<!-- STOCK HISTORY -->
+<section id="stocks">
+  <h2><span class="section-num">10</span>Historical Stock Moves (Reference)</h2>
+  <p class="section-desc">Window-bounded trough-to-later-peak adjusted-close ratios from Yahoo Finance. These are real market moves, NOT contest returns. No stocks are in the current September 2026 edition (94 futures only). Retained as research for a future stocks edition.</p>
+
+  <div class="callout warn">
+    <h3>⚠ No stocks in the September 2026 edition</h3>
+    <p>Individual stocks are not permitted in the current live competition. The 94 eligible instruments are all futures. This stock data is vendor-tier reference research only.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th>Company</th><th class="num">Trough</th><th class="num">Peak</th><th class="num">Multiple</th><th>Window</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sym">ENPH</td><td>Enphase Energy</td><td class="num">$0.70 (2017-05)</td><td class="num">$267.74 (2021-11)</td><td class="num" style="color:var(--green)"><strong>382.49×</strong></td><td>4.51 years</td></tr>
+        <tr><td class="sym">AMD</td><td>Advanced Micro Devices</td><td class="num">$1.80 (2016-01)</td><td class="num">$580.91 (2026-06)</td><td class="num" style="color:var(--green)"><strong>322.73×</strong></td><td>10.45 years</td></tr>
+        <tr><td class="sym">MARA</td><td>Marathon Digital</td><td class="num">$0.40 (2020-03)</td><td class="num">$76.09 (2021-11)</td><td class="num" style="color:var(--green)"><strong>190.22×</strong></td><td>1.65 years</td></tr>
+        <tr><td class="sym">CVNA</td><td>Carvana</td><td class="num">$0.74 (2022-12)</td><td class="num">$95.69 (2026-01)</td><td class="num" style="color:var(--green)"><strong>128.62×</strong></td><td>3.08 years</td></tr>
+        <tr><td class="sym">GME</td><td>GameStop</td><td class="num">$0.70 (2020-04)</td><td class="num">$86.88 (2021-01)</td><td class="num" style="color:var(--green)"><strong>124.11×</strong></td><td>0.82 years</td></tr>
+        <tr><td class="sym">RIOT</td><td>Riot Platforms</td><td class="num">$0.65 (2020-03)</td><td class="num">$77.90 (2021-02)</td><td class="num" style="color:var(--green)"><strong>119.85×</strong></td><td>0.92 years</td></tr>
+        <tr><td class="sym">SHOP</td><td>Shopify</td><td class="num">$1.93 (2016-02)</td><td class="num">$179.01 (2025-10)</td><td class="num" style="color:var(--green)"><strong>92.61×</strong></td><td>9.71 years</td></tr>
+        <tr><td class="sym">NVAX</td><td>Novavax</td><td class="num">$3.93 (2020-01)</td><td class="num">$319.93 (2021-02)</td><td class="num" style="color:var(--green)"><strong>81.41×</strong></td><td>1.08 years</td></tr>
+        <tr><td class="sym">APP</td><td>AppLovin</td><td class="num">$9.30 (2022-12)</td><td class="num">$733.60 (2025-12)</td><td class="num" style="color:var(--green)"><strong>78.88×</strong></td><td>3.00 years</td></tr>
+        <tr><td class="sym">PLUG</td><td>Plug Power</td><td class="num">$1.01 (2018-12)</td><td class="num">$73.18 (2021-01)</td><td class="num" style="color:var(--green)"><strong>72.46×</strong></td><td>2.10 years</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 12px; color: var(--text-dim);">
+    Source: <a href="https://query1.finance.yahoo.com/" target="_blank">Yahoo Finance</a> (market_data_vendor tier) · 
+    <a href="data/volatile_stocks.json">volatile_stocks.json</a> · 
+    Every multiple recomputed from archived adjusted closes by <a href="scripts/verify.py">verify.py</a>
+  </p>
+</section>
+
+<!-- UNIVERSE -->
+<section id="universe">
+  <h2><span class="section-num">11</span>Full Eligible Universe</h2>
+  <p class="section-desc">All 94 instruments and position caps transcribed from the official rules §08. 0 single-stock equities.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Instruments</div>
+      <div class="stat-value accent">94</div>
+      <div class="stat-note">futures only</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Equities</div>
+      <div class="stat-value red">0</div>
+      <div class="stat-note">not in this edition</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exchanges</div>
+      <div class="stat-value green">8</div>
+      <div class="stat-note">CME, CBOT, NYMEX, COMEX + MINI variants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Selected for Research</div>
+      <div class="stat-value purple">20</div>
+      <div class="stat-note">with verified multipliers and quotes</div>
+    </div>
+  </div>
+
+  <details style="margin-top: 16px;">
+    <summary style="cursor: pointer; color: var(--accent); font-weight: 500; padding: 8px 0;">View all 94 instruments with position caps →</summary>
+    <div class="table-wrap" style="margin-top: 12px;">
+      <table>
+        <thead><tr><th>#</th><th>Symbol</th><th>Exchange</th><th>Root</th><th class="num">Max Contracts</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="sym">CME_MINI:MES1!</td><td>CME_MINI</td><td>MES</td><td class="num">500</td></tr>
+          <tr><td>2</td><td class="sym">CME_MINI:MNQ1!</td><td>CME_MINI</td><td>MNQ</td><td class="num">500</td></tr>
+          <tr><td>3</td><td class="sym">CME_MINI:ES1!</td><td>CME_MINI</td><td>ES</td><td class="num">100</td></tr>
+          <tr><td>4</td><td class="sym">CME_MINI:NQ1!</td><td>CME_MINI</td><td>NQ</td><td class="num">100</td></tr>
+          <tr><td>5</td><td class="sym">CME:BTC1!</td><td>CME</td><td>BTC</td><td class="num">1</td></tr>
+          <tr><td>6</td><td class="sym">CME:ETH1!</td><td>CME</td><td>ETH</td><td class="num">1</td></tr>
+          <tr><td>7</td><td class="sym">NYMEX:CL1!</td><td>NYMEX</td><td>CL</td><td class="num">100</td></tr>
+          <tr><td>8</td><td class="sym">NYMEX:NG1!</td><td>NYMEX</td><td>NG</td><td class="num">25</td></tr>
+          <tr><td>9</td><td class="sym">NYMEX:HO1!</td><td>NYMEX</td><td>HO</td><td class="num">25</td></tr>
+          <tr><td>10</td><td class="sym">NYMEX:RB1!</td><td>NYMEX</td><td>RB</td><td class="num">25</td></tr>
+          <tr><td>11</td><td class="sym">COMEX:SI1!</td><td>COMEX</td><td>SI</td><td class="num">25</td></tr>
+          <tr><td>12</td><td class="sym">COMEX:GC1!</td><td>COMEX</td><td>GC</td><td class="num">100</td></tr>
+          <tr><td>13</td><td class="sym">NYMEX:PL1!</td><td>NYMEX</td><td>PL</td><td class="num">25</td></tr>
+          <tr><td>14</td><td class="sym">COMEX:HG1!</td><td>COMEX</td><td>HG</td><td class="num">25</td></tr>
+          <tr><td>15</td><td class="sym">CBOT:ZB1!</td><td>CBOT</td><td>ZB</td><td class="num">100</td></tr>
+          <tr><td colspan="5" style="text-align:center; color: var(--text-dim);">...and 79 more. Full list in <a href="data/contest_universe.json">contest_universe.json</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <p style="font-size: 12px; color: var(--text-dim); margin-top: 12px;">
+    Source: <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" target="_blank">Official rules §08</a> · 
+    <a href="data/contest_universe.json">contest_universe.json</a>
+  </p>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <h2><span class="section-num">12</span>Verified Sources</h2>
+  <p class="section-desc">Every non-trivial claim in this project traces to one of these verified sources. 94 registered sources across 4 tiers.</p>
+
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="filterSources('all')">All (94)</button>
+    <button class="filter-btn" onclick="filterSources('official_primary')">Official Primary</button>
+    <button class="filter-btn" onclick="filterSources('market_data_vendor')">Market Data Vendor</button>
+  </div>
+
+  <div id="sources-list">
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">TV-RULES-AMP-SEP2026</strong>
+          <p style="margin-top: 4px;">The Leap by AMP Futures — Official Competition Rules</p>
+        </div>
+        <a class="source-link" href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">TV-CONTEST-AMP-SEP2026</strong>
+          <p style="margin-top: 4px;">The Leap by AMP Futures — September 2026 (Live Contest Page)</p>
+        </div>
+        <a class="source-link" href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">TV-THELEAP-LANDING</strong>
+          <p style="margin-top: 4px;">The Leap — Paper Trading Competition by TradingView (Landing Page)</p>
+        </div>
+        <a class="source-link" href="https://www.tradingview.com/the-leap/" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">CME-SPEC-CL1!</strong>
+          <p style="margin-top: 4px;">Crude Oil futures — contract specs (1,000 barrels)</p>
+        </div>
+        <a class="source-link" href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">CME-SPEC-SI1!</strong>
+          <p style="margin-top: 4px;">Silver futures — contract specs (5,000 troy ounces)</p>
+        </div>
+        <a class="source-link" href="https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">CME-SPEC-HO1!</strong>
+          <p style="margin-top: 4px;">NY Harbor ULSD (Heating Oil) futures — contract specs (42,000 gal)</p>
+        </div>
+        <a class="source-link" href="https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">TV-RESULTS-BENBERNANKE1</strong>
+          <p style="margin-top: 4px;">Official blog: BenBernanke1 won CME edition (59,187 participants, 53.21×)</p>
+        </div>
+        <a class="source-link" href="https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="market_data_vendor">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill warn">market data vendor</span>
+          <strong style="margin-left: 8px;">YAHOO-FUTURES-CHART</strong>
+          <p style="margin-top: 4px;">Yahoo Finance v8 chart API — daily bars for 20 selected futures (front-month continuous, unadjusted rolls)</p>
+        </div>
+        <a class="source-link" href="https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;" data-tier="official_primary">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="pill ok">official primary</span>
+          <strong style="margin-left: 8px;">TV-PINE-AUTOTRADE</strong>
+          <p style="margin-top: 4px;">Pine strategies cannot directly place orders in the Paper Trading account</p>
+        </div>
+        <a class="source-link" href="https://www.tradingview.com/support/solutions/43000481026-how-to-autotrade-using-pine-script-strategies/" target="_blank">Open ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 12px; color: var(--text-dim); margin-top: 12px;">
+    Full registry: <a href="research/sources/sources.json">sources.json</a> (94 sources with evidence files, access dates, and allowed uses)
+  </p>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <h2><span class="section-num">13</span>Method & Verification</h2>
+  <p class="section-desc">The pipeline is deterministic and network-free. Evidence is captured first; the offline verifier checks provenance and re-derives arithmetic.</p>
+
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px;">1</div>
+      <h3>Capture</h3>
+      <p>Save official quotations, exact URLs, and access times</p>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px;">2</div>
+      <h3>Register</h3>
+      <p>Assign source tier and narrowly define what it may prove</p>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px;">3</div>
+      <h3>Derive</h3>
+      <p>Compute return multiples, capacity, thresholds from stored inputs</p>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px;">4</div>
+      <h3>Mutate</h3>
+      <p>Corrupt test copies and prove each verifier check fails</p>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px;">5</div>
+      <h3>Publish</h3>
+      <p>Render pages from checked JSON and fail CI when stale</p>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top: 24px;">
+    <h3>Reproduce</h3>
+    <pre style="font-family: var(--mono); font-size: 12px; color: var(--text-muted); margin-top: 8px; padding: 12px; background: var(--bg-surface); border-radius: 8px; overflow-x: auto;">
+python3 scripts/verify.py
+python3 scripts/verify.py --self-test
+python3 scripts/build_intelligence.py
+python3 scripts/build_site.py
+python3 -m unittest discover -s scripts -p 'test_*.py' -v</pre>
+  </div>
+
+  <div class="callout warn" style="margin-top: 16px;">
+    <h3>Material Limitations</h3>
+    <ul>
+      <li>The verifier is offline; captured public pages can later change</li>
+      <li>Leaderboard rows and display prices are asynchronous, non-executable snapshots</li>
+      <li>No licensed consistent intraday history covers all eligible symbols</li>
+      <li>Champion summaries contain no trade history — no winning strategy can be reverse-engineered</li>
+      <li>Continuous-contract roll effects require settlement-based series for precision</li>
+      <li>No authenticated TradingView Strategy Report exists for any model</li>
+      <li>Vendor data is front-month continuous with unadjusted roll splices</li>
+    </ul>
+  </div>
+
+  <div class="disclaimer" style="margin-top: 24px;">
+    <strong>⚠ Scope.</strong> This project concerns a virtual-money paper trading competition. It is not investment advice, a return forecast, or evidence that any historical result will repeat. TradingView and CME Group are not affiliated with this repository. Every dollar, percentage, multiple, and participant count is either quoted verbatim from captured evidence files or recomputed deterministically by the offline verifier scripts.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>The Leap Research Lab · Built from audited repository artifacts · September 2026</p>
+    <div class="links">
+      <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/" target="_blank">Official Rules</a>
+      <a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/" target="_blank">Live Contest</a>
+      <a href="https://github.com/buffedlizard55-lab/TradingViewTheLeap" target="_blank">GitHub Repository</a>
+      <a href="data/">Data Downloads</a>
+      <a href="research/">Research Files</a>
+      <a href="intel/">Engine Source</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navigation active state
+document.querySelectorAll('.nav a').forEach(link => {
+  link.addEventListener('click', function() {
+    document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Shadow competition filter
+function filterComp() {
+  const q = document.getElementById('comp-search').value.toLowerCase();
+  document.querySelectorAll('#comp-table tbody tr').forEach(row => {
+    const text = row.getAttribute('data-search') || row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// Source filter
+function filterSources(tier) {
+  document.querySelectorAll('#sources-list .card').forEach(card => {
+    card.style.display = (tier === 'all' || card.getAttribute('data-tier') === tier) ? '' : 'none';
+  });
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Intersection Observer for nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -80% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
