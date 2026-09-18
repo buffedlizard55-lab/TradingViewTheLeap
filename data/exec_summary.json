@@ -148,6 +148,7 @@
       }
      ],
      "waiting_for": null,
+     "strategy_kind": "signal_timed",
      "symbols_watched": [
       "NYMEX:NG1!",
       "NYMEX:CL1!",
@@ -209,6 +210,7 @@
       }
      ],
      "waiting_for": null,
+     "strategy_kind": "signal_timed",
      "symbols_watched": [
       "COMEX:SI1!",
       "COMEX_MINI:SIL1!",
@@ -244,6 +246,7 @@
      ],
      "pending_orders": [],
      "waiting_for": "A range-expansion exhaustion bar (true range >= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.",
+     "strategy_kind": "signal_timed",
      "symbols_watched": [
       "NYMEX:CL1!",
       "NYMEX:RB1!"

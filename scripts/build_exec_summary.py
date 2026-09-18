@@ -56,9 +56,12 @@ from intel.stock_strategies import (  # noqa: E402
     warmup,
 )
 from intel.contrarian import MODEL_CLAIMS as FUTURES_CLAIMS  # noqa: E402
+from intel.contrarian import generate_decisions  # noqa: E402
+from intel.strategy import warmup_bars  # noqa: E402
 from intel.contrarian import MODEL_NAMES as FUTURES_NAMES  # noqa: E402
 
 TOP_N_PER_DIVISION = 3
+RANKING_MIN_ROWS = 5          # rows published in each division's ranking before any extension
 FUTURES_PROFILE = "futures_amp_sep2026"
 STOCKS_PROFILE = "stocks_official_leap"
 
@@ -112,6 +115,26 @@ def indicative_stock_qty(profile, price: float) -> int:
                    (profile.starting_balance * profile.leverage) // price))
 
 
+def publish_prefix(board: list[dict], rows: list[dict]) -> list[dict]:
+    """The ranking rows the artifact publishes: a true leaderboard prefix.
+
+    It is at least RANKING_MIN_ROWS long and is extended so that every username the
+    recommendations are drawn from is visible in the ranking. A reader must never be told to
+    trade a username whose row the division's own ranking does not show (the offline verifier
+    requires exactly this), and the prefix property keeps season_rank = 1..N.
+    """
+    deepest = RANKING_MIN_ROWS
+    for row in rows:
+        if not row:
+            continue
+        rank = row.get("season_rank") or row.get("season_rank_latest") or 0
+        try:
+            deepest = max(deepest, int(rank))
+        except (TypeError, ValueError):
+            continue
+    return board[:deepest]
+
+
 def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
                   profile_key: str, division: str, is_stock: bool) -> list[dict]:
     profile = RULE_PROFILES[profile_key]
@@ -123,12 +146,32 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
         if not pool:
             continue
         model, variant = roster_row["model"], roster_row.get("variant")
-        decisions = prepare_decisions(
-            {s: series_map[s] for s in pool}, model, variant) if not is_stock else {
-                s: generate_stock_decisions(list(series_map[s].bars), model, variant)
-                for s in pool if len(series_map[s].bars) > warmup(model, variant)
-            }
-        claims = (STOCK_CLAIMS if is_stock else FUTURES_CLAIMS).get(model, "")
+        if not is_stock:
+            decisions = prepare_decisions({s: series_map[s] for s in pool}, model, variant)
+        else:
+            # Equity divisions run the C6-C10 contrarian models plus the B1 control. The control
+            # is a baseline from intel.strategy, not a stock model, so it must be dispatched the
+            # same way scripts/run_stock_competition.py dispatches it -- otherwise building the
+            # executive summary raises as soon as a stock division exists (found by the
+            # synthetic-capture smoke test before the real captures landed).
+            decisions = {}
+            for s in pool:
+                bars = list(series_map[s].bars)
+                if model in STOCK_MODEL_IDS:
+                    if len(bars) > warmup(model, variant):
+                        decisions[s] = generate_stock_decisions(bars, model, variant)
+                elif model == "B1":
+                    # B1 is the buy-and-hold CONTROL: scripts/run_stock_competition.py runs it
+                    # with an empty decision stream on one control symbol rather than through a
+                    # signal generator, so the executive summary must mirror that (a control has
+                    # no timing orders to publish).
+                    continue
+                elif len(bars) > warmup_bars(model):
+                    decisions[s] = generate_decisions(bars, model, variant)
+        # Stock divisions contain both the C6-C10 stock models (intel.stock_strategies) and the
+        # S1-S3 baselines / B1 control, whose claims live with the futures models, so look in
+        # both maps instead of publishing an empty "waiting for" string.
+        claims = STOCK_CLAIMS.get(model) or FUTURES_CLAIMS.get(model) or ""
         names = STOCK_NAMES if is_stock else FUTURES_NAMES
         state_summary = []
         for symbol in pool:
@@ -231,7 +274,11 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
                 }
                 for state, symbol, action, token, is_exit in pending_groups
             ],
-            "waiting_for": None if pending_groups else claims,
+            "waiting_for": None if pending_groups else (
+                "nothing further: this is the buy-and-hold control and it places no timing orders"
+                if model == "B1" else claims
+            ),
+            "strategy_kind": "buy_and_hold_control" if model == "B1" else "signal_timed",
             "symbols_watched": pool,
         })
     return entries
@@ -296,7 +343,7 @@ def main() -> int:
             {"season_rank": row["season_rank"], "username": row["username"],
              "season_realized_pnl_usd": row["season_realized_pnl_usd"],
              "best_edition_multiple": row["best_edition_multiple"]}
-            for row in futures_board[:5]
+            for row in publish_prefix(futures_board, futures_top)
         ],
         "recommendations": build_entries(futures_top, futures_series, futures_by_user,
                                          FUTURES_PROFILE, "futures", is_stock=False),
@@ -337,7 +384,7 @@ def main() -> int:
                     {"season_rank": row["season_rank"], "username": row["username"],
                      "season_realized_pnl_usd": row["season_realized_pnl_usd"],
                      "best_edition_multiple": row["best_edition_multiple"]}
-                    for row in board[:5]
+                    for row in publish_prefix(board, top)
                 ],
                 "recommendations": build_entries(
                     [row for row in top if row], series_map, stock_by_user,

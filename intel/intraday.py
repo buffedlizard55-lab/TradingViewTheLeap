@@ -130,8 +130,21 @@ def load_capture(record: dict, rel_dir: str = "data/intraday") -> Capture:
         raise IntradayError(f"{path}: symbol mismatch with the index record")
     if document.get("interval") != record["interval"]:
         raise IntradayError(f"{path}: interval mismatch with the index record")
-    if document.get("raw_response_sha256") != record["raw_response_sha256"]:
-        raise IntradayError(f"{path}: raw-response digest mismatch with the index record")
+    # Series-level raw digest: present in captures written from script_version 3 onward (the
+    # fetch script derives it from every chunk's raw-response digest). It is only compared when
+    # the index declares it, and a document that declares it while the index does not is treated
+    # as an inconsistent index rather than silently ignored.
+    declared_raw = record.get("raw_response_sha256")
+    document_raw = document.get("raw_response_sha256")
+    if declared_raw is not None and document_raw != declared_raw:
+        raise IntradayError(
+            f"{path}: raw-response digest mismatch with the index record "
+            f"(document {document_raw}, index {declared_raw})"
+        )
+    if document_raw is not None and declared_raw is None:
+        raise IntradayError(
+            f"{path}: the capture declares raw_response_sha256 but the index record does not"
+        )
     bars = _validate_bars(document["bars"], record["symbol"], record["interval"])
     if len(bars) != record["bar_count"]:
         raise IntradayError(

@@ -445,6 +445,16 @@ def main() -> int:
         # The stored file must be EXACTLY the bytes that stored_sha256 digests: the offline
         # loader (intel/intraday.py) re-hashes the file on disk and refuses a mismatch, so no
         # trailing newline is appended here.
+        # A multi-chunk series has no single raw vendor response, so the series-level digest is
+        # defined as SHA-256 over the ordered concatenation of every chunk's raw-response digest.
+        # It is written to BOTH the capture document and the index record, and the offline loader
+        # requires the two to agree (or both to be absent, for captures written before this field).
+        chunk_digests = "".join(c["raw_response_sha256"] for c in result["chunks"])
+        document["raw_response_sha256"] = hashlib.sha256(chunk_digests.encode("ascii")).hexdigest()
+        document["raw_response_note"] = (
+            "SHA-256 over the ordered concatenation of every chunk's raw-response SHA-256; "
+            "multi-chunk series have no single raw vendor response."
+        )
         stored_text = json.dumps(document, separators=(",", ":"))
         filename = stored_filename(key, interval)
         with open(os.path.join(ROOT, args.out_dir, filename), "w", encoding="utf-8") as fh:
@@ -468,6 +478,7 @@ def main() -> int:
             "chunks": len(result["chunks"]),
             "chunk_provenance": result["chunks"],
             "raw_response_bytes_total": sum(c["raw_response_bytes"] for c in result["chunks"]),
+            "raw_response_sha256": document["raw_response_sha256"],
             "stored_bytes": len(stored_text.encode("utf-8")),
             "stored_sha256": hashlib.sha256(stored_text.encode("utf-8")).hexdigest(),
             "rounding_decimals": ROUNDING_DECIMALS,

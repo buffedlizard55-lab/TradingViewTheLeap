@@ -109,7 +109,7 @@ def build_series(captures: dict, interval: str, symbol_of_key) -> dict[str, Seri
             symbol=symbol,
             bars=tuple(bars),
             contract_multiplier=1.0,
-            rules_cap_units=50,           # official stocks-edition cap, one unit = one share
+            rules_cap_contracts=50,       # official stocks-edition cap; one unit = one share
         )
     return out
 
@@ -650,7 +650,9 @@ def main() -> int:
         "counterfactual_20x": counterfactual_doc,
         "latency_sensitivity": latency_doc,
         "official_rule_bound": {"summary": bound_summary, "editions": bound_rows},
-        "elapsed_seconds": round(time.time() - started, 3),
+        # No wall-clock field: scripts/verify.py re-runs this engine at the stored stamp and
+        # requires the artifact field-for-field, so a runtime measurement would make every
+        # capture-time artifact irreproducible. Runtime stays on stdout / in the CI log.
     }
 
     out_path = os.path.join(ROOT, args.out)
@@ -661,7 +663,8 @@ def main() -> int:
         f"L={r['latency_bars']}: mean_mult={r['mean_edition_multiple']}, "
         f"trades={r['total_trades']}" for r in latency_doc.get("daily", [])))
     print(f"official-rule bound: {bound_summary}")
-    print(f"wrote {os.path.relpath(out_path, ROOT)} in {doc['elapsed_seconds']}s")
+    print(f"wrote {os.path.relpath(out_path, ROOT)} in {time.time() - started:.3f}s "
+          f"(run time is deliberately not stored: the artifact must reproduce exactly)")
     return 0
 
 

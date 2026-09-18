@@ -361,11 +361,23 @@ def prepare_decisions(
 
 
 def model_params_label(model: str, variant: str | None) -> str:
-    """Human label of the frozen parameter delta a variant applies."""
+    """Human label of the frozen parameter delta a variant applies.
+
+    Futures models (C1-C5, the baselines) resolve through intel.contrarian; the volatile-equity
+    models (C6-C10) resolve through intel.stock_strategies, which owns its own frozen parameter
+    table. The import is local so the two strategy modules stay independent of each other.
+    """
     if not variant:
         return "default"
-    params = resolve_params(model, variant)
-    base = DEFAULT_PARAMS.get(model, {})
+    try:
+        params = resolve_params(model, variant)
+        base = DEFAULT_PARAMS.get(model, {})
+    except ValueError:
+        from .stock_strategies import DEFAULT_PARAMS as STOCK_DEFAULTS
+        from .stock_strategies import resolve_params as resolve_stock_params
+
+        params = resolve_stock_params(model, variant)
+        base = STOCK_DEFAULTS.get(model, {})
     diff = {k: v for k, v in params.items() if base.get(k) != v}
     return ", ".join(f"{k}={v}" for k, v in sorted(diff.items())) or "default"
 

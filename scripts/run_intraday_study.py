@@ -106,10 +106,13 @@ def study_capture(capture) -> dict:
     daily_atr = atr(daily, 14)
 
     gaps: list[dict] = []
+    skipped_no_atr = 0        # ATR(14) is undefined until 14 sessions exist
+    skipped_zero_gap = 0      # the session opened exactly at the prior close
     for i in range(1, len(day_groups)):
         prior_close = daily[i - 1].close
         atr_prev = daily_atr[i - 1]
         if atr_prev is None or atr_prev <= 0 or prior_close <= 0:
+            skipped_no_atr += 1
             continue
         day, bars = day_groups[i]
         session_open = bars[0].open
@@ -130,6 +133,7 @@ def study_capture(capture) -> dict:
                 (j for j, b in enumerate(bars) if b.high >= prior_close), None
             )
         else:
+            skipped_zero_gap += 1
             continue
         session_close = bars[-1].close
         gaps.append({
@@ -175,9 +179,23 @@ def study_capture(capture) -> dict:
                     latency[f"delay_{step}_bar_close_delta"].append(
                         (later.close - bar.close) / bar.close * 10_000.0
                     )
+    # Every session after the first either yields a gap row or is skipped for one of exactly
+    # two measured reasons. Making that identity explicit (and publishing it) is what lets the
+    # offline verifier prove no session silently disappeared: "sessions - 1" alone is wrong,
+    # because the first 14 sessions have no ATR baseline yet.
+    candidates = max(len(day_groups) - 1, 0)
+    if len(gaps) + skipped_no_atr + skipped_zero_gap != candidates:
+        raise IntradayError(
+            f"{capture.symbol}[{capture.interval}]: gap accounting does not close: "
+            f"{len(gaps)} gaps + {skipped_no_atr} no-ATR + {skipped_zero_gap} zero-gap "
+            f"!= {candidates} sessions after the first"
+        )
     return {"gaps": gaps, "latency": latency, "sessions": len(day_groups),
             "first_session": day_groups[0][0] if day_groups else None,
-            "last_session": day_groups[-1][0] if day_groups else None}
+            "last_session": day_groups[-1][0] if day_groups else None,
+            "gap_candidates": candidates,
+            "gaps_skipped_no_atr": skipped_no_atr,
+            "gaps_skipped_zero_gap": skipped_zero_gap}
 
 
 def summarize_bucket(rows: list[dict], kind: str, bucket: str, direction: str) -> dict | None:
@@ -262,6 +280,9 @@ def main() -> int:
             "last_session": result["last_session"],
             "bars": len(capture.bars),
             "gaps_analyzed": len(gaps),
+            "gap_candidates": result["gap_candidates"],
+            "gaps_skipped_no_atr": result["gaps_skipped_no_atr"],
+            "gaps_skipped_zero_gap": result["gaps_skipped_zero_gap"],
             "gap_up_sessions": sum(1 for g in gaps if g["direction"] == "up"),
             "gap_down_sessions": sum(1 for g in gaps if g["direction"] == "down"),
             "fill_rate_all": round(len(filled) / len(gaps), 6) if gaps else None,
