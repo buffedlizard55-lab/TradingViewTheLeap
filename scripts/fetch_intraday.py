@@ -77,11 +77,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INTERVAL_SPEC = {
     "15m": {"period1": "2026-07-21T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
-            "chunk_days": 10},
+            "chunk_days": 15},
     "1h": {"period1": "2024-09-21T00:00:00Z", "period2": "2026-09-18T00:00:00Z",
-           "chunk_days": 120},
+           "chunk_days": 180},
     "1d": {"period1": "2016-01-01T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
-           "chunk_days": 1825},
+           "chunk_days": 3650},
 }
 
 INTERVAL_ORDER = ("15m", "1h", "1d")
@@ -161,14 +161,15 @@ def chunks_for(interval: str) -> list[tuple[int, int]]:
 class Transport:
     """Direct + relay HTTP transport with a per-run direct decision."""
 
-    def __init__(self, relay_attempts: int = 3, direct_attempts: int = 1,
-                 timeout: int = 60, log=print):
+    def __init__(self, relay_attempts: int = 2, direct_attempts: int = 1,
+                 timeout: int = 75, log=print):
         self.relay_attempts = relay_attempts
         self.direct_attempts = direct_attempts
         self.timeout = timeout
         self.direct_disabled = False
         self.direct_429s = 0
         self.attempts_log: list[str] = []
+        self.preferred_relay: str | None = None
         self.log = log
 
     def _get(self, url: str) -> bytes:
@@ -200,12 +201,17 @@ class Transport:
                     last_error = exc
                     self.log(f"    direct attempt {attempt} failed: {exc}")
                 time.sleep(2 * attempt)
-        for name, template in RELAY_TEMPLATES:
+        ordered = sorted(RELAY_TEMPLATES,
+                         key=lambda item: 0 if item[0] == self.preferred_relay else 1)
+        for name, template in ordered:
             relay_url = template.format(encoded=urllib.parse.quote(url, safe=""))
             for attempt in range(1, self.relay_attempts + 1):
                 try:
                     payload = self._get(relay_url)
                     self.attempts_log.append(f"{name}-ok")
+                    if self.preferred_relay != name:
+                        self.preferred_relay = name
+                        self.log(f"    relay preference set to {name}")
                     return payload, f"{name}-relay"
                 except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
                     last_error = exc
@@ -345,7 +351,12 @@ def main() -> int:
     parser.add_argument("--futures-hourly", action="store_true")
     parser.add_argument("--only-failed", action="store_true")
     parser.add_argument("--pacing-seconds", type=float, default=1.0)
-    parser.add_argument("--relay-attempts", type=int, default=3)
+    parser.add_argument("--relay-attempts", type=int, default=2)
+    parser.add_argument("--time-budget-seconds", type=float, default=0.0,
+                        help="stop after roughly this long and mark the rest not_attempted "
+                             "(0 = no limit); a later --only-failed run resumes them")
+    parser.add_argument("--max-series", type=int, default=0,
+                        help="stop after this many series (0 = all); for smoke tests")
     args = parser.parse_args()
 
     intervals = INTERVAL_ORDER if args.interval == "all" else (args.interval,)
@@ -373,8 +384,18 @@ def main() -> int:
         print(f"preserving {len(keep)} existing captures; retrying {len(jobs)}", flush=True)
 
     transport = Transport(relay_attempts=args.relay_attempts)
+    started_at = time.time()
+    attempted = 0
+    deferred: list[tuple[str, str, str, str]] = []
 
     for key, yahoo, kind, interval in jobs:
+        if args.time_budget_seconds and (time.time() - started_at) > args.time_budget_seconds:
+            deferred.append((key, yahoo, kind, interval))
+            continue
+        if args.max_series and attempted >= args.max_series:
+            deferred.append((key, yahoo, kind, interval))
+            continue
+        attempted += 1
         print(f"GET {key} [{interval}] across {len(chunks_for(interval))} chunk(s)", flush=True)
         try:
             result = capture_series(transport, key, yahoo, interval, args.pacing_seconds)
@@ -453,6 +474,12 @@ def main() -> int:
         })
         print(f"    {len(bars)} bars {iso_of(bars[0][0])} -> {iso_of(bars[-1][0])}", flush=True)
 
+    for key, yahoo, kind, interval in deferred:
+        records.append({
+            "symbol": key, "yahoo_ticker": yahoo, "kind": kind, "interval": interval,
+            "status": "not_attempted",
+            "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed",
+        })
     captured = [r for r in records if r["status"] == "captured"]
     by_interval: dict[str, int] = {}
     for record in captured:
@@ -480,6 +507,8 @@ def main() -> int:
             "symbol_count": len(records),
             "captured_count": len(captured),
             "failed_count": len(failures),
+            "not_attempted_count": len(deferred),
+            "elapsed_seconds": round(time.time() - started_at, 1),
             "captured_by_interval": by_interval,
             "equity_symbols": [s for s, _ in stock_symbols()],
             "futures_symbols": sorted({r["symbol"] for r in captured if r["kind"] == "future"}),

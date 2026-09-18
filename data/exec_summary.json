@@ -1,0 +1,262 @@
+{
+ "_meta": {
+  "kind": "executive_summary_recommendations",
+  "description": "Machine-derived 'what would be placed next' table for the top-performing usernames of the repository's own paper competitions. Orders are mechanical replays of frozen models on committed vendor bars; sizes are indicative and computed from the official rule constants at the last captured close.",
+  "engine": "exec-summary-1",
+  "generated_utc": "2026-09-17T23:59:00Z",
+  "top_n_per_division": 3,
+  "divisions": [
+   "futures",
+   "stocks_daily"
+  ],
+  "pending_order_count": 2,
+  "sizing_note": "Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price.",
+  "honesty_note": "This is a simulation of mechanical rules on vendor history for a PAPER competition. It is not investment advice, not a forecast, and not a claim that any of these orders would win a prize. Historical and simulated returns do not imply future results.",
+  "not_a_forecast": true
+ },
+ "divisions": {
+  "futures": {
+   "division": "futures",
+   "rule_profile": "futures_amp_sep2026",
+   "price_source": "data/market_history/ (vendor daily bars, front-month continuous futures)",
+   "competition_source": "data/competition_results.json",
+   "ranking": [
+    {
+     "season_rank": 1,
+     "username": "ContrarianQueen",
+     "season_realized_pnl_usd": 2806899.58,
+     "best_edition_multiple": 6.766678
+    },
+    {
+     "season_rank": 2,
+     "username": "GapGoblin",
+     "season_realized_pnl_usd": 1629892.12,
+     "best_edition_multiple": 4.140646
+    },
+    {
+     "season_rank": 3,
+     "username": "ClimaxCarla",
+     "season_realized_pnl_usd": 1168973.61,
+     "best_edition_multiple": 6.283905
+    },
+    {
+     "season_rank": 4,
+     "username": "FadeThePanic",
+     "season_realized_pnl_usd": 627775.79,
+     "best_edition_multiple": 7.239835
+    },
+    {
+     "season_rank": 5,
+     "username": "SqueezeSpark",
+     "season_realized_pnl_usd": 262355.4,
+     "best_edition_multiple": 3.955807
+    }
+   ],
+   "recommendations": [
+    {
+     "username": "ContrarianQueen",
+     "division": "futures",
+     "model": "C5",
+     "model_name": "Capitulation pyramider",
+     "variant": "patient",
+     "params_label": "add_atr_step=1.5, max_adds=3",
+     "rule_profile": "futures_amp_sep2026",
+     "season_realized_pnl_usd": 2806899.58,
+     "season_rank": 1,
+     "best_edition_multiple": 6.766678,
+     "entry_condition": "Contrarian capitulation entries followed by full-reinvestment pyramiding every 1 ATR of favourable drift concentrate capital into the rare explosive reversals the placement arithmetic requires.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [
+      {
+       "symbol": "NYMEX:NG1!",
+       "side": "long",
+       "since": "2026-01-30",
+       "last_close": 2.8970000743865967
+      },
+      {
+       "symbol": "NYMEX:CL1!",
+       "side": "long",
+       "since": "2026-05-08",
+       "last_close": 102.19000244140625
+      },
+      {
+       "symbol": "NYMEX:RB1!",
+       "side": "short",
+       "since": "2026-09-09",
+       "last_close": 3.238800048828125
+      },
+      {
+       "symbol": "NYMEX:HO1!",
+       "side": "short",
+       "since": "2026-04-23",
+       "last_close": 4.9822998046875
+      },
+      {
+       "symbol": "NYMEX_MINI:QM1!",
+       "side": "long",
+       "since": "2026-05-08",
+       "last_close": 102.17500305175781
+      },
+      {
+       "symbol": "COMEX:SI1!",
+       "side": "long",
+       "since": "2026-03-05",
+       "last_close": 64.52999877929688
+      },
+      {
+       "symbol": "COMEX_MINI:SIL1!",
+       "side": "long",
+       "since": "2026-03-05",
+       "last_close": 63.70500183105469
+      },
+      {
+       "symbol": "NYMEX:PL1!",
+       "side": "long",
+       "since": "2026-09-14",
+       "last_close": 1789.4000244140625
+      },
+      {
+       "symbol": "CME_MINI:NQ1!",
+       "side": "short",
+       "since": "2026-08-04",
+       "last_close": 29433.75
+      },
+      {
+       "symbol": "CME:BTC1!",
+       "side": "long",
+       "since": "2026-09-10",
+       "last_close": 76480.0
+      },
+      {
+       "symbol": "CME:ETH1!",
+       "side": "short",
+       "since": "2026-08-21",
+       "last_close": 2422.0
+      }
+     ],
+     "pending_orders": [
+      {
+       "symbol": "CME:ETH1!",
+       "action": "exit and reverse to LONG",
+       "reason": "reverse",
+       "decided_on": "2026-09-17",
+       "decided_close": 2422.0,
+       "order_type": "market at the next bar open of the same series",
+       "sizing_rule": "the exit leg closes the position the model already holds; the entry leg is sized by the rule below",
+       "indicative_size_units": 1,
+       "indicative_size_note": "indicative only: computed from the last captured close and the official rule constants; the actual fill price at the next open is unknown"
+      }
+     ],
+     "waiting_for": null,
+     "symbols_watched": [
+      "NYMEX:NG1!",
+      "NYMEX:CL1!",
+      "NYMEX:RB1!",
+      "NYMEX:HO1!",
+      "NYMEX_MINI:QM1!",
+      "COMEX:SI1!",
+      "COMEX_MINI:SIL1!",
+      "NYMEX:PL1!",
+      "CME_MINI:NQ1!",
+      "CME:BTC1!",
+      "CME:ETH1!"
+     ]
+    },
+    {
+     "username": "GapGoblin",
+     "division": "futures",
+     "model": "C2",
+     "model_name": "Gap fade",
+     "variant": "tight",
+     "params_label": "gap_atr_mult=1.0",
+     "rule_profile": "futures_amp_sep2026",
+     "season_realized_pnl_usd": 1629892.12,
+     "season_rank": 2,
+     "best_edition_multiple": 4.140646,
+     "entry_condition": "An opening gap larger than 1.5 ATR(14) is over-reaction, not information: fading the gap direction captures the close-the-gap drift over ~5 sessions.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [
+      {
+       "symbol": "COMEX:SI1!",
+       "side": "long",
+       "since": "2026-09-11",
+       "last_close": 64.52999877929688
+      },
+      {
+       "symbol": "COMEX_MINI:SIL1!",
+       "side": "long",
+       "since": "2026-09-15",
+       "last_close": 63.70500183105469
+      },
+      {
+       "symbol": "NYMEX:PL1!",
+       "side": "short",
+       "since": "2026-09-10",
+       "last_close": 1789.4000244140625
+      }
+     ],
+     "pending_orders": [
+      {
+       "symbol": "NYMEX:PL1!",
+       "action": "exit (close the open position)",
+       "reason": "hold elapsed",
+       "decided_on": "2026-09-17",
+       "decided_close": 1789.4000244140625,
+       "order_type": "market at the next bar open of the same series",
+       "sizing_rule": "close the open position; no new size",
+       "indicative_size_units": null,
+       "indicative_size_note": "an exit leg carries no size: it closes whatever the position is"
+      }
+     ],
+     "waiting_for": null,
+     "symbols_watched": [
+      "COMEX:SI1!",
+      "COMEX_MINI:SIL1!",
+      "NYMEX:PL1!"
+     ]
+    },
+    {
+     "username": "ClimaxCarla",
+     "division": "futures",
+     "model": "C4",
+     "model_name": "Exhaustion-bar reversal",
+     "variant": "loose",
+     "params_label": "close_tail_fraction=0.35, tr_atr_mult=1.5",
+     "rule_profile": "futures_amp_sep2026",
+     "season_realized_pnl_usd": 1168973.61,
+     "season_rank": 3,
+     "best_edition_multiple": 6.283905,
+     "entry_condition": "A range-expansion exhaustion bar (true range >= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [
+      {
+       "symbol": "NYMEX:CL1!",
+       "side": "short",
+       "since": "2026-09-11",
+       "last_close": 102.19000244140625
+      },
+      {
+       "symbol": "NYMEX:RB1!",
+       "side": "short",
+       "since": "2026-09-11",
+       "last_close": 3.238800048828125
+      }
+     ],
+     "pending_orders": [],
+     "waiting_for": "A range-expansion exhaustion bar (true range >= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.",
+     "symbols_watched": [
+      "NYMEX:CL1!",
+      "NYMEX:RB1!"
+     ]
+    }
+   ]
+  },
+  "stocks_daily": {
+   "division": "stocks_daily",
+   "status": "not_run",
+   "reason": "data/stock_competition_results.json is produced by scripts/run_stock_competition.py after the intraday capture lands (data/intraday_index.json)",
+   "rule_profile": "stocks_official_leap",
+   "recommendations": []
+  }
+ }
+}
