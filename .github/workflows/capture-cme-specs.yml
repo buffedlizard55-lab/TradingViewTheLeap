@@ -9,10 +9,13 @@ name: Capture official CME contract specs
 #   data/cme_specs_index.json       URL, HTTP status, byte length, SHA-256, extracted fields
 #   data/cme_product_hours.json     verbatim hours / termination / listing rules per product
 #
-# Fail-closed: a product whose page does not answer 200, or that exposes no "Trading Hours"
-# row, is recorded as failed with the reason and the job exits non-zero - a short table is
-# never committed as if it were complete. A transient failure keeps the previously stored,
-# audited extraction instead of erasing it.
+# Fail-closed AND fail-readable. A product whose page does not answer 200, or that exposes no
+# "Trading Hours" row, is recorded as failed with the reason - it is never filled in from a
+# neighbouring product or from memory. The index and whatever HTML did arrive are committed
+# even when the job ends red, because run logs are served from a blob host this project's
+# research sandbox cannot reach (IR-27): a lane whose evidence cannot be read cannot be
+# debugged. The final step then fails the job unless every product transcribed, so an
+# incomplete table is visible as a red check and never mistaken for complete.
 #
 # The committed transcription is re-audited offline: scripts/verify.py re-runs the same
 # extractor against the stored HTML and fails on any divergence, so a hand-edited hour or
@@ -52,14 +55,43 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Fetch and transcribe (fail-closed)
+      - name: Fetch and transcribe
+        continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: python3 scripts/fetch_cme_specs.py
 
-      - name: Re-extract offline from the stored HTML and require equality
+      - name: Report what landed (always, because run logs are unreachable from the sandbox)
+        if: always()
         run: |
+          if [ ! -f data/cme_specs_index.json ]; then
+            echo "::error::no data/cme_specs_index.json was written at all"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json
+          doc = json.load(open("data/cme_specs_index.json"))
+          meta = doc["_meta"]
+          print(f"captured {meta['captured_count']}/{meta['product_count']} "
+                f"(failed={meta['failed_count']}, kept_previous={meta['kept_previous_count']})")
+          for rec in doc["records"]:
+              mark = "ok  " if rec["status"] == "captured" else "MISS"
+              extra = ""
+              if rec["status"] == "captured":
+                  miss = rec.get("missing_fields") or []
+                  extra = f" http={rec.get('http_status')} bytes={rec.get('raw_bytes')}"
+                  if miss:
+                      extra += f" missing_fields={miss}"
+              else:
+                  extra = f" {rec.get('reason')}"
+              print(f"  {mark} {rec['product']:<5} {rec['status']:<14}{extra}")
+          PY
+
+      - name: Re-extract offline from the stored HTML and require equality
+        if: always()
+        run: |
+          [ -f data/cme_specs_index.json ] || exit 0
           cp data/cme_specs_index.json /tmp/index_from_network.json
           cp data/cme_product_hours.json /tmp/hours_from_network.json
           python3 scripts/fetch_cme_specs.py --offline
@@ -79,8 +111,23 @@ jobs:
           cp /tmp/index_from_network.json data/cme_specs_index.json
           cp /tmp/hours_from_network.json data/cme_product_hours.json
 
-      - name: Commit
+      - name: Commit whatever was transcribed (evidence must survive a red run)
+        if: always()
         run: |
           bash .github/scripts/commit_capture.sh \
             "capture: official CME contract specs for the pooled futures (automated)" \
             data/cme_specs data/cme_specs_index.json data/cme_product_hours.json
+
+      - name: Fail unless every pooled future transcribed
+        if: always()
+        run: |
+          [ -f data/cme_specs_index.json ] || { echo "::error::nothing transcribed"; exit 1; }
+          python3 - <<'PY'
+          import json, sys
+          meta = json.load(open("data/cme_specs_index.json"))["_meta"]
+          if meta["captured_count"] != meta["product_count"]:
+              print(f"::error::only {meta['captured_count']}/{meta['product_count']} pooled futures "
+                    "transcribed; see data/cme_specs_index.json for each reason")
+              sys.exit(1)
+          print(f"::notice::all {meta['product_count']} pooled futures transcribed")
+          PY
