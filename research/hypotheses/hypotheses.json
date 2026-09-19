@@ -2,9 +2,9 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 36,
-  "reverified_utc": "2026-09-18",
-  "reverification_note": "2026-09-18 eleventh pass (intraday + stock-division session): H31 added and supported from the capture-lane evidence (sandbox egress, a timed-out unbounded sweep, a bounded lane that produced a validated artifact); H32 registered as the falsifiable intraday gap-fill/latency prediction that the study artifact will answer once captures are committed - deliberately left without a verdict rather than asserted in advance. H27-H30 unchanged from the eighth-pass reverification."
+  "hypothesis_count": 40,
+  "reverified_utc": "2026-09-19",
+  "reverification_note": "2026-09-19 sixteenth pass: H37-H39 pre-registered untested for the new C17-C19 stock models (11/20 daily series captured, full-pool verdict withheld); H40 added and supported from the R10 frontier capture (first rank-1 turnover + a realised-profit decline for a tracked trader). H34-H36 remain untested on the partial pool."
  },
  "hypotheses": [
   {
@@ -570,7 +570,8 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C14 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -583,7 +584,8 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C15 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -596,10 +598,66 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C16 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H37",
+   "claim": "C17 (overnight implosion harvester): a volatile-stock session that gaps down >=2 ATR but still closes in the top half of its own range, above its own open, on >=2x average volume has absorbed its opening panic, and the recovery over the following ~12 sessions is strong enough that pyramided longs beat the B1 control on the same editions.",
+   "prediction": "On the full 20-stock daily pool, the C17 usernames (GapGobbler, DawnRaider) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C17 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H38",
+   "claim": "C18 (blow-off short avalanche): a >=20% three-session vertical run on >=2x average volume with the close pinned in the top quartile is a blow-off whose snapback exceeds the adverse extension often enough that shorting it and pyramiding into each further 1 ATR of extension beats the B1 control on the same editions — accepting edition-ruin as the intended paper-tournament tail risk.",
+   "prediction": "On the full 20-stock daily pool, the C18 usernames (AvalancheAva, MartingaleMax) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C18 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H39",
+   "claim": "C19 (twin-hammer capitulation compounder): two consecutive >=1.5 ATR down closes where the second bar still closes in the top half of its own range mark a two-day liquidation cascade ending in absorption, and the snapback over the following ~15 sessions is strong enough that pyramided longs beat the B1 control on the same editions.",
+   "prediction": "On the full 20-stock daily pool, the C19 usernames (HammerHank, DoubleTapDora) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C19 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H40",
+   "claim": "The live leaderboard's rank-1 holder turns over during the edition and individual displayed realised profits can fall between captures, so no frontier value is a ratchet floor for its rank.",
+   "prediction": "A later same-edition capture shows a different rank-1 holder than leonardo22_romano, and at least one tracked trader's displayed realised profit is lower than in an earlier capture.",
+   "test": "Compare the 2026-09-19 R10 frontier capture (ranks 1/50/100/250 + top-5 rows) against captures 3-8 and the R9 top-10 rows.",
+   "status": "supported",
+   "evidence": [
+    "Rank 1 turned over for the first time since captures began: HappyLittleTrades +$2,485,745.50 (+994.30%) leads at capture 9, up from rank 3 / +$2,065,935.50 at R9; prior holder leonardo22_romano is byte-identical at +$2,335,125.00 and slides to rank 3.",
+    "youcanttrickme's displayed realised profit FELL +$2,324,723.00 (rank 2, R9) -> +$2,270,023.00 (rank 4, R10): realised P/L moves down only when net losers are closed (H20 re-confirmed).",
+    "Cash-prize edge (rank 50) rose +$1,380,404.00 -> +$1,459,666.50; rank 100 +$1,123,096.25 -> +$1,181,405.00; rank 250 +$715,045.00 -> +$757,562.50; participants 96,586 -> 99,663."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R10",
+    "TV-CONTEST-AMP-SEP2026-R8"
    ]
   }
  ]

@@ -149,7 +149,7 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
         if not is_stock:
             decisions = prepare_decisions({s: series_map[s] for s in pool}, model, variant)
         else:
-            # Equity divisions run the C6-C10 contrarian models plus the B1 control. The control
+            # Equity divisions run the C6-C19 contrarian models plus the B1 control. The control
             # is a baseline from intel.strategy, not a stock model, so it must be dispatched the
             # same way scripts/run_stock_competition.py dispatches it -- otherwise building the
             # executive summary raises as soon as a stock division exists (found by the
@@ -168,7 +168,7 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
                     continue
                 elif len(bars) > warmup_bars(model):
                     decisions[s] = generate_decisions(bars, model, variant)
-        # Stock divisions contain both the C6-C10 stock models (intel.stock_strategies) and the
+        # Stock divisions contain both the C6-C19 stock models (intel.stock_strategies) and the
         # S1-S3 baselines / B1 control, whose claims live with the futures models, so look in
         # both maps instead of publishing an empty "waiting for" string.
         claims = STOCK_CLAIMS.get(model) or FUTURES_CLAIMS.get(model) or ""
@@ -211,7 +211,15 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
                 elif exit_order:
                     action = "exit (close the open position)"
                 elif entry_order:
-                    action = f"{entry_order['action'].upper()} (new position)"
+                    if entry_order["action"] == "add":
+                        # An "add" decision is only ever emitted while the model already
+                        # holds the position (see intel/stock_strategies.py and
+                        # intel/contrarian.py: adds fire inside the position branch), so
+                        # labelling it a new position would be wrong. First observed in
+                        # the wild on BreakoutBea/MSTR (stocks_daily, 2026-09-18 bar).
+                        action = "ADD (increase the open position)"
+                    else:
+                        action = f"{entry_order['action'].upper()} (new position)"
                 else:
                     continue
                 token = entry_order or exit_order

@@ -22,6 +22,7 @@
       "status": "verified",
       "source_ids": [
         "TV-CONTEST-AMP-SEP2026",
+        "TV-CONTEST-AMP-SEP2026-R10",
         "TV-CONTEST-AMP-SEP2026-R2",
         "TV-CONTEST-AMP-SEP2026-R3",
         "TV-CONTEST-AMP-SEP2026-R4",
@@ -56,6 +57,7 @@
         "TV-QUOTE-XRP1",
         "TV-RESULTS-BENBERNANKE1",
         "TV-RULES-AMP-SEP2026",
+        "TV-RULES-AMP-SEP2026-R10",
         "TV-RULES-AMP-SEP2026-R3",
         "TV-RULES-AMP-SEP2026-R4",
         "TV-RULES-AMP-SEP2026-R5",
@@ -63,6 +65,7 @@
         "TV-RULES-AMP-SEP2026-R7",
         "TV-RULES-TS-JUL2026",
         "TV-THELEAP-LANDING",
+        "TV-THELEAP-LANDING-R10",
         "TV-THELEAP-LANDING-R3",
         "TV-THELEAP-LANDING-R4",
         "TV-THELEAP-LANDING-R5",
@@ -140,9 +143,9 @@
       ],
       "captured_series": 20,
       "failed_series": 0,
-      "intraday_captured_series": 29,
-      "intraday_captured_bars": 56724,
-      "intraday_index_stamp": "2026-09-19T05:32:06+00:00",
+      "intraday_captured_series": 37,
+      "intraday_captured_bars": 75327,
+      "intraday_index_stamp": "2026-09-19T15:59:03+00:00",
       "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary."
     },
     "repository_simulation": {
@@ -205,16 +208,16 @@
       ],
       "next_step": "Top up any series the vendor rate-limited (scripts/fetch_intraday.py --only-failed) and re-run the study after each capture.",
       "detail": {
-        "captured_series": 29,
+        "captured_series": 37,
         "by_interval": {
-          "15m": 15,
-          "1h": 9,
-          "1d": 5
+          "15m": 16,
+          "1h": 10,
+          "1d": 11
         },
-        "captured_bar_total": 56724,
-        "failed_or_not_attempted": 51,
+        "captured_bar_total": 75327,
+        "failed_or_not_attempted": 43,
         "index": "data/intraday_index.json",
-        "index_stamp": "2026-09-19T05:32:06+00:00",
+        "index_stamp": "2026-09-19T15:59:03+00:00",
         "vendor_rate_limited_direct": true,
         "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
       }
@@ -239,7 +242,7 @@
       ],
       "next_step": "Add an out-of-sample season on bars captured after this run; the current division is fitted to one finite vendor window.",
       "detail": {
-        "roster_usernames": 32,
+        "roster_usernames": 38,
         "artifact": "data/stock_competition_results.json",
         "primary_profile": true,
         "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
@@ -254,7 +257,7 @@
       ],
       "next_step": "Re-derive after every capture and after every competition re-run; the sizes are indicative rule-arithmetic, never advice.",
       "detail": {
-        "pending_order_count": 2,
+        "pending_order_count": 3,
         "divisions": [
           "futures",
           "stocks_daily",
@@ -563,27 +566,27 @@
   },
   "coverage": {
     "intraday_capture": {
-      "captured_series": 29,
+      "captured_series": 37,
       "by_interval": {
-        "15m": 15,
-        "1h": 9,
-        "1d": 5
+        "15m": 16,
+        "1h": 10,
+        "1d": 11
       },
-      "captured_bar_total": 56724,
-      "failed_or_not_attempted": 51,
+      "captured_bar_total": 75327,
+      "failed_or_not_attempted": 43,
       "index": "data/intraday_index.json",
-      "index_stamp": "2026-09-19T05:32:06+00:00",
+      "index_stamp": "2026-09-19T15:59:03+00:00",
       "vendor_rate_limited_direct": true,
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },
     "stock_division": {
-      "roster_usernames": 32,
+      "roster_usernames": 38,
       "artifact": "data/stock_competition_results.json",
       "primary_profile": true,
       "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
     },
-    "latest_official_frontier_capture": "2026-09-18T02:27:00Z",
-    "latest_official_participants_displayed": 96586,
+    "latest_official_frontier_capture": "2026-09-19T18:30:00Z",
+    "latest_official_participants_displayed": 99663,
     "vendor_captured_symbols": [
       "CME:BTC1!",
       "CME:ETH1!",

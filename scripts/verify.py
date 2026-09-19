@@ -1209,7 +1209,12 @@ def check_returns(rep: Report, source_ids: dict, cfg: dict, snap: dict) -> None:
             continue
         balance = cfg["starting_balance_virtual_usd"]
         exp_usd = balance * (r["return_multiple"] - 1)
-        if not approx(usd, exp_usd, 1.0):
+        # Same rounding bound as check_frontier (H11): the published percentage is rounded
+        # to two decimals, so the $ column can legitimately sit up to balance*0.00005 away
+        # from balance*(mult-1). The R10 pair carries $4.50 of that slack; a $1.00 bound
+        # would reject a verbatim official transcription.
+        rounding_bound = balance * 0.00005
+        if not approx(usd, exp_usd, rounding_bound + 1e-6):
             rep.fail("returns.live_consistency",
                      f"{r['edition_label']}: ${usd:,.2f} vs balance*(mult-1)=${exp_usd:,.2f}")
         else:
@@ -1748,6 +1753,12 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
     meta = (idx or {}).get("_meta", {})
     caps = (idx or {}).get("captures", [])
     captured: list[dict] = []
+    # Records whose files actually loaded (hash-verified and parsed). The study
+    # cross-checks below must only iterate over these: a record whose file is missing
+    # or corrupt already fails above, and reloading it here would crash the verifier
+    # with FileNotFoundError instead of reporting the failure (found when AMC[15m]
+    # landed in the study and the self-test's missing-file scenario started crashing).
+    loaded: list[dict] = []
 
     if idx is None:
         rep.warn("intraday.index: data/intraday_index.json not present yet "
@@ -1822,6 +1833,7 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
             except intraday_mod.IntradayError as exc:
                 rep.fail("intraday.capture", f"{symbol}[{interval}]: {exc}")
                 continue
+            loaded.append(record)
             # Independent re-derivation of the declared first/last stamps and the plan tally.
             first_iso = datetime.fromtimestamp(capture.bars[0].ts, tz=timezone.utc).isoformat()
             last_iso = datetime.fromtimestamp(capture.bars[-1].ts, tz=timezone.utc).isoformat()
@@ -1901,7 +1913,7 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
 
     coverage = study.get("coverage") or []
     by_key = {(row.get("symbol"), row.get("interval")): row for row in coverage}
-    for record in captured:
+    for record in loaded:
         if record["interval"] == "1d":
             continue  # the study measures intraday series only
         key = (record["symbol"], record["interval"])
@@ -1997,7 +2009,7 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
                f"({sum(len(v) for v in calendar_mod.OFFICIAL_FULL_CLOSURES.values())} full closures, "
                f"{sum(len(v) for v in calendar_mod.OFFICIAL_EARLY_CLOSES.values())} early closes)")
     per_series = diag.get("per_series") or []
-    studied_keys = {(r["symbol"], r["interval"]) for r in captured if r["interval"] != "1d"}
+    studied_keys = {(r["symbol"], r["interval"]) for r in loaded if r["interval"] != "1d"}
     diag_keys = {(r.get("symbol"), r.get("interval")) for r in per_series}
     if diag_keys != studied_keys:
         rep.fail("intraday.study_calendar",
@@ -2010,7 +2022,7 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
         if diag.get(key) != want:
             rep.fail("intraday.study_calendar",
                      f"calendar_diagnostics.{key} {diag.get(key)} != sum of per_series {want}")
-    for record in captured:
+    for record in loaded:
         if record["interval"] == "1d":
             continue
         row = next((r for r in per_series
