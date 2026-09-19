@@ -611,6 +611,7 @@ def main() -> int:
             "interval_spec": INTERVAL_SPEC,
             "vendor_retention_note": VENDOR_RETENTION_NOTE,
             "rounding_decimals": ROUNDING_DECIMALS,
+            "vendor_source_id": "YAHOO-INTRADAY-CHART",
             "fetched_at_utc": fetched_at,
             "capture_environment": os.environ.get("CAPTURE_ENV", "local"),
             "workflow_run_url": os.environ.get("WORKFLOW_RUN_URL"),

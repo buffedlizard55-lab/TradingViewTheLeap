@@ -142,7 +142,7 @@
       "failed_series": 0,
       "intraday_captured_series": 1,
       "intraday_captured_bars": 2693,
-      "intraday_index_stamp": "2026-09-18T21:49:22+00:00",
+      "intraday_index_stamp": "2026-09-19T04:17:38+00:00",
       "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary."
     },
     "repository_simulation": {
@@ -212,7 +212,7 @@
         "captured_bar_total": 2693,
         "failed_or_not_attempted": 19,
         "index": "data/intraday_index.json",
-        "index_stamp": "2026-09-18T21:49:22+00:00",
+        "index_stamp": "2026-09-19T04:17:38+00:00",
         "vendor_rate_limited_direct": true,
         "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
       }
@@ -568,7 +568,7 @@
       "captured_bar_total": 2693,
       "failed_or_not_attempted": 19,
       "index": "data/intraday_index.json",
-      "index_stamp": "2026-09-18T21:49:22+00:00",
+      "index_stamp": "2026-09-19T04:17:38+00:00",
       "vendor_rate_limited_direct": true,
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },
