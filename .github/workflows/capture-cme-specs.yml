@@ -1,0 +1,84 @@
+name: Capture official CME contract specs
+
+# Transcribes the official CME Group contract-specification page of every future in this
+# repository's pool. The sandbox this project is written in has no egress to cmegroup.com,
+# so the fetch happens here, on a GitHub-hosted runner, over plain HTTPS.
+#
+# What the lane stores (nothing else):
+#   data/cme_specs/<PRODUCT>.html   the exact response body, byte for byte
+#   data/cme_specs_index.json       URL, HTTP status, byte length, SHA-256, extracted fields
+#   data/cme_product_hours.json     verbatim hours / termination / listing rules per product
+#
+# Fail-closed: a product whose page does not answer 200, or that exposes no "Trading Hours"
+# row, is recorded as failed with the reason and the job exits non-zero - a short table is
+# never committed as if it were complete. A transient failure keeps the previously stored,
+# audited extraction instead of erasing it.
+#
+# The committed transcription is re-audited offline: scripts/verify.py re-runs the same
+# extractor against the stored HTML and fails on any divergence, so a hand-edited hour or
+# an invented expiry cannot survive a build.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - "scripts/fetch_cme_specs.py"
+      - ".github/workflows/capture-cme-specs.yml"
+  schedule:
+    # Weekly re-transcription so a CME hours or listing-rule change is picked up and the
+    # diff is visible in the commit rather than silently absorbed.
+    - cron: "40 3 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: capture-cme-specs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    name: Transcribe the official CME contract-spec pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch and transcribe (fail-closed)
+        env:
+          CAPTURE_ENV: github-actions
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 scripts/fetch_cme_specs.py
+
+      - name: Re-extract offline from the stored HTML and require equality
+        run: |
+          cp data/cme_specs_index.json /tmp/index_from_network.json
+          cp data/cme_product_hours.json /tmp/hours_from_network.json
+          python3 scripts/fetch_cme_specs.py --offline
+          python3 - <<'PY'
+          import json
+          def fields(path):
+              doc = json.load(open(path))
+              return {r["product"]: {k: v for k, v in r.items()
+                                     if k not in ("accessed_utc", "http_status",
+                                                  "transport", "status")}
+                      for r in doc["records"]}
+          a = fields("/tmp/index_from_network.json")
+          b = fields("data/cme_specs_index.json")
+          assert a == b, "offline re-extraction diverged from the network extraction"
+          print(f"::notice::{len(b)} product transcriptions reproduce exactly from stored HTML")
+          PY
+          cp /tmp/index_from_network.json data/cme_specs_index.json
+          cp /tmp/hours_from_network.json data/cme_product_hours.json
+
+      - name: Commit
+        run: |
+          bash .github/scripts/commit_capture.sh \
+            "capture: official CME contract specs for the pooled futures (automated)" \
+            data/cme_specs data/cme_specs_index.json data/cme_product_hours.json

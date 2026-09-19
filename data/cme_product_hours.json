@@ -18,15 +18,35 @@
         "reason": "hours sit on a later contractSpecs chunk that this pass does not re-fetch; not guessed"
       },
       {
-        "product": "NG",
-        "reason": "hours sit on a later contractSpecs chunk that this pass does not re-fetch; not guessed"
-      },
-      {
         "product": "HO",
         "reason": "hours sit on a later contractSpecs chunk that this pass does not re-fetch; not guessed"
       },
       {
-        "product": "RB",
+        "product": "MBT",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "MCL",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "MET",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "MNG",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "MSL",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "MXP",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "NG",
         "reason": "hours sit on a later contractSpecs chunk that this pass does not re-fetch; not guessed"
       },
       {
@@ -36,8 +56,34 @@
       {
         "product": "PL",
         "reason": "contractSpecs chunk 1 was footer-only; hours not recovered"
+      },
+      {
+        "product": "QM",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "RB",
+        "reason": "hours sit on a later contractSpecs chunk that this pass does not re-fetch; not guessed"
+      },
+      {
+        "product": "SIC",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "SIL",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "SOL",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
+      },
+      {
+        "product": "XRP",
+        "reason": "contract-spec page not read by any pass of this repository; hours are not transcribed here and are not inferred from another product"
       }
-    ]
+    ],
+    "product_count": 3,
+    "coverage_note": "3 of 20 pooled futures have verbatim product-specific hours; the remainder are listed in omitted with a reason. The official capture lane .github/workflows/capture-cme-specs.yml transcribes all 20 from each product's own contractSpecs page."
   },
   "products": [
     {
