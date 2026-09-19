@@ -1278,6 +1278,7 @@ def check_hypotheses(rep: Report, source_ids: dict, hyp_ids: set) -> None:
         if x["status"] in ("supported", "refuted") and not x["evidence"]:
             rep.fail("hypotheses.evidence_required", f"{x['id']}: verdict without evidence")
     rep.ok("every hypothesis has claim, prediction, test, evidence and registered sources")
+    check_h34_h39_coverage_gate(rep)
 
 
 def check_irregularities(rep: Report, source_ids: dict, hyp_ids: set) -> None:
@@ -1735,6 +1736,72 @@ def _reproduce(rep: Report, check: str, script: str, rel: str, extra: tuple = ()
 def _volatile_pool_symbols() -> set:
     vs = load("data/volatile_stocks.json")
     return {r["symbol"] for r in vs["records"]}
+
+
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39")
+
+
+def check_h34_h39_coverage_gate(rep: Report) -> None:
+    """H34-H39 full-pool verdicts are forbidden until 20 symbols × 3 intervals are captured."""
+    hyps = {h["id"]: h for h in load("research/hypotheses/hypotheses.json")["hypotheses"]}
+    pool = _volatile_pool_symbols()
+    idx = load_opt("data/intraday_index.json")
+    have: set[tuple[str, str]] = set()
+    if idx:
+        for rec in idx.get("captures", []):
+            if rec.get("status") != "captured":
+                continue
+            if rec.get("kind") not in (None, "equity"):
+                continue
+            symbol, interval = rec.get("symbol"), rec.get("interval")
+            if symbol in pool and interval in INTRADAY_INTERVALS:
+                have.add((symbol, interval))
+    wanted = {(s, iv) for s in pool for iv in INTRADAY_INTERVALS}
+    daily = {s for s, iv in have if iv == "1d"}
+    complete = have == wanted and daily == pool
+    for hid in FULL_POOL_HYPOTHESES:
+        h = hyps.get(hid)
+        if h is None:
+            rep.fail("hypotheses.coverage_gate", f"{hid} is missing from the register")
+            continue
+        if h["status"] in ("supported", "refuted") and not complete:
+            rep.fail(
+                "hypotheses.coverage_gate",
+                f"{hid} has full-pool verdict {h['status']!r} but captured "
+                f"{len(have)}/{len(wanted)} series (daily {len(daily)}/{len(pool)})",
+            )
+    if complete:
+        rep.ok("H34-H39 coverage gate: matrix is 60/60 including 20/20 daily")
+    else:
+        rep.ok(
+            f"H34-H39 coverage gate: full-pool verdicts withheld "
+            f"({len(have)}/{len(wanted)} series, daily {len(daily)}/{len(pool)})"
+        )
+
+
+def check_stock_roster_gates(rep: Report) -> None:
+    """Gated stock models (C19A) must not be rostered; C-models must resolve."""
+    sys.path.insert(0, ROOT)
+    from intel.stock_strategies import (  # noqa: E402
+        GATED_STOCK_MODEL_IDS,
+        STOCK_MODEL_IDS,
+        resolve_params as stock_resolve,
+    )
+    roster = load("data/competition/stock_roster.json")
+    for p in roster["participants"]:
+        model = p["model"]
+        if model in GATED_STOCK_MODEL_IDS:
+            rep.fail(
+                "stock_competition.gated_model_rostered",
+                f"{p['username']}: gated model {model} must not be rostered "
+                "(see research/strategy/C19-VARIANT-GATE.md)",
+            )
+        if model in STOCK_MODEL_IDS:
+            try:
+                stock_resolve(model, p.get("variant"))
+            except ValueError as exc:
+                rep.fail("stock_competition.unknown_model", f"{p['username']}: {exc}")
+    rep.ok("stock roster: no gated models; C-models resolve")
 
 
 def check_intraday(rep: Report, source_ids: dict) -> None:
@@ -2824,6 +2891,28 @@ def self_test(rep: Report) -> None:
         mutated["_meta"]["status"] = "measured"
         scenarios.append(("tv_benchmark.status", ("data/tv_benchmark.json", mutated),
                           lambda r: check_tv_benchmark(r, source_ids)))
+
+    fake_hyps = copy.deepcopy(load("research/hypotheses/hypotheses.json"))
+    for row in fake_hyps["hypotheses"]:
+        if row["id"] == "H34":
+            row["status"] = "supported"
+            break
+    scenarios.append(("hypotheses.coverage_gate",
+                      ("research/hypotheses/hypotheses.json", fake_hyps),
+                      lambda r: check_h34_h39_coverage_gate(r)))
+
+    fake_roster = copy.deepcopy(load("data/competition/stock_roster.json"))
+    fake_roster["participants"].append({
+        "username": "GateBreaker",
+        "kind": "contrarian",
+        "model": "C19A",
+        "variant": None,
+        "division": "daily",
+        "pool": ["ENPH"],
+    })
+    scenarios.append(("stock_competition.gated_model_rostered",
+                      ("data/competition/stock_roster.json", fake_roster),
+                      lambda r: check_stock_roster_gates(r)))
 
     for expected, (path, payload), runner in scenarios:
         r = Report()

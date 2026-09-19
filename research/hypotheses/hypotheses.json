@@ -2,9 +2,9 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 40,
+  "hypothesis_count": 41,
   "reverified_utc": "2026-09-19",
-  "reverification_note": "2026-09-19 sixteenth pass: H37-H39 pre-registered untested for the new C17-C19 stock models (11/20 daily series captured, full-pool verdict withheld); H40 added and supported from the R10 frontier capture (first rank-1 turnover + a realised-profit decline for a tracked trader). H34-H36 remain untested on the partial pool."
+  "reverification_note": "2026-09-19 R11 pass: H34-H39 remain untested (38/60 series, 11/20 daily; full-pool gate in scripts/verify.py). H44 added and supported from R10->R11 frontier stasis with +64 participants. H40 unchanged (R10 rank-1 turnover)."
  },
  "hypotheses": [
   {
@@ -571,7 +571,8 @@
    "status": "untested",
    "evidence": [
     "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
-    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -585,7 +586,8 @@
    "status": "untested",
    "evidence": [
     "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
-    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -599,7 +601,8 @@
    "status": "untested",
    "evidence": [
     "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
-    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands."
+    "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -612,7 +615,8 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C17 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -625,7 +629,8 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C18 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -638,7 +643,8 @@
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C19 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands."
+    "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
+    "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
@@ -658,6 +664,23 @@
    "source_ids": [
     "TV-CONTEST-AMP-SEP2026-R10",
     "TV-CONTEST-AMP-SEP2026-R8"
+   ]
+  },
+  {
+   "id": "H44",
+   "claim": "While registration is open, the displayed participant count can rise without any change in the public frontier (ranks 1/50/100/250 trader, percentage, and dollar value).",
+   "prediction": "A later same-edition capture shows a higher displayed participant count and byte-identical rank 1/50/100/250 rows versus the previous capture.",
+   "test": "Compare frontier capture 10 (R11, 2026-09-19T19:35:00Z) against capture 9 (R10, 2026-09-19T18:30:00Z) for participants_displayed and the four tracked rows.",
+   "status": "supported",
+   "evidence": [
+    "Capture 9 (R10): participants 99,663; rank 1 HappyLittleTrades +994.30% / +$2,485,745.50; rank 50 ashutoshrajan6 +583.87% / +$1,459,666.50; rank 100 aoe900620 +472.56% / +$1,181,405.00; rank 250 maxeq +303.03% / +$757,562.50.",
+    "Capture 10 (R11): participants 99,727 (+64); the four tracked rows are byte-identical to capture 9. Landing hero also read 99,727 (IR-09 delta 0). Registration remains open until 2026-09-23 08:00 UTC.",
+    "This is a same-day interval of complete frontier stasis with a rising headcount, distinct from H40 (rank-1 turnover) and from H20 (a displayed profit that falls)."
+   ],
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R10",
+    "TV-CONTEST-AMP-SEP2026-R11",
+    "TV-THELEAP-LANDING-R11"
    ]
   }
  ]

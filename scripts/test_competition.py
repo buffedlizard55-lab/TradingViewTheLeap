@@ -345,6 +345,99 @@ class StockModelTests(unittest.TestCase):
         self.assertEqual([(d.index, d.action) for d in d19 if d.action == "long"],
                          [(27, "long")])
 
+    def test_c19a_c20_c21_resolve_warmup_and_fire(self):
+        from intel.stock_strategies import (
+            GATED_STOCK_MODEL_IDS,
+            STOCK_MODEL_IDS,
+            generate_stock_decisions,
+            resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        for model in ("C19A", "C20", "C21"):
+            self.assertIn(model, STOCK_MODEL_IDS)
+        self.assertIn("C19A", GATED_STOCK_MODEL_IDS)
+        self.assertNotIn("C20", GATED_STOCK_MODEL_IDS)
+        self.assertNotIn("C21", GATED_STOCK_MODEL_IDS)
+
+        p19a = stock_resolve("C19A", None)
+        self.assertEqual(p19a["stage1_crash_atr_mult"], 1.5)
+        self.assertEqual(p19a["stage2_window"], 3)
+        self.assertEqual(p19a["stage2_close_tail_fraction"], 0.40)
+        self.assertEqual(p19a["max_adds"], 3)
+        self.assertEqual(stock_warmup("C19A", None), 22)
+        with self.assertRaises(ValueError):
+            stock_resolve("C19A", "nope")
+
+        p20 = stock_resolve("C20", "aggressive")
+        self.assertEqual(p20["lookback"], 10)
+        self.assertEqual(p20["volume_mult"], 1.5)
+        self.assertEqual(p20["max_adds"], 6)
+        self.assertEqual(p20["hold_bars"], 8)
+        self.assertEqual(stock_warmup("C20", None), 22)
+        self.assertEqual(stock_warmup("C20", "aggressive"), 22)
+
+        p21 = stock_resolve("C21", "tight")
+        self.assertEqual(p21["climax_atr_mult"], 2.0)
+        self.assertEqual(p21["inside_range_fraction"], 0.4)
+        self.assertEqual(p21["hold_bars"], 4)
+        self.assertEqual(stock_warmup("C21", None), 16)
+        with self.assertRaises(ValueError):
+            stock_resolve("C21", "nope")
+
+        t0 = int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp())
+
+        # C19A fires on delayed two-stage absorption (gap bar between stages);
+        # frozen C19 (adjacent-bar cascade) must not fire on the same series.
+        tight = [Bar(t0 + i * 86400, 100.0, 100.2, 99.8, 100.0, 1000)
+                 for i in range(26)]
+        stage1 = Bar(tight[-1].ts + 86400, 100.0, 100.2, 98.8, 99.0, 5000)
+        skip = Bar(stage1.ts + 86400, 99.0, 101.0, 98.9, 100.8, 1000)
+        stage2 = Bar(skip.ts + 86400, 99.5, 100.0, 98.8, 99.9, 1000)
+        snap = [Bar(stage2.ts + (i + 1) * 86400, 99.9 + i, 101.0 + i, 99.0 + i,
+                    100.5 + i, 1000) for i in range(14)]
+        series_19a = tight + [stage1, skip, stage2] + snap
+        d19a = generate_stock_decisions(series_19a, "C19A")
+        d19 = generate_stock_decisions(series_19a, "C19")
+        self.assertEqual(d19a[0].action, "long")
+        self.assertEqual(d19a[0].index, 28)
+        self.assertFalse(any(d.action == "long" for d in d19))
+
+        # C20 fires on a failed-breakdown spring: new 20-bar low, next bar reclaims.
+        flat = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000)
+                for i in range(40)]
+        breakdown = Bar(flat[-1].ts + 86400, 100.0, 100.2, 90.0, 91.0, 1000)
+        spring = Bar(breakdown.ts + 86400, 91.0, 96.0, 90.5, 95.5, 5000)
+        tail = [Bar(spring.ts + (i + 1) * 86400, 95.5 + i, 97.0 + i, 94.0 + i,
+                    96.0 + i, 1000) for i in range(12)]
+        d20 = generate_stock_decisions(flat + [breakdown, spring] + tail, "C20")
+        self.assertEqual(d20[0].action, "long")
+        self.assertEqual(d20[0].index, 41)
+        self.assertIn("add", {d.action for d in d20})
+
+        # C21 fires long after a down-climax bar followed by a narrow opposite close.
+        tight21 = [Bar(t0 + i * 86400, 100.0, 100.2, 99.8, 100.0, 1000)
+                   for i in range(20)]
+        climax = Bar(tight21[-1].ts + 86400, 100.0, 100.2, 97.0, 97.2, 1000)
+        inside = Bar(climax.ts + 86400, 97.2, 98.0, 97.0, 97.8, 1000)
+        d21 = generate_stock_decisions(
+            tight21 + [climax, inside]
+            + [Bar(inside.ts + (i + 1) * 86400, 97.8, 98.0, 97.5, 97.7, 1000)
+               for i in range(8)],
+            "C21",
+        )
+        self.assertEqual([(d.index, d.action) for d in d21 if d.action in ("long", "short")],
+                         [(21, "long")])
+
+    def test_gated_c19a_is_not_rostered(self):
+        import json
+        from intel.stock_strategies import GATED_STOCK_MODEL_IDS
+        with open(os.path.join(ROOT, "data/competition/stock_roster.json"),
+                  encoding="utf-8") as fh:
+            roster = json.load(fh)
+        rostered = {p["model"] for p in roster["participants"]}
+        self.assertTrue(GATED_STOCK_MODEL_IDS)
+        self.assertTrue(rostered.isdisjoint(GATED_STOCK_MODEL_IDS))
+
 
 class ExecutionRealismTests(unittest.TestCase):
     def _two_symbol_setup(self):

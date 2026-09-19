@@ -479,6 +479,80 @@ class TestMergeIntradayIndexes(unittest.TestCase):
         finally:
             shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
 
+    def test_salvage_promotes_orphan_file_without_inventing_bars(self):
+        import hashlib
+        import shutil
+        rel_dir = "data/intraday/_salvage_test_tmp"
+        abs_dir = os.path.join(self.merge.ROOT, rel_dir)
+        os.makedirs(abs_dir, exist_ok=True)
+        try:
+            document = {
+                "_meta": {"kind": "intraday_vendor_capture", "rounding_decimals": 5},
+                "symbol": "ORPH",
+                "yahoo_ticker": "ORPH",
+                "kind": "equity",
+                "interval": "1h",
+                "captured_at_utc": "2026-09-19T04:32:43+00:00",
+                "vendor_data_granularity": "1h",
+                "vendor_reported_exchange": "NasdaqGS",
+                "vendor_reported_instrument_type": "EQUITY",
+                "vendor_currency": "USD",
+                "vendor_exchange_timezone": "America/New_York",
+                "dropped_null_bars": 0,
+                "raw_response_sha256": "b" * 64,
+                "chunks": [{
+                    "period1": 1, "period2": 2,
+                    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/ORPH",
+                    "transport": "allorigins-relay",
+                    "raw_response_bytes": 12,
+                    "raw_response_sha256": "c" * 64,
+                    "bars_returned": 2,
+                    "bars_dropped_null": 0,
+                    "bars_dropped_out_of_window": 0,
+                }],
+                "bar_count": 2,
+                "bars": [[1727098200, 10.0, 10.5, 9.5, 10.2, 100],
+                         [1727101800, 10.2, 10.8, 10.1, 10.7, 120]],
+            }
+            payload = json.dumps(document, separators=(",", ":")).encode("utf-8")
+            with open(os.path.join(abs_dir, "ORPH_1h.json"), "wb") as fh:
+                fh.write(payload)
+            base = {"_meta": {"kind": "intraday_capture_index",
+                              "script": "scripts/fetch_intraday.py",
+                              "fetched_at_utc": "2026-09-19T04:00:00+00:00",
+                              "elapsed_seconds": 12.5,
+                              "direct_429_count": 3,
+                              "equity_symbols": ["ORPH"]},
+                    "captures": [{"symbol": "ORPH", "yahoo_ticker": "ORPH", "kind": "equity",
+                                  "interval": "1h", "status": "failed", "error": "HTTP 522"}]}
+            merged, notes = self.merge.merge(base, [], salvage_dir=rel_dir)
+            by = {(r["symbol"], r["interval"]): r for r in merged["captures"]}
+            rec = by[("ORPH", "1h")]
+            self.assertEqual(rec["status"], "captured")
+            self.assertEqual(rec["bar_count"], 2)
+            self.assertEqual(rec["stored_sha256"], hashlib.sha256(payload).hexdigest())
+            self.assertEqual(rec["stored_bytes"], len(payload))
+            self.assertEqual(rec["raw_response_sha256"], "b" * 64)
+            self.assertEqual(rec["first_close"], 10.2)
+            self.assertEqual(rec["last_close"], 10.7)
+            self.assertTrue(rec.get("salvaged_from_orphan_file"))
+            self.assertTrue(any("salvaged orphan" in n for n in notes))
+            self.assertEqual(merged["_meta"]["captured_count"], 1)
+            self.assertEqual(merged["_meta"]["failed_count"], 0)
+            self.assertEqual(merged["_meta"]["elapsed_seconds"], 12.5,
+                             "salvage-only must not zero the committed elapsed tally")
+            self.assertEqual(merged["_meta"]["kind"], "intraday_capture_index")
+            # An already-captured record is never replaced by salvage.
+            captured_base = {"_meta": base["_meta"],
+                             "captures": [{**rec, "salvaged_from_orphan_file": False,
+                                           "bar_count": 2}]}
+            merged2, notes2 = self.merge.merge(captured_base, [], salvage_dir=rel_dir)
+            rec2 = {(r["symbol"], r["interval"]): r for r in merged2["captures"]}[("ORPH", "1h")]
+            self.assertFalse(any("salvaged orphan" in n for n in notes2))
+            self.assertEqual(rec2["status"], "captured")
+        finally:
+            shutil.rmtree(abs_dir, ignore_errors=True)
+
 
 class TestSpotCheckOfficialVsVendor(unittest.TestCase):
     @classmethod

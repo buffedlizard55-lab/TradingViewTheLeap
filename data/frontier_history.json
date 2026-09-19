@@ -2,9 +2,9 @@
   "_meta": {
     "description": "Timestamped captures of the public leaderboard frontier (ranks 1, 50, 100, 250) and the displayed participant count. Each row is a moving snapshot, not a final threshold and not a prize guarantee. The public page exposes only ranks 1-250 while prizes extend through rank 300.",
     "generated_utc": "2026-09-19",
-    "capture_count": 9,
+    "capture_count": 10,
     "leaderboard_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-    "capture_granularity_note": "The 2026-09-17 00:30 capture was read between roughly 00:25 and 00:35 UTC; the 16:56 capture was read between roughly 16:54 and 16:58 UTC; the 19:04 capture between roughly 18:58 and 19:08 UTC; the 20:58 capture between roughly 20:55 and 21:01 UTC; the 21:27 capture between roughly 21:15 and 21:30 UTC. Recorded timestamps are the midpoints of those windows. Leaderboard values update no more than once per hour and rank by realized P/L, which only changes when a participant closes a position (official rules section 08). The 2026-09-18 02:27 capture was read at approximately 02:27 UTC; the timestamp is the read-time marker, not a claim that the page was frozen for an exact second. The 2026-09-19 18:30 capture was read between roughly 18:15 and 18:45 UTC across 16 page chunks (ranks 1-250 fully enumerated); the timestamp is the window midpoint.",
+    "capture_granularity_note": "The 2026-09-17 00:30 capture was read between roughly 00:25 and 00:35 UTC; the 16:56 capture was read between roughly 16:54 and 16:58 UTC; the 19:04 capture between roughly 18:58 and 19:08 UTC; the 20:58 capture between roughly 20:55 and 21:01 UTC; the 21:27 capture between roughly 21:15 and 21:30 UTC. Recorded timestamps are the midpoints of those windows. Leaderboard values update no more than once per hour and rank by realized P/L, which only changes when a participant closes a position (official rules section 08). The 2026-09-18 02:27 capture was read at approximately 02:27 UTC; the timestamp is the read-time marker, not a claim that the page was frozen for an exact second. The 2026-09-19 18:30 capture was read between roughly 18:15 and 18:45 UTC across 16 page chunks (ranks 1-250 fully enumerated); the timestamp is the window midpoint. The 2026-09-19 19:35 capture was read between roughly 19:30 and 19:40 UTC; the timestamp is the window midpoint. Only the tracked quartet and the displayed participant count are claimed.",
     "observed_notes": [
       "Between captures 1 and 2 (~3 hours, US after-hours) rank 1 and rank 250 were byte-identical while the mid-board moved (rank 50 +$28,139.75, rank 100 +$11,027.50).",
       "Between captures 2 and 3 (~16.4 hours, US trading day) ALL FOUR frontiers rose: rank 1 +$31,400.00 (same holder), rank 50 +$75,661.00 (new holder), rank 100 +$28,661.85 (new holder), rank 250 +$31,380.50 (new holder). The 3-hour quiet at captures 1-2 does not generalize: the frontier is a moving target.",
@@ -20,7 +20,8 @@
       "Between captures 7 and 8 (~3.3 hours) rank 1 remained unchanged at +$2,335,125.00, while rank 50 rose to +$1,380,404.00, rank 100 to +$1,123,096.25, and rank 250 to +$715,045.00. Displayed participants rose 96,344 -> 96,586 (+242). These are point-in-time board observations, not a forecast or a final prize cutoff.",
       "Between captures 8 and 9 (~40 hours) the FIRST rank-1 turnover since captures began: HappyLittleTrades +$2,485,745.50 (+994.30%) takes the lead (up from rank 3 / +$2,065,935.50 at R9); prior holder leonardo22_romano is byte-identical at +$2,335,125.00 and slides to rank 3. huliusalecsander rises to rank 2 (+$2,396,183.75).",
       "Between captures 8 and 9 the displayed profit of youcanttrickme FELL +$2,324,723.00 (rank 2, R9) -> +$2,270,023.00 (rank 4): realised P/L moves down only when net losers are closed, re-confirming H20 that frontier values are not ratchet floors.",
-      "Between captures 8 and 9 the cash-prize edge (rank 50) rose +$1,380,404.00 -> +$1,459,666.50 (+$79,262.50), rank 100 rose +$1,123,096.25 -> +$1,181,405.00, and rank 250 rose +$715,045.00 -> +$757,562.50. Displayed participants rose 96,586 -> 99,663 (+3,077) while registration remains open until 2026-09-23 08:00 UTC; the landing hero read 99,658 at the same session (IR-09 async delta +5)."
+      "Between captures 8 and 9 the cash-prize edge (rank 50) rose +$1,380,404.00 -> +$1,459,666.50 (+$79,262.50), rank 100 rose +$1,123,096.25 -> +$1,181,405.00, and rank 250 rose +$715,045.00 -> +$757,562.50. Displayed participants rose 96,586 -> 99,663 (+3,077) while registration remains open until 2026-09-23 08:00 UTC; the landing hero read 99,658 at the same session (IR-09 async delta +5).",
+      "Between captures 9 and 10 (~1.1 hours, 18:30Z R10 -> 19:35Z R11) ALL FOUR tracked frontiers were byte-identical: rank 1 HappyLittleTrades +$2,485,745.50 (+994.30%), rank 50 ashutoshrajan6 +$1,459,666.50 (+583.87%), rank 100 aoe900620 +$1,181,405.00 (+472.56%), rank 250 maxeq +$757,562.50 (+303.03%), while displayed participants rose 99,663 -> 99,727 (+64). Landing hero also read 99,727 (IR-09 delta 0). Recorded as H44 (frontier stasis with open-registration rise). No IR-30."
     ]
   },
   "captures": [
@@ -254,6 +255,34 @@
       "participants_displayed": 99663,
       "source_id": "TV-CONTEST-AMP-SEP2026-R10",
       "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R10.md",
+      "rows": {
+        "1": {
+          "trader": "HappyLittleTrades",
+          "realized_profit_pct": 994.3,
+          "realized_profit_usd": 2485745.5
+        },
+        "50": {
+          "trader": "ashutoshrajan6",
+          "realized_profit_pct": 583.87,
+          "realized_profit_usd": 1459666.5
+        },
+        "100": {
+          "trader": "aoe900620",
+          "realized_profit_pct": 472.56,
+          "realized_profit_usd": 1181405.0
+        },
+        "250": {
+          "trader": "maxeq",
+          "realized_profit_pct": 303.03,
+          "realized_profit_usd": 757562.5
+        }
+      }
+    },
+    {
+      "captured_at_utc": "2026-09-19T19:35:00Z",
+      "participants_displayed": 99727,
+      "source_id": "TV-CONTEST-AMP-SEP2026-R11",
+      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R11.md",
       "rows": {
         "1": {
           "trader": "HappyLittleTrades",

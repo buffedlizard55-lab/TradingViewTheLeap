@@ -6,12 +6,13 @@
   "source_ids": [
    "TV-THELEAP-LANDING",
    "TV-CONTEST-AMP-SEP2026",
-   "TV-CONTEST-AMP-SEP2026-R10"
+   "TV-CONTEST-AMP-SEP2026-R10",
+   "TV-CONTEST-AMP-SEP2026-R11"
   ],
   "derivation": "return_multiple = 1 + net_profit_pct_as_published / 100. This is the only transformation applied; it is arithmetic on a published figure.",
   "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session.",
   "reverified_utc": "2026-09-19",
-  "reverification_note": "2026-09-19 tenth pass: the 15 completed champion records remain the historical sample (all re-verified unchanged against the landing page); the in-progress row is synchronized to the latest official frontier capture R10 (18:30Z, first rank-1 turnover to HappyLittleTrades +994.30%). The first public snapshot remains archived in data/live_contest_snapshot.json and is used for the initial capacity benchmark."
+  "reverification_note": "2026-09-19 eleventh pass: the 15 completed champion records remain the historical sample (last fully re-read at R10); the in-progress row is synchronized to frontier capture R11 (19:35Z, HappyLittleTrades +994.30% / 10.943x, participants 99,727). Threshold in-progress cases corrected to the current live holder."
  },
  "records": [
   {
@@ -199,14 +200,14 @@
    "edition_label": "AMP Futures - September 2026",
    "asset_class_label": "futures",
    "winner": "HappyLittleTrades",
-   "participants": 99663,
+   "participants": 99727,
    "net_profit_pct_as_published": 994.3,
    "return_multiple": 10.943,
    "realized_profit_usd_as_published": 2485745.5,
    "profitable_trades_pct_as_published": null,
    "results_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-   "source_id": "TV-CONTEST-AMP-SEP2026-R10",
-   "captured_at_utc": "2026-09-19T18:30:00Z"
+   "source_id": "TV-CONTEST-AMP-SEP2026-R11",
+   "captured_at_utc": "2026-09-19T19:35:00Z"
   }
  ],
  "threshold_analysis": {
@@ -221,8 +222,8 @@
     },
     {
      "edition": "AMP Futures - September 2026",
-     "winner": "leonardo22_romano",
-     "return_multiple": 10.2149,
+     "winner": "HappyLittleTrades",
+     "return_multiple": 10.943,
      "status": "in_progress"
     }
    ]
@@ -238,8 +239,8 @@
     },
     {
      "edition": "AMP Futures - September 2026",
-     "winner": "leonardo22_romano",
-     "return_multiple": 10.2149,
+     "winner": "HappyLittleTrades",
+     "return_multiple": 10.943,
      "status": "in_progress"
     }
    ]

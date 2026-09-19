@@ -368,7 +368,7 @@ def model_params_label(model: str, variant: str | None) -> str:
     """Human label of the frozen parameter delta a variant applies.
 
     Futures models (C1-C5, the baselines) resolve through intel.contrarian; the volatile-equity
-    models (C6-C19) resolve through intel.stock_strategies, which owns its own frozen parameter
+    models (C6-C21) resolve through intel.stock_strategies, which owns its own frozen parameter
     table. The import is local so the two strategy modules stay independent of each other.
     """
     if not variant:
@@ -1355,7 +1355,7 @@ class MultiSeasonCompetition:
 
         This is the explicit “alongside futures” entry point the brief requires:
         one engine, two pools, real verified bars, tracked usernames, frozen
-        contrarian models (C1-C5 for futures, C6-C19 for equities), in-sample vs
+        contrarian models (C1-C5 for futures, C6-C21 for equities), in-sample vs
         forward-held-out partitioning, and latency-delay measurement. The caller
         supplies the already-loaded series maps and the decision providers; this
         method enforces the same cost scenario and latency for both sides so the
