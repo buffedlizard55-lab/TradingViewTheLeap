@@ -35,11 +35,10 @@ on:
         required: false
         default: true
         type: boolean
-  push:
-    branches: [main, "arena/**"]
-    paths:
-      - "scripts/fetch_intraday.py"
-      - ".github/workflows/capture-intraday.yml"
+  # Push-triggered runs were removed on 2026-09-19: every edit to the fetch script restarted
+  # this 2-hour serial job (cancel-in-progress) and competed with the per-symbol matrix
+  # workflow for the vendor's per-IP budget. Use capture-intraday-matrix.yml (cron + dispatch)
+  # for routine top-ups; dispatch this serial lane only for a single-interval retry.
 
 permissions:
   contents: write

@@ -3,7 +3,7 @@
   "kind": "executive_summary_recommendations",
   "description": "Machine-derived 'what would be placed next' table for the top-performing usernames of the repository's own paper competitions. Orders are mechanical replays of frozen models on committed vendor bars; sizes are indicative and computed from the official rule constants at the last captured close.",
   "engine": "exec-summary-1",
-  "generated_utc": "2026-09-19T00:38:10Z",
+  "generated_utc": "2026-09-19T14:50:30Z",
   "top_n_per_division": 3,
   "divisions": [
    "futures",
@@ -305,170 +305,32 @@
     {
      "season_rank": 1,
      "username": "BreakoutBea",
-     "season_realized_pnl_usd": 13505.78,
+     "season_realized_pnl_usd": 14134.21,
      "best_edition_multiple": 1.084137
     },
     {
      "season_rank": 2,
+     "username": "TurboTad",
+     "season_realized_pnl_usd": 6991.89,
+     "best_edition_multiple": 1.044176
+    },
+    {
+     "season_rank": 3,
      "username": "RocketRider",
      "season_realized_pnl_usd": 6607.11,
      "best_edition_multiple": 1.040192
     },
     {
-     "season_rank": 3,
-     "username": "VolcanoVic",
-     "season_realized_pnl_usd": 3378.98,
-     "best_edition_multiple": 1.049101
-    },
-    {
      "season_rank": 4,
-     "username": "MomentumMarauder",
-     "season_realized_pnl_usd": 2846.8,
-     "best_edition_multiple": 1.025844
+     "username": "VolatilityVera",
+     "season_realized_pnl_usd": 3446.77,
+     "best_edition_multiple": 1.049625
     },
     {
      "season_rank": 5,
-     "username": "TurboTad",
-     "season_realized_pnl_usd": 2681.31,
-     "best_edition_multiple": 1.039122
-    },
-    {
-     "season_rank": 6,
      "username": "CrashColossus",
-     "season_realized_pnl_usd": 964.05,
-     "best_edition_multiple": 1.004822
-    },
-    {
-     "season_rank": 7,
-     "username": "VolatilityVera",
-     "season_realized_pnl_usd": 676.78,
-     "best_edition_multiple": 1.043618
-    },
-    {
-     "season_rank": 8,
-     "username": "ClimaxCleo",
-     "season_realized_pnl_usd": 631.06,
-     "best_edition_multiple": 1.00526
-    },
-    {
-     "season_rank": 9,
-     "username": "VolumeVortex",
-     "season_realized_pnl_usd": 631.06,
-     "best_edition_multiple": 1.00526
-    },
-    {
-     "season_rank": 10,
-     "username": "FadeFiend",
-     "season_realized_pnl_usd": 628.75,
-     "best_edition_multiple": 1.0036
-    },
-    {
-     "season_rank": 11,
-     "username": "RangeRanger",
-     "season_realized_pnl_usd": 526.04,
-     "best_edition_multiple": 1.00526
-    },
-    {
-     "season_rank": 12,
-     "username": "EmaEddie",
-     "season_realized_pnl_usd": 386.57,
-     "best_edition_multiple": 1.004837
-    },
-    {
-     "season_rank": 13,
-     "username": "ExhaustionEcho",
-     "season_realized_pnl_usd": 268.74,
-     "best_edition_multiple": 1.002687
-    },
-    {
-     "season_rank": 14,
-     "username": "DeadCatDana",
-     "season_realized_pnl_usd": 154.25,
-     "best_edition_multiple": 1.001543
-    },
-    {
-     "season_rank": 15,
-     "username": "GapGlider",
-     "season_realized_pnl_usd": 143.46,
-     "best_edition_multiple": 1.009624
-    },
-    {
-     "season_rank": 16,
-     "username": "DipDestroyer",
-     "season_realized_pnl_usd": 121.86,
-     "best_edition_multiple": 1.001219
-    },
-    {
-     "season_rank": 17,
-     "username": "CrashCrusader",
-     "season_realized_pnl_usd": 0.0,
-     "best_edition_multiple": 1.0
-    },
-    {
-     "season_rank": 18,
-     "username": "GapGremlin",
-     "season_realized_pnl_usd": 0.0,
-     "best_edition_multiple": 1.0
-    },
-    {
-     "season_rank": 19,
-     "username": "SqueezeSasha",
-     "season_realized_pnl_usd": -232.63,
-     "best_edition_multiple": 1.008337
-    },
-    {
-     "season_rank": 20,
-     "username": "SqueezeStorm",
-     "season_realized_pnl_usd": -587.6,
-     "best_edition_multiple": 1.010554
-    },
-    {
-     "season_rank": 21,
-     "username": "DipDynamo",
-     "season_realized_pnl_usd": -634.79,
-     "best_edition_multiple": 1.00746
-    },
-    {
-     "season_rank": 22,
-     "username": "SnapbackSue",
-     "season_realized_pnl_usd": -957.64,
-     "best_edition_multiple": 1.000337
-    },
-    {
-     "season_rank": 23,
-     "username": "VolSpikeVince",
-     "season_realized_pnl_usd": -973.55,
-     "best_edition_multiple": 1.018453
-    },
-    {
-     "season_rank": 24,
-     "username": "BlowoffBella",
-     "season_realized_pnl_usd": -1885.47,
-     "best_edition_multiple": 1.0036
-    },
-    {
-     "season_rank": 25,
-     "username": "ParabolaPasha",
-     "season_realized_pnl_usd": -3348.69,
-     "best_edition_multiple": 1.0036
-    },
-    {
-     "season_rank": 26,
-     "username": "ParabolaPiranha",
-     "season_realized_pnl_usd": -3909.02,
-     "best_edition_multiple": 1.022397
-    },
-    {
-     "season_rank": 27,
-     "username": "DonchianDana",
-     "season_realized_pnl_usd": -4131.11,
-     "best_edition_multiple": 1.004682
-    },
-    {
-     "season_rank": 28,
-     "username": "SpikeSaber",
-     "season_realized_pnl_usd": -4165.41,
-     "best_edition_multiple": 1.009852
+     "season_realized_pnl_usd": 2793.63,
+     "best_edition_multiple": 1.02657
     }
    ],
    "recommendations": [
@@ -480,17 +342,48 @@
      "variant": "runner",
      "params_label": "atr_expansion_mult=1.1, hold_bars=20, lookback=30, max_adds=8",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 13505.78,
+     "season_realized_pnl_usd": 14134.21,
      "season_rank": 1,
      "best_edition_multiple": 1.084137,
      "entry_condition": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
      "as_of_last_bar": "2026-09-18",
-     "open_positions": [],
+     "open_positions": [
+      {
+       "symbol": "HOOD",
+       "side": "long",
+       "since": "2026-09-04",
+       "last_close": 119.82
+      }
+     ],
      "pending_orders": [],
      "waiting_for": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
-      "ENPH"
+      "ENPH",
+      "HOOD"
+     ]
+    },
+    {
+     "username": "TurboTad",
+     "division": "stocks_daily",
+     "model": "C13",
+     "model_name": "Momentum runner surfer",
+     "variant": "runner",
+     "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 6991.89,
+     "season_rank": 2,
+     "best_edition_multiple": 1.044176,
+     "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "as_of_last_bar": "2026-09-18",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH",
+      "NVDA",
+      "SMCI"
      ]
     },
     {
@@ -502,7 +395,7 @@
      "params_label": "add_atr_step=1.0, hold_bars=10, max_adds=6, volume_mult=2.0",
      "rule_profile": "stocks_official_leap",
      "season_realized_pnl_usd": 6607.11,
-     "season_rank": 2,
+     "season_rank": 3,
      "best_edition_multiple": 1.040192,
      "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "as_of_last_bar": "2026-09-18",
@@ -515,61 +408,136 @@
      ]
     },
     {
-     "username": "VolcanoVic",
+     "username": "VolatilityVera",
      "division": "stocks_daily",
-     "model": "C16",
-     "model_name": "ATR-expansion breakout compounder",
+     "model": "B1",
+     "model_name": "Volatility leader, always long (control)",
      "variant": null,
      "params_label": "default",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 3378.98,
-     "season_rank": 3,
-     "best_edition_multiple": 1.049101,
-     "entry_condition": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
+     "season_realized_pnl_usd": 3446.77,
+     "season_rank": 4,
+     "best_edition_multiple": 1.049625,
+     "entry_condition": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
      "as_of_last_bar": "2026-09-18",
      "open_positions": [],
      "pending_orders": [],
-     "waiting_for": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
-     "strategy_kind": "signal_timed",
+     "waiting_for": "nothing further: this is the buy-and-hold control and it places no timing orders",
+     "strategy_kind": "buy_and_hold_control",
      "symbols_watched": [
-      "ENPH"
-     ]
-    },
-    {
-     "username": "SpikeSaber",
-     "division": "stocks_daily",
-     "model": "C6",
-     "model_name": "Blow-off spike fade",
-     "variant": "aggressive",
-     "params_label": "hold_bars=12, run_atr_mult=1.5, volume_mult=1.5",
-     "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": -4165.41,
-     "season_rank": 28,
-     "best_edition_multiple": 1.009852,
-     "entry_condition": "A >=3-session parabolic advance that stretches at least 2 ATR, prints on >=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.",
-     "as_of_last_bar": "2026-09-18",
-     "open_positions": [
-      {
-       "symbol": "ENPH",
-       "side": "short",
-       "since": "2026-09-09",
-       "last_close": 34.64
-      }
-     ],
-     "pending_orders": [],
-     "waiting_for": "A >=3-session parabolic advance that stretches at least 2 ATR, prints on >=2x its 20-bar average volume and closes in the top quartile of its range is a blow-off, not information; it fades over the following ~8 sessions.",
-     "strategy_kind": "signal_timed",
-     "symbols_watched": [
-      "ENPH"
+      "ENPH",
+      "APP",
+      "SMCI",
+      "HOOD",
+      "NVDA"
      ]
     }
    ]
   },
   "stocks_hourly": {
    "division": "stocks_hourly",
-   "status": "no_captured_series",
    "rule_profile": "stocks_official_leap",
-   "recommendations": []
+   "interval": "1h",
+   "price_source": "data/intraday/ (1h vendor bars for the 20-stock volatile pool)",
+   "competition_source": "data/stock_competition_results.json",
+   "ranking": [
+    {
+     "season_rank": 1,
+     "username": "CrashColossus",
+     "season_realized_pnl_usd": 4903.96,
+     "best_edition_multiple": 1.064811
+    },
+    {
+     "season_rank": 2,
+     "username": "TurboTad",
+     "season_realized_pnl_usd": 4406.03,
+     "best_edition_multiple": 1.032622
+    },
+    {
+     "season_rank": 3,
+     "username": "VolSpikeVince",
+     "season_realized_pnl_usd": 3636.39,
+     "best_edition_multiple": 1.035689
+    },
+    {
+     "season_rank": 4,
+     "username": "GapGremlin",
+     "season_realized_pnl_usd": 2590.28,
+     "best_edition_multiple": 1.012563
+    },
+    {
+     "season_rank": 5,
+     "username": "VolatilityVera",
+     "season_realized_pnl_usd": 2224.16,
+     "best_edition_multiple": 1.063271
+    }
+   ],
+   "recommendations": [
+    {
+     "username": "CrashColossus",
+     "division": "stocks_hourly",
+     "model": "C7",
+     "model_name": "Capitulation pyramider (equity)",
+     "variant": "patient",
+     "params_label": "add_atr_step=2.0, crash_atr_mult=2.5, max_adds=3",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 4903.96,
+     "season_rank": 1,
+     "best_edition_multiple": 1.064811,
+     "entry_condition": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "AMD",
+      "SHOP"
+     ]
+    },
+    {
+     "username": "TurboTad",
+     "division": "stocks_hourly",
+     "model": "C13",
+     "model_name": "Momentum runner surfer",
+     "variant": "runner",
+     "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 4406.03,
+     "season_rank": 2,
+     "best_edition_multiple": 1.032622,
+     "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "AMD"
+     ]
+    },
+    {
+     "username": "VolSpikeVince",
+     "division": "stocks_hourly",
+     "model": "C11",
+     "model_name": "Squeeze-breakout pyramider",
+     "variant": "patient",
+     "params_label": "add_atr_step=1.5, hold_bars=15, max_adds=3",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 3636.39,
+     "season_rank": 3,
+     "best_edition_multiple": 1.035689,
+     "entry_condition": "Extreme volatility compression (20-day standard deviation <= 1.2 ATR) followed by a >=2.5x volume expansion breakout signals institutional accumulation; buying the breakout and pyramiding every 1 ATR captures explosive multi-day trending expansions.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "Extreme volatility compression (20-day standard deviation <= 1.2 ATR) followed by a >=2.5x volume expansion breakout signals institutional accumulation; buying the breakout and pyramiding every 1 ATR captures explosive multi-day trending expansions.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "AMD"
+     ]
+    }
+   ]
   }
  }
 }

@@ -392,13 +392,15 @@
   {
    "id": "IR-28",
    "severity": "medium",
-   "title": "NYSE full-closure table is a rule-based transcription pending line-by-line network re-verification",
+   "title": "NYSE full-closure table re-verified line by line against official NYSE publications (one date corrected)",
    "detail": "intel/calendar.py encodes the standing NYSE holiday schedule (nine holidays, weekend observance, Juneteenth from 2022, Gregorian Good Friday) plus two individually recorded special closures (2018-12-05 Bush mourning, 2025-01-09 Carter mourning). It was written in a sandbox with no network access, so no date in it has been checked against the live official calendar yet. Until a networked reviewer completes the protocol in research/evidence/NYSE-CALENDAR-2016-2026.md, the study's calendar_diagnostics must be read as transcription-annotated, not authoritatively calendared; the UTC-date baseline numbers are unaffected either way.",
-   "observed": "2026-09-19: calendar module added; evidence doc generated from the module (106 closure lines, 2016-2026).",
+   "observed": "2026-09-19: calendar module added; evidence doc generated from the module (106 closure lines, 2016-2026). 2026-09-19 (later session): all 11 years compared against the official NYSE tables (live nyse.com for 2026-2028; Internet Archive captures of nyse.com/markets/hours-calendars for 2016-2017, 2018-2021, 2021-2023, 2024-2026; ICE press releases for 2018-12-05 and 2025-01-09; Nasdaq Trader 2026 cross-check). One mismatch: 2021-12-31 was wrongly listed as an observed New Year closure - NYSE Rule 7.2 means a Saturday January 1 is not observed (official footnote), and the ENPH daily capture has a 2021-12-31 bar. Fixed in intel/calendar.py nyse-holidays-2; the official transcription now lives in the module and scripts/verify.py fails on any divergence.",
    "source_ids": [
     "NYSE-HOURS-CALENDAR"
    ],
-   "linked_hypothesis": "H33"
+   "linked_hypothesis": "H33",
+   "status": "resolved_by_correction",
+   "resolution": "Corrected and closed. See research/evidence/NYSE-CALENDAR-2016-2026.md for per-year official URLs and verbatim quotes."
   }
  ]
 }

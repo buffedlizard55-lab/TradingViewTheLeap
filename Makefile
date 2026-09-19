@@ -76,3 +76,14 @@ official-bars:
 	python3 scripts/fetch_official_bars.py
 	python3 scripts/run_intraday_study.py --index data/official_bars/index.json --out data/official_bars/study.json
 	python3 scripts/run_stock_competition.py --index data/official_bars/index.json --out data/official_bars/competition.json
+
+# Official (Alpaca IEX) vs vendor (Yahoo) close comparison with a split-step detector.
+# Needs both data/official_bars/index.json and data/intraday_index.json; exits 2 otherwise.
+.PHONY: spot-check
+spot-check:
+	python3 scripts/spot_check_official_vs_vendor.py
+
+# Merge per-symbol partial indexes produced by capture-intraday-matrix.yml (offline).
+.PHONY: merge-intraday
+merge-intraday:
+	python3 scripts/merge_intraday_indexes.py --partials-dir partials_flat

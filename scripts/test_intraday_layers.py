@@ -365,6 +365,11 @@ class TestCaptureTransportRetry(unittest.TestCase):
                 c.append(price * 1.001)
                 v.append(100)
                 ts += step
+            # Yahoo appends the live bar (outside the requested window) to every response;
+            # observed on run 35398650536. The fetcher must drop it, not fail the series.
+            stamps.append(p2 + 10 * step)
+            o.append(price); h.append(price * 1.01); l.append(price * 0.99)
+            c.append(price * 1.001); v.append(100)
             return json.dumps({"chart": {"result": [{
                 "meta": {"symbol": ticker, "dataGranularity": interval, "gmtoffset": -14400,
                          "exchangeTimezoneName": "America/New_York"},
@@ -396,6 +401,24 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual([c["status"] for c in index["captures"]], ["captured"])
         self.assertEqual(index["_meta"]["captured_count"], 1)
+        record = index["captures"][0]
+        for chunk in record["chunk_provenance"]:
+            self.assertEqual(chunk["bars_dropped_out_of_window"], 1)
+        self.assertLessEqual(record["chunk_provenance"][0]["period1"], record["first_epoch"])
+        self.assertLessEqual(record["last_epoch"], record["chunk_provenance"][-1]["period2"])
+
+    def test_direct_transport_is_re_enabled_after_cooldown(self):
+        transport = self.fetch.Transport()
+        transport.direct_disabled = True
+        transport.direct_disabled_at = self.fetch.time.time() - 10_000
+        calls = []
+        self.fetch.Transport._get = lambda self, url: calls.append(url) or b"ok"
+        try:
+            payload, name = transport.fetch("https://example.invalid/x")
+        finally:
+            del self.fetch.Transport._get
+        self.assertEqual((payload, name), (b"ok", "direct"))
+        self.assertFalse(transport.direct_disabled)
 
     def test_a_run_that_cannot_fetch_still_writes_one_failure_record_per_series(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -407,7 +430,89 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertIn("IncompleteRead", record["error"])
         self.assertEqual(index["_meta"]["captured_count"], 0)
         self.assertEqual(index["_meta"]["failed_count"], 1)
-        self.assertEqual(index["_meta"]["script_version"], "3")
+        self.assertEqual(index["_meta"]["script_version"], "4")
+
+
+class TestMergeIntradayIndexes(unittest.TestCase):
+    """scripts/merge_intraday_indexes.py: union of partials, never downgrading a capture."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.merge = load_module("merge_intraday_under_test", "scripts/merge_intraday_indexes.py")
+
+    def _capture_record(self, tmp_rel_dir, symbol, interval, payload=b'{"bars":[]}'):
+        import hashlib
+        rel = f"{tmp_rel_dir}/{symbol}_{interval}.json"
+        with open(os.path.join(self.merge.ROOT, rel), "wb") as fh:
+            fh.write(payload)
+        return {"symbol": symbol, "interval": interval, "kind": "equity", "status": "captured",
+                "file": rel, "stored_sha256": hashlib.sha256(payload).hexdigest(),
+                "stored_bytes": len(payload), "bar_count": 0}
+
+    def test_union_keeps_captures_and_drops_corrupt_files(self):
+        import shutil
+        rel_dir = "data/intraday/_merge_test_tmp"
+        os.makedirs(os.path.join(self.merge.ROOT, rel_dir), exist_ok=True)
+        try:
+            base = {"_meta": {"fetched_at_utc": "2026-09-18T00:00:00+00:00", "script_version": "4"},
+                    "captures": [self._capture_record(rel_dir, "AAA", "1d"),
+                                 {"symbol": "BBB", "interval": "1d", "kind": "equity",
+                                  "status": "failed", "error": "x"}]}
+            good = self._capture_record(rel_dir, "BBB", "1d", b'{"bars":[1]}')
+            corrupt = self._capture_record(rel_dir, "CCC", "1d")
+            corrupt["stored_sha256"] = "0" * 64
+            p1 = {"_meta": {"fetched_at_utc": "2026-09-19T01:00:00+00:00", "direct_429_count": 1,
+                            "elapsed_seconds": 10.0, "workflow_run_url": "https://x/1"},
+                  "captures": [good, corrupt,
+                               {"symbol": "AAA", "interval": "1d", "kind": "equity",
+                                "status": "failed", "error": "retry failed"}]}
+            merged, notes = self.merge.merge(base, [p1])
+            by = {(r["symbol"], r["interval"]): r for r in merged["captures"]}
+            self.assertEqual(by[("AAA", "1d")]["status"], "captured", "a failed retry must not downgrade")
+            self.assertEqual(by[("BBB", "1d")]["status"], "captured")
+            self.assertNotIn(("CCC", "1d"), by, "corrupt file must be dropped")
+            self.assertTrue(any("DROPPED" in n for n in notes))
+            self.assertEqual(merged["_meta"]["captured_count"], 2)
+            self.assertEqual(merged["_meta"]["direct_429_count"], 1)
+            self.assertEqual(merged["_meta"]["fetched_at_utc"], "2026-09-19T01:00:00+00:00")
+            self.assertEqual(merged["_meta"]["workflow_run_urls"], ["https://x/1"])
+        finally:
+            shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
+
+
+class TestSpotCheckOfficialVsVendor(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = load_module("spot_check_under_test", "scripts/spot_check_official_vs_vendor.py")
+
+    def _cap(self, symbol, closes, scale=1.0, start=1_700_000_000):
+        from intel.intraday import Capture, IBar
+        bars = tuple(IBar(start + i * 86400, c * scale, c * scale * 1.01, c * scale * 0.99,
+                          c * scale, 100) for i, c in enumerate(closes))
+        return Capture(symbol=symbol, interval="1d", kind="equity", endpoint="https://x",
+                       raw_response_sha256="0" * 64, stored_sha256="0" * 64, rounding_decimals=5,
+                       vendor_exchange=None, vendor_timezone=None, first_utc="", last_utc="", bars=bars)
+
+    def test_identical_series_compare_clean(self):
+        closes = [10 + (i % 7) * 0.1 for i in range(120)]
+        row = self.mod.compare(self._cap("AAA", closes), self._cap("AAA", closes))
+        self.assertEqual(row["status"], "compared")
+        self.assertEqual(row["matched_bars"], 120)
+        self.assertEqual(row["median_abs_delta_bps"], 0.0)
+        self.assertIsNone(row["suspected_split_boundary_epoch"])
+
+    def test_split_step_is_flagged(self):
+        closes = [10 + (i % 7) * 0.1 for i in range(120)]
+        vendor = self._cap("AAA", closes)
+        # official carries a 2:1 adjustment only for the first 60 bars -> ratio steps at bar 60
+        from intel.intraday import Capture
+        mixed = tuple(b if i >= 60 else type(b)(b.ts, b.open / 2, b.high / 2, b.low / 2, b.close / 2, b.volume)
+                      for i, b in enumerate(vendor.bars))
+        official = Capture(**{**vendor.__dict__, "bars": mixed})
+        row = self.mod.compare(official, vendor)
+        self.assertEqual(row["status"], "drift_suspected")
+        self.assertIsNotNone(row["suspected_split_boundary_epoch"])
+        self.assertGreater(row["max_abs_delta_bps"], 4000)
 
 
 class TestEquityCalendar(unittest.TestCase):
@@ -416,8 +521,32 @@ class TestEquityCalendar(unittest.TestCase):
         self.assertIn("Christmas", cal.is_full_closure("2021-12-24") or "")
         self.assertIn("Juneteenth", cal.is_full_closure("2022-06-20") or "")
         self.assertIsNone(cal.is_full_closure("2021-06-19"))  # not observed before 2022
-        self.assertIn("New Year", cal.is_full_closure("2021-12-31") or "")
+        # NYSE Rule 7.2: Saturday New Year's Day is not observed; 2021-12-31 was a full session
+        # (official 2028 note on https://www.nyse.com/markets/hours-calendars; ENPH_1d bar exists)
+        self.assertIsNone(cal.is_full_closure("2021-12-31"))
         self.assertIsNone(cal.is_full_closure("2022-01-01"))  # Saturday itself is not the closure
+        self.assertIsNone(cal.is_full_closure("2016-12-30"))  # Sunday 2017-01-01 -> Monday
+        self.assertIn("New Year", cal.is_full_closure("2017-01-02") or "")
+        self.assertIn("Juneteenth", cal.is_full_closure("2022-06-20") or "")
+        # Official 2026 table, transcribed line by line on 2026-09-19
+        for iso in ("2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25",
+                    "2026-06-19", "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25"):
+            self.assertIsNotNone(cal.is_full_closure(iso), iso)
+        self.assertEqual(len(cal.holidays_for_year(2026)), 10)
+
+    def test_cme_globex_windows_are_informational_and_2026_only(self):
+        from intel import calendar as cal
+        self.assertEqual(cal.cme_globex_holiday_window("2026-11-27"), "Thanksgiving")
+        self.assertEqual(cal.cme_globex_holiday_window("2026-04-03"), "Good Friday")
+        self.assertIsNone(cal.cme_globex_holiday_window("2026-09-18"))
+        self.assertIsNone(cal.cme_globex_holiday_window("2025-11-27"))  # not transcribed
+        for _, first, last in cal.CME_GLOBEX_2026_HOLIDAY_WINDOWS:
+            self.assertLessEqual(first, last)
+
+    def test_rules_reproduce_official_nyse_tables(self):
+        from intel import calendar as cal
+        self.assertEqual(cal.verify_against_official(), [])
+        self.assertEqual(sum(len(v) for v in cal.OFFICIAL_FULL_CLOSURES.values()), 105)
         self.assertIn("Bush", cal.is_full_closure("2018-12-05") or "")
         self.assertIn("Carter", cal.is_full_closure("2025-01-09") or "")
         self.assertIsNone(cal.is_full_closure("2026-09-18"))  # ordinary Friday

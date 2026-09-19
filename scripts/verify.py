@@ -1984,6 +1984,18 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
         rep.fail("intraday.study_calendar",
                  f"calendar_diagnostics version {cal_identity!r} != "
                  f"intel.calendar {calendar_mod.CALENDAR_VERSION!r}")
+    # The rule engine must reproduce the official NYSE tables (2016-2026) exactly; the
+    # transcription lives next to the rules and cites its official URLs (IR-28 closure).
+    mismatches = calendar_mod.verify_against_official()
+    if mismatches:
+        rep.fail("intraday.study_calendar",
+                 "intel.calendar rules disagree with the official NYSE transcription: "
+                 + "; ".join(mismatches))
+    else:
+        rep.ok(f"intraday.study_calendar: rule-based closures match the official NYSE tables for "
+               f"{calendar_mod.FIRST_YEAR}-{calendar_mod.LAST_YEAR} "
+               f"({sum(len(v) for v in calendar_mod.OFFICIAL_FULL_CLOSURES.values())} full closures, "
+               f"{sum(len(v) for v in calendar_mod.OFFICIAL_EARLY_CLOSES.values())} early closes)")
     per_series = diag.get("per_series") or []
     studied_keys = {(r["symbol"], r["interval"]) for r in captured if r["interval"] != "1d"}
     diag_keys = {(r.get("symbol"), r.get("interval")) for r in per_series}

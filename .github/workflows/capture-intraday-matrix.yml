@@ -1,0 +1,189 @@
+name: Capture intraday market data (per-symbol matrix)
+
+# Parallel variant of capture-intraday.yml. One job per pool symbol (plus one job for the
+# hourly futures set), each on its own GitHub-hosted runner, so that:
+#   * the vendor's per-IP rate limit (HTTP 429) and the public relays' outages (HTTP 5xx)
+#     hit one symbol at a time instead of stalling a single 15-minute budget, and
+#   * every job commits nothing itself - it uploads a partial index + capture files as
+#     an artifact, and a final merge job folds them into data/intraday_index.json with
+#     scripts/merge_intraday_indexes.py (re-hashing every file, never dropping an
+#     existing capture) and makes exactly one commit.
+#
+# Same fetch script, same frozen windows, same per-chunk SHA-256/byte provenance, same
+# fail-closed validation. Resumable: with only_failed=true (default) each job skips the
+# series the committed index already holds.
+
+on:
+  workflow_dispatch:
+    inputs:
+      interval:
+        description: "Which interval to capture"
+        required: false
+        default: all
+        type: choice
+        options: [all, 15m, 1h, 1d]
+      only_failed:
+        description: "Only retry series not yet captured"
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - ".github/workflows/capture-intraday-matrix.yml"
+      - "scripts/merge_intraday_indexes.py"
+  schedule:
+    # Two top-up sweeps a day while the pool is incomplete (UTC); each is a no-op once
+    # every series is captured because --only-failed leaves nothing to fetch.
+    - cron: "17 2,14 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: capture-intraday-matrix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Plan the matrix from data/volatile_stocks.json
+    runs-on: ubuntu-latest
+    outputs:
+      symbols: ${{ steps.plan.outputs.symbols }}
+      interval: ${{ steps.plan.outputs.interval }}
+      only_failed: ${{ steps.plan.outputs.only_failed }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          pool = [r["symbol"] for r in json.load(open("data/volatile_stocks.json"))["records"]]
+          print("symbols=" + json.dumps(pool + ["__FUTURES_1H__"]))
+          PY
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "interval=${{ inputs.interval }}" >> "$GITHUB_OUTPUT"
+            echo "only_failed=${{ inputs.only_failed }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "interval=all" >> "$GITHUB_OUTPUT"
+            echo "only_failed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  capture:
+    name: ${{ matrix.symbol }}
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        symbol: ${{ fromJson(needs.plan.outputs.symbols) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Capture this symbol (all requested intervals)
+        continue-on-error: true
+        env:
+          CAPTURE_ENV: github-actions
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -o pipefail
+          mkdir -p partial/${{ matrix.symbol }}
+          extra=""
+          if [ "${{ needs.plan.outputs.only_failed }}" = "true" ] && [ -f data/intraday_index.json ]; then
+            extra="--only-failed --previous-index data/intraday_index.json"
+          fi
+          if [ "${{ matrix.symbol }}" = "__FUTURES_1H__" ]; then
+            # Futures hourly set: every captured daily future, hourly only.
+            syms=$(python3 -c "import json;print(','.join(r['tradingview_symbol'] for r in json.load(open('data/market_history_index.json'))['captures'] if r['status']=='captured'))")
+            if [ "${{ needs.plan.outputs.interval }}" != "all" ] && [ "${{ needs.plan.outputs.interval }}" != "1h" ]; then
+              echo "::notice::futures job skipped: interval ${{ needs.plan.outputs.interval }} is not hourly"; exit 0
+            fi
+            python3 scripts/fetch_intraday.py --interval 1h --futures-hourly --symbols "$syms" $extra \
+              --out-dir data/intraday --index "partial/${{ matrix.symbol }}/intraday_index.json" \
+              --pacing-seconds 1.0 --time-budget-seconds 1800 2>&1 | tee partial/${{ matrix.symbol }}/log.txt
+          else
+            python3 scripts/fetch_intraday.py --interval "${{ needs.plan.outputs.interval }}" \
+              --symbols "${{ matrix.symbol }}" $extra \
+              --out-dir data/intraday --index "partial/${{ matrix.symbol }}/intraday_index.json" \
+              --pacing-seconds 1.0 --time-budget-seconds 1800 2>&1 | tee partial/${{ matrix.symbol }}/log.txt
+          fi
+      - name: Collect the files this job stored
+        run: |
+          mkdir -p partial/${{ matrix.symbol }}/intraday
+          if [ -f "partial/${{ matrix.symbol }}/intraday_index.json" ]; then
+            python3 - <<'PY'
+          import json, os, shutil
+          sym = "${{ matrix.symbol }}"
+          idx = json.load(open(f"partial/{sym}/intraday_index.json"))
+          n = 0
+          for rec in idx["captures"]:
+              if rec.get("status") == "captured" and os.path.exists(rec["file"]):
+                  shutil.copy2(rec["file"], f"partial/{sym}/intraday/")
+                  n += 1
+          print(f"::notice::{sym}: {n} capture file(s) collected; "
+                f"{idx['_meta']['captured_count']} captured / {idx['_meta']['failed_count']} failed / "
+                f"{idx['_meta']['not_attempted_count']} deferred")
+          PY
+          else
+            echo "::warning::${{ matrix.symbol }}: no partial index written"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: partial-${{ matrix.symbol }}
+          path: partial/${{ matrix.symbol }}
+          retention-days: 7
+          if-no-files-found: warn
+
+  merge:
+    name: Merge partial indexes and commit once
+    needs: [plan, capture]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: partial-*
+          path: partials
+          merge-multiple: false
+      - name: Lay out partials and merge
+        run: |
+          mkdir -p partials_flat data/intraday
+          for d in partials/partial-*; do
+            [ -d "$d" ] || continue
+            sym=$(basename "$d" | sed 's/^partial-//')
+            mkdir -p "partials_flat/$sym"
+            [ -f "$d/intraday_index.json" ] && cp "$d/intraday_index.json" "partials_flat/$sym/"
+            if [ -d "$d/intraday" ]; then cp "$d"/intraday/* data/intraday/ 2>/dev/null || true; fi
+          done
+          git pull --rebase --autostash origin "${{ github.ref_name }}" || true
+          python3 scripts/merge_intraday_indexes.py --partials-dir partials_flat
+      - name: Verify the merged captures offline before committing
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, ".")
+          from intel import intraday
+          idx = json.load(open("data/intraday_index.json"))
+          ok = 0
+          for rec in idx["captures"]:
+              if rec.get("status") == "captured":
+                  intraday.load_capture(rec)   # re-hash + OHLC invariants; raises on any problem
+                  ok += 1
+          print(f"::notice::{ok} captured series re-validated offline; "
+                f"by_interval={idx['_meta']['captured_by_interval']}")
+          PY
+      - name: Commit
+        run: |
+          bash .github/scripts/commit_capture.sh \
+            "capture: intraday bars for the volatile stock pool (per-symbol matrix, automated)" \
+            data/intraday data/intraday_index.json

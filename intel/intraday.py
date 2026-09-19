@@ -213,7 +213,7 @@ def sessions(bars: tuple[IBar, ...] | list[IBar]) -> "list[tuple[str, list[IBar]
     for reviewers to verify that no regular-hour bar crosses midnight UTC. For a
     future exchange-session-accurate grouping, join these bars with an official
     NYSE/CME holiday calendar (NYSE calendar: https://www.nyse.com/markets/hours-calendars
-    and CME calendar: https://www.cmegroup.com/trading_hours.html) and re-derive
+    and CME calendar: https://www.cmegroup.com/trading-hours.html) and re-derive
     the study; the current UTC method is the honest, verifiable baseline.
 
     Use only publicly available official calendars; no hallucinated sessions.
