@@ -108,6 +108,105 @@ class TestExtractSpecFields(unittest.TestCase):
                          fcs.extract_spec_fields(SPEC_PAGE))
 
 
+class TestBuildFailClosed(unittest.TestCase):
+    """The lane must record a transport failure, never crash on one."""
+
+    def _run(self, fetch_stub, tmpdir):
+        import argparse
+        from pathlib import Path
+
+        saved = (fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH)
+        try:
+            fcs.fetch = fetch_stub
+            fcs.SPECS_DIR = Path(tmpdir) / "specs"
+            fcs.INDEX_PATH = Path(tmpdir) / "index.json"
+            fcs.HOURS_PATH = Path(tmpdir) / "hours.json"
+            args = argparse.Namespace(offline=False, timeout=5, allow_failures=False)
+            return fcs.build(args)
+        finally:
+            fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH = saved
+
+    def test_a_transport_error_is_recorded_and_exits_two(self):
+        import json
+        import tempfile
+
+        def boom(url, timeout=25):
+            raise RuntimeError(f"GET failed with every header set: {url} (timed out)")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rc = self._run(boom, tmp)
+            self.assertEqual(rc, 2, "a short table must exit non-zero")
+            doc = json.load(open(os.path.join(tmp, "index.json")))
+            self.assertEqual(doc["_meta"]["captured_count"], 0)
+            self.assertEqual(doc["_meta"]["failed_count"], doc["_meta"]["product_count"])
+            for rec in doc["records"]:
+                self.assertEqual(rec["status"], "failed")
+                self.assertIn("timed out", rec["reason"])
+
+    def test_a_page_without_a_trading_hours_row_is_refused(self):
+        import json
+        import tempfile
+
+        def no_hours(url, timeout=25):
+            return 200, b"<html><body><table><tr><th>Contract Unit</th><td>x</td></tr></table></body></html>"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rc = self._run(no_hours, tmp)
+            self.assertEqual(rc, 2)
+            doc = json.load(open(os.path.join(tmp, "index.json")))
+            self.assertEqual(doc["_meta"]["captured_count"], 0)
+            self.assertTrue(all("Trading Hours" in r["reason"] for r in doc["records"]))
+
+    def test_a_successful_page_is_stored_hashed_and_transcribed(self):
+        import hashlib
+        import json
+        import tempfile
+
+        body = SPEC_PAGE.encode("utf-8")
+
+        def ok(url, timeout=25):
+            return 200, body
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rc = self._run(ok, tmp)
+            self.assertEqual(rc, 0)
+            doc = json.load(open(os.path.join(tmp, "index.json")))
+            self.assertEqual(doc["_meta"]["captured_count"], doc["_meta"]["product_count"])
+            rec = doc["records"][0]
+            self.assertEqual(rec["http_status"], 200)
+            self.assertEqual(rec["raw_sha256"], hashlib.sha256(body).hexdigest())
+            self.assertEqual(rec["raw_bytes"], len(body))
+            self.assertIn("Sunday - Friday", rec["fields"]["trading_hours"])
+            stored = os.path.join(tmp, "specs", f"{rec['product']}.html")
+            self.assertEqual(open(stored, "rb").read(), body)
+            hours = json.load(open(os.path.join(tmp, "hours.json")))
+            self.assertEqual(hours["_meta"]["product_count"], doc["_meta"]["product_count"])
+
+    def test_allow_failures_exits_zero_but_still_records_the_failure(self):
+        import argparse
+        import json
+        import tempfile
+
+        def boom(url, timeout=25):
+            raise RuntimeError("nope")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            saved = (fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH)
+            try:
+                from pathlib import Path
+                fcs.fetch = boom
+                fcs.SPECS_DIR = Path(tmp) / "specs"
+                fcs.INDEX_PATH = Path(tmp) / "index.json"
+                fcs.HOURS_PATH = Path(tmp) / "hours.json"
+                rc = fcs.build(argparse.Namespace(offline=False, timeout=5,
+                                                  allow_failures=True))
+            finally:
+                fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH = saved
+            self.assertEqual(rc, 0)
+            doc = json.load(open(os.path.join(tmp, "index.json")))
+            self.assertEqual(doc["_meta"]["failed_count"], doc["_meta"]["product_count"])
+
+
 class TestPooledProducts(unittest.TestCase):
     def test_every_pooled_future_resolves_to_a_registered_official_url(self):
         products = fcs.pooled_products()

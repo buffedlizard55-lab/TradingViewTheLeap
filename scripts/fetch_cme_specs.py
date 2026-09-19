@@ -285,7 +285,11 @@ def build(args: argparse.Namespace) -> int:
         print(f"GET {product} <- {item['url']}", flush=True)
         try:
             status, body = fetch(item["url"], timeout=args.timeout)
-        except (urllib.error.URLError, urllib.error.HTTPError, OSError, ValueError) as exc:
+        except Exception as exc:  # noqa: BLE001 - fetch() normalises every transport error
+            # fetch() folds URLError/HTTPError/OSError/ValueError into one RuntimeError, and a
+            # product whose page will not answer must be *recorded*, never allowed to abort the
+            # lane: a crash here would exit 1 with no index written and lose every product
+            # already transcribed in this run.
             record["status"] = "failed"
             record["reason"] = f"{type(exc).__name__}: {exc}"
             # Keep the previous successful extraction so a transient network failure does
