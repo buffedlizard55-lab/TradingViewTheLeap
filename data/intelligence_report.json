@@ -237,7 +237,7 @@
       ],
       "next_step": "Add an out-of-sample season on bars captured after this run; the current division is fitted to one finite vendor window.",
       "detail": {
-        "roster_usernames": 26,
+        "roster_usernames": 32,
         "artifact": "data/stock_competition_results.json",
         "primary_profile": true,
         "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
@@ -573,7 +573,7 @@
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },
     "stock_division": {
-      "roster_usernames": 26,
+      "roster_usernames": 32,
       "artifact": "data/stock_competition_results.json",
       "primary_profile": true,
       "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."

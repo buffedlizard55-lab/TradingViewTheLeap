@@ -8,7 +8,7 @@
    "medium",
    "low"
   ],
-  "count": 27,
+  "count": 28,
   "reverified_utc": "2026-09-18",
   "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
   "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
@@ -388,6 +388,17 @@
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
    ]
+  },
+  {
+   "id": "IR-28",
+   "severity": "medium",
+   "title": "NYSE full-closure table is a rule-based transcription pending line-by-line network re-verification",
+   "detail": "intel/calendar.py encodes the standing NYSE holiday schedule (nine holidays, weekend observance, Juneteenth from 2022, Gregorian Good Friday) plus two individually recorded special closures (2018-12-05 Bush mourning, 2025-01-09 Carter mourning). It was written in a sandbox with no network access, so no date in it has been checked against the live official calendar yet. Until a networked reviewer completes the protocol in research/evidence/NYSE-CALENDAR-2016-2026.md, the study's calendar_diagnostics must be read as transcription-annotated, not authoritatively calendared; the UTC-date baseline numbers are unaffected either way.",
+   "observed": "2026-09-19: calendar module added; evidence doc generated from the module (106 closure lines, 2016-2026).",
+   "source_ids": [
+    "NYSE-HOURS-CALENDAR"
+   ],
+   "linked_hypothesis": "H33"
   }
  ]
 }

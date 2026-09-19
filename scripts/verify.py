@@ -59,6 +59,10 @@ OFFICIAL_DOMAINS = (
     "sec.gov",
     "cftc.gov",
     "ampglobal.com",
+    # Listing-exchange calendars are official exchange publications: NYSE for the US equity
+    # full-closure table (intel/calendar.py), Nasdaq Trader as the cross-check source.
+    "nyse.com",
+    "nasdaqtrader.com",
 )
 
 # Market-data vendors are NOT official sources. They are allowed only under the
@@ -1973,6 +1977,70 @@ def check_intraday(rep: Report, source_ids: dict) -> None:
             if summary.get("mean_signed_bps") is None:
                 rep.fail("intraday.study_latency",
                          f"{row.get('kind')}[{row.get('interval')}].{name}: mean_signed_bps missing")
+    diag = study.get("calendar_diagnostics") or {}
+    cal_identity = (diag.get("calendar") or {}).get("version")
+    from intel import calendar as calendar_mod
+    if cal_identity != calendar_mod.CALENDAR_VERSION:
+        rep.fail("intraday.study_calendar",
+                 f"calendar_diagnostics version {cal_identity!r} != "
+                 f"intel.calendar {calendar_mod.CALENDAR_VERSION!r}")
+    per_series = diag.get("per_series") or []
+    studied_keys = {(r["symbol"], r["interval"]) for r in captured if r["interval"] != "1d"}
+    diag_keys = {(r.get("symbol"), r.get("interval")) for r in per_series}
+    if diag_keys != studied_keys:
+        rep.fail("intraday.study_calendar",
+                 f"calendar per_series keys {sorted(diag_keys)} != studied captures "
+                 f"{sorted(studied_keys)}")
+    for label, key in (("sessions_on_full_closure", "sessions_on_full_closure_total"),
+                       ("boundaries_spanning_closure", "boundaries_spanning_closure_total"),
+                       ("gaps_spanning_closure", "gaps_spanning_closure_total")):
+        want = sum(r.get(label, 0) for r in per_series)
+        if diag.get(key) != want:
+            rep.fail("intraday.study_calendar",
+                     f"calendar_diagnostics.{key} {diag.get(key)} != sum of per_series {want}")
+    for record in captured:
+        if record["interval"] == "1d":
+            continue
+        row = next((r for r in per_series
+                    if (r.get("symbol"), r.get("interval")) == (record["symbol"], record["interval"])), None)
+        if row is None:
+            continue
+        if record.get("kind", "equity") != "equity":
+            if row.get("calendar_applies") is not False:
+                rep.fail("intraday.study_calendar",
+                         f"{record['symbol']}[{record['interval']}]: non-equity series must carry "
+                         "calendar_applies=false (no CME calendar is encoded)")
+            continue
+        if row.get("calendar_applies") is not True:
+            rep.fail("intraday.study_calendar",
+                     f"{record['symbol']}[{record['interval']}]: equity series must be annotated")
+            continue
+        try:
+            cap = intraday_mod.load_capture(record)
+        except intraday_mod.IntradayError as exc:
+            rep.fail("intraday.study_calendar",
+                     f"{record['symbol']}[{record['interval']}]: reload failed: {exc}")
+            continue
+        annotated = intraday_mod.sessions_calendar_aware(cap.bars)
+        want_on = sorted(s["date"] for s in annotated if s["is_full_closure"])
+        if row.get("session_dates_on_full_closure") != want_on:
+            rep.fail("intraday.study_calendar",
+                     f"{record['symbol']}[{record['interval']}]: sessions on full closure "
+                     f"{row.get('session_dates_on_full_closure')} != re-derived {want_on}")
+        want_spanned = sum(1 for s in annotated[1:] if s["closures_spanned"])
+        if row.get("boundaries_spanning_closure") != want_spanned:
+            rep.fail("intraday.study_calendar",
+                     f"{record['symbol']}[{record['interval']}]: boundaries_spanning_closure "
+                     f"{row.get('boundaries_spanning_closure')} != re-derived {want_spanned}")
+    window = diag.get("studied_window") or {}
+    if diag.get("equity_series_annotated"):
+        want_window = calendar_mod.full_closures_between(window.get("start"), window.get("end"))
+        if diag.get("full_closures_in_window") != want_window:
+            rep.fail("intraday.study_calendar",
+                     "full_closures_in_window does not match intel.calendar over the studied window")
+    elif diag.get("full_closures_in_window"):
+        rep.fail("intraday.study_calendar",
+                 "no equity series studied but full_closures_in_window is non-empty")
     rep.ok(f"intraday study: {len(coverage)} series, {len(buckets)} bucket rows and "
            f"{len(aggregate)} kind aggregates re-derived from the capture index")
 
@@ -2097,6 +2165,61 @@ def check_stock_competition(rep: Report, source_ids: dict) -> None:
             if got is not None and not approx(got, want, 1e-9):
                 rep.fail("stock_competition.profile",
                          f"{name}: _meta.profiles.{division.get('profile')}.{key} {got} != engine {want}")
+    for name, division in (doc.get("divisions") or {}).items():
+        if not division.get("leaderboard"):
+            continue
+        fwd = division.get("forward_held_out") or {}
+        editions = division.get("editions") or []
+        held_n = fwd.get("held_out_editions", 0) or 0
+        fwd_lb = fwd.get("forward_leaderboard")
+        in_lb = fwd.get("in_sample_leaderboard")
+        if (fwd_lb is None) != (in_lb is None):
+            rep.fail("stock_competition.forward",
+                     f"{name}: in-sample and forward leaderboards must both be present or both null")
+            continue
+        if fwd_lb is None:
+            if held_n == 0:
+                rep.ok(f"{name}: forward held-out disabled (held_out_editions=0)")
+            elif held_n >= len(editions):
+                rep.ok(f"{name}: forward window correctly null ({held_n} held out of "
+                       f"{len(editions)} editions)")
+            else:
+                rep.fail("stock_competition.forward",
+                         f"{name}: {held_n} editions held out of {len(editions)} but no forward "
+                         "leaderboard stored")
+            continue
+        window = fwd.get("held_out_window") or {}
+        if window.get("start_date") != editions[-held_n]["start_date"] or \
+                window.get("end_date") != editions[-1]["end_date"]:
+            rep.fail("stock_competition.forward",
+                     f"{name}: held_out_window {window} != trailing {held_n} season editions")
+        if fwd.get("in_sample_editions") != len(editions) - held_n:
+            rep.fail("stock_competition.forward",
+                     f"{name}: in_sample_editions {fwd.get('in_sample_editions')} != "
+                     f"{len(editions) - held_n}")
+        for label, board, ed_slice in (("in_sample", in_lb, editions[:-held_n]),
+                                       ("forward", fwd_lb, editions[-held_n:])):
+            ranks = [row["season_rank"] for row in board]
+            if ranks != list(range(1, len(board) + 1)):
+                rep.fail("stock_competition.forward",
+                         f"{name}/{label}: season_rank is not 1..{len(board)}")
+            pnls = [row["season_realized_pnl_usd"] for row in board]
+            if pnls != sorted(pnls, reverse=True):
+                rep.fail("stock_competition.forward",
+                         f"{name}/{label}: leaderboard is not sorted by season P/L")
+            for row in board:
+                if row["username"] not in usernames:
+                    rep.fail("stock_competition.forward",
+                             f"{name}/{label}: {row['username']} is not on the roster")
+                    continue
+                per = [r for ed in ed_slice for r in ed.get("rows", [])
+                       if r["username"] == row["username"]]
+                want_pnl = round(sum(r["realized_pnl_usd"] for r in per), 2)
+                if not approx(row["season_realized_pnl_usd"], want_pnl, 0.011):
+                    rep.fail("stock_competition.forward",
+                             f"{name}/{label}/{row['username']}: season P/L "
+                             f"{row['season_realized_pnl_usd']} != re-derived {want_pnl} from the "
+                             f"{label} edition slice")
     # The counterfactual block must be flagged as a counterfactual wherever it is rendered.
     for name, div in (doc.get("counterfactual_20x") or {}).items():
         if div.get("is_counterfactual") is not True:

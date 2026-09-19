@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 32,
+  "hypothesis_count": 36,
   "reverified_utc": "2026-09-18",
   "reverification_note": "2026-09-18 eleventh pass (intraday + stock-division session): H31 added and supported from the capture-lane evidence (sandbox egress, a timed-out unbounded sweep, a bounded lane that produced a validated artifact); H32 registered as the falsifiable intraday gap-fill/latency prediction that the study artifact will answer once captures are committed - deliberately left without a verdict rather than asserted in advance. H27-H30 unchanged from the eighth-pass reverification."
  },
@@ -544,6 +544,59 @@
    "status": "untested",
    "evidence": [
     "Register opened in the eleventh pass. The measuring instrument (scripts/run_intraday_study.py), its self-checking gap accounting and the offline audit are in place; the number this hypothesis needs is withheld until the vendor capture is committed, and no value is asserted here in advance of the data."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H33",
+   "claim": "Session-boundary gaps that span a full US equity exchange closure behave differently from ordinary weekend gaps (different fill rate and bars-to-fill), so the gap study must annotate closures separately rather than pooling all multi-day boundaries.",
+   "prediction": "Once intraday captures land, calendar_diagnostics.gaps_spanning_closure_total is non-trivial and the fill rate of closure-spanning gaps differs from the pooled bucket rate by a margin larger than the binomial noise of the smaller sample.",
+   "test": "Re-derive data/intraday_study.json after the 20-stock intraday capture lands; read calendar_diagnostics per_series gaps_spanning_closure and compare closure-spanning gap fills against the pooled gap_fill buckets.",
+   "status": "untested",
+   "evidence": [
+    "Instrument in place: intel/calendar.py full-closure table, sessions_calendar_aware() annotation and the calendar_diagnostics study section (this pass); no intraday series is captured yet, so the comparison number is withheld, not estimated."
+   ],
+   "source_ids": [
+    "NYSE-HOURS-CALENDAR",
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H34",
+   "claim": "C14 (gap-and-go momentum surfer): a volatile-stock session that gaps up >=1.5 ATR and still closes in the top half of its range with the close above the open continues upward over the following ~10 sessions often enough that pyramided longs beat the B1 control on the same editions.",
+   "prediction": "On the full 20-stock daily pool, the C14 usernames (GapGlider, MomentumMarauder) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C14 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H35",
+   "claim": "C15 (crash snapback sniper): after a >=25% five-session drawdown, a high-volume session closing in the top half of its range marks forced-seller exhaustion and snaps back over ~4 sessions.",
+   "prediction": "On the full 20-stock daily pool, the C15 usernames (DeadCatDana, SnapbackSue) show a positive median edition multiple and beat the B1 control by season realized P/L in the primary profile.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C15 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "H36",
+   "claim": "C16 (ATR-expansion breakout compounder): a close above the 20-session high while ATR(14) itself expands (>=1.2x its 5-bar-ago value) identifies volatility-backed breakouts whose pyramided compounding beats thin-air breakouts and the B1 control.",
+   "prediction": "On the full 20-stock daily pool, the C16 usernames (VolcanoVic, BreakoutBea) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C16 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"

@@ -217,6 +217,10 @@ def sessions(bars: tuple[IBar, ...] | list[IBar]) -> "list[tuple[str, list[IBar]
     the study; the current UTC method is the honest, verifiable baseline.
 
     Use only publicly available official calendars; no hallucinated sessions.
+
+    For the calendar-aware variant that annotates these same sessions with the
+    US equity full-closure table (weekend gaps vs gaps spanning an exchange
+    holiday), see sessions_calendar_aware(); the study reports both.
     """
     grouped: dict[str, list[IBar]] = {}
     order: list[str] = []
@@ -227,6 +231,62 @@ def sessions(bars: tuple[IBar, ...] | list[IBar]) -> "list[tuple[str, list[IBar]
             order.append(day)
         grouped[day].append(bar)
     return [(day, grouped[day]) for day in order]
+
+
+def sessions_calendar_aware(
+    bars: tuple[IBar, ...] | list[IBar],
+    calendar_id: str = "NYSE",
+) -> "list[dict]":
+    """UTC sessions annotated with the US equity holiday calendar.
+
+    The grouping is identical to :func:`sessions` (the honest baseline: one UTC
+    date is one session for regular-hours equities); each session is then
+    annotated with the ``intel.calendar`` full-closure table so downstream
+    measurements can tell a weekend gap from a gap that spans a mid-week
+    exchange holiday. Holiday sessions are NEVER dropped here: vendor bars
+    dated on a full closure are an anomaly the study reports, not data to
+    delete silently.
+
+    Returns one dict per session, in order::
+
+        {"date": ..., "bars": [...], "bar_count": N,
+         "is_full_closure": bool, "closure_name": str | None,
+         "closures_spanned": [iso dates strictly between the prior session
+                              and this one that are full closures]}
+
+    Only ``calendar_id="NYSE"`` is supported; futures need the CME Globex
+    calendar, which is not encoded (see intel.calendar).
+    """
+    if calendar_id != "NYSE":
+        raise IntradayError(
+            f"unknown calendar {calendar_id!r}: only 'NYSE' is encoded; "
+            "futures need the CME Globex calendar (not implemented)"
+        )
+    from .calendar import full_closures_between
+
+    groups = sessions(bars)
+    if not groups:
+        return []
+    first_day = groups[0][0]
+    last_day = groups[-1][0]
+    closures = full_closures_between(first_day, last_day)
+    annotated: list[dict] = []
+    prior_day: str | None = None
+    for day, day_bars in groups:
+        spanned = sorted(
+            iso for iso in closures
+            if prior_day is not None and prior_day < iso < day
+        )
+        annotated.append({
+            "date": day,
+            "bars": day_bars,
+            "bar_count": len(day_bars),
+            "is_full_closure": day in closures,
+            "closure_name": closures.get(day),
+            "closures_spanned": spanned,
+        })
+        prior_day = day
+    return annotated
 
 
 def atr(bars: list, length: int = 14) -> list[float | None]:

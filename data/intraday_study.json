@@ -84,17 +84,24 @@
    3,
    5
   ],
+  "calendar": {
+   "module": "intel.calendar",
+   "version": "nyse-holidays-1",
+   "applied_to": "equity sessions in calendar_diagnostics only; gap and latency numbers are unchanged from the UTC-date baseline"
+  },
   "methodology": [
    "Session = UTC calendar date, NOT a verified exchange-session calendar. Regular US equity hours vary with daylight saving time; extended-hours data may cross UTC dates. Futures UTC boundaries do not equal CME sessions. These observations must not be labelled official opening-auction gaps.",
    "Gap = session_open - prior_session_close, both read from stored bars.",
    "Gap scale = ATR(14) of session-aggregated bars (open first bar, high/low of the session, close of the last bar) at the prior session; gap_atr = gap / ATR.",
    "Filled = the session traded back through the prior session close (gap up: session low <= prior close; gap down: session high >= prior close).",
-   "Latency = price change from the decision bar's close to the fill bar's open (default engine semantics) or to a later bar's close, in basis points of the decision close. Positive = the fill is above the decision close."
+   "Latency = price change from the decision bar's close to the fill bar's open (default engine semantics) or to a later bar's close, in basis points of the decision close. Positive = the fill is above the decision close.",
+   "Calendar annotation = each studied equity session is looked up in the intel.calendar full-closure table so gaps spanning an exchange holiday can be told apart from weekend gaps; holiday-dated sessions are reported, not removed."
   ],
   "assumptions": [
    "Adjustments and feed coverage come from source_metadata. Alpaca captures use split adjustment and IEX; legacy Yahoo captures may contain split gaps. Neither feed is an independently verified executable quote.",
    "The requested dates and actual capture endpoints determine coverage. No retention entitlement is inferred for other providers.",
-   "No transaction costs, borrow costs or liquidity limits are applied to the latency measurement; it is a price-distance measurement only."
+   "No transaction costs, borrow costs or liquidity limits are applied to the latency measurement; it is a price-distance measurement only.",
+   "The full-closure table is a rule-based transcription (intel.calendar) that must be re-verified against the official NYSE calendar before authoritative use; early closes are informational and never exclude a session."
   ],
   "not_a_forecast": true
  },
@@ -106,5 +113,36 @@
  },
  "execution_latency": {
   "by_kind_interval": []
+ },
+ "calendar_diagnostics": {
+  "calendar": {
+   "calendar_id": "NYSE",
+   "version": "nyse-holidays-1",
+   "years": [
+    2016,
+    2026
+   ],
+   "sources": [
+    "https://www.nyse.com/markets/hours-calendars",
+    "https://www.nasdaqtrader.com/Trader.aspx?id=calendar"
+   ],
+   "futures_calendar_source": "https://www.cmegroup.com/trading_hours.html",
+   "special_closures": {
+    "2018-12-05": "National Day of Mourning for President George H.W. Bush",
+    "2025-01-09": "National Day of Mourning for President Jimmy Carter"
+   },
+   "verification": "Rule-based transcription; every date must be re-verified against the official NYSE calendar before authoritative use."
+  },
+  "equity_series_annotated": 0,
+  "sessions_on_full_closure_total": 0,
+  "boundaries_spanning_closure_total": 0,
+  "gaps_spanning_closure_total": 0,
+  "studied_window": {
+   "start": null,
+   "end": null
+  },
+  "full_closures_in_window": {},
+  "per_series": [],
+  "note": "Sessions are still grouped by UTC date (the verifiable baseline); the calendar only annotates them. A session dated on a full closure is reported, never deleted. Futures series are not annotated: the CME Globex calendar is not encoded."
  }
 }

@@ -146,6 +146,9 @@ def main() -> int:
                     help="cap on season editions per division (most recent kept)")
     ap.add_argument("--counterfactual-editions", type=int, default=12)
     ap.add_argument("--latency-editions", type=int, default=6)
+    ap.add_argument("--forward-held-out", type=int, default=6,
+                    help="trailing season editions held out as the forward test window "
+                    "(in-sample leaderboard vs forward leaderboard are reported separately)")
     args = ap.parse_args()
     def default_stamp() -> str:
         """Newest input capture stamp, so an un-stamped run still reproduces exactly.
@@ -289,6 +292,8 @@ def main() -> int:
                 "short_trades": r.short_trades,
                 "skipped_entries": r.skipped_entries,
                 "expired_orders": getattr(r, "expired_orders", 0),
+                "roll_closes": getattr(r, "roll_closes", 0),
+                "arbitration": getattr(r, "arbitration", "sequential"),
                 "margin_breach_bars": r.margin_breach_bars,
                 "max_drawdown_usd": round(r.max_drawdown_usd, 2),
                 "multiple_buckets": r.multiple_buckets,
@@ -405,6 +410,7 @@ def main() -> int:
             windows=[*season_windows, latest_window],
             latency_bars=0,
             control_symbol_picker=control_symbol_for,
+            forward_held_out_count=args.forward_held_out,
             division_name=name,
             division_of_user=division_of,
         )
@@ -423,6 +429,23 @@ def main() -> int:
             "participants": res.participants,
             "leaderboard": res.leaderboard,
             "target_summary": res.target_summary,
+            "forward_held_out": {
+                "held_out_editions": res.forward_held_out_count,
+                "held_out_window": {
+                    "start_date": res.editions[-res.forward_held_out_count]["start_date"],
+                    "end_date": res.editions[-1]["end_date"],
+                } if res.forward_held_out_count and res.forward_held_out_leaderboard else None,
+                "in_sample_editions": (len(res.editions) - res.forward_held_out_count
+                                       if res.forward_held_out_leaderboard else len(res.editions)),
+                "in_sample_leaderboard": res.in_sample_leaderboard,
+                "forward_leaderboard": res.forward_held_out_leaderboard,
+                "note": (
+                    "The trailing season editions are held out as a forward test window that the "
+                    "frozen models never saw during design (they have no fitted parameters at "
+                    "all). The in-sample and forward leaderboards rank the same usernames on "
+                    "disjoint edition sets; the latest window is excluded from both."
+                ),
+            },
         }
         print(f"[{name}] {len(res.editions)} season editions on {len(series_map)} symbols; "
               f"champion {divisions[name]['leaderboard'][0]['username']} "
@@ -601,6 +624,7 @@ def main() -> int:
                 "max_editions_per_division": args.max_editions,
                 "counterfactual_editions": args.counterfactual_editions,
                 "latency_editions": args.latency_editions,
+                "forward_held_out_editions": args.forward_held_out,
                 "final_window_note": (
                     "The LATEST window is the 30-calendar-day window ending at the last captured "
                     "session; it is reported separately and excluded from season standings."
