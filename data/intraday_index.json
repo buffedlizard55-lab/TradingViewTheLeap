@@ -24,20 +24,20 @@
   "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-19; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately (the window was re-frozen once, on 2026-09-19, from a 2026-07-21 start to a 2026-07-28 start).",
   "rounding_decimals": 5,
   "vendor_source_id": "YAHOO-INTRADAY-CHART",
-  "fetched_at_utc": "2026-09-19T05:32:06+00:00",
+  "fetched_at_utc": "2026-09-19T15:59:03+00:00",
   "capture_environment": "github-actions",
-  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35422148917",
+  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35452359048",
   "direct_rate_limited": true,
-  "direct_429_count": 36,
+  "direct_429_count": 39,
   "symbol_count": 80,
-  "captured_count": 29,
-  "failed_count": 41,
+  "captured_count": 37,
+  "failed_count": 33,
   "not_attempted_count": 10,
-  "elapsed_seconds": 21257.8,
+  "elapsed_seconds": 12142.4,
   "captured_by_interval": {
-   "15m": 15,
-   "1h": 9,
-   "1d": 5
+   "15m": 16,
+   "1h": 10,
+   "1d": 11
   },
   "equity_symbols": [
    "ENPH",
@@ -64,10 +64,10 @@
   "futures_symbols": [],
   "provenance_note": "Re-run scripts/fetch_intraday.py --only-failed in a networked environment to top up. The offline verifier audits these files without network access: it re-validates every OHLC invariant, re-checks each stored SHA-256 against the index, and re-derives the intraday study. Records with status 'failed' carry the error text and must be retried.",
   "workflow_run_urls": [
-   "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35422148917"
+   "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35452359048"
   ],
   "merge_note": "Merged from per-symbol partial indexes written by parallel capture jobs (scripts/merge_intraday_indexes.py). Tallies are recomputed from the merged records; direct_429_count and elapsed_seconds are summed across the jobs.",
-  "merged_at_utc": "2026-09-19T06:07:13+00:00",
+  "merged_at_utc": "2026-09-19T16:29:54+00:00",
   "merged_partial_count": 21
  },
  "captures": [
@@ -353,7 +353,7 @@
    "kind": "equity",
    "interval": "1d",
    "status": "failed",
-   "error": "RuntimeError: AMD[1d] chunk 1766966400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/AMD?period1=1766966400&period2=1789776000&interval=1d (HTTP Error 522: <none>)"
+   "error": "RuntimeError: AMD[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/AMD?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
   },
   {
    "symbol": "AMD",
@@ -459,7 +459,7 @@
    "kind": "equity",
    "interval": "15m",
    "status": "failed",
-   "error": "RuntimeError: APP[15m] chunk 1785196800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/APP?period1=1785196800&period2=1786406400&interval=15m (HTTP Error 522: <none>)"
+   "error": "RuntimeError: APP[15m] chunk 1787616000: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/APP?period1=1787616000&period2=1788825600&interval=15m (HTTP Error 522: <none>)"
   },
   {
    "symbol": "APP",
@@ -623,16 +623,144 @@
    "yahoo_ticker": "COIN",
    "kind": "equity",
    "interval": "15m",
-   "status": "failed",
-   "error": "RuntimeError: COIN[15m] chunk 1786406400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1786406400&period2=1787616000&interval=15m (HTTP Error 522: <none>)"
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1785196800&period2=1786406400&interval=15m",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/COIN_15m.json",
+   "bar_count": 989,
+   "dropped_null_bars": 0,
+   "first_epoch": 1785245400,
+   "last_epoch": 1789761600,
+   "first_utc": "2026-07-28T13:30:00+00:00",
+   "last_utc": "2026-09-18T20:00:00+00:00",
+   "first_close": 159.7,
+   "last_close": 194.25,
+   "chunks": 4,
+   "chunk_provenance": [
+    {
+     "period1": 1785196800,
+     "period2": 1786406400,
+     "period1_utc": "2026-07-28T00:00:00+00:00",
+     "period2_utc": "2026-08-11T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1785196800&period2=1786406400&interval=15m",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 27451,
+     "raw_response_sha256": "140532b9c30cc22e5b90160e8e64eb0791cbd389dbed85df8a1e05dea94cb5c2",
+     "bars_returned": 260,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1786406400,
+     "period2": 1787616000,
+     "period1_utc": "2026-08-11T00:00:00+00:00",
+     "period2_utc": "2026-08-25T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1786406400&period2=1787616000&interval=15m",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 26813,
+     "raw_response_sha256": "7bdaab03afed79b45dbf2b2a4b161be3d04f68899ed4e3a6762a2f9e33e4bcb6",
+     "bars_returned": 260,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1787616000,
+     "period2": 1788825600,
+     "period1_utc": "2026-08-25T00:00:00+00:00",
+     "period2_utc": "2026-09-08T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1787616000&period2=1788825600&interval=15m",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 23623,
+     "raw_response_sha256": "f5a84ac774c08949615b47ded706195136a7ae7d6ae82ed5183d27ab107f1273",
+     "bars_returned": 234,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1788825600,
+     "period2": 1789776000,
+     "period1_utc": "2026-09-08T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1788825600&period2=1789776000&interval=15m",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 22972,
+     "raw_response_sha256": "732828fdd6b6f38d77d970c8a127ae42afea08a71c622ccceeed0b8bf852d1a6",
+     "bars_returned": 235,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 100859,
+   "raw_response_sha256": "7a26a4b34f73f5ec78cbcef27fcf3ad7d4bc8d40134a957f8f223e26f163b8af",
+   "stored_bytes": 55565,
+   "stored_sha256": "03483ab1004f3a0da6c7825a25a21bc651d649d045345d83e59d1f988a4508de",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "15m",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:56:25+00:00"
   },
   {
    "symbol": "COIN",
    "yahoo_ticker": "COIN",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: COIN[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/COIN_1d.json",
+   "bar_count": 1365,
+   "dropped_null_bars": 0,
+   "first_epoch": 1618407000,
+   "last_epoch": 1789738200,
+   "first_utc": "2021-04-14T13:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 328.28,
+   "last_close": 194.25,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 125210,
+     "raw_response_sha256": "1bbb0164790d8b86aa6fb34aeaeb78b9cb6fbd49b4309423dbc090c96924abcf",
+     "bars_returned": 1183,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20735,
+     "raw_response_sha256": "3c4fbf52d3432c3e4d8a9f41bc5535cdcfb91fcae791619c9b45c61bd8966bda",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 145945,
+   "raw_response_sha256": "93866111f412b68cee886add6f967d0b475ebed42aedd52329acb97cce23e583",
+   "stored_bytes": 72221,
+   "stored_sha256": "ed635bef8b25b942e05b736eeba5cf3f2a47d366e740e89bdc03c8603db935c5",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:56:25+00:00"
   },
   {
    "symbol": "COIN",
@@ -640,7 +768,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: COIN[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: COIN[1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "CVNA",
@@ -891,7 +1019,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: ENPH[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/ENPH?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: ENPH[1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/ENPH?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "GME",
@@ -899,7 +1027,7 @@
    "kind": "equity",
    "interval": "15m",
    "status": "failed",
-   "error": "RuntimeError: GME[15m] chunk 1788825600: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/GME?period1=1788825600&period2=1789776000&interval=15m (HTTP Error 522: <none>)"
+   "error": "RuntimeError: GME[15m] chunk 1785196800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/GME?period1=1785196800&period2=1786406400&interval=15m (HTTP Error 522: <none>)"
   },
   {
    "symbol": "GME",
@@ -1339,8 +1467,59 @@
    "yahoo_ticker": "MARA",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: MARA[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MARA?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/MARA_1d.json",
+   "bar_count": 2693,
+   "dropped_null_bars": 0,
+   "first_epoch": 1451917800,
+   "last_epoch": 1789738200,
+   "first_utc": "2016-01-04T14:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 25.44,
+   "last_close": 13.24,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 271876,
+     "raw_response_sha256": "2a22a9430f667a30f478776d1d92e8eb5994ad04bc7d96e75e540638bfe52aa2",
+     "bars_returned": 2511,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20963,
+     "raw_response_sha256": "2e5ecb61e4f1005eafbebb4aa81d90417f336f87fdc25d9be2bc58ca4d3c29df",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 292839,
+   "raw_response_sha256": "4a1309520e14dad28b3cf6aded72e2e7a26730b9f734fb23bbc0591c86b0256b",
+   "stored_bytes": 116695,
+   "stored_sha256": "84383fc17b44cbd9d128d5bb0cd0700b7cd0d15baaf2113eacc037b33af07bf7",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NasdaqCM",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:37:06+00:00"
   },
   {
    "symbol": "MARA",
@@ -1348,7 +1527,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: MARA[1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MARA?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: MARA[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MARA?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "MSTR",
@@ -1440,8 +1619,59 @@
    "yahoo_ticker": "MSTR",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: MSTR[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/MSTR_1d.json",
+   "bar_count": 2693,
+   "dropped_null_bars": 0,
+   "first_epoch": 1451917800,
+   "last_epoch": 1789738200,
+   "first_utc": "2016-01-04T14:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 17.113,
+   "last_close": 153.92,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 273620,
+     "raw_response_sha256": "98de98cfa50337f0cd87567b7ed50323d7b9a4e0944032b3ff34b7bc0973dc55",
+     "bars_returned": 2511,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20976,
+     "raw_response_sha256": "eb83a714325bcc67c92b43cb32d6f5ac1429eebc1206260e8c00d1b49eb90cdb",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 294596,
+   "raw_response_sha256": "6122194bc896ea41a69ec17f1f1cd259bd540bec30fdece8d5edc99d33c16942",
+   "stored_bytes": 134777,
+   "stored_sha256": "fb674307bd42f1dfba2725175b7b8c8bc5642005e3bd61d7703b7e8f2729a1c5",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:45:47+00:00"
   },
   {
    "symbol": "MSTR",
@@ -1449,7 +1679,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: MSTR[1h] chunk 1757980800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1757980800&period2=1773532800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: MSTR[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MSTR?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "NIO",
@@ -1541,8 +1771,59 @@
    "yahoo_ticker": "NIO",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: NIO[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/NIO?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/NIO_1d.json",
+   "bar_count": 2015,
+   "dropped_null_bars": 0,
+   "first_epoch": 1536759000,
+   "last_epoch": 1789738200,
+   "first_utc": "2018-09-12T13:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 6.6,
+   "last_close": 3.66,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 198896,
+     "raw_response_sha256": "6f2faf54069d36d0fbb3cdec96b9d6427f3635c9cd3be55ea5fc62f3196ce03c",
+     "bars_returned": 1833,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20660,
+     "raw_response_sha256": "d17a5eac2f757968bf993178a1ab62f1b1267e7f19bc69796a0a7d0c02925239",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 219556,
+   "raw_response_sha256": "4117aae0c2154d0564bc507ebe58972cd5c5fc515820844bada262ac8dbcad05",
+   "stored_bytes": 89137,
+   "stored_sha256": "0dc13061c2ec9120d7b03b30db5a0bf09a95e70c5feff0774b7d98b8707888d1",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NYSE",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:49:30+00:00"
   },
   {
    "symbol": "NIO",
@@ -1664,7 +1945,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: NVAX[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/NVAX?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: NVAX[1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/NVAX?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "NVDA",
@@ -2116,7 +2397,7 @@
    "kind": "equity",
    "interval": "15m",
    "status": "failed",
-   "error": "RuntimeError: PTON[15m] chunk 1787616000: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PTON?period1=1787616000&period2=1788825600&interval=15m (HTTP Error 522: <none>)"
+   "error": "RuntimeError: PTON[15m] chunk 1785196800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PTON?period1=1785196800&period2=1786406400&interval=15m (HTTP Error 522: <none>)"
   },
   {
    "symbol": "PTON",
@@ -2132,7 +2413,7 @@
    "kind": "equity",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: PTON[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PTON?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: PTON[1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/PTON?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "RIOT",
@@ -2415,8 +2696,59 @@
    "yahoo_ticker": "SHOP",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: SHOP[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/SHOP_1d.json",
+   "bar_count": 2693,
+   "dropped_null_bars": 0,
+   "first_epoch": 1451917800,
+   "last_epoch": 1789738200,
+   "first_utc": "2016-01-04T14:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 2.572,
+   "last_close": 128.5,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 273193,
+     "raw_response_sha256": "31992d01f3dfcb987445c04c85f5207f650afc0f5d670591da2ac3e394a0624c",
+     "bars_returned": 2511,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/SHOP?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20900,
+     "raw_response_sha256": "a5c508c5f44d25b53732da47b30e56868b8259cccc268fcc63aab358a9430ebf",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 294093,
+   "raw_response_sha256": "f264b1338760f382d77a5b21d58f94988d4f7c23ca9d0677f0885bd3d177b91e",
+   "stored_bytes": 132415,
+   "stored_sha256": "1bd737ecf1e690118a51124d75b389a0d882793b4a4758ab9afa5a74d5e6214e",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:43:20+00:00"
   },
   {
    "symbol": "SHOP",
@@ -2758,16 +3090,157 @@
    "yahoo_ticker": "TSLA",
    "kind": "equity",
    "interval": "1d",
-   "status": "failed",
-   "error": "RuntimeError: TSLA[1d] chunk 1451606400: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/TSLA?period1=1451606400&period2=1766966400&interval=1d (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1451606400&period2=1766966400&interval=1d",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/TSLA_1d.json",
+   "bar_count": 2693,
+   "dropped_null_bars": 0,
+   "first_epoch": 1451917800,
+   "last_epoch": 1789738200,
+   "first_utc": "2016-01-04T14:30:00+00:00",
+   "last_utc": "2026-09-18T13:30:00+00:00",
+   "first_close": 14.894,
+   "last_close": 364.26999,
+   "chunks": 2,
+   "chunk_provenance": [
+    {
+     "period1": 1451606400,
+     "period2": 1766966400,
+     "period1_utc": "2016-01-01T00:00:00+00:00",
+     "period2_utc": "2025-12-29T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1451606400&period2=1766966400&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 278275,
+     "raw_response_sha256": "94cf4d43e64460d51e4f456548e4fe3ec34bf1f812c94b4a9e8a8c87f5adbf71",
+     "bars_returned": 2511,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    },
+    {
+     "period1": 1766966400,
+     "period2": 1789776000,
+     "period1_utc": "2025-12-29T00:00:00+00:00",
+     "period2_utc": "2026-09-19T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1766966400&period2=1789776000&interval=1d",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 20458,
+     "raw_response_sha256": "72c05a7e337a1ea66fdf6a07cfc9db9151e851028eee69db4089ce06385e0150",
+     "bars_returned": 182,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 0
+    }
+   ],
+   "raw_response_bytes_total": 298733,
+   "raw_response_sha256": "0abc996bb80de7ae77e1c9eb9858577a65585e6c5667460e1db4790aa9c99aed",
+   "stored_bytes": 153916,
+   "stored_sha256": "25e38aed1c48cd91dc5b066ab473aa49a69b31d474362765594e8abbeba57c2e",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1d",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:51:42+00:00"
   },
   {
    "symbol": "TSLA",
    "yahoo_ticker": "TSLA",
    "kind": "equity",
    "interval": "1h",
-   "status": "failed",
-   "error": "RuntimeError: TSLA[1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/TSLA?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1726876800&period2=1742428800&interval=1h",
+   "endpoint_note": "first chunk; every chunk's exact endpoint is under 'chunks'",
+   "file": "data/intraday/TSLA_1h.json",
+   "bar_count": 3462,
+   "dropped_null_bars": 14,
+   "first_epoch": 1727098200,
+   "last_epoch": 1789673400,
+   "first_utc": "2024-09-23T13:30:00+00:00",
+   "last_utc": "2026-09-17T19:30:00+00:00",
+   "first_close": 247.84,
+   "last_close": 366.04001,
+   "chunks": 5,
+   "chunk_provenance": [
+    {
+     "period1": 1726876800,
+     "period2": 1742428800,
+     "period1_utc": "2024-09-21T00:00:00+00:00",
+     "period2_utc": "2025-03-20T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1726876800&period2=1742428800&interval=1h",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 115526,
+     "raw_response_sha256": "b5890008b5e83d21994437fbdfe62fa79aee7835d01071fb7c9a60d1362ab624",
+     "bars_returned": 848,
+     "bars_dropped_null": 2,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1742428800,
+     "period2": 1757980800,
+     "period1_utc": "2025-03-20T00:00:00+00:00",
+     "period2_utc": "2025-09-16T00:00:00+00:00",
+     "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/TSLA?period1=1742428800&period2=1757980800&interval=1h",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 106751,
+     "raw_response_sha256": "8fe56be587507e0b53c0c743c9013496d82bd3937f59fdc0a984daea45664246",
+     "bars_returned": 858,
+     "bars_dropped_null": 1,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1757980800,
+     "period2": 1773532800,
+     "period1_utc": "2025-09-16T00:00:00+00:00",
+     "period2_utc": "2026-03-15T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1757980800&period2=1773532800&interval=1h",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 97377,
+     "raw_response_sha256": "a3c1f1775d6eb2b2c647b494b4c5d429286dc17eff5d84db314cda5200715b23",
+     "bars_returned": 853,
+     "bars_dropped_null": 11,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1773532800,
+     "period2": 1789084800,
+     "period1_utc": "2026-03-15T00:00:00+00:00",
+     "period2_utc": "2026-09-11T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1773532800&period2=1789084800&interval=1h",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 88463,
+     "raw_response_sha256": "d4a143aa0653525affb246566e244fd41e47235f6a42f21b6583c5a429cc134c",
+     "bars_returned": 868,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 1
+    },
+    {
+     "period1": 1789084800,
+     "period2": 1789689600,
+     "period1_utc": "2026-09-11T00:00:00+00:00",
+     "period2_utc": "2026-09-18T00:00:00+00:00",
+     "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1789084800&period2=1789689600&interval=1h",
+     "transport": "allorigins-relay",
+     "raw_response_bytes": 4900,
+     "raw_response_sha256": "6676f91b18ed6d2c97c50092e817e34c668d6384c2ae48d83f27cfbe27c16fff",
+     "bars_returned": 35,
+     "bars_dropped_null": 0,
+     "bars_dropped_out_of_window": 1
+    }
+   ],
+   "raw_response_bytes_total": 413017,
+   "raw_response_sha256": "d6d58893d80b8ebed9a51862c7a36d3c7d1954658841801d10c3f6eac9399485",
+   "stored_bytes": 202106,
+   "stored_sha256": "3f5661600d8f13b3af10122de3f73774de7741d86d3ebff83d2fbee90fb96e80",
+   "rounding_decimals": 5,
+   "max_abs_rounding_delta": 5e-06,
+   "vendor_data_granularity": "1h",
+   "vendor_reported_exchange": "NasdaqGS",
+   "vendor_reported_instrument_type": "EQUITY",
+   "vendor_currency": "USD",
+   "vendor_exchange_timezone": "America/New_York",
+   "status": "captured",
+   "captured_at_utc": "2026-09-19T15:51:42+00:00"
   },
   {
    "symbol": "CME:BTC1!",
@@ -2823,7 +3296,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: CME:SOL1![1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/SOL%3DF?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: CME:SOL1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/SOL%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "CME:XRP1!",
@@ -2855,7 +3328,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: COMEX:SIC1![1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/SIC%3DF?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: COMEX:SIC1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/SIC%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "COMEX_MINI:SIL1!",
@@ -2919,7 +3392,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: NYMEX:RB1![1h] chunk 1742428800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/RB%3DF?period1=1742428800&period2=1757980800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: NYMEX:RB1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/RB%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "NYMEX_MINI:QM1!",
