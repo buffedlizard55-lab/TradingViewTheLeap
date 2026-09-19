@@ -1,18 +1,20 @@
 # C19 follow-up gate: two-stage absorption variant
 
-**Status: proposal only — not rostered, not backtested, and not a recommendation.**
+**Status: proposal only — implemented and frozen as model `C19A`, not rostered, not
+backtested on the live pool, and not a recommendation.**
 
 ## Why this exists
 
 Frozen C19 (`intel/stock_strategies.py`) requires two consecutive closes each down by at least
 1.5 ATR, with the second bar closing in the top half of its own range and volume confirmation.
-The current committed capture is only **37/60 stock series** (daily **11/20**), so the recorded
-zero-fire result cannot establish that the hypothesis is false. A full-pool run must happen first.
+The current committed capture is only **38/60 stock series** (daily **11/20**; 15m=16, 1h=11
+including salvaged MARA 1h). The recorded zero-fire result on the partial pool cannot establish
+that the hypothesis is false. A full-pool run must happen first.
 
 If C19 still has zero fires after the matrix reaches 60/60 and the competition is re-derived, this
 is a **new model**, not a parameter change to frozen C19:
 
-## C19-A — delayed two-stage absorption
+## C19-A — delayed two-stage absorption (`C19A`)
 
 - **Stage 1:** detect the first liquidation bar: close-to-close decline at least 1.5 ATR and volume
   at least 2 times the rolling volume baseline.
@@ -26,7 +28,9 @@ is a **new model**, not a parameter change to frozen C19:
 
 The wider three-session confirmation is intended to test whether the strict adjacent-bar cascade is
 simply too rare for a monthly edition while preserving the same contrarian/absorption idea. It is
-not a tuned rescue: the rules above must be frozen and registered before any result is inspected.
+not a tuned rescue: the rules above are frozen in `intel/stock_strategies.py` (`C19A` /
+`GATED_STOCK_MODEL_IDS`) and must not be rostered until the evidence list below is complete.
+`scripts/verify.py` fails if a gated model appears on `data/competition/stock_roster.json`.
 
 ## Required evidence before registration
 

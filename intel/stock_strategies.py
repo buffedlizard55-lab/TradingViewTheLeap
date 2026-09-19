@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C19).
+"""Contrarian strategy library for the volatile-equity division (C6-C21).
 
-The fourteen contrarian models here are pre-registered for the 20-stock volatile pool
+The sixteen contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -22,6 +22,12 @@ Why these shapes:
   C18 shorts vertical blow-offs and pyramids INTO further extension (averaging up):
   the deliberate paper-tournament tail bet that either ruins the edition or harvests
   the violent snapback at multiplied size.
+- C19A is a structurally new two-stage absorption model (not a C19 parameter retune).
+  It lives in STOCK_MODEL_IDS so the engine can generate decisions, but it is listed
+  in GATED_STOCK_MODEL_IDS and is NOT rostered until the matrix is 60/60 and frozen
+  C19 is still zero-fire (research/strategy/C19-VARIANT-GATE.md).
+- C20 (failed-breakdown spring) and C21 (wide-to-narrow climax reversal) are
+  additional unique shapes, rostered under new usernames.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -41,7 +47,10 @@ from .contrarian import Decision, warmup as contrarian_warmup
 from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
-                   "C14", "C15", "C16", "C17", "C18", "C19")
+                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21")
+# C19A is implemented and frozen, but must not be rostered until the matrix is 60/60
+# including 20/20 daily and frozen C19 is still zero-fire. See C19-VARIANT-GATE.md.
+GATED_STOCK_MODEL_IDS = ("C19A",)
 CONTROL_MODEL_IDS = ("B1",)
 
 MODEL_NAMES = {
@@ -59,6 +68,9 @@ MODEL_NAMES = {
     "C17": "Overnight implosion harvester",
     "C18": "Blow-off short avalanche",
     "C19": "Twin-hammer capitulation compounder",
+    "C19A": "Delayed two-stage absorption (gated)",
+    "C20": "Failed-breakdown spring",
+    "C21": "Wide-to-narrow climax reversal",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -80,6 +92,9 @@ MODEL_CLAIMS = {
     "C17": "A session that gaps down >=2 ATR but still closes in the top half of its own range, above its own open, on >=2x average volume has absorbed its opening panic; the recovery continues over the next ~12 sessions and is compounded with pyramiding.",
     "C18": "A >=20% three-session vertical run on >=2x average volume with the close pinned in the top quartile is a blow-off, not a breakout; shorting it and adding into each further 1 ATR of extension harvests the violent snapback at multiplied size (or ruins the edition — the intended paper-tournament tail bet).",
     "C19": "Two consecutive >=1.5 ATR down closes where the second bar still closes in the top half of its own range mark a two-day liquidation cascade ending in absorption; the snapback over the next ~15 sessions is compounded with pyramiding.",
+    "C19A": "A first liquidation bar (>=1.5 ATR close-to-close drop on >=2x volume) plus a second liquidation bar within the next three sessions (>=1.0 ATR down, low not more than 0.25 ATR below the first low, close in the top 40% of its range) is delayed absorption rather than a continuing cascade; long the next open and pyramid on +1 ATR closes (max 3 adds). Structurally distinct from frozen C19 (not a parameter retune).",
+    "C20": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
+    "C21": "A climax bar whose range is >=2.5 ATR followed by a bar whose range is at most half of that climax, closing in the opposite direction, is a wide-to-narrow reversal: long after a down climax, short after an up climax.",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -194,6 +209,32 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "max_adds": 8,
         "hold_bars": 15,
     },
+    "C19A": {
+        "stage1_crash_atr_mult": 1.5,
+        "stage1_volume_mult": 2.0,
+        "stage2_window": 3,
+        "stage2_crash_atr_mult": 1.0,
+        "stage2_low_atr_slack": 0.25,
+        "stage2_close_tail_fraction": 0.40,
+        "volume_length": 20,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 12,
+    },
+    "C20": {
+        "lookback": 20,
+        "volume_length": 20,
+        "volume_mult": 2.0,
+        "close_tail_fraction": 0.5,
+        "add_atr_step": 1.0,
+        "max_adds": 4,
+        "hold_bars": 10,
+    },
+    "C21": {
+        "climax_atr_mult": 2.5,
+        "inside_range_fraction": 0.5,
+        "hold_bars": 6,
+    },
     "B1": {},
 }
 
@@ -254,6 +295,13 @@ VARIANTS: dict[str, dict[str, dict]] = {
         "aggressive": {"crash_atr_mult": 1.0, "max_adds": 10},
         "patient": {"crash_atr_mult": 2.0, "max_adds": 4},
     },
+    "C19A": {},
+    "C20": {
+        "aggressive": {"lookback": 10, "volume_mult": 1.5, "max_adds": 6, "hold_bars": 8},
+    },
+    "C21": {
+        "tight": {"climax_atr_mult": 2.0, "inside_range_fraction": 0.4, "hold_bars": 4},
+    },
     "B1": {},
 }
 
@@ -277,7 +325,7 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model not in STOCK_MODEL_IDS:
         return contrarian_warmup(model, variant)
     p = resolve_params(model, variant)
-    if model in ("C6", "C7", "C10", "C12", "C17", "C18", "C19"):
+    if model in ("C6", "C7", "C10", "C12", "C17", "C18", "C19", "C19A"):
         # ATR(14) needs 14 bars; the volume average needs its window.
         return max(14, p.get("volume_length", 20)) + 2
     if model == "C8":
@@ -299,6 +347,12 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model == "C16":
         # the breakout lookback window plus ATR(14) at the current and lagged bar.
         return max(p.get("lookback", 20), 14 + p.get("atr_expansion_lag", 5))
+    if model == "C20":
+        # N-bar low lookback, volume average, and ATR(14) on the reclaim bar.
+        return max(p.get("lookback", 20), p.get("volume_length", 20), 14) + 2
+    if model == "C21":
+        # ATR(14) on the climax bar and the following inside bar.
+        return 16
     raise ValueError(f"unknown stock model {model!r}")
 
 
@@ -844,6 +898,144 @@ def generate_stock_decisions(
                     emit(i, "exit", "hold elapsed")
                     position = None
                     held = 0
+    elif model == "C19A":
+        # Delayed two-stage absorption: Stage 1 is a single liquidation print;
+        # Stage 2 is a second liquidation within `stage2_window` sessions whose low
+        # holds near Stage 1 and whose close is absorbed in the top 40%. Distinct
+        # from C19 (adjacent-bar 1.5 ATR cascade, top-half close, 0.5 ATR adds).
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        stage1: Optional[tuple[int, float]] = None
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0:
+                continue
+            if position is None:
+                if stage1 is not None and i - stage1[0] > p["stage2_window"]:
+                    stage1 = None
+                bar = bars[i]
+                rng = bar.high - bar.low
+                drop = closes[i - 1] - closes[i]
+                close_pos = (bar.close - bar.low) / rng if rng > 0 else 0.0
+                if (stage1 is not None
+                        and 1 <= (i - stage1[0]) <= p["stage2_window"]
+                        and rng > 0):
+                    s_low = stage1[1]
+                    stage2 = (
+                        drop >= p["stage2_crash_atr_mult"] * a
+                        and lows[i] >= s_low - p["stage2_low_atr_slack"] * a
+                        and close_pos >= 1.0 - p["stage2_close_tail_fraction"]
+                    )
+                    if stage2:
+                        emit(i, "long", "delayed two-stage absorption long")
+                        position = "long"
+                        held = 0
+                        adds = 0
+                        last_add_price = closes[i]
+                        entry_atr = a
+                        stage1 = None
+                        continue
+                stage1_hit = (
+                    drop >= p["stage1_crash_atr_mult"] * a
+                    and float(bar.volume or 0) >= p["stage1_volume_mult"] * va
+                )
+                if stage1_hit:
+                    stage1 = (i, lows[i])
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C20":
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        lb = p["lookback"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0:
+                continue
+            if position is None:
+                if i < lb + 1:
+                    continue
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0 or va <= 0:
+                    continue
+                prior_min = min(lows[i - lb - 1:i - 1])
+                breakdown_low = lows[i - 1]
+                is_new_low = breakdown_low <= prior_min
+                close_pos = (bar.close - bar.low) / rng
+                spring = (
+                    is_new_low
+                    and closes[i] > breakdown_low
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                )
+                if spring:
+                    emit(i, "long", "failed-breakdown spring long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C21":
+        position = None
+        held = 0
+        for i in range(start, len(bars)):
+            a = atr14[i]
+            prior_a = atr14[i - 1]
+            if a is None or prior_a is None or a <= 0 or prior_a <= 0:
+                continue
+            if position is not None:
+                held += 1
+                if held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+                continue
+            prev_rng = highs[i - 1] - lows[i - 1]
+            rng = highs[i] - lows[i]
+            if prev_rng <= 0 or rng <= 0:
+                continue
+            climax = prev_rng >= p["climax_atr_mult"] * prior_a
+            inside = rng <= p["inside_range_fraction"] * prev_rng
+            if not (climax and inside):
+                continue
+            close_pos = (closes[i] - lows[i]) / rng
+            prior_open = bars[i - 1].open
+            if closes[i - 1] < prior_open and close_pos >= 0.5:
+                emit(i, "long", "wide-to-narrow down-climax reversal")
+                position = "long"
+                held = 0
+            elif closes[i - 1] > prior_open and close_pos <= 0.5:
+                emit(i, "short", "wide-to-narrow up-climax reversal")
+                position = "short"
+                held = 0
 
     return decisions
 

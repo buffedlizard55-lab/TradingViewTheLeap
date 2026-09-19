@@ -118,7 +118,7 @@ def build_series(captures: dict, interval: str, symbol_of_key) -> dict[str, Seri
 
 
 def decisions_for_model(series_map: dict[str, Series], model: str, variant: str | None) -> dict:
-    """Decisions for one (model, variant) on every series. C6-C19 or the S1-S3 baselines."""
+    """Decisions for one (model, variant) on every series. C6-C21 or the S1-S3 baselines."""
     out: dict[str, list] = {}
     for symbol in sorted(series_map):
         bars = list(series_map[symbol].bars)

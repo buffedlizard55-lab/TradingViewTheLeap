@@ -3,7 +3,7 @@
     "kind": "deterministic_arithmetic_not_backtest",
     "description": "Leaderboard placement and prize arithmetic derived from official contest facts only: what each rank costs and what reaching it would require. Arithmetic, not a forecast.",
     "generated_utc": "2026-09-19",
-    "reference_capture_utc": "2026-09-19T18:30:00Z",
+    "reference_capture_utc": "2026-09-19T19:35:00Z",
     "input_files": [
       "data/contest_config.json",
       "data/frontier_history.json",
@@ -13,7 +13,7 @@
     ],
     "source_ids": [
       "TV-RULES-AMP-SEP2026",
-      "TV-CONTEST-AMP-SEP2026-R10",
+      "TV-CONTEST-AMP-SEP2026-R11",
       "TV-THELEAP-LANDING"
     ],
     "assumptions": [
@@ -32,8 +32,8 @@
     "competition_end_utc": "2026-09-30T12:00:00Z",
     "registration_close_utc": "2026-09-23T08:00:00Z",
     "total_competition_days": 29.166667,
-    "remaining_days_at_latest_capture": 10.729167,
-    "registration_days_left_at_latest_capture": 3.5625
+    "remaining_days_at_latest_capture": 10.684028,
+    "registration_days_left_at_latest_capture": 3.517361
   },
   "prize_ladder": {
     "tiers": [
@@ -114,9 +114,9 @@
   "board": {
     "visible_ranks": 250,
     "cash_ranks": 50,
-    "participants_displayed": 99663,
-    "visible_share_of_participants_pct": 0.250845,
-    "cash_share_of_participants_pct": 0.050169,
+    "participants_displayed": 99727,
+    "visible_share_of_participants_pct": 0.250684,
+    "cash_share_of_participants_pct": 0.050137,
     "rank50_to_rank100_gap_pct": 23.553438,
     "rank100_to_rank250_gap_pct": 55.948189
   },
@@ -534,6 +534,52 @@
           "fresh_account_required_underlying_pct_per_day_at_20x": 0.693637
         }
       }
+    },
+    {
+      "captured_at_utc": "2026-09-19T19:35:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R11",
+      "participants_displayed": 99727,
+      "elapsed_days_since_start": 18.482639,
+      "remaining_days_to_deadline": 10.684028,
+      "registration_days_left": 3.517361,
+      "rows": {
+        "1": {
+          "trader": "HappyLittleTrades",
+          "realized_profit_usd": 2485745.5,
+          "realized_profit_pct": 994.3,
+          "balance_multiple": 10.943,
+          "average_usd_per_day_since_start": 134490.832989,
+          "fresh_account_required_daily_compound_pct": 25.100987,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.255049
+        },
+        "50": {
+          "trader": "ashutoshrajan6",
+          "realized_profit_usd": 1459666.5,
+          "realized_profit_pct": 583.87,
+          "balance_multiple": 6.8387,
+          "average_usd_per_day_since_start": 78975.005072,
+          "fresh_account_required_daily_compound_pct": 19.715827,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.985791
+        },
+        "100": {
+          "trader": "aoe900620",
+          "realized_profit_usd": 1181405.0,
+          "realized_profit_pct": 472.56,
+          "balance_multiple": 5.7256,
+          "average_usd_per_day_since_start": 63919.714447,
+          "fresh_account_required_daily_compound_pct": 17.741692,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.887085
+        },
+        "250": {
+          "trader": "maxeq",
+          "realized_profit_usd": 757562.5,
+          "realized_profit_pct": 303.03,
+          "balance_multiple": 4.0303,
+          "average_usd_per_day_since_start": 40987.788841,
+          "fresh_account_required_daily_compound_pct": 13.935264,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.696763
+        }
+      }
     }
   ],
   "targets": [
@@ -541,8 +587,8 @@
       "balance_multiple": 5,
       "required_net_profit_usd": 1000000.0,
       "required_net_profit_pct": 400,
-      "required_daily_compound_pct_over_remaining_window": 16.184105,
-      "required_underlying_pct_per_day_at_20x": 0.809205,
+      "required_daily_compound_pct_over_remaining_window": 16.257761,
+      "required_underlying_pct_per_day_at_20x": 0.812888,
       "full_leverage_winning_days_at_1pct_underlying": 9,
       "completed_champion_sample_at_or_above": 1
     },
@@ -550,8 +596,8 @@
       "balance_multiple": 10,
       "required_net_profit_usd": 2250000.0,
       "required_net_profit_pct": 900,
-      "required_daily_compound_pct_over_remaining_window": 23.937828,
-      "required_underlying_pct_per_day_at_20x": 1.196891,
+      "required_daily_compound_pct_over_remaining_window": 24.050254,
+      "required_underlying_pct_per_day_at_20x": 1.202513,
       "full_leverage_winning_days_at_1pct_underlying": 13,
       "completed_champion_sample_at_or_above": 1
     },
@@ -559,8 +605,8 @@
       "balance_multiple": 20,
       "required_net_profit_usd": 4750000.0,
       "required_net_profit_pct": 1900,
-      "required_daily_compound_pct_over_remaining_window": 32.209007,
-      "required_underlying_pct_per_day_at_20x": 1.61045,
+      "required_daily_compound_pct_over_remaining_window": 32.36506,
+      "required_underlying_pct_per_day_at_20x": 1.618253,
       "full_leverage_winning_days_at_1pct_underlying": 17,
       "completed_champion_sample_at_or_above": 1
     },
@@ -568,8 +614,8 @@
       "balance_multiple": 50,
       "required_net_profit_usd": 12250000.0,
       "required_net_profit_pct": 4900,
-      "required_daily_compound_pct_over_remaining_window": 43.996056,
-      "required_underlying_pct_per_day_at_20x": 2.199803,
+      "required_daily_compound_pct_over_remaining_window": 44.218048,
+      "required_underlying_pct_per_day_at_20x": 2.210902,
       "full_leverage_winning_days_at_1pct_underlying": 22,
       "completed_champion_sample_at_or_above": 1
     },
@@ -577,8 +623,8 @@
       "balance_multiple": 100,
       "required_net_profit_usd": 24750000.0,
       "required_net_profit_pct": 9900,
-      "required_daily_compound_pct_over_remaining_window": 53.605852,
-      "required_underlying_pct_per_day_at_20x": 2.680293,
+      "required_daily_compound_pct_over_remaining_window": 53.884655,
+      "required_underlying_pct_per_day_at_20x": 2.694233,
       "full_leverage_winning_days_at_1pct_underlying": 26,
       "completed_champion_sample_at_or_above": 0
     }

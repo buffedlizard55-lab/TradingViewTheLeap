@@ -7,9 +7,9 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 99,
+  "source_count": 101,
   "reverified_utc": "2026-09-19",
-  "reverification_note": "2026-09-19 tenth pass (~18:30Z): the current official contest page was re-read. The displayed participant count was 99,663; rank 1 turned over to HappyLittleTrades +$2,485,745.50 (+994.30%) while ranks 50/100/250 were +$1,459,666.50/+$1,181,405.00/+$757,562.50. Rules re-verified 94/94 with a payment-rails text delta flagged as IR-29. No claim is made that any frontier value is a final threshold."
+  "reverification_note": "2026-09-19 eleventh pass (~19:35Z): contest page and landing page both displayed 99,727 participants. Ranks 1/50/100/250 were byte-identical to R10 (HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50). H44 records frontier stasis with a +64 participant rise. No IR-30. CME hours transcribed for SI/ETH/BTC only."
  },
  "sources": [
   {
@@ -1748,6 +1748,34 @@
     "Live-edition hero count 99,658 vs contest-board 99,663 (IR-09 asynchronous counters, delta +5)"
    ],
    "evidence_file": "research/evidence/TV-THELEAP-LANDING-R10.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R11",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-19, eleventh pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Tenth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250 unchanged vs R10: HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50) and displayed participant count (99,727, +64 vs R10)",
+    "H44 evidence: complete frontier stasis with a rising participant count while registration remains open",
+    "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R11.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R11",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-19, eleventh pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Eleventh live-edition hero count 99,727 matching the contest-board 99,727 at the same session (IR-09 asynchronous-counter delta 0 at this capture)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R11.md",
    "official_source": true
   }
  ]

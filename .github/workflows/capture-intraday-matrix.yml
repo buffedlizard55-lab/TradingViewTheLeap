@@ -166,7 +166,7 @@ jobs:
             if [ -d "$d/intraday" ]; then cp "$d"/intraday/* data/intraday/ 2>/dev/null || true; fi
           done
           git pull --rebase --autostash origin "${{ github.ref_name }}" || true
-          python3 scripts/merge_intraday_indexes.py --partials-dir partials_flat
+          python3 scripts/merge_intraday_indexes.py --partials-dir partials_flat --salvage-orphans
       - name: Verify the merged captures offline before committing
         run: |
           python3 - <<'PY'

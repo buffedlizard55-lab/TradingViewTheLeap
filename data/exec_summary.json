@@ -3,7 +3,7 @@
   "kind": "executive_summary_recommendations",
   "description": "Machine-derived 'what would be placed next' table for the top-performing usernames of the repository's own paper competitions. Orders are mechanical replays of frozen models on committed vendor bars; sizes are indicative and computed from the official rule constants at the last captured close.",
   "engine": "exec-summary-1",
-  "generated_utc": "2026-09-19T18:41:04Z",
+  "generated_utc": "2026-09-19T19:35:00Z",
   "top_n_per_division": 3,
   "divisions": [
    "futures",
@@ -463,21 +463,21 @@
     },
     {
      "season_rank": 3,
+     "username": "WyckoffWade",
+     "season_realized_pnl_usd": 5583.11,
+     "best_edition_multiple": 1.030642
+    },
+    {
+     "season_rank": 4,
      "username": "CrashColossus",
      "season_realized_pnl_usd": 3950.35,
      "best_edition_multiple": 1.062086
     },
     {
-     "season_rank": 4,
-     "username": "GapGremlin",
-     "season_realized_pnl_usd": 3278.3,
-     "best_edition_multiple": 1.015333
-    },
-    {
      "season_rank": 5,
-     "username": "SqueezeSage",
-     "season_realized_pnl_usd": 2874.23,
-     "best_edition_multiple": 1.013222
+     "username": "GapGremlin",
+     "season_realized_pnl_usd": 3263.5,
+     "best_edition_multiple": 1.015333
     }
    ],
    "recommendations": [
@@ -533,6 +533,28 @@
      ]
     },
     {
+     "username": "WyckoffWade",
+     "division": "stocks_hourly",
+     "model": "C20",
+     "model_name": "Failed-breakdown spring",
+     "variant": "aggressive",
+     "params_label": "hold_bars=8, lookback=10, max_adds=6, volume_mult=1.5",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 5583.11,
+     "season_rank": 3,
+     "best_edition_multiple": 1.030642,
+     "entry_condition": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "TSLA",
+      "AMD"
+     ]
+    },
+    {
      "username": "CrashColossus",
      "division": "stocks_hourly",
      "model": "C7",
@@ -541,7 +563,7 @@
      "params_label": "add_atr_step=2.0, crash_atr_mult=2.5, max_adds=3",
      "rule_profile": "stocks_official_leap",
      "season_realized_pnl_usd": 3950.35,
-     "season_rank": 3,
+     "season_rank": 4,
      "best_edition_multiple": 1.062086,
      "entry_condition": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
      "as_of_last_bar": "2026-09-17",
