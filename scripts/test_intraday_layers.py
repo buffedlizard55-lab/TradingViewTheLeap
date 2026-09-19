@@ -480,6 +480,41 @@ class TestMergeIntradayIndexes(unittest.TestCase):
             shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
 
 
+class TestSpotCheckOfficialVsVendor(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = load_module("spot_check_under_test", "scripts/spot_check_official_vs_vendor.py")
+
+    def _cap(self, symbol, closes, scale=1.0, start=1_700_000_000):
+        from intel.intraday import Capture, IBar
+        bars = tuple(IBar(start + i * 86400, c * scale, c * scale * 1.01, c * scale * 0.99,
+                          c * scale, 100) for i, c in enumerate(closes))
+        return Capture(symbol=symbol, interval="1d", kind="equity", endpoint="https://x",
+                       raw_response_sha256="0" * 64, stored_sha256="0" * 64, rounding_decimals=5,
+                       vendor_exchange=None, vendor_timezone=None, first_utc="", last_utc="", bars=bars)
+
+    def test_identical_series_compare_clean(self):
+        closes = [10 + (i % 7) * 0.1 for i in range(120)]
+        row = self.mod.compare(self._cap("AAA", closes), self._cap("AAA", closes))
+        self.assertEqual(row["status"], "compared")
+        self.assertEqual(row["matched_bars"], 120)
+        self.assertEqual(row["median_abs_delta_bps"], 0.0)
+        self.assertIsNone(row["suspected_split_boundary_epoch"])
+
+    def test_split_step_is_flagged(self):
+        closes = [10 + (i % 7) * 0.1 for i in range(120)]
+        vendor = self._cap("AAA", closes)
+        # official carries a 2:1 adjustment only for the first 60 bars -> ratio steps at bar 60
+        from intel.intraday import Capture
+        mixed = tuple(b if i >= 60 else type(b)(b.ts, b.open / 2, b.high / 2, b.low / 2, b.close / 2, b.volume)
+                      for i, b in enumerate(vendor.bars))
+        official = Capture(**{**vendor.__dict__, "bars": mixed})
+        row = self.mod.compare(official, vendor)
+        self.assertEqual(row["status"], "drift_suspected")
+        self.assertIsNotNone(row["suspected_split_boundary_epoch"])
+        self.assertGreater(row["max_abs_delta_bps"], 4000)
+
+
 class TestEquityCalendar(unittest.TestCase):
     def test_known_closures_and_observance(self):
         from intel import calendar as cal

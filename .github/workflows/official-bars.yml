@@ -1,0 +1,85 @@
+name: Official bars (Alpaca IEX, credential-gated)
+
+# Runs `make official-bars` on a GitHub-hosted runner using repository secrets. The fetch
+# script fails closed (exit 2, writes data/official_bars/availability.json with
+# status "blocked") when APCA_API_KEY_ID / APCA_API_SECRET_KEY are absent; nothing is
+# synthesised. To unblock: Settings -> Secrets and variables -> Actions -> add the two
+# secrets from a free Alpaca Basic account (https://docs.alpaca.markets/us/docs/about-market-data-api),
+# then dispatch this workflow. Raw provider bodies stay under data/official_bars/raw/ which
+# is ignored by Git (license review before any redistribution); only the canonical
+# per-series files + index are committed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: "Comma-separated pool subset (blank = all 20)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "41 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: official-bars-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  official:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Credential presence (values are never printed)
+        id: creds
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+        run: |
+          if [ -n "$APCA_API_KEY_ID" ] && [ -n "$APCA_API_SECRET_KEY" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::APCA_API_KEY_ID / APCA_API_SECRET_KEY not configured - official bars stay 'blocked' (no fabrication)"
+          fi
+      - name: Fetch official bars
+        if: steps.creds.outputs.present == 'true'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+        run: |
+          set +e
+          if [ -n "${{ inputs.symbols }}" ]; then
+            python3 scripts/fetch_official_bars.py --symbols "${{ inputs.symbols }}"
+          else
+            python3 scripts/fetch_official_bars.py
+          fi
+          code=$?
+          echo "fetch exit code: $code"
+          if [ -f data/official_bars/index.json ]; then
+            python3 scripts/run_intraday_study.py --index data/official_bars/index.json --out data/official_bars/study.json
+            python3 scripts/run_stock_competition.py --index data/official_bars/index.json --out data/official_bars/competition.json
+          fi
+      - name: Spot-check official vs vendor bars (only when both exist)
+        if: steps.creds.outputs.present == 'true'
+        run: |
+          if [ -f data/official_bars/index.json ] && [ -f data/intraday_index.json ]; then
+            python3 scripts/spot_check_official_vs_vendor.py --out data/official_bars/spot_check.json || true
+          else
+            echo "::notice::spot-check skipped: official index or vendor index absent"
+          fi
+      - name: Verify and commit
+        if: steps.creds.outputs.present == 'true'
+        run: |
+          python3 scripts/verify.py
+          git config user.name "github-actions[official-bars]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/official_bars/*.json
+          git diff --cached --quiet && { echo "::notice::nothing changed"; exit 0; }
+          git commit -m "official bars: Alpaca IEX captures + study + division + spot-check (automated)"
+          git push origin "HEAD:${GITHUB_REF_NAME}" || { git pull --rebase --autostash -X theirs origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; }

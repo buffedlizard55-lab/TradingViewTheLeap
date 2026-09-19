@@ -66,6 +66,8 @@ def main():
     ap.add_argument("--end", default="2026-09-18T00:00:00Z", help="Inclusive; use completed sessions only")
     ap.add_argument("--intervals", nargs="+", choices=TIMEFRAMES, default=list(TIMEFRAMES))
     ap.add_argument("--out-dir", default="data/official_bars")
+    ap.add_argument("--symbols", default=None,
+                    help="comma-separated subset of the 20-stock pool (default: whole pool)")
     args = ap.parse_args()
     start, end = [datetime.fromisoformat(v.replace("Z", "+00:00")) for v in (args.start, args.end)]
     if start.tzinfo is None or end.tzinfo is None or not start < end <= datetime.now(timezone.utc):
@@ -84,6 +86,12 @@ def main():
     else:
         headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
         pool = json.loads((ROOT / "data/volatile_stocks.json").read_text())["records"]
+        if args.symbols:
+            wanted = {x.strip() for x in args.symbols.split(",") if x.strip()}
+            unknown = wanted - {item["symbol"] for item in pool}
+            if unknown:
+                ap.error(f"--symbols outside the pool: {sorted(unknown)}")
+            pool = [item for item in pool if item["symbol"] in wanted]
         for item in pool:
             symbol = item["symbol"]
             for interval in args.intervals:
