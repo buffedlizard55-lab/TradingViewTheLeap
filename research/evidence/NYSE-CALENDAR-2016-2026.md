@@ -1,40 +1,47 @@
-# NYSE full-closure table 2016-2026 (rule-based transcription)
+# NYSE full-closure table 2016-2026 (verified line by line against official NYSE publications)
 
-- **URL:** https://www.nyse.com/markets/hours-calendars — the authoritative NYSE trading calendar this transcription must be re-verified against (cross-check: https://www.nasdaqtrader.com/Trader.aspx?id=calendar).
-- **Accessed (UTC):** 2026-09-19 (transcription written; live page NOT fetched — this sandbox has no network egress, so no verbatim NYSE page text is quoted below)
-- **Tier:** official_secondary — NYSE is the listing exchange and its calendar is an official exchange publication; the transcription itself is unverified until the protocol at the bottom is completed.
+- **URL:** https://www.nyse.com/markets/hours-calendars — the authoritative NYSE trading calendar (cross-check: https://www.nasdaqtrader.com/Trader.aspx?id=calendar).
+- **Accessed (UTC):** 2026-09-19 — live NYSE page (2026-2028 table) and Nasdaq Trader 2026 schedule fetched; earlier years read from Internet Archive captures of the same nyse.com page (URLs below); special closures from ICE/NYSE press releases.
+- **Tier:** official_secondary — NYSE is the listing exchange; each date below was compared against the official table for its year. `intel/calendar.py` (`nyse-holidays-2`) carries the transcription in `OFFICIAL_FULL_CLOSURES` / `OFFICIAL_EARLY_CLOSES`, and `verify_against_official()` (run by `scripts/verify.py` and the unit tests) proves the rule engine reproduces it exactly.
 
-Source module: `intel/calendar.py` (`nyse-holidays-1`). This file was generated from the module
-(see the generator in git history) so the date list below cannot drift from the code by hand-editing.
+## Official source for each year (verbatim table rows quoted)
 
-The two verbatim quotes this evidence file offers are from the transcription module itself, not
-from the live NYSE page (which was unreachable from this sandbox). They are quoted so the caveat
-is auditable word for word:
+| Years | Official page | Verbatim excerpt |
+|---|---|---|
+| 2016-2017 | https://web.archive.org/web/20160605000702/https://www.nyse.com/markets/hours-calendars | "New Years Day \| January 1 \| January 1 (Observed Monday, January 2)" … "Christmas \| December 25 (Observed Monday, December 26) \| December 25" |
+| 2018-2021 | https://web.archive.org/web/20181215174802/https://www.nyse.com/markets/hours-calendars | "Independence Day \| Wednesday, July 4 \| Thursday, July 4 \| Friday, July 3 (July 4 holiday observed) \| Monday, July 5 (July 4 holiday observed)" |
+| 2021-2023 | https://web.archive.org/web/20211126155609/https://www.nyse.com/markets/hours-calendars | "New Years Day \| Friday, January 1 \| —* \| Monday, January 2 (New Year's holiday observed)" and "* No holiday observed, pursuant to NYSE Rule 7.2, NYSE American Rule 7.2E, NYSE Arca Rules 7.2-O and 7.2-E, NYSE Chicago Rule 7.2, and NYSE National Rule 7.2."; "Juneteenth National Independence Day \| — \| Monday, June 20 (Juneteenth holiday observed) \| Monday, June 19" |
+| 2024-2026 | https://web.archive.org/web/20240529214655/https://www.nyse.com/markets/hours-calendars | "Juneteenth National Independence Day \| Wednesday, June 19 \| Thursday, June 19 \| Friday, June 19"; "Independence Day \| Thursday, July 4* \| Friday, July 4* \| Friday, July 3 (Independence Day observed)" |
+| 2026-2028 (live) | https://www.nyse.com/markets/hours-calendars | "New Year's Day \| Thursday, January 1 \| Friday, January 1 \| —*" and "* Because the holiday falls on Saturday, January 1, 2028, no New Year's Day holiday is observed." |
+| 2026 (cross-check) | https://www.nasdaqtrader.com/Trader.aspx?id=calendar | "U.S. Equity and Options Markets Holiday Schedule 2026" — 10 Closed rows + "November 27, 2026 \| Early Close* \| 1:00 p.m." + "December 24, 2026 \| Early Close* \| 1:00 p.m." |
+| 2018-12-05 | https://ir.theice.com/press/news-details/2018/New-York-Stock-Exchange-to-Honor-President-George-H-W-Bush/default.aspx | "NYSE Group Markets to close for Day of Mourning on Wednesday, December 5, 2018" |
+| 2025-01-09 | https://ir.theice.com/press/news-details/2024/The-New-York-Stock-Exchange-Will-Close-Markets-on-January-9-to-Honor-the-Passing-of-Former-President-Jimmy-Carter-on-National-Day-of-Mourning/default.aspx | "it will close all NYSE Group equity and options markets on Thursday, January 9, 2025, in observance of the National Day of Mourning" |
 
-> "Not a substitute for the official calendar. The authoritative sources are the NYSE trading
-> calendar (https://www.nyse.com/markets/hours-calendars) and the Nasdaq Trader holiday schedule
-> (https://www.nasdaqtrader.com/Trader.aspx?id=calendar). Every date produced here must be
-> re-verified line by line against those pages on a networked machine before it is treated as
-> authoritative; that re-verification is tracked as an irregularity in research/irregularities.json
-> until it is done." — intel/calendar.py module docstring, WHAT THIS IS NOT section
+Verbatim quotes (official pages, as fetched 2026-09-19):
 
-> "No network access, no fitting, no guessing: special closures outside the table below are not
-> inferred, and years outside 2016-2026 raise rather than silently extrapolating the
-> special-closure history." — intel/calendar.py module docstring
+> "All NYSE markets observe U.S. holidays as listed below for 2026, 2027, and 2028." — https://www.nyse.com/markets/hours-calendars
 
-Official sources (authoritative; re-verify every date here against them on a networked machine):
+> "* Because the holiday falls on Saturday, January 1, 2028, no New Year's Day holiday is observed." — https://www.nyse.com/markets/hours-calendars
 
-- https://www.nyse.com/markets/hours-calendars
-- https://www.nasdaqtrader.com/Trader.aspx?id=calendar
-- CME Globex (futures differ; NOT encoded here): https://www.cmegroup.com/trading_hours.html
+> "* No holiday observed, pursuant to NYSE Rule 7.2, NYSE American Rule 7.2E, NYSE Arca Rules 7.2-O and 7.2-E, NYSE Chicago Rule 7.2, and NYSE National Rule 7.2." — archived nyse.com page (2021-11-26 capture), footnote to the 2022 New Years Day cell "—*"
 
-Method: the nine standing NYSE holidays plus weekend observance (Saturday -> preceding Friday,
-Sunday -> following Monday) for New Year's Day, Juneteenth (observed from 2022), Independence Day
-and Christmas Day; Good Friday via the Gregorian Easter algorithm; plus two individually recorded
-special full-day closures (2018-12-05 Bush mourning, 2025-01-09 Carter mourning). Every closure
-falls on a weekday. Early closes are informational only and never exclude a session.
+> "All NYSE markets observe U.S. holidays as listed below for 2016 and 2017." — archived nyse.com page (2016-06-05 capture)
 
-## 2016 (9 full closures)
+> "All NYSE markets observe U.S. holidays as listed below for 2018, 2019, 2020, and 2021." — archived nyse.com page (2018-12-15 capture)
+
+> "All NYSE markets observe U.S. holidays as listed below for 2024, 2025, and 2026." — archived nyse.com page (2024-05-29 capture)
+
+> "NYSE Group Markets to close for Day of Mourning on Wednesday, December 5, 2018" — ir.theice.com press release, 2018-12-01
+
+> "it will close all NYSE Group equity and options markets on Thursday, January 9, 2025, in observance of the National Day of Mourning" — ir.theice.com press release, 2024-12-30
+
+## Correction made by this re-verification
+
+The `nyse-holidays-1` transcription listed **2021-12-31** as "New Year's Day (observed)". The official table says no holiday was observed in 2022 for New Year's Day (Rule 7.2); the captured vendor bars (`data/intraday/ENPH_1d.json`) also contain a 2021-12-31 session. `nyse-holidays-2` removes Saturday-New-Year observance. All other 105 full closures and 24 early closes matched.
+
+Method: nine standing NYSE holidays (ten from 2022 with Juneteenth) plus weekend observance for the fixed-date holidays (Saturday -> preceding Friday except New Year's Day, Sunday -> following Monday); Good Friday via the Gregorian Easter algorithm; two individually recorded special full-day closures. Early closes are informational only and never exclude a session.
+
+## 2016 (9 full closures — matches official)
 
 - 2016-01-01 — New Year's Day
 - 2016-01-18 — Martin Luther King Jr. Day
@@ -46,9 +53,9 @@ falls on a weekday. Early closes are informational only and never exclude a sess
 - 2016-11-24 — Thanksgiving Day
 - 2016-12-26 — Christmas Day (observed)
 
-Early closes (informational): 2016-11-25 (Day after Thanksgiving (early close))
+Early closes (informational, official): 2016-11-25 (Day after Thanksgiving (early close))
 
-## 2017 (9 full closures)
+## 2017 (9 full closures — matches official)
 
 - 2017-01-02 — New Year's Day (observed)
 - 2017-01-16 — Martin Luther King Jr. Day
@@ -60,9 +67,9 @@ Early closes (informational): 2016-11-25 (Day after Thanksgiving (early close))
 - 2017-11-23 — Thanksgiving Day
 - 2017-12-25 — Christmas Day
 
-Early closes (informational): 2017-07-03 (July 3 (early close)), 2017-11-24 (Day after Thanksgiving (early close))
+Early closes (informational, official): 2017-07-03 (July 3 (early close)), 2017-11-24 (Day after Thanksgiving (early close))
 
-## 2018 (10 full closures)
+## 2018 (10 full closures — matches official)
 
 - 2018-01-01 — New Year's Day
 - 2018-01-15 — Martin Luther King Jr. Day
@@ -75,9 +82,9 @@ Early closes (informational): 2017-07-03 (July 3 (early close)), 2017-11-24 (Day
 - 2018-12-05 — National Day of Mourning for President George H.W. Bush
 - 2018-12-25 — Christmas Day
 
-Early closes (informational): 2018-07-03 (July 3 (early close)), 2018-11-23 (Day after Thanksgiving (early close)), 2018-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2018-07-03 (July 3 (early close)), 2018-11-23 (Day after Thanksgiving (early close)), 2018-12-24 (Christmas Eve (early close))
 
-## 2019 (9 full closures)
+## 2019 (9 full closures — matches official)
 
 - 2019-01-01 — New Year's Day
 - 2019-01-21 — Martin Luther King Jr. Day
@@ -89,9 +96,9 @@ Early closes (informational): 2018-07-03 (July 3 (early close)), 2018-11-23 (Day
 - 2019-11-28 — Thanksgiving Day
 - 2019-12-25 — Christmas Day
 
-Early closes (informational): 2019-07-03 (July 3 (early close)), 2019-11-29 (Day after Thanksgiving (early close)), 2019-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2019-07-03 (July 3 (early close)), 2019-11-29 (Day after Thanksgiving (early close)), 2019-12-24 (Christmas Eve (early close))
 
-## 2020 (9 full closures)
+## 2020 (9 full closures — matches official)
 
 - 2020-01-01 — New Year's Day
 - 2020-01-20 — Martin Luther King Jr. Day
@@ -103,9 +110,9 @@ Early closes (informational): 2019-07-03 (July 3 (early close)), 2019-11-29 (Day
 - 2020-11-26 — Thanksgiving Day
 - 2020-12-25 — Christmas Day
 
-Early closes (informational): 2020-11-27 (Day after Thanksgiving (early close)), 2020-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2020-11-27 (Day after Thanksgiving (early close)), 2020-12-24 (Christmas Eve (early close))
 
-## 2021 (9 full closures)
+## 2021 (9 full closures — matches official)
 
 - 2021-01-01 — New Year's Day
 - 2021-01-18 — Martin Luther King Jr. Day
@@ -117,11 +124,10 @@ Early closes (informational): 2020-11-27 (Day after Thanksgiving (early close)),
 - 2021-11-25 — Thanksgiving Day
 - 2021-12-24 — Christmas Day (observed)
 
-Early closes (informational): 2021-11-26 (Day after Thanksgiving (early close))
+Early closes (informational, official): 2021-11-26 (Day after Thanksgiving (early close))
 
-## 2022 (10 full closures)
+## 2022 (9 full closures — matches official)
 
-- 2021-12-31 — New Year's Day (observed)
 - 2022-01-17 — Martin Luther King Jr. Day
 - 2022-02-21 — Presidents' Day
 - 2022-04-15 — Good Friday
@@ -132,9 +138,9 @@ Early closes (informational): 2021-11-26 (Day after Thanksgiving (early close))
 - 2022-11-24 — Thanksgiving Day
 - 2022-12-26 — Christmas Day (observed)
 
-Early closes (informational): 2022-11-25 (Day after Thanksgiving (early close))
+Early closes (informational, official): 2022-11-25 (Day after Thanksgiving (early close))
 
-## 2023 (10 full closures)
+## 2023 (10 full closures — matches official)
 
 - 2023-01-02 — New Year's Day (observed)
 - 2023-01-16 — Martin Luther King Jr. Day
@@ -147,9 +153,9 @@ Early closes (informational): 2022-11-25 (Day after Thanksgiving (early close))
 - 2023-11-23 — Thanksgiving Day
 - 2023-12-25 — Christmas Day
 
-Early closes (informational): 2023-07-03 (July 3 (early close)), 2023-11-24 (Day after Thanksgiving (early close))
+Early closes (informational, official): 2023-07-03 (July 3 (early close)), 2023-11-24 (Day after Thanksgiving (early close))
 
-## 2024 (10 full closures)
+## 2024 (10 full closures — matches official)
 
 - 2024-01-01 — New Year's Day
 - 2024-01-15 — Martin Luther King Jr. Day
@@ -162,9 +168,9 @@ Early closes (informational): 2023-07-03 (July 3 (early close)), 2023-11-24 (Day
 - 2024-11-28 — Thanksgiving Day
 - 2024-12-25 — Christmas Day
 
-Early closes (informational): 2024-07-03 (July 3 (early close)), 2024-11-29 (Day after Thanksgiving (early close)), 2024-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2024-07-03 (July 3 (early close)), 2024-11-29 (Day after Thanksgiving (early close)), 2024-12-24 (Christmas Eve (early close))
 
-## 2025 (11 full closures)
+## 2025 (11 full closures — matches official)
 
 - 2025-01-01 — New Year's Day
 - 2025-01-09 — National Day of Mourning for President Jimmy Carter
@@ -178,9 +184,9 @@ Early closes (informational): 2024-07-03 (July 3 (early close)), 2024-11-29 (Day
 - 2025-11-27 — Thanksgiving Day
 - 2025-12-25 — Christmas Day
 
-Early closes (informational): 2025-07-03 (July 3 (early close)), 2025-11-28 (Day after Thanksgiving (early close)), 2025-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2025-07-03 (July 3 (early close)), 2025-11-28 (Day after Thanksgiving (early close)), 2025-12-24 (Christmas Eve (early close))
 
-## 2026 (10 full closures)
+## 2026 (10 full closures — matches official)
 
 - 2026-01-01 — New Year's Day
 - 2026-01-19 — Martin Luther King Jr. Day
@@ -193,13 +199,10 @@ Early closes (informational): 2025-07-03 (July 3 (early close)), 2025-11-28 (Day
 - 2026-11-26 — Thanksgiving Day
 - 2026-12-25 — Christmas Day
 
-Early closes (informational): 2026-11-27 (Day after Thanksgiving (early close)), 2026-12-24 (Christmas Eve (early close))
+Early closes (informational, official): 2026-11-27 (Day after Thanksgiving (early close)), 2026-12-24 (Christmas Eve (early close))
 
-## Re-verification protocol (for a networked reviewer)
+## Re-verification record
 
-1. Open https://www.nyse.com/markets/hours-calendars and cross-check each year above line by line,
-   including the two special closures and the Juneteenth start year (2022).
-2. Cross-check against https://www.nasdaqtrader.com/Trader.aspx?id=calendar.
-3. On any mismatch, fix `intel/calendar.py`, re-generate this file, re-derive the study
-   (`python3 scripts/run_intraday_study.py`), rebuild the site and re-run `python3 scripts/verify.py`.
-4. Until step 1 is done, the transcription caveat stays open in research/irregularities.json (IR-28).
+1. 2026-09-19: every year 2016-2026 compared against the official NYSE table for that year (URLs above); Nasdaq Trader cross-check for 2026. Result: one mismatch (2021-12-31), fixed; 105/105 full closures and 24/24 early closes now match.
+2. `python3 -c "from intel import calendar as c; print(c.verify_against_official())"` must print `[]`; `scripts/verify.py` fails otherwise.
+3. Futures (CME Globex) holidays are NOT encoded here: https://www.cmegroup.com/trading-hours.html

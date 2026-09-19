@@ -439,8 +439,23 @@ class TestEquityCalendar(unittest.TestCase):
         self.assertIn("Christmas", cal.is_full_closure("2021-12-24") or "")
         self.assertIn("Juneteenth", cal.is_full_closure("2022-06-20") or "")
         self.assertIsNone(cal.is_full_closure("2021-06-19"))  # not observed before 2022
-        self.assertIn("New Year", cal.is_full_closure("2021-12-31") or "")
+        # NYSE Rule 7.2: Saturday New Year's Day is not observed; 2021-12-31 was a full session
+        # (official 2028 note on https://www.nyse.com/markets/hours-calendars; ENPH_1d bar exists)
+        self.assertIsNone(cal.is_full_closure("2021-12-31"))
         self.assertIsNone(cal.is_full_closure("2022-01-01"))  # Saturday itself is not the closure
+        self.assertIsNone(cal.is_full_closure("2016-12-30"))  # Sunday 2017-01-01 -> Monday
+        self.assertIn("New Year", cal.is_full_closure("2017-01-02") or "")
+        self.assertIn("Juneteenth", cal.is_full_closure("2022-06-20") or "")
+        # Official 2026 table, transcribed line by line on 2026-09-19
+        for iso in ("2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25",
+                    "2026-06-19", "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25"):
+            self.assertIsNotNone(cal.is_full_closure(iso), iso)
+        self.assertEqual(len(cal.holidays_for_year(2026)), 10)
+
+    def test_rules_reproduce_official_nyse_tables(self):
+        from intel import calendar as cal
+        self.assertEqual(cal.verify_against_official(), [])
+        self.assertEqual(sum(len(v) for v in cal.OFFICIAL_FULL_CLOSURES.values()), 105)
         self.assertIn("Bush", cal.is_full_closure("2018-12-05") or "")
         self.assertIn("Carter", cal.is_full_closure("2025-01-09") or "")
         self.assertIsNone(cal.is_full_closure("2026-09-18"))  # ordinary Friday

@@ -17,8 +17,13 @@ A rule-based transcription of the standing NYSE holiday schedule:
   September), Thanksgiving Day (fourth Thursday of November), Christmas
   (December 25).
 - Weekend observance for the four fixed-date holidays: a Saturday holiday is
-  observed on the preceding Friday, a Sunday holiday on the following Monday.
-  (So a Saturday January 1 is observed on Friday December 31 of the prior year.)
+  observed on the preceding Friday, a Sunday holiday on the following Monday --
+  EXCEPT New Year's Day on a Saturday, which is NOT observed at all (NYSE Rule
+  7.2: no Friday closure when it would end a monthly/yearly accounting period).
+  The official NYSE calendar states this for 2028 ("Because the holiday falls on
+  Saturday, January 1, 2028, no New Year's Day holiday is observed"); the same
+  rule applied on 2021-12-31 (Saturday 2022-01-01), a full trading day that the
+  captured vendor bars (data/intraday/ENPH_1d.json) also contain.
 - Special full-day closures, each recorded individually with its reason in
   ``SPECIAL_CLOSURES`` below.
 
@@ -27,10 +32,13 @@ WHAT THIS IS NOT
 - Not a substitute for the official calendar. The authoritative sources are the
   NYSE trading calendar (https://www.nyse.com/markets/hours-calendars) and the
   Nasdaq Trader holiday schedule
-  (https://www.nasdaqtrader.com/Trader.aspx?id=calendar). Every date produced
-  here must be re-verified line by line against those pages on a networked
-  machine before it is treated as authoritative; that re-verification is tracked
-  as an irregularity in research/irregularities.json until it is done.
+  (https://www.nasdaqtrader.com/Trader.aspx?id=calendar). On 2026-09-19 every
+  full closure and early close for 2016-2026 was re-verified line by line against
+  the official NYSE tables (live page plus archived captures of the same page)
+  and the two ICE/NYSE press releases; the transcription is kept in
+  ``OFFICIAL_FULL_CLOSURES`` / ``OFFICIAL_EARLY_CLOSES`` and
+  ``verify_against_official()`` proves the rules reproduce it exactly (IR-28
+  closed). The one discrepancy found (2021-12-31) was fixed in nyse-holidays-2.
 - Not a futures calendar. CME Globex holidays differ
   (https://www.cmegroup.com/trading_hours.html) and are not encoded here.
 - Early closes (1:00 PM ET, e.g. the day after Thanksgiving) are listed
@@ -46,7 +54,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-CALENDAR_VERSION = "nyse-holidays-1"
+CALENDAR_VERSION = "nyse-holidays-2"  # 2: Saturday New Year's Day is not observed (Rule 7.2)
 CALENDAR_SOURCES = (
     "https://www.nyse.com/markets/hours-calendars",
     "https://www.nasdaqtrader.com/Trader.aspx?id=calendar",
@@ -60,11 +68,84 @@ LAST_YEAR = 2026
 # during which NYSE and Nasdaq closed the cash session:
 #   2018-12-05  mourning President George H.W. Bush
 #   2025-01-09  mourning President Jimmy Carter
-# Re-verify against the official NYSE calendar before treating as authoritative.
+# Both verified against the ICE/NYSE press releases cited above OFFICIAL_FULL_CLOSURES.
 SPECIAL_CLOSURES: dict[str, str] = {
     "2018-12-05": "National Day of Mourning for President George H.W. Bush",
     "2025-01-09": "National Day of Mourning for President Jimmy Carter",
 }
+
+
+# ---------------------------------------------------------------------------
+# Official transcription (IR-28 re-verification, 2026-09-19).
+#
+# Every date below was read line by line from an official NYSE publication and is kept
+# here, separately from the rule engine, so that the verifier and the unit tests can
+# prove the rules reproduce the official table exactly (see verify_against_official()).
+# Sources (nyse.com, live and via the Internet Archive's captures of the same page):
+#   2016-2017  https://web.archive.org/web/20160605000702/https://www.nyse.com/markets/hours-calendars
+#   2018-2021  https://web.archive.org/web/20181215174802/https://www.nyse.com/markets/hours-calendars
+#   2021-2023  https://web.archive.org/web/20211126155609/https://www.nyse.com/markets/hours-calendars
+#              ("2022 New Years Day: —* No holiday observed, pursuant to NYSE Rule 7.2 ...")
+#   2024-2026  https://web.archive.org/web/20240529214655/https://www.nyse.com/markets/hours-calendars
+#   2026-2028  https://www.nyse.com/markets/hours-calendars (live 2026-09-19; 2026 also matches
+#              https://www.nasdaqtrader.com/Trader.aspx?id=calendar)
+#   2018-12-05 https://ir.theice.com/press/news-details/2018/New-York-Stock-Exchange-to-Honor-President-George-H-W-Bush/default.aspx
+#   2025-01-09 https://ir.theice.com/press/news-details/2024/The-New-York-Stock-Exchange-Will-Close-Markets-on-January-9-to-Honor-the-Passing-of-Former-President-Jimmy-Carter-on-National-Day-of-Mourning/default.aspx
+# ---------------------------------------------------------------------------
+OFFICIAL_FULL_CLOSURES: dict[int, tuple[str, ...]] = {
+    2016: ("2016-01-01", "2016-01-18", "2016-02-15", "2016-03-25", "2016-05-30", "2016-07-04",
+           "2016-09-05", "2016-11-24", "2016-12-26"),
+    2017: ("2017-01-02", "2017-01-16", "2017-02-20", "2017-04-14", "2017-05-29", "2017-07-04",
+           "2017-09-04", "2017-11-23", "2017-12-25"),
+    2018: ("2018-01-01", "2018-01-15", "2018-02-19", "2018-03-30", "2018-05-28", "2018-07-04",
+           "2018-09-03", "2018-11-22", "2018-12-05", "2018-12-25"),
+    2019: ("2019-01-01", "2019-01-21", "2019-02-18", "2019-04-19", "2019-05-27", "2019-07-04",
+           "2019-09-02", "2019-11-28", "2019-12-25"),
+    2020: ("2020-01-01", "2020-01-20", "2020-02-17", "2020-04-10", "2020-05-25", "2020-07-03",
+           "2020-09-07", "2020-11-26", "2020-12-25"),
+    2021: ("2021-01-01", "2021-01-18", "2021-02-15", "2021-04-02", "2021-05-31", "2021-07-05",
+           "2021-09-06", "2021-11-25", "2021-12-24"),
+    2022: ("2022-01-17", "2022-02-21", "2022-04-15", "2022-05-30", "2022-06-20", "2022-07-04",
+           "2022-09-05", "2022-11-24", "2022-12-26"),
+    2023: ("2023-01-02", "2023-01-16", "2023-02-20", "2023-04-07", "2023-05-29", "2023-06-19",
+           "2023-07-04", "2023-09-04", "2023-11-23", "2023-12-25"),
+    2024: ("2024-01-01", "2024-01-15", "2024-02-19", "2024-03-29", "2024-05-27", "2024-06-19",
+           "2024-07-04", "2024-09-02", "2024-11-28", "2024-12-25"),
+    2025: ("2025-01-01", "2025-01-09", "2025-01-20", "2025-02-17", "2025-04-18", "2025-05-26",
+           "2025-06-19", "2025-07-04", "2025-09-01", "2025-11-27", "2025-12-25"),
+    2026: ("2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25", "2026-06-19",
+           "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25"),
+}
+OFFICIAL_EARLY_CLOSES: dict[int, tuple[str, ...]] = {
+    2016: ("2016-11-25",),
+    2017: ("2017-07-03", "2017-11-24"),
+    2018: ("2018-07-03", "2018-11-23", "2018-12-24"),
+    2019: ("2019-07-03", "2019-11-29", "2019-12-24"),
+    2020: ("2020-11-27", "2020-12-24"),
+    2021: ("2021-11-26",),
+    2022: ("2022-11-25",),
+    2023: ("2023-07-03", "2023-11-24"),
+    2024: ("2024-07-03", "2024-11-29", "2024-12-24"),
+    2025: ("2025-07-03", "2025-11-28", "2025-12-24"),
+    2026: ("2026-11-27", "2026-12-24"),
+}
+
+
+def verify_against_official() -> list[str]:
+    """Return every (year, kind, rule-only, official-only) mismatch; empty means exact match."""
+    problems: list[str] = []
+    for year in range(FIRST_YEAR, LAST_YEAR + 1):
+        rule_full = set(holidays_for_year(year))
+        off_full = set(OFFICIAL_FULL_CLOSURES[year])
+        if rule_full != off_full:
+            problems.append(f"{year} full: rule-only {sorted(rule_full - off_full)} "
+                            f"official-only {sorted(off_full - rule_full)}")
+        rule_early = set(early_closes_for_year(year))
+        off_early = set(OFFICIAL_EARLY_CLOSES[year])
+        if rule_early != off_early:
+            problems.append(f"{year} early: rule-only {sorted(rule_early - off_early)} "
+                            f"official-only {sorted(off_early - rule_early)}")
+    return problems
 
 
 def _check_year(year: int) -> None:
@@ -141,6 +222,10 @@ def holidays_for_year(year: int) -> dict[str, str]:
             continue  # NYSE first observed Juneteenth in 2022
         actual = date(year, month, day)
         observed = _observed_fixed(actual)
+        if month == 1 and actual.weekday() == 5:
+            # NYSE Rule 7.2: a Saturday New Year's Day is not observed on the preceding
+            # Friday (year-end accounting period). 2021-12-31 traded; 2027-12-31 will.
+            continue
         if observed != actual:
             add(observed, f"{name} (observed)")
         else:
@@ -189,8 +274,10 @@ def full_closures_between(start_iso: str, end_iso: str) -> dict[str, str]:
     """Full closures with start_iso <= date <= end_iso, ISO date -> name.
 
     The scan covers one neighbouring year on each side (clamped to the reviewed
-    window) because a weekend observance can fall in the adjacent calendar year
-    (e.g. Saturday 2022-01-01 is observed on Friday 2021-12-31). A window reaching
+    window) because a weekend observance could in principle fall in the adjacent
+    calendar year (a Saturday January 1 is, by Rule 7.2, NOT observed on the
+    preceding Friday, so in practice no closure crosses the year boundary; the
+    neighbouring-year scan is kept as a safeguard). A window reaching
     outside the reviewed years fails loudly instead of silently reporting no
     closures where the table simply does not apply.
     """

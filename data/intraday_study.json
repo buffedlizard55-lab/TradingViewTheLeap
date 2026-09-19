@@ -86,7 +86,7 @@
   ],
   "calendar": {
    "module": "intel.calendar",
-   "version": "nyse-holidays-1",
+   "version": "nyse-holidays-2",
    "applied_to": "equity sessions in calendar_diagnostics only; gap and latency numbers are unchanged from the UTC-date baseline"
   },
   "methodology": [
@@ -117,7 +117,7 @@
  "calendar_diagnostics": {
   "calendar": {
    "calendar_id": "NYSE",
-   "version": "nyse-holidays-1",
+   "version": "nyse-holidays-2",
    "years": [
     2016,
     2026
