@@ -166,7 +166,7 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
     if rows:
         first_symbol = order_symbols[0]
         banner = f"""<div class="callout good" style="border-left-width:6px;"><h3>\u2b22 UPCOMING PAPER TRADES — {number_or_dash(pending)} MECHANICAL ORDER(S) AT NEXT BAR OPEN</h3>
-<p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen contrarian model on <strong>real verified pricing</strong>, sized from official rule constants (CME multipliers, TradingView caps) and labelled simulated.</p>
+<p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen model on <strong>captured vendor pricing</strong>. Official-provider stock bars are still blocked, so these are not exchange-verified prices; sizes use official rule constants (CME multipliers, TradingView caps) and every row is labelled simulated.</p>
 <ol class="compact">{''.join(plain_orders)}</ol>
 <p class="note\">Top paper-trade signal: <code>{esc(first_symbol)}</code> and {number_or_dash(max(0, len(rows)-1))} more below — see <code>Signal bar</code> for the deciding session and verify each figure in <code>data/exec_summary.json</code>.</p></div>"""
         table = (banner + f"""<div class="table-wrap"><table>
@@ -696,6 +696,12 @@ def build() -> str:
     exchange_counts = Counter(row["exchange"] for row in universe["instruments"])
     snapshot_at = latest_frontier["captured_at_utc"]
     captured_syms = [c for c in market_index["captures"] if c.get("status") == "captured"]
+    intraday_records = load("data/intraday_index.json")["captures"]
+    stock_series_captured = sum(r.get("status") == "captured" and r.get("kind") == "equity" for r in intraday_records)
+    stock_series_total = 60
+    coverage_note = ("full 60/60 coverage is present; H34–H39 may be re-run"
+                      if stock_series_captured == stock_series_total
+                      else f"coverage is {stock_series_captured}/{stock_series_total}; H34–H39 full-pool verdicts remain withheld")
     # Header capsule: the upcoming-trade answer must be visible at the very top of the page,
     # above the fold, straight from the generated artifact (never hardcoded).
     if exec_summary and exec_summary.get("_meta", {}).get("pending_order_count"):
@@ -793,7 +799,8 @@ are labeled separately.</p>
 <p>Official-source pricing and authenticated TradingView fill validation are not complete.
 The historical rankings below are exploratory, not a verified current order queue.
 Only {sum(r.get("status") == "captured" and r.get("interval") == "1d" for r in load("data/intraday_index.json")["captures"])}
-stock daily series are currently captured in the legacy index; the intended pool has 20 names.
+stock daily series are currently captured in the legacy index; the intended pool has 20 names. The matrix is at
+{stock_series_captured} of {stock_series_total} stock series; {coverage_note}.
 Missing prices are never synthesized. The stock pool is our own experiment, not the eligible
 universe of the current futures-only Leap contest.</p>
 <p><a href="research/implementation_review.md">Three-pass audit and remaining blockers</a> ·
