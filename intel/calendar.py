@@ -39,8 +39,10 @@ WHAT THIS IS NOT
   ``OFFICIAL_FULL_CLOSURES`` / ``OFFICIAL_EARLY_CLOSES`` and
   ``verify_against_official()`` proves the rules reproduce it exactly (IR-28
   closed). The one discrepancy found (2021-12-31) was fixed in nyse-holidays-2.
-- Not a futures calendar. CME Globex holidays differ
-  (https://www.cmegroup.com/trading_hours.html) and are not encoded here.
+- Not a futures session calendar. The 2026 CME Globex holiday WINDOWS are
+  transcribed from the official page (``CME_GLOBEX_2026_HOLIDAY_WINDOWS``) as
+  annotation only; product-specific holiday hours are not encoded and no futures
+  session is ever dropped (https://www.cmegroup.com/trading-hours.html).
 - Early closes (1:00 PM ET, e.g. the day after Thanksgiving) are listed
   separately as informational-only data and are NEVER used to exclude a session:
   the market still trades on those days.
@@ -59,7 +61,7 @@ CALENDAR_SOURCES = (
     "https://www.nyse.com/markets/hours-calendars",
     "https://www.nasdaqtrader.com/Trader.aspx?id=calendar",
 )
-FUTURES_CALENDAR_SOURCE = "https://www.cmegroup.com/trading_hours.html"
+FUTURES_CALENDAR_SOURCE = "https://www.cmegroup.com/trading-hours.html"
 FIRST_YEAR = 2016
 LAST_YEAR = 2026
 
@@ -129,6 +131,48 @@ OFFICIAL_EARLY_CLOSES: dict[int, tuple[str, ...]] = {
     2025: ("2025-07-03", "2025-11-28", "2025-12-24"),
     2026: ("2026-11-27", "2026-12-24"),
 }
+
+
+# ---------------------------------------------------------------------------
+# CME Globex 2026 holiday schedule (futures), transcribed 2026-09-19 from the official
+# "2026 CME Globex Trading Schedule" table on https://www.cmegroup.com/trading-hours.html
+# ("CME Globex trading hour and holiday schedules being observed for 2026"). Each row is
+# a holiday NAME and the DATE WINDOW the exchange lists for it, verbatim. Whether a given
+# product is halted, closed early or trades normally on a date inside the window is
+# PRODUCT-SPECIFIC (the same page shows e.g. Energy "13:45 closed" and Cryptocurrencies
+# "16:00 closed" on Friday 27 Nov 2026) and is deliberately NOT encoded: nothing here is
+# used to drop a futures session. The page also states: "This schedule is subject to
+# change. Trading hours are usually finalized approximately two weeks prior to the holiday."
+# ---------------------------------------------------------------------------
+CME_GLOBEX_CALENDAR_SOURCE = "https://www.cmegroup.com/trading-hours.html"
+CME_GLOBEX_2026_HOLIDAY_WINDOWS: tuple[tuple[str, str, str], ...] = (
+    # (holiday, first date, last date) — ISO dates for the verbatim "INCLUDES THE FOLLOWING DATES"
+    ("New Year's", "2025-12-31", "2026-01-02"),
+    ("Dr. Martin Luther King, Jr.", "2026-01-18", "2026-01-20"),
+    ("Presidents Day", "2026-02-15", "2026-02-17"),
+    ("Good Friday", "2026-04-02", "2026-04-04"),
+    ("Memorial Day", "2026-05-24", "2026-05-26"),
+    ("Juneteenth", "2026-06-18", "2026-06-19"),
+    ("Independence Day", "2026-07-03", "2026-07-05"),
+    ("Labor Day", "2026-09-06", "2026-09-08"),
+    ("Thanksgiving", "2026-11-26", "2026-11-28"),
+    ("Christmas", "2026-12-24", "2026-12-26"),
+    ("New Year's", "2026-12-31", "2027-01-01"),
+)
+
+
+def cme_globex_holiday_window(iso_date: str) -> str | None:
+    """Name of the 2026 CME Globex holiday window containing `iso_date`, else None.
+
+    Informational only (see the note above CME_GLOBEX_2026_HOLIDAY_WINDOWS): a date inside
+    a window may still trade with product-specific hours. Dates outside 2026 return None
+    because only the 2026 schedule has been transcribed from the official page.
+    """
+    day = date.fromisoformat(iso_date)
+    for name, first, last in CME_GLOBEX_2026_HOLIDAY_WINDOWS:
+        if date.fromisoformat(first) <= day <= date.fromisoformat(last):
+            return name
+    return None
 
 
 def verify_against_official() -> list[str]:

@@ -126,7 +126,7 @@
     "https://www.nyse.com/markets/hours-calendars",
     "https://www.nasdaqtrader.com/Trader.aspx?id=calendar"
    ],
-   "futures_calendar_source": "https://www.cmegroup.com/trading_hours.html",
+   "futures_calendar_source": "https://www.cmegroup.com/trading-hours.html",
    "special_closures": {
     "2018-12-05": "National Day of Mourning for President George H.W. Bush",
     "2025-01-09": "National Day of Mourning for President Jimmy Carter"

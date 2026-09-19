@@ -452,6 +452,15 @@ class TestEquityCalendar(unittest.TestCase):
             self.assertIsNotNone(cal.is_full_closure(iso), iso)
         self.assertEqual(len(cal.holidays_for_year(2026)), 10)
 
+    def test_cme_globex_windows_are_informational_and_2026_only(self):
+        from intel import calendar as cal
+        self.assertEqual(cal.cme_globex_holiday_window("2026-11-27"), "Thanksgiving")
+        self.assertEqual(cal.cme_globex_holiday_window("2026-04-03"), "Good Friday")
+        self.assertIsNone(cal.cme_globex_holiday_window("2026-09-18"))
+        self.assertIsNone(cal.cme_globex_holiday_window("2025-11-27"))  # not transcribed
+        for _, first, last in cal.CME_GLOBEX_2026_HOLIDAY_WINDOWS:
+            self.assertLessEqual(first, last)
+
     def test_rules_reproduce_official_nyse_tables(self):
         from intel import calendar as cal
         self.assertEqual(cal.verify_against_official(), [])
