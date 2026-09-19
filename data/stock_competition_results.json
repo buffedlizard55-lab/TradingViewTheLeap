@@ -3,7 +3,7 @@
   "kind": "own_stock_competition_simulation",
   "description": "The volatile-equity division of the repository's own paper competition: usernames from data/competition/stock_roster.json trade frozen contrarian or baseline models on captured vendor bars of the 20-stock volatile pool, with a fresh account per edition under an official rule profile. NOT the official contest, NOT a TradingView Strategy Report, NOT a Paper Trading account, NOT a prediction.",
   "engine": "intel-competition-3",
-  "generated_utc": "2026-09-19T19:35:00Z",
+  "generated_utc": "2026-09-19T18:41:04Z",
   "primary_scenario": "moderate",
   "primary_profile": "stocks_official_leap",
   "counterfactual_profile": "stocks_20x_counterfactual",
