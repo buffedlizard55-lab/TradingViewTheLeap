@@ -3,7 +3,7 @@
   "kind": "intraday_study",
   "description": "Deterministic measurement of (1) intra-session gap fills and (2) execution latency cost, computed only from the committed canonical vendor captures under the selected index. Provider coverage is described by source_metadata; these are vendor bars, not exchange prints, and no claim is made that any participant could have transacted at these prices.",
   "engine": "intraday-study-1",
-  "generated_utc": "2026-09-19T05:32:06+00:00",
+  "generated_utc": "2026-09-19T15:59:03+00:00",
   "source_index": "data/intraday_index.json",
   "source_metadata": {
    "kind": "intraday_capture_index",
@@ -30,20 +30,20 @@
    "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-19; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately (the window was re-frozen once, on 2026-09-19, from a 2026-07-21 start to a 2026-07-28 start).",
    "rounding_decimals": 5,
    "vendor_source_id": "YAHOO-INTRADAY-CHART",
-   "fetched_at_utc": "2026-09-19T05:32:06+00:00",
+   "fetched_at_utc": "2026-09-19T15:59:03+00:00",
    "capture_environment": "github-actions",
-   "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35422148917",
+   "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35452359048",
    "direct_rate_limited": true,
-   "direct_429_count": 36,
+   "direct_429_count": 39,
    "symbol_count": 80,
-   "captured_count": 29,
-   "failed_count": 41,
+   "captured_count": 37,
+   "failed_count": 33,
    "not_attempted_count": 10,
-   "elapsed_seconds": 21257.8,
+   "elapsed_seconds": 12142.4,
    "captured_by_interval": {
-    "15m": 15,
-    "1h": 9,
-    "1d": 5
+    "15m": 16,
+    "1h": 10,
+    "1d": 11
    },
    "equity_symbols": [
     "ENPH",
@@ -70,10 +70,10 @@
    "futures_symbols": [],
    "provenance_note": "Re-run scripts/fetch_intraday.py --only-failed in a networked environment to top up. The offline verifier audits these files without network access: it re-validates every OHLC invariant, re-checks each stored SHA-256 against the index, and re-derives the intraday study. Records with status 'failed' carry the error text and must be retried.",
    "workflow_run_urls": [
-    "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35422148917"
+    "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35452359048"
    ],
    "merge_note": "Merged from per-symbol partial indexes written by parallel capture jobs (scripts/merge_intraday_indexes.py). Tallies are recomputed from the merged records; direct_429_count and elapsed_seconds are summed across the jobs.",
-   "merged_at_utc": "2026-09-19T06:07:13+00:00",
+   "merged_at_utc": "2026-09-19T16:29:54+00:00",
    "merged_partial_count": 21
   },
   "script": "scripts/run_intraday_study.py",
@@ -171,6 +171,17 @@
    "raw_response_sha256": "358c2070dd806a337f1fc14363f6d82d0842822cdae6db4b213b1bb1894790ee",
    "stored_sha256": "6f9d1b351048f6c9f24dc5f09f4af898411eb51d03b324f1930a6e63579e3008",
    "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/APP?period1=1726876800&period2=1742428800&interval=1h"
+  },
+  {
+   "symbol": "COIN",
+   "kind": "equity",
+   "interval": "15m",
+   "bars": 989,
+   "first_utc": "2026-07-28T13:30:00+00:00",
+   "last_utc": "2026-09-18T20:00:00+00:00",
+   "raw_response_sha256": "7a26a4b34f73f5ec78cbcef27fcf3ad7d4bc8d40134a957f8f223e26f163b8af",
+   "stored_sha256": "03483ab1004f3a0da6c7825a25a21bc651d649d045345d83e59d1f988a4508de",
+   "endpoint": "https://query2.finance.yahoo.com/v8/finance/chart/COIN?period1=1785196800&period2=1786406400&interval=15m"
   },
   {
    "symbol": "CVNA",
@@ -380,19 +391,30 @@
    "raw_response_sha256": "1d4e459c27d1b1af55bd1d5e00b5b3f4cd4c7d12fd15953bffaa75925d668105",
    "stored_sha256": "940fc938ab0eabdb7df8009b7d9e3821826f1f635a40888a8361c9525a25ea80",
    "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1785196800&period2=1786406400&interval=15m"
+  },
+  {
+   "symbol": "TSLA",
+   "kind": "equity",
+   "interval": "1h",
+   "bars": 3462,
+   "first_utc": "2024-09-23T13:30:00+00:00",
+   "last_utc": "2026-09-17T19:30:00+00:00",
+   "raw_response_sha256": "d6d58893d80b8ebed9a51862c7a36d3c7d1954658841801d10c3f6eac9399485",
+   "stored_sha256": "3f5661600d8f13b3af10122de3f73774de7741d86d3ebff83d2fbee90fb96e80",
+   "endpoint": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1726876800&period2=1742428800&interval=1h"
   }
  ],
  "gap_fill": {
   "aggregate_by_kind": {
    "equity": {
-    "sessions_with_gap": 4611,
-    "fill_rate_all": 0.644763,
-    "fill_rate_ge_1_atr": 0.135484,
-    "sessions_with_gap_ge_1_atr": 155,
-    "median_abs_gap_atr": 0.199284,
+    "sessions_with_gap": 5119,
+    "fill_rate_all": 0.641727,
+    "fill_rate_ge_1_atr": 0.140351,
+    "sessions_with_gap_ge_1_atr": 171,
+    "median_abs_gap_atr": 0.202808,
     "median_abs_gap_atr_ge_1": 1.408148,
     "median_bars_to_fill": 0,
-    "share_closed_through": 0.324225
+    "share_closed_through": 0.323696
    }
   },
   "buckets": [
@@ -400,111 +422,111 @@
     "kind": "equity",
     "bucket": "lt_0.25_atr",
     "direction": "up",
-    "sessions": 1384,
-    "fill_rate": 0.811416,
-    "median_bars_to_fill": 0,
+    "sessions": 1545,
+    "fill_rate": 0.809061,
+    "median_bars_to_fill": 0.0,
     "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.42341,
-    "median_abs_gap_atr": 0.104926
+    "close_through_rate": 0.423948,
+    "median_abs_gap_atr": 0.106487
    },
    {
     "kind": "equity",
     "bucket": "lt_0.25_atr",
     "direction": "down",
-    "sessions": 1340,
-    "fill_rate": 0.807463,
+    "sessions": 1455,
+    "fill_rate": 0.808247,
     "median_bars_to_fill": 0.0,
     "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.388806,
-    "median_abs_gap_atr": 0.111653
+    "close_through_rate": 0.391065,
+    "median_abs_gap_atr": 0.111553
    },
    {
     "kind": "equity",
     "bucket": "0.25_0.5_atr",
     "direction": "up",
-    "sessions": 609,
-    "fill_rate": 0.507389,
+    "sessions": 690,
+    "fill_rate": 0.508696,
     "median_bars_to_fill": 0,
     "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.279146,
-    "median_abs_gap_atr": 0.347292
+    "close_through_rate": 0.273913,
+    "median_abs_gap_atr": 0.347937
    },
    {
     "kind": "equity",
     "bucket": "0.25_0.5_atr",
     "direction": "down",
-    "sessions": 561,
-    "fill_rate": 0.472371,
-    "median_bars_to_fill": 0,
-    "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.228164,
-    "median_abs_gap_atr": 0.340011
-   },
-   {
-    "kind": "equity",
-    "bucket": "0.5_1.0_atr",
-    "direction": "up",
-    "sessions": 300,
-    "fill_rate": 0.27,
-    "median_bars_to_fill": 0,
-    "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.123333,
-    "median_abs_gap_atr": 0.640704
-   },
-   {
-    "kind": "equity",
-    "bucket": "0.5_1.0_atr",
-    "direction": "down",
-    "sessions": 262,
-    "fill_rate": 0.351145,
+    "sessions": 626,
+    "fill_rate": 0.472843,
     "median_bars_to_fill": 0.0,
     "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.156489,
-    "median_abs_gap_atr": 0.625484
+    "close_through_rate": 0.228435,
+    "median_abs_gap_atr": 0.340539
+   },
+   {
+    "kind": "equity",
+    "bucket": "0.5_1.0_atr",
+    "direction": "up",
+    "sessions": 331,
+    "fill_rate": 0.265861,
+    "median_bars_to_fill": 0.0,
+    "median_fill_fraction_of_session": 0.142857,
+    "close_through_rate": 0.126888,
+    "median_abs_gap_atr": 0.636086
+   },
+   {
+    "kind": "equity",
+    "bucket": "0.5_1.0_atr",
+    "direction": "down",
+    "sessions": 301,
+    "fill_rate": 0.332226,
+    "median_bars_to_fill": 0.0,
+    "median_fill_fraction_of_session": 0.142857,
+    "close_through_rate": 0.149502,
+    "median_abs_gap_atr": 0.623886
    },
    {
     "kind": "equity",
     "bucket": "1.0_2.0_atr",
     "direction": "up",
-    "sessions": 67,
-    "fill_rate": 0.19403,
+    "sessions": 74,
+    "fill_rate": 0.202703,
     "median_bars_to_fill": 0,
     "median_fill_fraction_of_session": 0.142857,
-    "close_through_rate": 0.149254,
-    "median_abs_gap_atr": 1.278287
+    "close_through_rate": 0.148649,
+    "median_abs_gap_atr": 1.280381
    },
    {
     "kind": "equity",
     "bucket": "1.0_2.0_atr",
     "direction": "down",
-    "sessions": 53,
-    "fill_rate": 0.150943,
-    "median_bars_to_fill": 0.5,
-    "median_fill_fraction_of_session": 0.214286,
-    "close_through_rate": 0.037736,
-    "median_abs_gap_atr": 1.284261
+    "sessions": 58,
+    "fill_rate": 0.155172,
+    "median_bars_to_fill": 1,
+    "median_fill_fraction_of_session": 0.285714,
+    "close_through_rate": 0.051724,
+    "median_abs_gap_atr": 1.273268
    },
    {
     "kind": "equity",
     "bucket": "ge_2.0_atr",
     "direction": "up",
-    "sessions": 21,
+    "sessions": 23,
     "fill_rate": 0.0,
     "median_bars_to_fill": null,
     "median_fill_fraction_of_session": null,
     "close_through_rate": 0.0,
-    "median_abs_gap_atr": 2.604726
+    "median_abs_gap_atr": 2.836191
    },
    {
     "kind": "equity",
     "bucket": "ge_2.0_atr",
     "direction": "down",
-    "sessions": 14,
+    "sessions": 16,
     "fill_rate": 0.0,
     "median_bars_to_fill": null,
     "median_fill_fraction_of_session": null,
     "close_through_rate": 0.0,
-    "median_abs_gap_atr": 2.48539
+    "median_abs_gap_atr": 2.387246
    }
   ],
   "per_symbol": [
@@ -596,6 +618,24 @@
     "gap_down_sessions": 224,
     "fill_rate_all": 0.663223,
     "median_abs_gap_atr": 0.183857,
+    "median_bars_to_fill": 0
+   },
+   {
+    "symbol": "COIN",
+    "kind": "equity",
+    "interval": "15m",
+    "sessions": 38,
+    "first_session": "2026-07-28",
+    "last_session": "2026-09-18",
+    "bars": 989,
+    "gaps_analyzed": 24,
+    "gap_candidates": 37,
+    "gaps_skipped_no_atr": 13,
+    "gaps_skipped_zero_gap": 0,
+    "gap_up_sessions": 12,
+    "gap_down_sessions": 12,
+    "fill_rate_all": 0.375,
+    "median_abs_gap_atr": 0.395241,
     "median_bars_to_fill": 0
    },
    {
@@ -939,6 +979,24 @@
     "fill_rate_all": 0.666667,
     "median_abs_gap_atr": 0.241176,
     "median_bars_to_fill": 0.0
+   },
+   {
+    "symbol": "TSLA",
+    "kind": "equity",
+    "interval": "1h",
+    "sessions": 498,
+    "first_session": "2024-09-23",
+    "last_session": "2026-09-17",
+    "bars": 3462,
+    "gaps_analyzed": 484,
+    "gap_candidates": 497,
+    "gaps_skipped_no_atr": 13,
+    "gaps_skipped_zero_gap": 0,
+    "gap_up_sessions": 270,
+    "gap_down_sessions": 214,
+    "fill_rate_all": 0.626033,
+    "median_abs_gap_atr": 0.217949,
+    "median_bars_to_fill": 0
    }
   ]
  },
@@ -948,116 +1006,116 @@
     "kind": "equity",
     "interval": "15m",
     "same_session_next_open": {
-     "observations": 14265,
+     "observations": 15216,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": -0.001148,
-     "median_abs_bps": 1.357405,
-     "p90_abs_bps": 11.086475,
-     "share_above_10bps_abs": 0.11735,
-     "share_above_50bps_abs": 0.001052
+     "mean_signed_bps": 0.01983,
+     "median_abs_bps": 1.39981,
+     "p90_abs_bps": 10.905125,
+     "share_above_10bps_abs": 0.113039,
+     "share_above_50bps_abs": 0.000986
     },
     "session_boundary_next_open": {
-     "observations": 555,
-     "median_signed_bps": 6.461639,
-     "mean_signed_bps": 30.516253,
-     "median_abs_bps": 124.979579,
-     "p90_abs_bps": 343.58047,
-     "share_above_10bps_abs": 0.936937,
-     "share_above_50bps_abs": 0.774775
+     "observations": 592,
+     "median_signed_bps": 4.891358,
+     "mean_signed_bps": 28.280472,
+     "median_abs_bps": 125.917088,
+     "p90_abs_bps": 353.780314,
+     "share_above_10bps_abs": 0.934122,
+     "share_above_50bps_abs": 0.777027
     },
     "delay_1_bar_close_delta": {
-     "observations": 14820,
+     "observations": 15808,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": 1.865003,
-     "median_abs_bps": 27.499493,
-     "p90_abs_bps": 101.078167,
-     "share_above_10bps_abs": 0.791498,
-     "share_above_50bps_abs": 0.284345
+     "mean_signed_bps": 1.900291,
+     "median_abs_bps": 27.847844,
+     "p90_abs_bps": 101.137309,
+     "share_above_10bps_abs": 0.795483,
+     "share_above_50bps_abs": 0.288145
     },
     "delay_2_bar_close_delta": {
-     "observations": 14805,
+     "observations": 15792,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": 3.789212,
-     "median_abs_bps": 40.08016,
-     "p90_abs_bps": 150.690666,
-     "share_above_10bps_abs": 0.851131,
-     "share_above_50bps_abs": 0.412226
+     "mean_signed_bps": 3.851424,
+     "median_abs_bps": 40.538591,
+     "p90_abs_bps": 151.324086,
+     "share_above_10bps_abs": 0.854357,
+     "share_above_50bps_abs": 0.41768
     },
     "delay_3_bar_close_delta": {
-     "observations": 14790,
+     "observations": 15776,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": 5.646455,
-     "median_abs_bps": 49.060985,
-     "p90_abs_bps": 189.566495,
-     "share_above_10bps_abs": 0.879513,
-     "share_above_50bps_abs": 0.494794
+     "mean_signed_bps": 5.743961,
+     "median_abs_bps": 49.949197,
+     "p90_abs_bps": 190.393769,
+     "share_above_10bps_abs": 0.880895,
+     "share_above_50bps_abs": 0.499746
     },
     "delay_5_bar_close_delta": {
-     "observations": 14760,
-     "median_signed_bps": -0.682911,
-     "mean_signed_bps": 9.240534,
-     "median_abs_bps": 65.763596,
-     "p90_abs_bps": 260.663507,
-     "share_above_10bps_abs": 0.909011,
-     "share_above_50bps_abs": 0.592209
+     "observations": 15744,
+     "median_signed_bps": -0.716331,
+     "mean_signed_bps": 9.402759,
+     "median_abs_bps": 66.822413,
+     "p90_abs_bps": 261.928934,
+     "share_above_10bps_abs": 0.911776,
+     "share_above_50bps_abs": 0.598006
     }
    },
    {
     "kind": "equity",
     "interval": "1h",
     "same_session_next_open": {
-     "observations": 26673,
+     "observations": 29637,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": -0.073827,
-     "median_abs_bps": 2.082006,
-     "p90_abs_bps": 15.883306,
-     "share_above_10bps_abs": 0.163236,
-     "share_above_50bps_abs": 0.005811
+     "mean_signed_bps": -0.072837,
+     "median_abs_bps": 1.758341,
+     "p90_abs_bps": 14.306152,
+     "share_above_10bps_abs": 0.147181,
+     "share_above_50bps_abs": 0.005264
     },
     "session_boundary_next_open": {
-     "observations": 4473,
-     "median_signed_bps": 1.594867,
-     "mean_signed_bps": 13.701271,
-     "median_abs_bps": 107.609531,
-     "p90_abs_bps": 365.548349,
-     "share_above_10bps_abs": 0.929577,
-     "share_above_50bps_abs": 0.727923
+     "observations": 4970,
+     "median_signed_bps": 3.831319,
+     "mean_signed_bps": 13.310852,
+     "median_abs_bps": 106.916802,
+     "p90_abs_bps": 362.55065,
+     "share_above_10bps_abs": 0.930584,
+     "share_above_50bps_abs": 0.728169
     },
     "delay_1_bar_close_delta": {
-     "observations": 31146,
+     "observations": 34607,
      "median_signed_bps": 0.0,
-     "mean_signed_bps": 3.006462,
-     "median_abs_bps": 59.866795,
-     "p90_abs_bps": 230.039027,
-     "share_above_10bps_abs": 0.898767,
-     "share_above_50bps_abs": 0.561131
+     "mean_signed_bps": 2.910633,
+     "median_abs_bps": 58.407775,
+     "p90_abs_bps": 226.288026,
+     "share_above_10bps_abs": 0.896899,
+     "share_above_50bps_abs": 0.55301
     },
     "delay_2_bar_close_delta": {
-     "observations": 31134,
-     "median_signed_bps": -1.130514,
-     "mean_signed_bps": 5.921853,
-     "median_abs_bps": 93.240093,
-     "p90_abs_bps": 352.589833,
-     "share_above_10bps_abs": 0.936243,
-     "share_above_50bps_abs": 0.69991
+     "observations": 34594,
+     "median_signed_bps": -0.902993,
+     "mean_signed_bps": 5.744774,
+     "median_abs_bps": 91.350273,
+     "p90_abs_bps": 346.475862,
+     "share_above_10bps_abs": 0.934613,
+     "share_above_50bps_abs": 0.692577
     },
     "delay_3_bar_close_delta": {
-     "observations": 31116,
-     "median_signed_bps": -2.176374,
-     "mean_signed_bps": 9.039304,
-     "median_abs_bps": 123.239799,
-     "p90_abs_bps": 447.121686,
-     "share_above_10bps_abs": 0.950701,
-     "share_above_50bps_abs": 0.760895
+     "observations": 34574,
+     "median_signed_bps": -1.821667,
+     "mean_signed_bps": 8.753124,
+     "median_abs_bps": 120.910724,
+     "p90_abs_bps": 437.76824,
+     "share_above_10bps_abs": 0.949181,
+     "share_above_50bps_abs": 0.757621
     },
     "delay_5_bar_close_delta": {
-     "observations": 31020,
-     "median_signed_bps": -1.612625,
-     "mean_signed_bps": 15.469698,
-     "median_abs_bps": 180.362234,
-     "p90_abs_bps": 591.966173,
-     "share_above_10bps_abs": 0.966248,
-     "share_above_50bps_abs": 0.835106
+     "observations": 34467,
+     "median_signed_bps": -1.091068,
+     "mean_signed_bps": 14.952853,
+     "median_abs_bps": 177.577525,
+     "p90_abs_bps": 580.287625,
+     "share_above_10bps_abs": 0.966229,
+     "share_above_50bps_abs": 0.832768
     }
    }
   ]
@@ -1081,10 +1139,10 @@
    },
    "verification": "Rule-based transcription; every date must be re-verified against the official NYSE calendar before authoritative use."
   },
-  "equity_series_annotated": 24,
+  "equity_series_annotated": 26,
   "sessions_on_full_closure_total": 0,
-  "boundaries_spanning_closure_total": 204,
-  "gaps_spanning_closure_total": 201,
+  "boundaries_spanning_closure_total": 226,
+  "gaps_spanning_closure_total": 223,
   "studied_window": {
    "start": "2024-09-23",
    "end": "2026-09-18"
@@ -1162,6 +1220,16 @@
     "session_dates_on_full_closure": [],
     "boundaries_spanning_closure": 21,
     "gaps_spanning_closure": 21
+   },
+   {
+    "symbol": "COIN",
+    "kind": "equity",
+    "interval": "15m",
+    "calendar_applies": true,
+    "sessions_on_full_closure": 0,
+    "session_dates_on_full_closure": [],
+    "boundaries_spanning_closure": 1,
+    "gaps_spanning_closure": 1
    },
    {
     "symbol": "CVNA",
@@ -1352,6 +1420,16 @@
     "session_dates_on_full_closure": [],
     "boundaries_spanning_closure": 1,
     "gaps_spanning_closure": 1
+   },
+   {
+    "symbol": "TSLA",
+    "kind": "equity",
+    "interval": "1h",
+    "calendar_applies": true,
+    "sessions_on_full_closure": 0,
+    "session_dates_on_full_closure": [],
+    "boundaries_spanning_closure": 21,
+    "gaps_spanning_closure": 21
    }
   ],
   "note": "Sessions are still grouped by UTC date (the verifiable baseline); the calendar only annotates them. A session dated on a full closure is reported, never deleted. Futures series are not annotated: the CME Globex calendar is not encoded."

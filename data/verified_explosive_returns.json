@@ -1,17 +1,17 @@
 {
  "_meta": {
   "description": "Every explosive-return figure in this project that is sourced rather than computed. All rows are net-profit percentages TradingView itself publishes for the #1 finisher of a completed edition, plus rank 1 of the live edition.",
-  "generated_utc": "2026-09-18",
+  "generated_utc": "2026-09-19",
   "record_count": 16,
   "source_ids": [
    "TV-THELEAP-LANDING",
    "TV-CONTEST-AMP-SEP2026",
-   "TV-CONTEST-AMP-SEP2026-R8"
+   "TV-CONTEST-AMP-SEP2026-R10"
   ],
   "derivation": "return_multiple = 1 + net_profit_pct_as_published / 100. This is the only transformation applied; it is arithmetic on a published figure.",
   "honesty_note": "No equity (single-stock) explosive return appears in this file. No 100x outcome is attested by any official TradingView record captured in this session.",
-  "reverified_utc": "2026-09-18",
-  "reverification_note": "2026-09-18 eighth pass: the 15 completed champion records remain the historical sample; the in-progress row is synchronized to the latest official frontier capture R8 (02:27Z). The first public snapshot remains archived in data/live_contest_snapshot.json and is used for the initial capacity benchmark."
+  "reverified_utc": "2026-09-19",
+  "reverification_note": "2026-09-19 tenth pass: the 15 completed champion records remain the historical sample (all re-verified unchanged against the landing page); the in-progress row is synchronized to the latest official frontier capture R10 (18:30Z, first rank-1 turnover to HappyLittleTrades +994.30%). The first public snapshot remains archived in data/live_contest_snapshot.json and is used for the initial capacity benchmark."
  },
  "records": [
   {
@@ -198,15 +198,15 @@
    "status": "in_progress",
    "edition_label": "AMP Futures - September 2026",
    "asset_class_label": "futures",
-   "winner": "leonardo22_romano",
-   "participants": 96586,
-   "net_profit_pct_as_published": 934.05,
-   "return_multiple": 10.3405,
-   "realized_profit_usd_as_published": 2335125.0,
+   "winner": "HappyLittleTrades",
+   "participants": 99663,
+   "net_profit_pct_as_published": 994.3,
+   "return_multiple": 10.943,
+   "realized_profit_usd_as_published": 2485745.5,
    "profitable_trades_pct_as_published": null,
    "results_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-   "source_id": "TV-CONTEST-AMP-SEP2026-R8",
-   "captured_at_utc": "2026-09-18T02:27:00Z"
+   "source_id": "TV-CONTEST-AMP-SEP2026-R10",
+   "captured_at_utc": "2026-09-19T18:30:00Z"
   }
  ],
  "threshold_analysis": {

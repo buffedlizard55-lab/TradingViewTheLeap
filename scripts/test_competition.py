@@ -288,6 +288,63 @@ class StockModelTests(unittest.TestCase):
         self.assertTrue(d16 and d16[0].action == "long")
         self.assertIn("add", {d.action for d in d16})
 
+    def test_c17_c19_resolve_warmup_and_fire(self):
+        from intel.stock_strategies import (
+            STOCK_MODEL_IDS, generate_stock_decisions, resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        for model in ("C17", "C18", "C19"):
+            self.assertIn(model, STOCK_MODEL_IDS)
+        p17 = stock_resolve("C17", "aggressive")
+        self.assertEqual(p17["gap_atr_mult"], 1.5)
+        self.assertEqual(p17["max_adds"], 8)
+        self.assertEqual(stock_warmup("C17", None), 22)
+        p18 = stock_resolve("C18", "patient")
+        self.assertEqual(p18["run_pct"], 0.30)
+        self.assertEqual(p18["max_adds"], 5)
+        self.assertEqual(stock_warmup("C18", "aggressive"), 22)
+        p19 = stock_resolve("C19", "patient")
+        self.assertEqual(p19["crash_atr_mult"], 2.0)
+        self.assertEqual(stock_warmup("C19", None), 22)
+        with self.assertRaises(ValueError):
+            stock_resolve("C19", "nope")
+
+        t0 = int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp())
+
+        # C17 fires on a gap-down that recovers into the top half on volume.
+        flat = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000)
+                for i in range(30)]
+        implode = Bar(flat[-1].ts + 86400, 90.0, 96.0, 89.0, 95.0, 5000)
+        recover = [Bar(implode.ts + (i + 1) * 86400, 95.0 + i, 97.0 + i, 94.0 + i,
+                       96.0 + i, 1000) for i in range(14)]
+        d17 = generate_stock_decisions(flat + [implode] + recover, "C17")
+        self.assertEqual(d17[0].action, "long")
+        self.assertEqual(d17[0].index, 30)
+
+        # C18 fires short on a vertical blow-off and adds into extension.
+        base = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000)
+                for i in range(26)]
+        run = [Bar(base[-1].ts + 86400, 100.0, 111.0, 99.0, 110.0, 5000),
+               Bar(base[-1].ts + 2 * 86400, 110.0, 122.0, 109.0, 121.0, 5000),
+               Bar(base[-1].ts + 3 * 86400, 121.0, 134.0, 120.0, 133.0, 5000),
+               Bar(base[-1].ts + 4 * 86400, 133.0, 148.0, 132.0, 146.0, 5000)]
+        tail = [Bar(run[-1].ts + (i + 1) * 86400, 146.0, 147.0, 130.0 - i, 131.0 - i,
+                      1000) for i in range(12)]
+        d18 = generate_stock_decisions(base + run + tail, "C18")
+        self.assertEqual(d18[0].action, "short")
+        self.assertIn("add", {d.action for d in d18})
+
+        # C19 fires on two consecutive crash bars ending in an absorbed hammer.
+        tight = [Bar(t0 + i * 86400, 100.0, 100.2, 99.8, 100.0, 1000)
+                 for i in range(26)]
+        crash1 = Bar(tight[-1].ts + 86400, 100.0, 100.2, 93.0, 94.0, 1000)
+        hammer = Bar(crash1.ts + 86400, 94.0, 95.0, 84.0, 90.0, 5000)
+        snap = [Bar(hammer.ts + (i + 1) * 86400, 90.0 + i, 92.0 + i, 89.0 + i,
+                    91.0 + i, 1000) for i in range(16)]
+        d19 = generate_stock_decisions(tight + [crash1, hammer] + snap, "C19")
+        self.assertEqual([(d.index, d.action) for d in d19 if d.action == "long"],
+                         [(27, "long")])
+
 
 class ExecutionRealismTests(unittest.TestCase):
     def _two_symbol_setup(self):

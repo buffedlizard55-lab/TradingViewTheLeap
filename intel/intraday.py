@@ -117,12 +117,23 @@ def _validate_bars(raw_bars: list, symbol: str, interval: str) -> tuple[IBar, ..
 
 
 def load_capture(record: dict, rel_dir: str = "data/intraday") -> Capture:
-    """Load one capture record from the index into validated bars."""
+    """Load one capture record from the index into validated bars.
+
+    Every load problem — including a missing file — surfaces as IntradayError so
+    callers (notably scripts/verify.py) can report it instead of crashing.
+    """
     path = os.path.join(ROOT, record["file"]) if record["file"].startswith("data") else os.path.join(
         ROOT, rel_dir, os.path.basename(record["file"])
     )
-    with open(path, "rb") as fh:
-        payload = fh.read()
+    try:
+        with open(path, "rb") as fh:
+            payload = fh.read()
+    except OSError as exc:
+        sym = record.get("symbol")
+        iv = record.get("interval")
+        raise IntradayError(
+            f"{sym}[{iv}]: cannot read capture file {record.get('file')}: {exc}"
+        ) from exc
     stored_sha = hashlib.sha256(payload).hexdigest()
     if stored_sha != record["stored_sha256"]:
         raise IntradayError(

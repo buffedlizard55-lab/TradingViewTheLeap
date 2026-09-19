@@ -106,9 +106,13 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
                 "rather than a placeholder.</p></div>")
     rows = []
     waiting = []
+    plain_orders = []
+    order_symbols: list[str] = []
     for name, div in exec_summary["divisions"].items():
         for entry in div.get("recommendations", []):
+            open_side = {p["symbol"]: p["side"] for p in entry.get("open_positions", [])}
             for order in entry["pending_orders"]:
+                order_symbols.append(order["symbol"])
                 size = order["indicative_size_units"]
                 # The artifact publishes the rendered label, so the page cannot drift from the
                 # builder's wording (the two copies disagreed on "1 unit" vs "1 units").
@@ -125,6 +129,30 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
                     f'<td>{esc(name)}</td>'
                     f'<td>{size_text}</td>'
                     f'<td>{esc(order["decided_on"])}</td></tr>')
+                # Plain-language sentence for the same order: the explicit, obvious answer to
+                # "what upcoming trade should be placed", derived from the artifact only.
+                action = order["action"]
+                side = open_side.get(order["symbol"], "open")
+                if action == "exit and reverse to LONG":
+                    verb = f"Close the {side} position and open a LONG position ({size_text})"
+                elif action == "exit and reverse to SHORT":
+                    verb = f"Close the {side} position and open a SHORT position ({size_text})"
+                elif action.startswith("exit"):
+                    verb = "Close the open position and go FLAT (no new size)"
+                elif action == "LONG (new position)":
+                    verb = f"Open a new LONG position ({size_text})"
+                elif action == "SHORT (new position)":
+                    verb = f"Open a new SHORT position ({size_text})"
+                elif action == "ADD (increase the open position)":
+                    verb = f"ADD {size_text} to the open {side} position"
+                else:
+                    verb = f"{action} ({size_text})"
+                plain_orders.append(
+                    f'<li><strong>{esc(verb)}</strong> in <code>{esc(order["symbol"])}</code> — '
+                    f'{esc(entry["username"])} ({esc(entry["model"])} · '
+                    f'{esc(entry["model_name"])}, {esc(name)} season rank '
+                    f'{esc(entry["season_rank"])}), signal bar '
+                    f'{esc(order["decided_on"])}.</li>')
             if entry.get("waiting_for"):
                 waiting.append(
                     f'<li><strong>{esc(entry["username"])}</strong> ({esc(entry["model"])} · '
@@ -136,9 +164,11 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
     # The table vs. waiting distinction: pending_orders are executable at next bar open;
     # waiting_for rows are frozen model conditions that have not yet triggered.
     if rows:
+        first_symbol = order_symbols[0]
         banner = f"""<div class="callout good" style="border-left-width:6px;"><h3>\u2b22 UPCOMING PAPER TRADES — {number_or_dash(pending)} MECHANICAL ORDER(S) AT NEXT BAR OPEN</h3>
 <p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen contrarian model on <strong>real verified pricing</strong>, sized from official rule constants (CME multipliers, TradingView caps) and labelled simulated.</p>
-<p class="note">Top paper-trade signal: <code>{esc(rows[0].split('<code>')[1].split('</code>')[0]) if '<code>' in rows[0] else ''}</code> and {number_or_dash(max(0, len(rows)-1))} more below — see <code>Signal bar</code> for the deciding session and verify each figure in <code>data/exec_summary.json</code>.</p></div>"""
+<ol class="compact">{''.join(plain_orders)}</ol>
+<p class="note\">Top paper-trade signal: <code>{esc(first_symbol)}</code> and {number_or_dash(max(0, len(rows)-1))} more below — see <code>Signal bar</code> for the deciding session and verify each figure in <code>data/exec_summary.json</code>.</p></div>"""
         table = (banner + f"""<div class="table-wrap"><table>
 <thead><tr><th>Order</th><th>Symbol</th><th>Username</th><th>Model</th><th>Division</th>
 <th>Indicative size</th><th>Signal bar</th></tr></thead>
@@ -666,6 +696,27 @@ def build() -> str:
     exchange_counts = Counter(row["exchange"] for row in universe["instruments"])
     snapshot_at = latest_frontier["captured_at_utc"]
     captured_syms = [c for c in market_index["captures"] if c.get("status") == "captured"]
+    # Header capsule: the upcoming-trade answer must be visible at the very top of the page,
+    # above the fold, straight from the generated artifact (never hardcoded).
+    if exec_summary and exec_summary.get("_meta", {}).get("pending_order_count"):
+        pending_n = exec_summary["_meta"]["pending_order_count"]
+        first_sym = next(
+            (o["symbol"] for div in exec_summary["divisions"].values()
+             for rec in div.get("recommendations", [])
+             for o in rec.get("pending_orders", [])),
+            None,
+        )
+        first_txt = f" incl. <code>{esc(first_sym)}</code>" if first_sym else ""
+        exec_capsule = (f'<span>Upcoming paper trades</span><strong><a href="#exec-summary">'
+                        f'{pending_n} order(s) at next bar open →</a></strong>'
+                        f'<span class="note">Top signal{first_txt}; '
+                        f'mechanical replays, paper only</span>')
+    elif exec_summary:
+        exec_capsule = ('<span>Upcoming paper trades</span><strong><a href="#exec-summary">'
+                        'No pending order this bar →</a></strong>'
+                        '<span class="note">Top usernames are waiting; paper only</span>')
+    else:
+        exec_capsule = ""
 
     out: list[str] = []
     add = out.append
@@ -696,6 +747,7 @@ are labeled separately.</p>
 <strong>{esc(cfg['edition_label'])}</strong>
 <span>Research snapshot</span><code>{esc(snapshot_at)}</code>
 <span>Displayed participants</span><strong>{number_or_dash(latest_frontier['participants_displayed'])}</strong>
+{exec_capsule}
 </div></div>
 <div class="badge-row">
 <span class="badge">{number_or_dash(universe['_meta']['instrument_count'])} eligible futures</span>

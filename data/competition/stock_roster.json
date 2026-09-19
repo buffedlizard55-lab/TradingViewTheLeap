@@ -1,15 +1,15 @@
 {
  "_meta": {
   "kind": "stock_competition_roster",
-  "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C16 in intel/stock_strategies.py, the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
+  "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C19 in intel/stock_strategies.py, the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
   "created_utc": "2026-09-18",
   "engine": "intel-competition-3",
   "rules_source_ids": ["TV-RULES-MAG7-MAR2026", "TV-RULES-AMP-SEP2026"],
   "price_source_ids": ["YAHOO-INTRADAY-CHART"],
   "primary_profile": "stocks_official_leap",
   "counterfactual_profile": "stocks_20x_counterfactual",
-  "participant_count": 32,
-  "daily_participants": 28,
+  "participant_count": 38,
+  "daily_participants": 34,
   "hourly_participants": 4,
   "deployment_fraction": 1.0,
   "deployment_note": "Every participant deploys 100% of available buying power on each new entry or add tranche, up to the rule cap of the profile. This is deliberate: the brief for the paper division is maximum simulated return, not risk management. Ruin (equity <= 0) is terminal because the official rules forbid account resets.",
@@ -80,6 +80,18 @@
   {"username": "SqueezeSage", "kind": "contrarian", "model": "C8", "variant": "wide", "division": "hourly",
    "pool": ["TSLA", "NVDA", "AMD", "COIN", "MSTR", "SMCI"]},
   {"username": "IntradayIris", "kind": "contrarian", "model": "C7", "variant": "rapid", "division": "hourly",
-   "pool": ["MARA", "RIOT", "GME", "CVNA", "COIN", "PLUG"]}
+   "pool": ["MARA", "RIOT", "GME", "CVNA", "COIN", "PLUG"]},
+  {"username": "GapGobbler", "kind": "contrarian", "model": "C17", "variant": null, "division": "daily",
+   "pool": ["ENPH", "MARA", "RIOT", "COIN", "MSTR", "HOOD"]},
+  {"username": "DawnRaider", "kind": "contrarian", "model": "C17", "variant": "aggressive", "division": "daily",
+   "pool": ["ENPH", "GME", "AMC", "CVNA", "PLUG", "SMCI"]},
+  {"username": "AvalancheAva", "kind": "contrarian", "model": "C18", "variant": null, "division": "daily",
+   "pool": ["ENPH", "MSTR", "COIN", "NVDA", "TSLA", "AMD"]},
+  {"username": "MartingaleMax", "kind": "contrarian", "model": "C18", "variant": "aggressive", "division": "daily",
+   "pool": ["ENPH", "GME", "AMC", "MARA", "RIOT", "SMCI"]},
+  {"username": "HammerHank", "kind": "contrarian", "model": "C19", "variant": null, "division": "daily",
+   "pool": ["ENPH", "PLTR", "APP", "SHOP", "NIO", "HOOD"]},
+  {"username": "DoubleTapDora", "kind": "contrarian", "model": "C19", "variant": "patient", "division": "daily",
+   "pool": ["ENPH", "TSLA", "NVDA", "AMD", "COIN", "MSTR"]}
  ]
 }

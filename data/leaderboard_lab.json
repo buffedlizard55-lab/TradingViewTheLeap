@@ -2,8 +2,8 @@
   "_meta": {
     "kind": "deterministic_arithmetic_not_backtest",
     "description": "Leaderboard placement and prize arithmetic derived from official contest facts only: what each rank costs and what reaching it would require. Arithmetic, not a forecast.",
-    "generated_utc": "2026-09-18",
-    "reference_capture_utc": "2026-09-18T02:27:00Z",
+    "generated_utc": "2026-09-19",
+    "reference_capture_utc": "2026-09-19T18:30:00Z",
     "input_files": [
       "data/contest_config.json",
       "data/frontier_history.json",
@@ -13,7 +13,7 @@
     ],
     "source_ids": [
       "TV-RULES-AMP-SEP2026",
-      "TV-CONTEST-AMP-SEP2026-R8",
+      "TV-CONTEST-AMP-SEP2026-R10",
       "TV-THELEAP-LANDING"
     ],
     "assumptions": [
@@ -32,8 +32,8 @@
     "competition_end_utc": "2026-09-30T12:00:00Z",
     "registration_close_utc": "2026-09-23T08:00:00Z",
     "total_competition_days": 29.166667,
-    "remaining_days_at_latest_capture": 12.397917,
-    "registration_days_left_at_latest_capture": 5.23125
+    "remaining_days_at_latest_capture": 10.729167,
+    "registration_days_left_at_latest_capture": 3.5625
   },
   "prize_ladder": {
     "tiers": [
@@ -114,11 +114,11 @@
   "board": {
     "visible_ranks": 250,
     "cash_ranks": 50,
-    "participants_displayed": 96586,
-    "visible_share_of_participants_pct": 0.258837,
-    "cash_share_of_participants_pct": 0.051767,
-    "rank50_to_rank100_gap_pct": 22.91057,
-    "rank100_to_rank250_gap_pct": 57.066513
+    "participants_displayed": 99663,
+    "visible_share_of_participants_pct": 0.250845,
+    "cash_share_of_participants_pct": 0.050169,
+    "rank50_to_rank100_gap_pct": 23.553438,
+    "rank100_to_rank250_gap_pct": 55.948189
   },
   "captures": [
     {
@@ -488,6 +488,52 @@
           "fresh_account_required_underlying_pct_per_day_at_20x": 0.575518
         }
       }
+    },
+    {
+      "captured_at_utc": "2026-09-19T18:30:00Z",
+      "source_id": "TV-CONTEST-AMP-SEP2026-R10",
+      "participants_displayed": 99663,
+      "elapsed_days_since_start": 18.4375,
+      "remaining_days_to_deadline": 10.729167,
+      "registration_days_left": 3.5625,
+      "rows": {
+        "1": {
+          "trader": "HappyLittleTrades",
+          "realized_profit_usd": 2485745.5,
+          "realized_profit_pct": 994.3,
+          "balance_multiple": 10.943,
+          "average_usd_per_day_since_start": 134820.094915,
+          "fresh_account_required_daily_compound_pct": 24.983174,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 1.249159
+        },
+        "50": {
+          "trader": "ashutoshrajan6",
+          "realized_profit_usd": 1459666.5,
+          "realized_profit_pct": 583.87,
+          "balance_multiple": 6.8387,
+          "average_usd_per_day_since_start": 79168.352542,
+          "fresh_account_required_daily_compound_pct": 19.625228,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.981261
+        },
+        "100": {
+          "trader": "aoe900620",
+          "realized_profit_usd": 1181405.0,
+          "realized_profit_pct": 472.56,
+          "balance_multiple": 5.7256,
+          "average_usd_per_day_since_start": 64076.20339,
+          "fresh_account_required_daily_compound_pct": 17.660817,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.883041
+        },
+        "250": {
+          "trader": "maxeq",
+          "realized_profit_usd": 757562.5,
+          "realized_profit_pct": 303.03,
+          "balance_multiple": 4.0303,
+          "average_usd_per_day_since_start": 41088.135593,
+          "fresh_account_required_daily_compound_pct": 13.872746,
+          "fresh_account_required_underlying_pct_per_day_at_20x": 0.693637
+        }
+      }
     }
   ],
   "targets": [
@@ -495,8 +541,8 @@
       "balance_multiple": 5,
       "required_net_profit_usd": 1000000.0,
       "required_net_profit_pct": 400,
-      "required_daily_compound_pct_over_remaining_window": 13.861793,
-      "required_underlying_pct_per_day_at_20x": 0.69309,
+      "required_daily_compound_pct_over_remaining_window": 16.184105,
+      "required_underlying_pct_per_day_at_20x": 0.809205,
       "full_leverage_winning_days_at_1pct_underlying": 9,
       "completed_champion_sample_at_or_above": 1
     },
@@ -504,8 +550,8 @@
       "balance_multiple": 10,
       "required_net_profit_usd": 2250000.0,
       "required_net_profit_pct": 900,
-      "required_daily_compound_pct_over_remaining_window": 20.408934,
-      "required_underlying_pct_per_day_at_20x": 1.020447,
+      "required_daily_compound_pct_over_remaining_window": 23.937828,
+      "required_underlying_pct_per_day_at_20x": 1.196891,
       "full_leverage_winning_days_at_1pct_underlying": 13,
       "completed_champion_sample_at_or_above": 1
     },
@@ -513,8 +559,8 @@
       "balance_multiple": 20,
       "required_net_profit_usd": 4750000.0,
       "required_net_profit_pct": 1900,
-      "required_daily_compound_pct_over_remaining_window": 27.33254,
-      "required_underlying_pct_per_day_at_20x": 1.366627,
+      "required_daily_compound_pct_over_remaining_window": 32.209007,
+      "required_underlying_pct_per_day_at_20x": 1.61045,
       "full_leverage_winning_days_at_1pct_underlying": 17,
       "completed_champion_sample_at_or_above": 1
     },
@@ -522,8 +568,8 @@
       "balance_multiple": 50,
       "required_net_profit_usd": 12250000.0,
       "required_net_profit_pct": 4900,
-      "required_daily_compound_pct_over_remaining_window": 37.099771,
-      "required_underlying_pct_per_day_at_20x": 1.854989,
+      "required_daily_compound_pct_over_remaining_window": 43.996056,
+      "required_underlying_pct_per_day_at_20x": 2.199803,
       "full_leverage_winning_days_at_1pct_underlying": 22,
       "completed_champion_sample_at_or_above": 1
     },
@@ -531,8 +577,8 @@
       "balance_multiple": 100,
       "required_net_profit_usd": 24750000.0,
       "required_net_profit_pct": 9900,
-      "required_daily_compound_pct_over_remaining_window": 44.983113,
-      "required_underlying_pct_per_day_at_20x": 2.249156,
+      "required_daily_compound_pct_over_remaining_window": 53.605852,
+      "required_underlying_pct_per_day_at_20x": 2.680293,
       "full_leverage_winning_days_at_1pct_underlying": 26,
       "completed_champion_sample_at_or_above": 0
     }
@@ -553,7 +599,7 @@
     "maximum_completed_multiple": 53.2072,
     "median_completed_multiple": 2.1192,
     "minimum_completed_multiple": 1.0836,
-    "latest_rank50_multiple": 6.5216,
+    "latest_rank50_multiple": 6.8387,
     "completed_champions_strictly_below_latest_rank50": 14,
     "completed_champions_at_or_above_latest_rank50": 1,
     "note": "Cross-edition comparison only: the completed records span stocks, crypto, forex, multi-asset and futures editions with different rules and different participant counts. It is evidence of what has been published, not a like-for-like benchmark and not a success probability."
@@ -563,7 +609,7 @@
       "symbol": "NYMEX:CL1!",
       "modeled_initial_notional_usd": 4916640.0,
       "max_whole_contracts_at_initial_balance": 48,
-      "favorable_move_pct_needed_for_latest_rank50_level": 28.076166,
+      "favorable_move_pct_needed_for_latest_rank50_level": 29.688293,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 58.37,
       "history_contains_a_30d_window_as_large_as_that_requirement": true
@@ -572,7 +618,7 @@
       "symbol": "COMEX:SI1!",
       "modeled_initial_notional_usd": 4869000.0,
       "max_whole_contracts_at_initial_balance": 15,
-      "favorable_move_pct_needed_for_latest_rank50_level": 28.350873,
+      "favorable_move_pct_needed_for_latest_rank50_level": 29.978774,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 64.74,
       "history_contains_a_30d_window_as_large_as_that_requirement": true
@@ -581,7 +627,7 @@
       "symbol": "NYMEX:HO1!",
       "modeled_initial_notional_usd": 4830289.8,
       "max_whole_contracts_at_initial_balance": 23,
-      "favorable_move_pct_needed_for_latest_rank50_level": 28.578078,
+      "favorable_move_pct_needed_for_latest_rank50_level": 30.219025,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 78.22,
       "history_contains_a_30d_window_as_large_as_that_requirement": true
@@ -590,7 +636,7 @@
       "symbol": "CME_MINI:NQ1!",
       "modeled_initial_notional_usd": 4681080.0,
       "max_whole_contracts_at_initial_balance": 8,
-      "favorable_move_pct_needed_for_latest_rank50_level": 29.489007,
+      "favorable_move_pct_needed_for_latest_rank50_level": 31.182259,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 20.11,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -599,7 +645,7 @@
       "symbol": "NYMEX:RB1!",
       "modeled_initial_notional_usd": 3394860.0,
       "max_whole_contracts_at_initial_balance": 25,
-      "favorable_move_pct_needed_for_latest_rank50_level": 40.661588,
+      "favorable_move_pct_needed_for_latest_rank50_level": 42.996368,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 66.69,
       "history_contains_a_30d_window_as_large_as_that_requirement": true
@@ -608,7 +654,7 @@
       "symbol": "NYMEX:PL1!",
       "modeled_initial_notional_usd": 2232375.0,
       "max_whole_contracts_at_initial_balance": 25,
-      "favorable_move_pct_needed_for_latest_rank50_level": 61.835668,
+      "favorable_move_pct_needed_for_latest_rank50_level": 65.386259,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 50.3,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -617,7 +663,7 @@
       "symbol": "NYMEX:MCL1!",
       "modeled_initial_notional_usd": 1024300.0,
       "max_whole_contracts_at_initial_balance": 100,
-      "favorable_move_pct_needed_for_latest_rank50_level": 134.765596,
+      "favorable_move_pct_needed_for_latest_rank50_level": 142.503807,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -626,7 +672,7 @@
       "symbol": "NYMEX:NG1!",
       "modeled_initial_notional_usd": 722750.0,
       "max_whole_contracts_at_initial_balance": 25,
-      "favorable_move_pct_needed_for_latest_rank50_level": 190.99329,
+      "favorable_move_pct_needed_for_latest_rank50_level": 201.960083,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 140.41,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -635,7 +681,7 @@
       "symbol": "COMEX_MINI:SIL1!",
       "modeled_initial_notional_usd": 649200.0,
       "max_whole_contracts_at_initial_balance": 10,
-      "favorable_move_pct_needed_for_latest_rank50_level": 212.631547,
+      "favorable_move_pct_needed_for_latest_rank50_level": 224.840804,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 64.74,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -644,7 +690,7 @@
       "symbol": "NYMEX_MINI:QM1!",
       "modeled_initial_notional_usd": 512125.0,
       "max_whole_contracts_at_initial_balance": 10,
-      "favorable_move_pct_needed_for_latest_rank50_level": 269.54435,
+      "favorable_move_pct_needed_for_latest_rank50_level": 285.021528,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 58.37,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -653,7 +699,7 @@
       "symbol": "CME:BTC1!",
       "modeled_initial_notional_usd": 380425.0,
       "max_whole_contracts_at_initial_balance": 1,
-      "favorable_move_pct_needed_for_latest_rank50_level": 362.858382,
+      "favorable_move_pct_needed_for_latest_rank50_level": 383.693632,
       "vendor_history_sessions": 504,
       "best_30d_up_move_pct_in_vendor_history": 48.79,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -662,7 +708,7 @@
       "symbol": "CME:MBT1!",
       "modeled_initial_notional_usd": 190062.5,
       "max_whole_contracts_at_initial_balance": 25,
-      "favorable_move_pct_needed_for_latest_rank50_level": 726.28951,
+      "favorable_move_pct_needed_for_latest_rank50_level": 767.992897,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -671,7 +717,7 @@
       "symbol": "CME:ETH1!",
       "modeled_initial_notional_usd": 120475.0,
       "max_whole_contracts_at_initial_balance": 1,
-      "favorable_move_pct_needed_for_latest_rank50_level": 1145.801204,
+      "favorable_move_pct_needed_for_latest_rank50_level": 1211.592862,
       "vendor_history_sessions": 503,
       "best_30d_up_move_pct_in_vendor_history": 71.81,
       "history_contains_a_30d_window_as_large_as_that_requirement": false
@@ -680,7 +726,7 @@
       "symbol": "CME:XRP1!",
       "modeled_initial_notional_usd": 65150.0,
       "max_whole_contracts_at_initial_balance": 1,
-      "favorable_move_pct_needed_for_latest_rank50_level": 2118.808903,
+      "favorable_move_pct_needed_for_latest_rank50_level": 2240.470453,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -689,7 +735,7 @@
       "symbol": "COMEX:SIC1!",
       "modeled_initial_notional_usd": 63200.0,
       "max_whole_contracts_at_initial_balance": 10,
-      "favorable_move_pct_needed_for_latest_rank50_level": 2184.183544,
+      "favorable_move_pct_needed_for_latest_rank50_level": 2309.598892,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -698,7 +744,7 @@
       "symbol": "CME:SOL1!",
       "modeled_initial_notional_usd": 49175.0,
       "max_whole_contracts_at_initial_balance": 1,
-      "favorable_move_pct_needed_for_latest_rank50_level": 2807.125572,
+      "favorable_move_pct_needed_for_latest_rank50_level": 2968.310117,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -707,7 +753,7 @@
       "symbol": "NYMEX:MNG1!",
       "modeled_initial_notional_usd": 28910.0,
       "max_whole_contracts_at_initial_balance": 10,
-      "favorable_move_pct_needed_for_latest_rank50_level": 4774.832238,
+      "favorable_move_pct_needed_for_latest_rank50_level": 5049.002075,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -716,7 +762,7 @@
       "symbol": "CME:MXP1!",
       "modeled_initial_notional_usd": 16193.75,
       "max_whole_contracts_at_initial_balance": 5,
-      "favorable_move_pct_needed_for_latest_rank50_level": 8524.301042,
+      "favorable_move_pct_needed_for_latest_rank50_level": 9013.76457,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -725,7 +771,7 @@
       "symbol": "CME:MSL1!",
       "modeled_initial_notional_usd": 12243.75,
       "max_whole_contracts_at_initial_balance": 5,
-      "favorable_move_pct_needed_for_latest_rank50_level": 11274.356304,
+      "favorable_move_pct_needed_for_latest_rank50_level": 11921.727412,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null
@@ -734,7 +780,7 @@
       "symbol": "CME:MET1!",
       "modeled_initial_notional_usd": 5981.25,
       "max_whole_contracts_at_initial_balance": 25,
-      "favorable_move_pct_needed_for_latest_rank50_level": 23078.854754,
+      "favorable_move_pct_needed_for_latest_rank50_level": 24404.037618,
       "vendor_history_sessions": null,
       "best_30d_up_move_pct_in_vendor_history": null,
       "history_contains_a_30d_window_as_large_as_that_requirement": null

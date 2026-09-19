@@ -8,8 +8,8 @@
    "medium",
    "low"
   ],
-  "count": 28,
-  "reverified_utc": "2026-09-18",
+  "count": 29,
+  "reverified_utc": "2026-09-19",
   "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
   "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
  },
@@ -132,11 +132,11 @@
    "severity": "low",
    "title": "Live participant counters differ across pages and capture times",
    "detail": "TradingView landing and contest pages displayed slightly different participant counts when fetched at different moments. The live registration counter increased during the day. This is consistent with asynchronous snapshots rather than a fixed-data contradiction.",
-   "observed": "Latest captured pair (same session, 2026-09-17 ~21:27Z): contest page 96,268 versus landing page 96,263. Previous pair ~20:58Z: 96,236 versus 96,230. Earlier same-day pairs: 96,095 vs 96,089; contest counts rose 93,527 -> 93,702 -> 95,709 -> 96,095 -> 96,236 -> 96,268 (+2,741 total across six captures).",
+   "observed": "Latest captured pair (same session, 2026-09-19 ~18:30Z): contest page 99,663 versus landing page 99,658 (delta +5, same signature as the 96,268-vs-96,263 pair). Previous pairs: 96,268 vs 96,263 (~21:27Z Sep 17); 96,236 vs 96,230 (~20:58Z); 96,095 vs 96,089; contest counts rose 93,527 -> 99,663 (+6,136 across nine captures).",
    "expected_by_brief": "n/a",
    "source_ids": [
-    "TV-THELEAP-LANDING-R6",
-    "TV-CONTEST-AMP-SEP2026-R6"
+    "TV-THELEAP-LANDING-R10",
+    "TV-CONTEST-AMP-SEP2026-R10"
    ],
    "resolution": "Every live count must carry a snapshot time or be described as displayed at capture; never combine counts from different fetches.",
    "linked_hypothesis": null,
@@ -401,6 +401,20 @@
    "linked_hypothesis": "H33",
    "status": "resolved_by_correction",
    "resolution": "Corrected and closed. See research/evidence/NYSE-CALENDAR-2016-2026.md for per-year official URLs and verbatim quotes."
+  },
+  {
+   "id": "IR-29",
+   "title": "Official rules page section-09 payment-rails text now reads a 600 USD split vs 1,000 USD at R3-R6",
+   "detail": "The 2026-09-19 R10 re-read of the official rules page quotes section 09 as 'Prizes equal to, or more than Six hundred (600) USD will be awarded only via Wire Transfer' and 'Prizes less than Six hundred (600) USD will be awarded via PayPal. No alternative payment methods will be accepted or offered.' The R3-R6 evidence (2026-09-16/17) quotes the same clause as 'Prizes equal to, or more than One thousand (1,000) USD will be awarded only via Wire Transfer or PayPal. Prizes less than One thousand (1,000) USD will be awarded via PayPal only.' Both the threshold (1,000 -> 600) and the large-prize rails ('Wire Transfer or PayPal' -> 'only via Wire Transfer') differ. This may be a genuine mid-competition rules update or a page-render/fetch artifact; the prize ladder, ARV, claim window and all trading constants are unchanged.",
+   "observed": "2026-09-19 ~18:15-18:45 UTC: R10 chunks 2-3 vs research/evidence/TV-RULES-AMP-SEP2026-R3.md line 62 (and R4-R6).",
+   "expected_by_brief": "Stable payment-rails transcription (1,000 USD split) in data/contest_config.json.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026-R10",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "severity": "low",
+   "status": "flagged_for_manual_review",
+   "resolution": "UNRESOLVED: data/contest_config.json keeps the 1,000 USD transcription pending a human re-read of the live rules page. Affects prize logistics only; no trading, ranking, backtest or competition artifact depends on the payment-rails value."
   }
  ]
 }
