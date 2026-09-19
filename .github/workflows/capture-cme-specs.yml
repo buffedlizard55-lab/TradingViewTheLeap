@@ -35,13 +35,15 @@ permissions:
 
 concurrency:
   group: capture-cme-specs-${{ github.ref }}
-  cancel-in-progress: false
+  # A superseded transcription run has no value: the newest commit is the one whose
+  # pages we want, and these runs can sit on a slow origin for many minutes.
+  cancel-in-progress: true
 
 jobs:
   capture:
     name: Transcribe the official CME contract-spec pages
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:

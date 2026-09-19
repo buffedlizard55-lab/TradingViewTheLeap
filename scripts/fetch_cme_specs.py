@@ -194,10 +194,36 @@ def extract_spec_fields(document: str) -> tuple[dict, list[str]]:
     return fields, missing
 
 
-def fetch(url: str, timeout: int = 60) -> tuple[int, bytes]:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html"})
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return int(getattr(response, "status", 200) or 200), response.read()
+#: Header sets tried in order. CME's edge has been observed to hold a connection open
+#: rather than reject a bare client, so the second attempt presents a full browser profile.
+#: Both are ordinary GETs of a public page; neither spoofs a login or a signed-in session.
+HEADER_SETS = (
+    {"User-Agent": USER_AGENT, "Accept": "text/html"},
+    {
+        "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                       "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"),
+        "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+                   "image/avif,image/webp,*/*;q=0.8"),
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "close",
+    },
+)
+
+
+def fetch(url: str, timeout: int = 25) -> tuple[int, bytes]:
+    """GET a public page, trying each header set once. Raises the last transport error."""
+    last: Exception | None = None
+    for headers in HEADER_SETS:
+        request = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = response.read()
+            if body:
+                return int(getattr(response, "status", 200) or 200), body
+            last = ValueError("empty response body")
+        except Exception as exc:                      # noqa: BLE001 - transport-level only
+            last = exc
+    raise RuntimeError(f"GET failed with every header set: {url} ({last})")
 
 
 def build(args: argparse.Namespace) -> int:
@@ -256,6 +282,7 @@ def build(args: argparse.Namespace) -> int:
             records.append(record)
             continue
 
+        print(f"GET {product} <- {item['url']}", flush=True)
         try:
             status, body = fetch(item["url"], timeout=args.timeout)
         except (urllib.error.URLError, urllib.error.HTTPError, OSError, ValueError) as exc:
@@ -412,7 +439,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--offline", action="store_true",
                         help="re-extract from the stored HTML instead of fetching")
-    parser.add_argument("--timeout", type=int, default=60)
+    parser.add_argument("--timeout", type=int, default=25,
+                        help="per-request socket timeout in seconds")
     parser.add_argument("--allow-failures", action="store_true",
                         help="exit 0 even when some products could not be transcribed")
     args = parser.parse_args()
