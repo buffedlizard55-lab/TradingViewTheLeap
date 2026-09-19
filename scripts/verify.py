@@ -2528,6 +2528,98 @@ def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
            "re-hashed, recomputed and honesty-checked")
 
 
+def check_cme_roll_schedule(rep: Report, source_ids: dict) -> None:
+    """Re-derive every committed roll date from the official rule text it came from.
+
+    `data/cme_roll_schedule.json` is produced by `scripts/build_cme_roll_schedule.py` from the
+    rule codecs in `intel/cme_roll.py`. This check imports those same codecs (it does not
+    restate them), re-runs each product over its recorded window, and requires the committed
+    dates to match exactly. It also re-compares every codec's quoted sentence against the
+    transcribed termination rule in `data/cme_product_hours.json`, so a CME rewording or a
+    hand-edited date fails the build instead of silently shifting a roll.
+    """
+    doc = load_opt("data/cme_roll_schedule.json")
+    if doc is None:
+        rep.ok("CME roll schedule: data/cme_roll_schedule.json not built yet; the engine runs "
+               "without roll_dates and says so")
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "cme_roll_schedule":
+        rep.fail("cme_roll.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("cme_roll.honesty", "artifact must declare not_a_forecast: true")
+    wiring = meta.get("engine_wiring") or {}
+    if "wired_into_competition" not in wiring:
+        rep.fail("cme_roll.wiring", "the artifact must state whether the schedule is wired into "
+                                    "the competition engine")
+
+    sys.path.insert(0, ROOT)
+    from intel import cme_roll  # noqa: E402
+    from datetime import date as _date
+
+    hours = load_opt("data/cme_product_hours.json") or {}
+    by_product = {p["product"]: p for p in hours.get("products") or []}
+
+    if meta.get("business_day_basis") != cme_roll.BUSINESS_DAY_BASIS:
+        rep.fail("cme_roll.basis", "the declared business-day basis does not match intel/cme_roll.py")
+
+    products = doc.get("products") or []
+    pool = {r["tradingview_symbol"] for r in load("data/market_history_index.json")["captures"]}
+    if {p.get("tradingview_symbol") for p in products} != pool:
+        rep.fail("cme_roll.pool", "the schedule does not cover exactly the pooled futures")
+
+    dated = 0
+    total = 0
+    for row in products:
+        product = row.get("product")
+        window = row.get("captured_bar_window")
+        if not window:
+            if row.get("roll_dates"):
+                rep.fail("cme_roll.window", f"{product}: dates without a recorded bar window")
+            if not row.get("reason"):
+                rep.fail("cme_roll.reason", f"{product}: no dates and no reason")
+            continue
+        start = _date.fromisoformat(window["start"])
+        end = _date.fromisoformat(window["end"])
+        recomputed = cme_roll.roll_dates(product, start, end)
+        if product in cme_roll.RULE_CODECS:
+            ok, why = cme_roll.codec_matches_transcription(
+                product, (by_product.get(product) or {}).get("termination"))
+            if not ok:
+                # A codec whose quoted sentence no longer matches the official transcription
+                # must not contribute dates; the builder clears them and says why.
+                if row.get("roll_dates"):
+                    rep.fail("cme_roll.rule_drift", f"{why} but dates were still committed")
+                if not row.get("reason"):
+                    rep.fail("cme_roll.rule_drift", f"{product}: rule drift with no reason recorded")
+                continue
+        want = recomputed["termination_dates_iso"]
+        got = row.get("termination_dates_iso")
+        if got is None:
+            got = [r["termination_date"] for r in row.get("roll_dates") or []]
+        if got != want:
+            rep.fail("cme_roll.dates",
+                     f"{product}: committed {len(got)} roll dates differ from the {len(want)} "
+                     "re-derived from the official rule over the same window")
+            continue
+        if row.get("roll_dates"):
+            dated += 1
+            total += len(row["roll_dates"])
+        if row.get("roll_dates") and not row.get("rule_matches_transcription"):
+            rep.fail("cme_roll.rule_drift", f"{product}: dates committed although the rule text "
+                                            "was not confirmed against the transcription")
+    if dated != meta.get("products_with_dates"):
+        rep.fail("cme_roll.tally",
+                 f"_meta.products_with_dates {meta.get('products_with_dates')} != {dated}")
+    if total != meta.get("roll_date_count"):
+        rep.fail("cme_roll.tally", f"_meta.roll_date_count {meta.get('roll_date_count')} != {total}")
+    if len(products) != meta.get("product_count"):
+        rep.fail("cme_roll.tally", f"_meta.product_count {meta.get('product_count')} != {len(products)}")
+    rep.ok(f"CME roll schedule: {total} roll dates across {dated}/{len(products)} products "
+           f"re-derived from the official termination rules; "
+           f"{len(products) - dated} products declare no dates with a reason")
+
+
 def check_docs_mirror(rep: Report, source_ids: dict) -> None:
     """The committed docs/ mirror must be byte-identical to what the site builder writes.
 
@@ -3254,6 +3346,21 @@ def self_test(rep: Report) -> None:
                       ("data/competition/stock_roster.json", fake_roster),
                       lambda r: check_stock_roster_gates(r)))
 
+    roll_doc = load_opt("data/cme_roll_schedule.json")
+    if roll_doc is not None and any(p.get("roll_dates") for p in roll_doc.get("products") or []):
+        mutated = copy.deepcopy(roll_doc)
+        for row in mutated["products"]:
+            if row.get("roll_dates"):
+                row["termination_dates_iso"] = row["termination_dates_iso"][:-1]
+                row["roll_dates"] = row["roll_dates"][:-1]
+                break
+        scenarios.append(("cme_roll.dates", ("data/cme_roll_schedule.json", mutated),
+                          lambda r: check_cme_roll_schedule(r, source_ids)))
+        mutated = copy.deepcopy(roll_doc)
+        mutated["_meta"]["roll_date_count"] = (mutated["_meta"].get("roll_date_count") or 0) + 1
+        scenarios.append(("cme_roll.tally", ("data/cme_roll_schedule.json", mutated),
+                          lambda r: check_cme_roll_schedule(r, source_ids)))
+
     cme_hours_doc = load_opt("data/cme_product_hours.json")
     if cme_hours_doc is not None and cme_hours_doc.get("products"):
         mutated = copy.deepcopy(cme_hours_doc)
@@ -3346,6 +3453,7 @@ def main() -> int:
     check_cme_specs(rep, source_ids)
     check_full_pool_verdicts(rep, source_ids)
     check_docs_mirror(rep, source_ids)
+    check_cme_roll_schedule(rep, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)
