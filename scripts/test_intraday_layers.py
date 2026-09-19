@@ -410,5 +410,113 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertEqual(index["_meta"]["script_version"], "3")
 
 
+class TestEquityCalendar(unittest.TestCase):
+    def test_known_closures_and_observance(self):
+        from intel import calendar as cal
+        self.assertIn("Christmas", cal.is_full_closure("2021-12-24") or "")
+        self.assertIn("Juneteenth", cal.is_full_closure("2022-06-20") or "")
+        self.assertIsNone(cal.is_full_closure("2021-06-19"))  # not observed before 2022
+        self.assertIn("New Year", cal.is_full_closure("2021-12-31") or "")
+        self.assertIsNone(cal.is_full_closure("2022-01-01"))  # Saturday itself is not the closure
+        self.assertIn("Bush", cal.is_full_closure("2018-12-05") or "")
+        self.assertIn("Carter", cal.is_full_closure("2025-01-09") or "")
+        self.assertIsNone(cal.is_full_closure("2026-09-18"))  # ordinary Friday
+        self.assertIn("Good Friday", cal.is_full_closure("2026-04-03") or "")
+        self.assertIn("Thanksgiving", cal.is_full_closure("2026-11-26") or "")
+
+    def test_every_closure_is_a_weekday_and_unique(self):
+        from datetime import date as date_cls
+        from intel import calendar as cal
+        seen: set[str] = set()
+        for year in range(cal.FIRST_YEAR, cal.LAST_YEAR + 1):
+            for iso in cal.holidays_for_year(year):
+                self.assertLess(date_cls.fromisoformat(iso).weekday(), 5, iso)
+                self.assertNotIn(iso, seen, iso)
+                seen.add(iso)
+        self.assertGreater(len(seen), 90)
+
+    def test_range_guard_and_early_close_hygiene(self):
+        from intel import calendar as cal
+        with self.assertRaises(ValueError):
+            cal.holidays_for_year(2015)
+        with self.assertRaises(ValueError):
+            cal.holidays_for_year(2027)
+        with self.assertRaises(ValueError):
+            cal.full_closures_between("2026-01-10", "2026-01-01")
+        for year in range(cal.FIRST_YEAR, cal.LAST_YEAR + 1):
+            full = set(cal.holidays_for_year(year))
+            early = cal.early_closes_for_year(year)
+            self.assertTrue(set(early) & full == set(), year)  # never both
+            # the day after Thanksgiving is always an early close
+            nov = [d for d in early if d.startswith(f"{year}-11-")]
+            self.assertEqual(len(nov), 1, year)
+
+    def test_describe_carries_sources_and_caveat(self):
+        from intel import calendar as cal
+        identity = cal.describe()
+        self.assertEqual(identity["version"], cal.CALENDAR_VERSION)
+        self.assertIn("https://www.nyse.com/markets/hours-calendars", identity["sources"])
+        self.assertIn("re-verified", identity["verification"])
+
+
+class TestCalendarAwareSessions(unittest.TestCase):
+    def _bars(self, days: list[str]):
+        from datetime import datetime, timezone
+        from intel.intraday import IBar
+        out = []
+        for day in days:
+            ts = int(datetime.fromisoformat(day + "T14:30:00+00:00").timestamp())
+            out.append(IBar(ts, 100.0, 101.0, 99.0, 100.5, 1000))
+        return tuple(out)
+
+    def test_annotation_matches_plain_grouping_and_flags_closures(self):
+        from intel.intraday import IntradayError, sessions, sessions_calendar_aware
+        bars = self._bars(["2026-07-01", "2026-07-02", "2026-07-06"])
+        plain = sessions(bars)
+        annotated = sessions_calendar_aware(bars)
+        self.assertEqual([day for day, _ in plain], [s["date"] for s in annotated])
+        self.assertEqual([len(b) for _, b in plain], [s["bar_count"] for s in annotated])
+        # 2026-07-03 (Friday, Independence Day observed) falls between 07-02 and 07-06.
+        spanned = next(s for s in annotated if s["date"] == "2026-07-06")
+        self.assertEqual(spanned["closures_spanned"], ["2026-07-03"])
+        self.assertFalse(any(s["is_full_closure"] for s in annotated))
+
+    def test_holiday_session_is_reported_not_dropped(self):
+        from intel.intraday import sessions_calendar_aware
+        bars = self._bars(["2026-12-24", "2026-12-25", "2026-12-28"])
+        annotated = sessions_calendar_aware(bars)
+        self.assertEqual(len(annotated), 3)  # nothing is deleted
+        christmas = next(s for s in annotated if s["date"] == "2026-12-25")
+        self.assertTrue(christmas["is_full_closure"])
+        self.assertIn("Christmas", christmas["closure_name"] or "")
+
+    def test_unknown_calendar_refuses_to_guess(self):
+        from intel.intraday import IntradayError, sessions_calendar_aware
+        with self.assertRaises(IntradayError):
+            sessions_calendar_aware(self._bars(["2026-07-01"]), calendar_id="CME")
+
+    def test_out_of_window_fails_closed(self):
+        from intel import calendar as cal
+        with self.assertRaises(ValueError):
+            cal.full_closures_between("2015-12-01", "2016-02-01")
+        with self.assertRaises(ValueError):
+            cal.full_closures_between("2026-11-01", "2027-02-01")
+
+    def test_study_calendar_row_counts_closure_spans(self):
+        import collections
+        study = load_module("run_intraday_study_under_test", "scripts/run_intraday_study.py")
+        fake = collections.namedtuple("FakeCapture", "symbol kind interval bars")
+        bars = self._bars(["2026-07-01", "2026-07-02", "2026-07-06"])
+        gaps = [{"date": "2026-07-02"}, {"date": "2026-07-06"}]
+        row = study.calendar_row_for_capture(fake("TEST", "equity", "1h", bars), gaps)
+        self.assertTrue(row["calendar_applies"])
+        self.assertEqual(row["sessions_on_full_closure"], 0)
+        self.assertEqual(row["boundaries_spanning_closure"], 1)
+        self.assertEqual(row["gaps_spanning_closure"], 1)  # only the 07-06 boundary spans 07-03
+        fut = study.calendar_row_for_capture(fake("FUT", "future", "1h", bars), gaps)
+        self.assertFalse(fut["calendar_applies"])
+        self.assertEqual(fut["boundaries_spanning_closure"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

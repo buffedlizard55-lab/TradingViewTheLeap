@@ -99,6 +99,11 @@ def render_exec_orders(exec_summary, stock_comp) -> str:
     No order here is advice, a forecast, or a guarantee; every figure is
     re-derivable from data/exec_summary.json which the verifier replays.
     """
+    if not exec_summary or not (exec_summary.get("divisions") or {}):
+        return ('<div class="callout warn"><h3>PENDING DATA — no executive summary yet</h3>'
+                "<p>Run <code>python3 scripts/build_exec_summary.py</code> after the futures and "
+                "stock competitions have been derived; until then no upcoming order is shown "
+                "rather than a placeholder.</p></div>")
     rows = []
     waiting = []
     for name, div in exec_summary["divisions"].items():
@@ -252,6 +257,40 @@ whether 5x–100x competition returns are achievable. Coverage is incomplete.</p
                     'explosive-return question and must never be read as an achievable contest '
                     f'outcome.</p><ul>{"".join(lines)}</ul></div>')
 
+    fwd_parts = []
+    for name, label in (("daily", "Daily"), ("hourly", "Hourly"), ("15minute", "15-minute")):
+        div = divisions.get(name) or {}
+        fwd = div.get("forward_held_out") or {}
+        in_lb = fwd.get("in_sample_leaderboard")
+        out_lb = fwd.get("forward_leaderboard")
+        if not in_lb or not out_lb:
+            continue
+        window = fwd.get("held_out_window") or {}
+        in_rows = "".join(
+            f'<tr><td>#{number_or_dash(r["season_rank"])}</td><td><code>{esc(r["username"])}</code></td>'
+            f'<td>{esc(r["model"])}</td><td>{money(r["season_realized_pnl_usd"])}</td>'
+            f'<td>{number_or_dash(r["best_edition_multiple"])}x</td></tr>'
+            for r in in_lb[:5])
+        out_rows = "".join(
+            f'<tr><td>#{number_or_dash(r["season_rank"])}</td><td><code>{esc(r["username"])}</code></td>'
+            f'<td>{esc(r["model"])}</td><td>{money(r["season_realized_pnl_usd"])}</td>'
+            f'<td>{number_or_dash(r["best_edition_multiple"])}x</td></tr>'
+            for r in out_lb[:5])
+        fwd_parts.append(f"""<div class="card"><h3>{esc(label)} — forward held-out window</h3>
+<p class="note">Trailing {number_or_dash(fwd.get("held_out_editions"))} season editions held out
+({esc(str(window.get("start_date", "")))} → {esc(str(window.get("end_date", "")))}); the frozen
+models have no fitted parameters, so both windows are out-of-sample. Top 5 of each:</p>
+<div class="grid cols-2"><div><h4>In-sample ({number_or_dash(fwd.get("in_sample_editions"))} editions)</h4>
+<div class="table-wrap"><table><thead><tr><th>Rank</th><th>Username</th><th>Model</th>
+<th>Season P/L</th><th>Best ×</th></tr></thead><tbody>{in_rows}</tbody></table></div></div>
+<div><h4>Forward held-out ({number_or_dash(fwd.get("held_out_editions"))} editions)</h4>
+<div class="table-wrap"><table><thead><tr><th>Rank</th><th>Username</th><th>Model</th>
+<th>Season P/L</th><th>Best ×</th></tr></thead><tbody>{out_rows}</tbody></table></div></div></div></div>""")
+    fwd_block = ""
+    if fwd_parts:
+        fwd_block = ("<h3>Forward-held-out test (trailing editions the models never saw in design)</h3>"
+                     f'<div class="grid">{"".join(fwd_parts)}</div>')
+
     return f"""<section id="stocksdivision"><h2>Volatile-stock division (our own multi-season competition)</h2>
 <p class="lead">The captured subset of the intended 20-stock volatile pool competes in our paper competition under
 two rule profiles: the official stocks-edition constants (primary) and a declared 20:1
@@ -259,6 +298,7 @@ counterfactual. Usernames, frozen model parameters and every edition's ranking a
 <code>data/stock_competition_results.json</code>; the engine is the same one the futures division
 uses, verified to reproduce the original futures engine byte-for-byte at zero latency.</p>
 <div class="grid cols-2">{''.join(cards)}</div>
+{fwd_block}
 {latency_block}
 {bound_block}
 {cf_block}
@@ -309,6 +349,27 @@ is produced by <code>scripts/run_intraday_study.py</code> once
         f'<td><code>{esc(c["stored_sha256"][:16])}…</code></td></tr>'
         for c in coverage)
     index_meta = (intraday_index or {}).get("_meta", {})
+    diag = study.get("calendar_diagnostics") or {}
+    cal_rows = "".join(
+        f'<tr><td><code>{esc(r["symbol"])}</code></td><td>{esc(r["interval"])}</td>'
+        f'<td>{number_or_dash(r["sessions_on_full_closure"])}</td>'
+        f'<td>{number_or_dash(r["boundaries_spanning_closure"])}</td>'
+        f'<td>{number_or_dash(r["gaps_spanning_closure"])}</td></tr>'
+        for r in (diag.get("per_series") or []) if r.get("calendar_applies"))
+    cal_identity = diag.get("calendar") or {}
+    window = diag.get("studied_window") or {}
+    calendar_block = f"""<h3>Exchange-holiday annotation (NYSE full-closure table)</h3>
+<p class="note">Sessions stay grouped by UTC date; the calendar only annotates them, so weekend gaps
+can be told apart from gaps spanning an exchange holiday. Table <code>{esc(str(cal_identity.get("version", "")))}</code>
+(<code>intel/calendar.py</code>, rule-based transcription of
+<a href="https://www.nyse.com/markets/hours-calendars" rel="noopener noreferrer">the official NYSE calendar ↗</a>,
+pending line-by-line network re-verification). Window {esc(str(window.get("start", "—")))} →
+{esc(str(window.get("end", "—")))}: {number_or_dash(len(diag.get("full_closures_in_window") or {}))}
+full closures inside, {number_or_dash(diag.get("sessions_on_full_closure_total", 0))} studied sessions
+dated on a closure, {number_or_dash(diag.get("boundaries_spanning_closure_total", 0))} boundaries spanning one.</p>
+<div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Interval</th>
+<th>Sessions on a closure</th><th>Boundaries spanning a closure</th><th>Gaps spanning a closure</th>
+</tr></thead><tbody>{cal_rows or '<tr><td colspan="5">No equity intraday series studied yet.</td></tr>'}</tbody></table></div>"""
     return f"""<section id="intraday"><h2>Intraday gap fills and execution latency (measured)</h2>
 <p class="lead">Two measurements on the committed vendor captures, no modelling: (1) do session
 gaps fill, and how fast; (2) what does execution latency cost, in basis points of the decision
@@ -336,7 +397,8 @@ vendor: <strong>{esc(str(index_meta.get("direct_rate_limited", "unknown")))}</st
 <h3>Captured series audited here</h3>
 <div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Kind</th><th>Interval</th><th>Bars</th>
 <th>First session</th><th>Last session</th><th>Stored SHA-256</th></tr></thead>
-<tbody>{cov_rows}</tbody></table></div></section>"""
+<tbody>{cov_rows}</tbody></table></div>
+{calendar_block}</section>"""
 
 
 def strip_html(text: str) -> str:
@@ -372,11 +434,12 @@ def render_tv_benchmark(bench) -> str:
         + "</ol></div>")
     rules = meta.get("pine_emulator_rules", {})
     return f"""<section id="tvbench"><h2>Pine broker emulator vs Python backtest fills</h2>
-<p class="lead">TradingView publishes the Strategy Report export as a CSV, one tab at a time, and
-documents the broker emulator's fill rules. This section imports any real export committed to
-<code>data/tv_reports/</code>, audits it row by row (observed header, column mapping, SHA-256,
-rejected rows, arithmetic P/L cross-check) and compares each exported fill with the same vendor
-bar and with the Python engine's fill model.</p>
+<p class="lead">TradingView publishes the Strategy Report export one tab at a time (CSV per the
+support page; workbooks are read through their first worksheet) and documents the broker
+emulator's fill rules. This section imports any real export committed to
+<code>data/tv_reports/</code> — <code>.csv</code> or <code>.xlsx</code> — audits it row by row
+(observed header, column mapping, SHA-256, rejected rows, arithmetic P/L cross-check) and
+compares each exported fill with the same vendor bar and with the Python engine's fill model.</p>
 {status_callout}
 <div class="callout info"><h3>Documented emulator rules the benchmark tests against</h3>
 <ul class="compact">

@@ -23,8 +23,8 @@
   },
   "how_to_complete_this_benchmark": [
    "Sign in to TradingView on a plan that includes Strategy Tester export.",
-   "Run the strategy on a chart, open the Strategy Report, and use the Download button on the 'List of Trades' tab (CSV) - optionally also download the 'Performance Summary' tab.",
-   "Commit the downloaded CSV to data/tv_reports/ (any filename).",
+   "Run the strategy on a chart, open the Strategy Report, and use the Download button on the 'List of Trades' tab (CSV or XLSX) - optionally also download the 'Performance Summary' tab.",
+   "Commit the downloaded file to data/tv_reports/ (any filename).",
    "Re-run: python3 scripts/tv_benchmark.py",
    "The import audit runs immediately; the fill benchmark additionally needs the symbol, either in the export or in a <stem>.manifest.json beside it."
   ],

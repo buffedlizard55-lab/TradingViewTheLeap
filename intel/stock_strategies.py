@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C10).
+"""Contrarian strategy library for the volatile-equity division (C6-C16).
 
-The five contrarian models here are pre-registered for the 20-stock volatile pool
+The eleven contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -9,15 +9,16 @@ declared brief for this division is maximum simulated return in a paper
 competition, and ruin (equity <= 0) is terminal because the official rules forbid
 account resets.
 
-Why these five shapes:
+Why these shapes:
 
 - Single-stock paper tournaments are won on the tail of the return distribution.
   For a stock that can move 30-300% on news, the exploitable patterns are
   capitulation (forced selling) and blow-off tops (forced buying), both of which
   are visible in price and volume without any fundamental data.
-- C6 and C9 are the SHORT side of that idea, C7 and C10 the LONG side, and C8 fades
-  the opening gap inside the session using hourly bars — the one model that cannot
-  exist on daily bars.
+- C6 and C9 are the SHORT side of that idea, C7, C10, C12 and C15 the LONG side,
+  C8 fades the opening gap inside the session using hourly bars — the one model that
+  cannot exist on daily bars — and C11, C13, C14 and C16 ride breakouts with
+  pyramiding, because a paper tournament is scored on realised multiples, not Sharpe.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -36,7 +37,8 @@ from . import indicators as ind
 from .contrarian import Decision, warmup as contrarian_warmup
 from .data import Bar
 
-STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13")
+STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
+                   "C14", "C15", "C16")
 CONTROL_MODEL_IDS = ("B1",)
 
 MODEL_NAMES = {
@@ -48,6 +50,9 @@ MODEL_NAMES = {
     "C11": "Squeeze-breakout pyramider",
     "C12": "Flash-crash dip buyer",
     "C13": "Momentum runner surfer",
+    "C14": "Gap-and-go momentum surfer",
+    "C15": "Crash snapback sniper",
+    "C16": "ATR-expansion breakout compounder",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -63,6 +68,9 @@ MODEL_CLAIMS = {
     "C11": "Extreme volatility compression (20-day standard deviation <= 1.2 ATR) followed by a >=2.5x volume expansion breakout signals institutional accumulation; buying the breakout and pyramiding every 1 ATR captures explosive multi-day trending expansions.",
     "C12": "A single-session crash of >=3.0 ATR on >=2.0x volume closing in the bottom decile represents forced margin liquidation; buying the panic close for next-open execution targets the violent mean-reversion snapback.",
     "C13": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
+    "C14": "A session that gaps up >=1.5 ATR over the prior close and still closes in the top half of its own range with the close above the open has absorbed its opening supply; the gap holds and the runner continues over the next ~10 sessions.",
+    "C15": "After a >=25% five-session drawdown, a session that closes in the top half of its own range on >=2x average volume marks the forced sellers' exhaustion; the snapback over the next ~4 sessions is harvested with a short hold and no adds.",
+    "C16": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -126,6 +134,29 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "max_adds": 4,
         "hold_bars": 14,
     },
+    "C14": {
+        "gap_atr_mult": 1.5,
+        "close_tail_fraction": 0.5,
+        "add_atr_step": 1.0,
+        "max_adds": 4,
+        "hold_bars": 10,
+    },
+    "C15": {
+        "drawdown_lookback": 5,
+        "drawdown_pct": 0.25,
+        "volume_length": 20,
+        "volume_mult": 2.0,
+        "close_tail_fraction": 0.5,
+        "hold_bars": 4,
+    },
+    "C16": {
+        "lookback": 20,
+        "atr_expansion_mult": 1.2,
+        "atr_expansion_lag": 5,
+        "add_atr_step": 0.5,
+        "max_adds": 6,
+        "hold_bars": 12,
+    },
     "B1": {},
 }
 
@@ -161,6 +192,18 @@ VARIANTS: dict[str, dict[str, dict]] = {
     "C13": {
         "aggressive": {"volume_mult": 2.0, "add_atr_step": 1.0, "max_adds": 6, "hold_bars": 10},
         "runner": {"volume_mult": 3.5, "add_atr_step": 2.0, "max_adds": 3, "hold_bars": 20},
+    },
+    "C14": {
+        "aggressive": {"gap_atr_mult": 1.0, "max_adds": 6, "hold_bars": 14},
+        "patient": {"gap_atr_mult": 2.5, "max_adds": 2, "hold_bars": 6},
+    },
+    "C15": {
+        "deep": {"drawdown_pct": 0.35, "hold_bars": 6},
+        "quick": {"drawdown_pct": 0.15, "hold_bars": 2},
+    },
+    "C16": {
+        "runner": {"lookback": 30, "atr_expansion_mult": 1.1, "max_adds": 8, "hold_bars": 20},
+        "tight": {"lookback": 10, "atr_expansion_mult": 1.5, "max_adds": 3, "hold_bars": 6},
     },
     "B1": {},
 }
@@ -198,6 +241,15 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
         return max(p.get("squeeze_length", 20), p.get("volume_length", 20)) + 14 + 2
     if model == "C13":
         return max(p.get("lookback", 30), p.get("volume_length", 20)) + 14 + 2
+    if model == "C14":
+        # ATR(14) plus one prior close for the gap reference.
+        return 16
+    if model == "C15":
+        # ATR(14), the 5-session drawdown window and the volume average.
+        return max(14, p.get("volume_length", 20), p.get("drawdown_lookback", 5)) + 2
+    if model == "C16":
+        # the breakout lookback window plus ATR(14) at the current and lagged bar.
+        return max(p.get("lookback", 20), 14 + p.get("atr_expansion_lag", 5))
     raise ValueError(f"unknown stock model {model!r}")
 
 
@@ -485,6 +537,119 @@ def generate_stock_decisions(
                 vol_surge = float(bars[i].volume or 0) >= p["volume_mult"] * va
                 if is_breakout and vol_surge:
                     emit(i, "long", "momentum runner breakout")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C14":
+        position: Optional[str] = None
+        held = 0
+        adds = 0
+        last_add_price: Optional[float] = None
+        entry_atr: Optional[float] = None
+        for i in range(start, len(bars)):
+            a = atr14[i]
+            if a is None or a <= 0:
+                continue
+            if position is None:
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0 or closes[i - 1] <= 0:
+                    continue
+                gap = bar.open - closes[i - 1]
+                close_pos = (bar.close - bar.low) / rng
+                held_gap = (
+                    gap >= p["gap_atr_mult"] * a
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                    and bar.close > bar.open
+                )
+                if held_gap:
+                    emit(i, "long", "gap-and-go momentum long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C15":
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        look = p["drawdown_lookback"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0:
+                continue
+            if position is not None:
+                held += 1
+                if held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+                continue
+            bar = bars[i]
+            rng = bar.high - bar.low
+            if rng <= 0 or va <= 0 or i < look:
+                continue
+            peak = max(closes[i - look : i + 1])
+            trough = closes[i]
+            if peak <= 0:
+                continue
+            drawdown = peak / trough - 1.0 if trough > 0 else 0.0
+            close_pos = (bar.close - bar.low) / rng
+            snapback = (
+                drawdown >= p["drawdown_pct"]
+                and close_pos >= 1.0 - p["close_tail_fraction"]
+                and float(bar.volume or 0) >= p["volume_mult"] * va
+            )
+            if snapback:
+                emit(i, "long", "crash snapback sniper long")
+                position = "long"
+                held = 0
+    elif model == "C16":
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        lb = p["lookback"]
+        lag = p["atr_expansion_lag"]
+        for i in range(start, len(bars)):
+            a = atr14[i]
+            if a is None or a <= 0:
+                continue
+            if position is None:
+                if i < lb or i < lag:
+                    continue
+                prior_high = max(highs[i - lb : i])
+                lagged = atr14[i - lag]
+                if lagged is None or lagged <= 0:
+                    continue
+                breakout = closes[i] > prior_high and a >= p["atr_expansion_mult"] * lagged
+                if breakout:
+                    emit(i, "long", "ATR-expansion breakout long")
                     position = "long"
                     held = 0
                     adds = 0

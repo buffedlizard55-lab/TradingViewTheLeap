@@ -235,6 +235,150 @@ class StockModelTests(unittest.TestCase):
         d13 = generate_stock_decisions(test_bars, "C13")
         self.assertIsInstance(d13, list)
 
+    def test_c14_c16_resolve_warmup_and_fire(self):
+        from intel.stock_strategies import (
+            STOCK_MODEL_IDS, generate_stock_decisions, resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        for model in ("C14", "C15", "C16"):
+            self.assertIn(model, STOCK_MODEL_IDS)
+        p14 = stock_resolve("C14", "aggressive")
+        self.assertEqual(p14["gap_atr_mult"], 1.0)
+        self.assertEqual(p14["max_adds"], 6)
+        self.assertEqual(stock_warmup("C14", None), 16)
+        p15 = stock_resolve("C15", "quick")
+        self.assertEqual(p15["drawdown_pct"], 0.15)
+        self.assertEqual(p15["hold_bars"], 2)
+        self.assertGreaterEqual(stock_warmup("C15", "deep"), 22)
+        p16 = stock_resolve("C16", "runner")
+        self.assertEqual(p16["lookback"], 30)
+        self.assertEqual(stock_warmup("C16", "runner"), 30)
+        with self.assertRaises(ValueError):
+            stock_resolve("C14", "nope")
+
+        # C14 fires on a gap-up that holds into the close.
+        day0 = date(2026, 1, 1)
+        flat = [Bar(
+            int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp()) + i * 86400,
+            100.0, 101.0, 99.0, 100.0, 1000) for i in range(30)]
+        gap = Bar(flat[-1].ts + 86400, 112.0, 114.0, 111.0, 113.5, 1000)
+        cont = [Bar(gap.ts + (i + 1) * 86400, 113.5 + i, 115.0 + i, 112.0 + i, 114.0 + i, 1000)
+                for i in range(14)]
+        d14 = generate_stock_decisions(flat + [gap] + cont, "C14")
+        self.assertEqual(d14[0].action, "long")
+        self.assertEqual(d14[0].index, 30)
+
+        # C15 fires on the high-volume bounce bar after a deep drawdown.
+        run = [Bar(flat[0].ts + i * 86400, 100.0 + i, 101.0 + i, 99.0 + i, 100.0 + i, 1000)
+               for i in range(25)]
+        crash = Bar(run[-1].ts + 86400, 124.0, 125.0, 86.0, 88.0, 1000)
+        bounce = Bar(crash.ts + 86400, 88.0, 100.0, 87.0, 99.0, 5000)
+        d15 = generate_stock_decisions(run + [crash, bounce], "C15")
+        self.assertEqual([(d.index, d.action) for d in d15], [(26, "long")])
+
+        # C16 fires on an ATR-expanding breakout and pyramids.
+        climb = []
+        px = 100.0
+        for i in range(40):
+            rng = 1.0 + i * 0.15
+            o = px
+            px = px + rng * 0.8
+            climb.append(Bar(flat[0].ts + i * 86400, o, px + rng * 0.2, o - rng * 0.1, px, 1000))
+        d16 = generate_stock_decisions(climb, "C16")
+        self.assertTrue(d16 and d16[0].action == "long")
+        self.assertIn("add", {d.action for d in d16})
+
+
+class ExecutionRealismTests(unittest.TestCase):
+    def _two_symbol_setup(self):
+        from intel.competition import Series
+        day0 = date(2024, 1, 2)
+        spec_a = Series(symbol="AAA", bars=tuple(bars([100.0 + i for i in range(10)], day0)),
+                        contract_multiplier=1.0, rules_cap_contracts=10 ** 9)
+        spec_b = Series(symbol="BBB", bars=tuple(bars([50.0 + i for i in range(10)], day0)),
+                        contract_multiplier=1.0, rules_cap_contracts=10 ** 9)
+        series_map = {"AAA": spec_a, "BBB": spec_b}
+        slices = {s: list(v.bars) for s, v in series_map.items()}
+        starts = {s: 0 for s in series_map}
+        decisions = {"AAA": [Decision(index=1, action="long", atr=2.0)],
+                     "BBB": [Decision(index=1, action="long", atr=1.0)]}
+        return series_map, slices, starts, decisions
+
+    def test_fill_log_preserves_timestamps(self):
+        import dataclasses
+        from intel.competition import RULE_PROFILES, run_participant_window
+        series_map, slices, starts, decisions = self._two_symbol_setup()
+        profile = RULE_PROFILES["stocks_official_leap"]
+        result = run_participant_window(decisions, slices, starts, series_map, profile,
+                                        COST_SCENARIOS["moderate"], return_fills=True)
+        self.assertEqual(len(result.fill_log), 2)
+        for fill in result.fill_log:
+            spec = series_map[fill["symbol"]]
+            entry = next(b for b in spec.bars if b.date == fill["entry_date"])
+            exit_ = next(b for b in spec.bars if b.date == fill["exit_date"])
+            self.assertEqual(fill["entry_ts"], entry.ts)
+            self.assertEqual(fill["exit_ts"], exit_.ts)
+            self.assertLessEqual(fill["entry_ts"], fill["exit_ts"])
+        # P/L in the log reconciles to the headline number.
+        self.assertAlmostEqual(sum(f["net_pnl_usd"] for f in result.fill_log),
+                               round(result.realized_pnl_usd, 2), places=2)
+
+    def test_proportional_arbitration_splits_contended_buying_power(self):
+        import dataclasses
+        from intel.competition import RULE_PROFILES, run_participant_window
+        series_map, slices, starts, decisions = self._two_symbol_setup()
+        profile = dataclasses.replace(RULE_PROFILES["stocks_official_leap"],
+                                      starting_balance=1000.0, per_symbol_cap_units=10 ** 9)
+        seq = run_participant_window(decisions, slices, starts, series_map, profile,
+                                     COST_SCENARIOS["moderate"], return_fills=True)
+        pro = run_participant_window(decisions, slices, starts, series_map, profile,
+                                     COST_SCENARIOS["moderate"], return_fills=True,
+                                     arbitration="proportional")
+        seq_qty = {f["symbol"]: f["qty"] for f in seq.fill_log}
+        pro_qty = {f["symbol"]: f["qty"] for f in pro.fill_log}
+        # Sequential lets AAA (sorted first) consume nearly all buying power.
+        self.assertGreater(seq_qty["AAA"], seq_qty["BBB"])
+        # Proportional gives each symbol half the buying power: AAA's share buys fewer
+        # high-priced shares than the sequential run, BBB's share buys more.
+        self.assertLess(pro_qty["AAA"], seq_qty["AAA"])
+        self.assertGreater(pro_qty["BBB"], seq_qty["BBB"])
+        self.assertEqual(pro.arbitration, "proportional")
+        with self.assertRaises(ValueError):
+            run_participant_window(decisions, slices, starts, series_map, profile,
+                                   COST_SCENARIOS["moderate"], arbitration="random")
+
+    def test_roll_dates_force_close_and_count(self):
+        from intel.competition import RULE_PROFILES, run_participant_window
+        series_map, slices, starts, decisions = self._two_symbol_setup()
+        profile = RULE_PROFILES["stocks_official_leap"]
+        roll_day = slices["AAA"][5].date
+        result = run_participant_window(decisions, slices, starts, series_map, profile,
+                                        COST_SCENARIOS["moderate"], return_fills=True,
+                                        roll_dates={"AAA": {roll_day}})
+        self.assertEqual(result.roll_closes, 1)
+        reasons = {(f["symbol"], f["reason"]) for f in result.fill_log}
+        self.assertIn(("AAA", "roll"), reasons)
+        # The roll exit happens at the roll bar's open, before the auto-close.
+        rolled = next(f for f in result.fill_log if f["reason"] == "roll")
+        self.assertEqual(rolled["exit_date"], roll_day)
+        with self.assertRaises(ValueError):
+            run_participant_window(decisions, slices, starts, series_map, profile,
+                                   COST_SCENARIOS["moderate"], roll_dates={"ZZZ": {"2024-01-01"}})
+
+    def test_realism_defaults_leave_legacy_results_untouched(self):
+        from intel.competition import RULE_PROFILES, run_participant_window
+        series_map, slices, starts, decisions = self._two_symbol_setup()
+        profile = RULE_PROFILES["stocks_official_leap"]
+        base = run_participant_window(decisions, slices, starts, series_map, profile,
+                                      COST_SCENARIOS["moderate"])
+        self.assertEqual(base.fill_log, [])
+        self.assertEqual(base.roll_closes, 0)
+        self.assertEqual(base.arbitration, "sequential")
+        logged = run_participant_window(decisions, slices, starts, series_map, profile,
+                                        COST_SCENARIOS["moderate"], return_fills=True)
+        self.assertEqual(logged.realized_pnl_usd, base.realized_pnl_usd)
+        self.assertEqual(logged.trades, base.trades)
+
 
 class MultiSeasonEngineTests(unittest.TestCase):
     def test_multi_season_division_execution_and_forward_partition(self):
@@ -280,6 +424,11 @@ class MultiSeasonEngineTests(unittest.TestCase):
         self.assertIsNotNone(res.forward_held_out_leaderboard)
         self.assertIsNotNone(res.in_sample_leaderboard)
         self.assertEqual(len(res.forward_held_out_leaderboard), 2)
+        # Every edition row records the execution settings it ran under.
+        for edition in res.editions:
+            for row in edition["rows"]:
+                self.assertEqual(row["arbitration"], "sequential")
+                self.assertEqual(row["roll_closes"], 0)
 
 
 if __name__ == "__main__":

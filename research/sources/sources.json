@@ -7,7 +7,7 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 95,
+  "source_count": 96,
   "reverified_utc": "2026-09-18",
   "reverification_note": "2026-09-18 eighth pass (~02:27Z): the current official contest page was re-read. The displayed participant count was 96,586; rank 1 remained $2,335,125.00 while ranks 50/100/250 were $1,380,404.00/$1,123,096.25/$715,045.00. The new frontier capture is registered as TV-CONTEST-AMP-SEP2026-R8. No claim is made that this is a final threshold."
  },
@@ -1680,6 +1680,26 @@
      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1441929600&period2=1758240000&interval=1d"
     }
    ]
+  },
+  {
+   "source_id": "NYSE-HOURS-CALENDAR",
+   "publisher": "New York Stock Exchange (Intercontinental Exchange)",
+   "tier": "official_secondary",
+   "title": "NYSE trading calendar \u2014 holidays and hours",
+   "url": "https://www.nyse.com/markets/hours-calendars",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Rule-based US equity full-closure table in intel/calendar.py annotating studied intraday sessions (weekend gaps vs gaps spanning an exchange holiday)",
+    "Line-by-line re-verification target for the 2016-2026 closure transcription in research/evidence/NYSE-CALENDAR-2016-2026.md"
+   ],
+   "evidence_file": "research/evidence/NYSE-CALENDAR-2016-2026.md",
+   "endpoint_urls": [
+    {
+     "label": "nyse_hours_calendars",
+     "url": "https://www.nyse.com/markets/hours-calendars"
+    }
+   ],
+   "verification_note": "Transcribed as deterministic rules in this sandbox (no network); every date must be re-verified against the official page before authoritative use."
   }
  ]
 }

@@ -268,7 +268,7 @@ def main() -> int:
     real_paths, fixture_paths = [], []
     if os.path.isdir(reports_dir):
         for path in sorted(glob.glob(os.path.join(reports_dir, "**", "*"), recursive=True)):
-            if not os.path.isfile(path) or not path.lower().endswith(".csv"):
+            if not os.path.isfile(path) or not path.lower().endswith((".csv", ".xlsx")):
                 continue
             (fixture_paths if FIXTURE_MARKER in path else real_paths).append(path)
 
@@ -333,9 +333,9 @@ def main() -> int:
             "how_to_complete_this_benchmark": [
                 "Sign in to TradingView on a plan that includes Strategy Tester export.",
                 "Run the strategy on a chart, open the Strategy Report, and use the Download "
-                "button on the 'List of Trades' tab (CSV) - optionally also download the "
-                "'Performance Summary' tab.",
-                "Commit the downloaded CSV to data/tv_reports/ (any filename).",
+                "button on the 'List of Trades' tab (CSV or XLSX) - optionally also download "
+                "the 'Performance Summary' tab.",
+                "Commit the downloaded file to data/tv_reports/ (any filename).",
                 "Re-run: python3 scripts/tv_benchmark.py",
                 "The import audit runs immediately; the fill benchmark additionally needs the "
                 "symbol, either in the export or in a <stem>.manifest.json beside it.",

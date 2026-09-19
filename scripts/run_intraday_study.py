@@ -51,7 +51,10 @@ from datetime import datetime, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-from intel.intraday import IBar, IntradayError, atr, load_all, load_index, sessions  # noqa: E402
+from intel.calendar import CALENDAR_VERSION, describe as describe_calendar  # noqa: E402
+from intel.intraday import (  # noqa: E402
+    IBar, IntradayError, atr, load_all, load_index, sessions, sessions_calendar_aware,
+)
 
 GAP_BUCKETS = (
     (0.0, 0.25, "lt_0.25_atr"),
@@ -218,6 +221,33 @@ def summarize_bucket(rows: list[dict], kind: str, bucket: str, direction: str) -
     }
 
 
+def calendar_row_for_capture(capture, gaps: list[dict]) -> dict:
+    """Holiday annotation for one studied series (equities only; futures carry zeros).
+
+    `gaps` are the gap rows study_capture() produced for the same capture; a gap is
+    counted as closure-spanning when its session boundary crosses a full closure.
+    """
+    calendar_applies = capture.kind == "equity"
+    if calendar_applies:
+        annotated = sessions_calendar_aware(capture.bars)
+        spanned_by_date = {s["date"]: s["closures_spanned"] for s in annotated}
+        on_closure = sorted(s["date"] for s in annotated if s["is_full_closure"])
+        boundaries_spanned = sum(1 for s in annotated[1:] if s["closures_spanned"])
+        gaps_spanned = sum(1 for g in gaps if spanned_by_date.get(g["date"]))
+    else:
+        on_closure, boundaries_spanned, gaps_spanned = [], 0, 0
+    return {
+        "symbol": capture.symbol,
+        "kind": capture.kind,
+        "interval": capture.interval,
+        "calendar_applies": calendar_applies,
+        "sessions_on_full_closure": len(on_closure),
+        "session_dates_on_full_closure": on_closure,
+        "boundaries_spanning_closure": boundaries_spanned,
+        "gaps_spanning_closure": gaps_spanned,
+    }
+
+
 def latency_summary(values: list[float]) -> dict:
     if not values:
         return {"observations": 0}
@@ -258,6 +288,7 @@ def main() -> int:
     all_gaps_by_kind: dict[str, list[dict]] = {"equity": [], "future": []}
     latency_by_kind_interval: dict[tuple[str, str], dict[str, list[float]]] = {}
     coverage = []
+    calendar_per_series = []
 
     for key in sorted(captures):
         capture = captures[key]
@@ -265,6 +296,7 @@ def main() -> int:
             continue
         result = study_capture(capture)
         gaps = result["gaps"]
+        calendar_per_series.append(calendar_row_for_capture(capture, gaps))
         all_gaps_by_kind.setdefault(capture.kind, []).extend(gaps)
         slot = latency_by_kind_interval.setdefault(
             (capture.kind, capture.interval), {name: [] for name in result["latency"]}
@@ -339,6 +371,40 @@ def main() -> int:
             row[name] = latency_summary(series.get(name, []))
         latency_rows.append(row)
 
+    calendar_identity = describe_calendar()
+    studied_equity_windows = [
+        (r["first_session"], r["last_session"])
+        for r in per_symbol if r["kind"] == "equity"
+    ]
+    if studied_equity_windows:
+        from intel.calendar import full_closures_between
+
+        window_start = min(w[0] for w in studied_equity_windows)
+        window_end = max(w[1] for w in studied_equity_windows)
+        closures_in_window = full_closures_between(window_start, window_end)
+    else:
+        window_start = window_end = None
+        closures_in_window = {}
+    calendar_diagnostics = {
+        "calendar": calendar_identity,
+        "equity_series_annotated": sum(
+            1 for r in calendar_per_series if r["calendar_applies"]),
+        "sessions_on_full_closure_total": sum(
+            r["sessions_on_full_closure"] for r in calendar_per_series),
+        "boundaries_spanning_closure_total": sum(
+            r["boundaries_spanning_closure"] for r in calendar_per_series),
+        "gaps_spanning_closure_total": sum(
+            r["gaps_spanning_closure"] for r in calendar_per_series),
+        "studied_window": {"start": window_start, "end": window_end},
+        "full_closures_in_window": closures_in_window,
+        "per_series": calendar_per_series,
+        "note": (
+            "Sessions are still grouped by UTC date (the verifiable baseline); the calendar only "
+            "annotates them. A session dated on a full closure is reported, never deleted. "
+            "Futures series are not annotated: the CME Globex calendar is not encoded."
+        ),
+    }
+
     doc = {
         "_meta": {
             "kind": "intraday_study",
@@ -359,6 +425,14 @@ def main() -> int:
                 c["interval"] == i for c in coverage)],
             "gap_buckets": [name for _, _, name in GAP_BUCKETS],
             "latency_steps_bars": list(LATENCY_STEPS),
+            "calendar": {
+                "module": "intel.calendar",
+                "version": CALENDAR_VERSION,
+                "applied_to": (
+                    "equity sessions in calendar_diagnostics only; gap and latency numbers "
+                    "are unchanged from the UTC-date baseline"
+                ),
+            },
             "methodology": [
                 "Session = UTC calendar date, NOT a verified exchange-session calendar. "
                 "Regular US equity hours vary with daylight saving time; extended-hours data "
@@ -372,6 +446,9 @@ def main() -> int:
                 "Latency = price change from the decision bar's close to the fill bar's open "
                 "(default engine semantics) or to a later bar's close, in basis points of the "
                 "decision close. Positive = the fill is above the decision close.",
+                "Calendar annotation = each studied equity session is looked up in the "
+                "intel.calendar full-closure table so gaps spanning an exchange holiday can be "
+                "told apart from weekend gaps; holiday-dated sessions are reported, not removed.",
             ],
             "assumptions": [
                 "Adjustments and feed coverage come from source_metadata. Alpaca captures "
@@ -381,6 +458,9 @@ def main() -> int:
                 "No retention entitlement is inferred for other providers.",
                 "No transaction costs, borrow costs or liquidity limits are applied to the "
                 "latency measurement; it is a price-distance measurement only.",
+                "The full-closure table is a rule-based transcription (intel.calendar) that must "
+                "be re-verified against the official NYSE calendar before authoritative use; "
+                "early closes are informational and never exclude a session.",
             ],
             "not_a_forecast": True,
         },
@@ -393,6 +473,7 @@ def main() -> int:
         "execution_latency": {
             "by_kind_interval": latency_rows,
         },
+        "calendar_diagnostics": calendar_diagnostics,
     }
 
     out_path = os.path.join(ROOT, args.out)

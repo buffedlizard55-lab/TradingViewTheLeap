@@ -3,7 +3,7 @@
   "kind": "own_shadow_competition_simulation",
   "description": "The repository's own paper competition: every username in data/competition/roster.json trades a frozen contrarian or baseline strategy on captured vendor daily bars with a fresh 250,000 virtual USD account per edition, under the official rule constants. NOT the official contest, NOT a TradingView Strategy Report, NOT a prediction.",
   "engine": "intel-competition-2",
-  "generated_utc": "2026-09-18T22:31:46Z",
+  "generated_utc": "2026-09-19T00:38:10Z",
   "primary_scenario": "moderate",
   "price_source": "data/market_history_index.json (market_data_vendor tier; front-month continuous, unadjusted rolls)",
   "rules_source": "data/contest_config.json (official rules transcription, TV-RULES-AMP-SEP2026)",

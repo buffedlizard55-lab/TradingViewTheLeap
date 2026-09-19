@@ -77,6 +77,8 @@ class Trade:
     entry_fill_price: float
     exit_fill_price: float
     net_pnl_usd: float
+    entry_ts: int | None = None
+    exit_ts: int | None = None
 
 
 @dataclass
@@ -501,6 +503,9 @@ def run_participant_window(
     latency_bars: int = 0,
     deployment: float = 1.0,
     control_symbol: str | None = None,
+    return_fills: bool = False,
+    arbitration: str = "sequential",
+    roll_dates: dict[str, set[str]] | None = None,
 ) -> EditionResult:
     """Simulate one participant over one window under a rule profile.
 
@@ -514,11 +519,36 @@ def run_participant_window(
       outside the window are counted in `expired_orders` and never fill.
     - `control_symbol`, when given, opens one maximum-size long in that symbol at the first
       bar of the window and holds it to the auto-close (the B1 control).
+    - `return_fills`, when True, attaches a per-fill log (`result.fill_log`) preserving the
+      exact entry/exit timestamps, dates, prices and net P/L of every closed tranche. The
+      default False keeps the legacy output shape (aggregates only).
+    - `arbitration` controls simultaneous-symbol buying-power allocation. "sequential"
+      (default) fills symbols in sorted order per date/timestamp, so the first symbol may
+      consume the shared buying power. "proportional" splits the buying power available at
+      the start of each date (daily bars) or timestamp (intraday bars) equally among the
+      symbols with entry/add orders due there; each symbol's sizing is capped by its share
+      (no redistribution of unused shares; closes inside the group do not expand the
+      others' budgets; a symbol's consecutive fills inside one group decrement its own
+      share). Both modes are deterministic; committed artifacts use "sequential".
+    - `roll_dates`, when given, maps symbol -> set of ISO dates on which any open position
+      is force-closed at that bar's open (a declared contract-roll / corporate-action
+      boundary) and counted in `result.roll_closes`. No roll schedule is committed for any
+      captured series, so committed runs pass None and record zero roll closes.
     """
     if not isinstance(latency_bars, int) or isinstance(latency_bars, bool) or latency_bars < 0:
         raise ValueError("latency_bars must be a nonnegative integer")
     if not 0 < deployment <= 1:
         raise ValueError("deployment must be in (0, 1]")
+    if arbitration not in ("sequential", "proportional"):
+        raise ValueError("arbitration must be 'sequential' or 'proportional'")
+    if roll_dates is not None:
+        if not isinstance(roll_dates, dict):
+            raise ValueError("roll_dates must map symbol -> set of ISO dates")
+        for sym, dates in roll_dates.items():
+            if sym not in spec_by_symbol:
+                raise ValueError(f"roll_dates symbol {sym!r} is not in the series map")
+            for day in dates:
+                date.fromisoformat(day)  # validate shape eagerly
     equity = profile.starting_balance
     realized = 0.0
     ruined = False
@@ -532,6 +562,8 @@ def run_participant_window(
     short_trades = 0
     skipped_entries = 0
     expired_orders = 0
+    roll_closes = 0
+    fill_log: list[dict] = []
 
     positions: dict[str, dict] = {}
     pending: dict[str, dict[int, list]] = {sym: {} for sym in slices}
@@ -556,22 +588,25 @@ def run_participant_window(
             total += qty * pos["last_open"] * spec.contract_multiplier
         return total
 
-    def sizing_qty(fill_price: float, sym: str) -> int:
+    def sizing_qty(fill_price: float, sym: str, budget_cap: float | None = None) -> int:
         spec = spec_by_symbol[sym]
         available = max(0.0, equity * profile.leverage - notional_used())
         target = available * deployment
         notional_limit = cap_for(sym) * fill_price * spec.contract_multiplier
         room = min(target, notional_limit)
+        if budget_cap is not None:
+            room = min(room, budget_cap)
         if fill_price * spec.contract_multiplier <= 0:
             return 0
         return int(room // (fill_price * spec.contract_multiplier))
 
-    def open_position(sym: str, direction: str, bar: Bar, slip_pts: float, day: str) -> None:
+    def open_position(sym: str, direction: str, bar: Bar, slip_pts: float, day: str,
+                      budget_cap: float | None = None) -> int:
         nonlocal skipped_entries
-        qty = sizing_qty(bar.open, sym)
+        qty = sizing_qty(bar.open, sym, budget_cap)
         if qty < 1:
             skipped_entries += 1
-            return
+            return 0
         positions[sym] = {
             "dir": direction,
             "tranches": [{
@@ -581,18 +616,21 @@ def run_participant_window(
                 "commission": _commission_for_fill(
                     profile, scenario, bar.open, qty, spec_by_symbol[sym].contract_multiplier),
                 "entry_date": day,
+                "entry_ts": bar.ts,
             }],
             "entry_date": day,
             "last_open": bar.open,
         }
         active_days.add(day)
+        return qty
 
-    def add_tranche(sym: str, pos: dict, bar: Bar, slip_pts: float, day: str) -> None:
+    def add_tranche(sym: str, pos: dict, bar: Bar, slip_pts: float, day: str,
+                    budget_cap: float | None = None) -> int:
         nonlocal add_tranches, skipped_entries
-        qty = sizing_qty(bar.open, sym)
+        qty = sizing_qty(bar.open, sym, budget_cap)
         if qty < 1:
             skipped_entries += 1
-            return
+            return 0
         pos["tranches"].append({
             "qty": qty,
             "entry_raw": bar.open,
@@ -600,13 +638,15 @@ def run_participant_window(
             "commission": _commission_for_fill(
                 profile, scenario, bar.open, qty, spec_by_symbol[sym].contract_multiplier),
             "entry_date": day,
+            "entry_ts": bar.ts,
         })
         pos["last_open"] = bar.open
         add_tranches += 1
         active_days.add(day)
+        return qty
 
     def close_position(sym: str, pos: dict, exit_index: int, exit_slip_pts: float,
-                       at_close: bool = False) -> None:
+                       at_close: bool = False, reason: str = "signal") -> None:
         nonlocal realized, equity, long_trades, short_trades
         spec = spec_by_symbol[sym]
         exit_bar = spec.bars[exit_index]
@@ -621,13 +661,32 @@ def run_participant_window(
             net = gross + slip - commission
             realized += net
             equity += net
+            entry_fill = tranche["entry_raw"] + direction * tranche["slip_pts"]
+            exit_fill = exit_raw - direction * exit_slip_pts
             trades.append(Trade(
                 symbol=sym, direction=pos["dir"], contracts=tranche["qty"],
                 entry_date=tranche["entry_date"], exit_date=exit_bar.date,
-                entry_fill_price=tranche["entry_raw"] + direction * tranche["slip_pts"],
-                exit_fill_price=exit_raw - direction * exit_slip_pts,
+                entry_fill_price=entry_fill,
+                exit_fill_price=exit_fill,
                 net_pnl_usd=net,
+                entry_ts=tranche.get("entry_ts"),
+                exit_ts=exit_bar.ts,
             ))
+            if return_fills:
+                fill_log.append({
+                    "symbol": sym,
+                    "direction": pos["dir"],
+                    "qty": tranche["qty"],
+                    "entry_date": tranche["entry_date"],
+                    "entry_ts": tranche.get("entry_ts"),
+                    "exit_date": exit_bar.date,
+                    "exit_ts": exit_bar.ts,
+                    "entry_fill_price": round(entry_fill, 6),
+                    "exit_fill_price": round(exit_fill, 6),
+                    "at_close": at_close,
+                    "reason": reason,
+                    "net_pnl_usd": round(net, 2),
+                })
             if pos["dir"] == "long":
                 long_trades += 1
             else:
@@ -664,13 +723,31 @@ def run_participant_window(
             for i, bar in enumerate(slices[sym])
         )
 
+    # Proportional arbitration pre-computes the event groups (one date for daily bars,
+    # one timestamp for intraday bars) so that at each group start the engine can split the
+    # buying power available then among the symbols with entry/add orders due in the group.
+    group_members: dict = {}
+    if arbitration == "proportional":
+        for event in events:
+            if daily_mode:
+                g_day, g_sym, g_i = event
+                group_key = g_day
+            else:
+                g_day, g_ts, g_sym, g_i = event
+                group_key = (g_day, g_ts)
+            group_members.setdefault(group_key, []).append((g_sym, starts[g_sym] + g_i))
+    current_group = object()
+    group_budget: dict[str, float] = {}
+
     for event in events:
         if ruined:
             break
         if daily_mode:
             day, sym, i = event
+            group_key = day
         else:
             day, _ts, sym, i = event
+            group_key = (day, _ts)
         if True:
             series = slices[sym]
             bar = series[i]
@@ -678,11 +755,36 @@ def run_participant_window(
             spec = spec_by_symbol[sym]
             cursor[sym] = i
 
+            if group_key != current_group:
+                current_group = group_key
+                group_budget = {}
+                if arbitration == "proportional":
+                    claimants = sorted({
+                        g_sym for g_sym, g_full in group_members[group_key]
+                        for order in pending[g_sym].get(g_full, [])
+                        if order["action"] in ("long", "short", "add")
+                    })
+                    if claimants:
+                        share = max(0.0, equity * profile.leverage - notional_used()) / len(claimants)
+                        group_budget = {g_sym: share for g_sym in claimants}
+
+            # ---- declared roll boundary: force-close at this bar's open ----
+            if roll_dates and day in roll_dates.get(sym, ()):
+                pos = positions.get(sym)
+                if pos is not None:
+                    known = [d for d in (decisions.get(sym) or []) if d.index <= full_i]
+                    roll_atr = known[-1].atr if known else 0.0
+                    close_position(sym, pos, full_i,
+                                   scenario.slippage_atr_fraction * roll_atr, reason="roll")
+                    positions.pop(sym, None)
+                    roll_closes += 1
+
             # ---- fills for orders due at this bar's open ----
             for order in pending[sym].pop(full_i, []):
                 pos = positions.get(sym)
                 slip_pts = scenario.slippage_atr_fraction * order["atr"]
                 action = order["action"]
+                budget = group_budget.get(sym) if arbitration == "proportional" else None
                 if action in ("long", "short"):
                     if pos is not None and pos["dir"] == action:
                         continue
@@ -693,14 +795,20 @@ def run_participant_window(
                     if equity <= 0:
                         ruined = True
                         break
-                    open_position(sym, action, bar, slip_pts, day)
+                    filled = open_position(sym, action, bar, slip_pts, day, budget)
+                    if arbitration == "proportional" and budget is not None:
+                        group_budget[sym] = max(
+                            0.0, budget - filled * bar.open * spec.contract_multiplier)
                 elif action == "add":
                     if pos is None:
                         continue
                     if equity <= 0:
                         ruined = True
                         break
-                    add_tranche(sym, pos, bar, slip_pts, day)
+                    filled = add_tranche(sym, pos, bar, slip_pts, day, budget)
+                    if arbitration == "proportional" and budget is not None:
+                        group_budget[sym] = max(
+                            0.0, budget - filled * bar.open * spec.contract_multiplier)
                 elif action == "exit":
                     if pos is not None:
                         close_position(sym, pos, full_i, slip_pts)
@@ -751,7 +859,8 @@ def run_participant_window(
         decision_list = decisions.get(sym) or []
         known = [d for d in decision_list if d.index <= last_full_i[sym]]
         exit_atr = known[-1].atr if known else 0.0
-        close_position(sym, pos, last_full_i[sym], scenario.slippage_atr_fraction * exit_atr, at_close=True)
+        close_position(sym, pos, last_full_i[sym], scenario.slippage_atr_fraction * exit_atr,
+                       at_close=True, reason="auto_close")
 
     result = EditionResult(
         realized_pnl_usd=realized,
@@ -768,6 +877,9 @@ def run_participant_window(
     )
     result.multiple_buckets = [m for m in TARGET_MULTIPLES if result.equity_multiple >= m]
     result.expired_orders = expired_orders
+    result.fill_log = fill_log
+    result.roll_closes = roll_closes
+    result.arbitration = arbitration
     return result
 
 
@@ -972,8 +1084,15 @@ def run_division_seasons(
     min_active_days: int | None = None,
     division_name: str = "daily",
     division_of_user: dict[str, str] | None = None,
+    arbitration: str = "sequential",
+    roll_dates: dict[str, set[str]] | None = None,
 ) -> MultiSeasonResult:
-    """Run paper competition seasons across windows for all participants."""
+    """Run paper competition seasons across windows for all participants.
+
+    `arbitration` and `roll_dates` pass straight through to run_participant_window;
+    every edition row records the arbitration mode and the roll-close count it ran
+    under, so a future non-default run cannot be mistaken for the legacy baseline.
+    """
     import statistics
 
     if min_active_days is None:
@@ -1003,6 +1122,7 @@ def run_division_seasons(
             results[p.username] = run_participant_window(
                 dec, slices, starts, series_map, profile, scenario,
                 latency_bars=latency_bars, control_symbol=control,
+                arbitration=arbitration, roll_dates=roll_dates,
             )
 
         rows = []
@@ -1020,6 +1140,8 @@ def run_division_seasons(
                 "short_trades": r.short_trades,
                 "skipped_entries": r.skipped_entries,
                 "expired_orders": getattr(r, "expired_orders", 0),
+                "roll_closes": getattr(r, "roll_closes", 0),
+                "arbitration": getattr(r, "arbitration", "sequential"),
                 "margin_breach_bars": r.margin_breach_bars,
                 "max_drawdown_usd": round(r.max_drawdown_usd, 2),
                 "multiple_buckets": r.multiple_buckets,
@@ -1197,6 +1319,8 @@ class MultiSeasonCompetition:
         control_symbol_picker: callable | None = None,
         division_name: str = "daily",
         division_of_user: dict[str, str] | None = None,
+        arbitration: str = "sequential",
+        roll_dates: dict[str, set[str]] | None = None,
     ) -> MultiSeasonResult:
         return run_division_seasons(
             series_map=series_map,
@@ -1210,6 +1334,8 @@ class MultiSeasonCompetition:
             forward_held_out_count=forward_held_out_count,
             division_name=division_name,
             division_of_user=division_of_user,
+            arbitration=arbitration,
+            roll_dates=roll_dates,
         )
 
     def run_combined_leap_simulation(

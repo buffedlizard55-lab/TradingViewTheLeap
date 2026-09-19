@@ -1,4 +1,4 @@
-"""Import authenticated TradingView Strategy Report exports (CSV) and validate them.
+"""Import authenticated TradingView Strategy Report exports (CSV or XLSX) and validate them.
 
 WHAT CAN BE IMPORTED, AND WHAT CANNOT
 ------------------------------------
@@ -12,7 +12,10 @@ https://www.tradingview.com/support/solutions/43000613680-how-to-export-strategy
      Summary' tab will only export the metrics."
 
 The exact column labels are produced by the platform, and this module does NOT assert what
-they are. Instead it:
+they are. A workbook (.xlsx) export is read through its FIRST worksheet, whatever the sheet
+is named, and classified by its header row exactly like a CSV; shared strings, inline
+strings, numbers and date-formatted serials are decoded with the standard library only.
+Instead of asserting labels, this module:
 
 1. requires a header row, normalizes the labels, and maps them through the declared alias
    table below;
@@ -48,7 +51,10 @@ import io
 import math
 import os
 import re
+import zipfile
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from typing import Optional
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -237,10 +243,10 @@ def _side_and_phase(trade_type: str, signal: str) -> tuple[str, str]:
 
 
 def import_trades(path: str) -> ImportedReport:
-    """Import a List of Trades CSV export with strict validation."""
+    """Import a List of Trades export (CSV, or the first XLSX worksheet) with strict validation."""
     with open(path, "rb") as fh:
         digest = hashlib.sha256(fh.read()).hexdigest()
-    rows = _read_rows(path)
+    rows = _read_any_rows(path)
     if not rows:
         raise ImportError_(f"{path}: file contains no rows")
     header = rows[0]
@@ -355,10 +361,10 @@ def import_trades(path: str) -> ImportedReport:
 
 
 def import_performance_summary(path: str) -> ImportedReport:
-    """Import a two-column Performance Summary export (metric name, value)."""
+    """Import a two-column Performance Summary export (CSV, or the first XLSX worksheet)."""
     with open(path, "rb") as fh:
         digest = hashlib.sha256(fh.read()).hexdigest()
-    rows = _read_rows(path)
+    rows = _read_any_rows(path)
     if not rows:
         raise ImportError_(f"{path}: file contains no rows")
     report = ImportedReport(
@@ -391,9 +397,150 @@ def import_performance_summary(path: str) -> ImportedReport:
     return report
 
 
+def _xlsx_col_to_index(ref: str) -> int:
+    letters = "".join(ch for ch in ref if ch.isalpha())
+    idx = 0
+    for ch in letters:
+        idx = idx * 26 + (ord(ch.upper()) - ord("A") + 1)
+    return idx - 1
+
+
+def _xlsx_is_date_numfmt(fmt: str) -> bool:
+    """True when a number-format code is date-like (contains date tokens outside quotes)."""
+    stripped = re.sub(r'"[^"]*"', "", fmt)
+    stripped = re.sub(r"\[[^\]]*\]", "", stripped)
+    return bool(re.search(r"(?i)(y+|d+|m+|h+|s+)", stripped))
+
+
+def _read_xlsx_rows(path: str) -> list[list[str]]:
+    """Read the FIRST worksheet of an .xlsx workbook into string rows (stdlib only).
+
+    No claim is made about the platform's sheet names: whatever the first sheet holds is
+    classified by its header row exactly like a CSV. Shared strings, inline strings,
+    numbers, booleans and date-formatted serials are decoded; formulas contribute their
+    cached value; empty rows are skipped. Raises ImportError_ on any unreadable workbook
+    instead of guessing.
+    """
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile as exc:
+        raise ImportError_(f"{path}: not a readable .xlsx workbook: {exc}")
+    with archive:
+        names = set(archive.namelist())
+        if "xl/workbook.xml" not in names:
+            raise ImportError_(f"{path}: missing xl/workbook.xml, not an .xlsx workbook")
+        main_ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
+                   "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships"}
+        workbook = ET.fromstring(archive.read("xl/workbook.xml"))
+        sheets = workbook.findall("m:sheets/m:sheet", main_ns)
+        if not sheets:
+            raise ImportError_(f"{path}: workbook contains no worksheets")
+        first_id = sheets[0].get(
+            "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
+        rels = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
+        rel_ns = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
+        target = None
+        for rel in rels.findall("rel:Relationship", rel_ns):
+            if rel.get("Id") == first_id:
+                target = rel.get("Target")
+                break
+        if target is None:
+            raise ImportError_(f"{path}: first worksheet relationship {first_id!r} not found")
+        sheet_path = "xl/" + target.lstrip("/").removeprefix("xl/")
+        if sheet_path not in names:
+            sheet_path = "xl/worksheets/" + target.split("/")[-1]
+        if sheet_path not in names:
+            raise ImportError_(f"{path}: worksheet part {target!r} missing from the workbook")
+
+        shared: list[str] = []
+        if "xl/sharedStrings.xml" in names:
+            sst = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+            for si in sst.findall("m:si", main_ns):
+                shared.append("".join(t.text or "" for t in si.iter(
+                    "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t")))
+
+        date_styles: set[int] = set()
+        if "xl/styles.xml" in names:
+            styles = ET.fromstring(archive.read("xl/styles.xml"))
+            custom: dict[str, str] = {}
+            for numfmt in styles.findall("m:numFmts/m:numFmt", main_ns):
+                custom[numfmt.get("numFmtId", "")] = numfmt.get("formatCode", "")
+            builtin_date_ids = {14, 15, 16, 17, 18, 19, 20, 21, 22, 27, 28, 29, 30, 31,
+                                32, 33, 34, 35, 36, 45, 46, 47, 50, 57}
+            xfs = styles.findall("m:cellXfs/m:xf", main_ns)
+            for i, xf in enumerate(xfs):
+                fmt_id = xf.get("numFmtId", "0")
+                try:
+                    numeric = int(fmt_id)
+                except ValueError:
+                    numeric = -1
+                if numeric in builtin_date_ids or _xlsx_is_date_numfmt(custom.get(fmt_id, "")):
+                    date_styles.add(i)
+
+        sheet = ET.fromstring(archive.read(sheet_path))
+        cell_tag = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c"
+        val_tag = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v"
+        inline_tag = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}is"
+        text_tag = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t"
+        rows: list[list[str]] = []
+        for row in sheet.iter("{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row"):
+            cells: dict[int, str] = {}
+            for cell in row.findall(cell_tag):
+                ref = cell.get("r", "")
+                if not ref:
+                    continue
+                kind = cell.get("t", "n")
+                style = int(cell.get("s", "0") or 0)
+                if kind == "inlineStr":
+                    inline = cell.find(inline_tag)
+                    value = "".join(t.text or "" for t in inline.iter(text_tag)) if inline is not None else ""
+                elif kind == "s":
+                    val = cell.findtext(val_tag, default="")
+                    try:
+                        value = shared[int(val)] if val != "" else ""
+                    except (ValueError, IndexError):
+                        raise ImportError_(f"{path}: shared-string index {val!r} out of range")
+                elif kind == "b":
+                    value = "TRUE" if (cell.findtext(val_tag, default="0") or "0") != "0" else "FALSE"
+                elif kind == "e":
+                    value = ""
+                else:
+                    raw = cell.findtext(val_tag, default="")
+                    if raw == "":
+                        value = ""
+                    elif style in date_styles:
+                        try:
+                            serial = float(raw)
+                        except ValueError:
+                            value = raw
+                        else:
+                            moment = datetime(1899, 12, 30) + timedelta(days=serial)
+                            value = moment.strftime("%Y-%m-%d %H:%M:%S") if serial % 1 else moment.strftime("%Y-%m-%d")
+                    else:
+                        value = raw
+                cells[_xlsx_col_to_index(ref)] = value
+            if not cells:
+                continue
+            width = max(cells) + 1
+            text_row = [cells.get(i, "") for i in range(width)]
+            while text_row and text_row[-1] == "":
+                text_row.pop()
+            if any(cell.strip() for cell in text_row):
+                rows.append(text_row)
+    # Fixture banners and human notes: same rule as the CSV reader.
+    return [row for row in rows if not (row and row[0].lstrip().startswith("#"))]
+
+
+def _read_any_rows(path: str) -> list[list[str]]:
+    """Rows from a CSV export or from the first worksheet of an XLSX export."""
+    if os.path.splitext(path)[1].lower() == ".xlsx":
+        return _read_xlsx_rows(path)
+    return _read_rows(path)
+
+
 def import_any(path: str) -> ImportedReport:
     """Dispatch on the export shape."""
-    rows = _read_rows(path)
+    rows = _read_any_rows(path)
     if not rows:
         raise ImportError_(f"{path}: empty export")
     kind = _classify(rows[0])

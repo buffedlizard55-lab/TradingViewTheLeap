@@ -75,6 +75,15 @@ verifier-audited content, and added the four research pipelines the brief asked 
   its downstream study, division and stock rows, and the fifth is the COMEX:SIC1! vendor-vs-quote
   delta tracked as IR-22. The intraday-dependent checks turn strict the moment the capture lands.
 
+## September 19 fourteenth pass: equity holiday calendar, C14–C16 strategies, execution realism, XLSX imports
+
+- **NYSE holiday calendar (`intel/calendar.py`, new).** Rule-based 2016–2026 full-closure table (standing holidays, weekend observance, Juneteenth from 2022, two recorded special closures) annotates — never replaces — the UTC-date session baseline via `sessions_calendar_aware()`; the study reports `calendar_diagnostics` per series. Registered as `NYSE-HOURS-CALENDAR` (`https://www.nyse.com/markets/hours-calendars`); the 106-date evidence transcription stays flagged (IR-28) until a networked line-by-line re-verification.
+- **Three new frozen stock models + six usernames (roster 26→32).** C14 gap-and-go momentum, C15 crash snapback sniper, C16 ATR-expansion breakout compounder. On the ENPH-only daily subset the C16-runner `BreakoutBea` leads season (+$13,505.78), in-sample and forward windows — a single-symbol biased result, reported as such.
+- **Forward-held-out metrics produced by default** (`--forward-held-out 6`): 75 in-sample + 6 forward editions with separate leaderboards, rendered on the site and re-derived by the verifier.
+- **Engine realism, opt-in and legacy-stable:** per-fill timestamp logs, proportional buying-power arbitration (exact per-share budgets), declared roll boundaries; every edition row records `arbitration`/`roll_closes`; futures output is stamp-identical.
+- **XLSX Strategy Report imports** via stdlib first-worksheet reader; the benchmark still reports honestly `blocked` for real exports (no TradingView credentials here).
+- **Verification:** `390 passed / 0 failed / 3 warnings` (`python3 scripts/verify.py`), 87 unit tests green, self-test `448/0`. Full audit in [the three-pass review](research/implementation_review.md).
+
 ## September 18 thirteenth pass: competition companion, session constants, and unmissable paper-trade banner
 
 - **Expanded `intel/competition.py` line by line** with per-pool provenance (20 futures from `data/master_list.json` + provider `data/market_history/` under `futures_amp_sep2026` 250k/20:1 `TV-RULES-AMP-SEP2026`; 20 volatile equities from `data/volatile_stocks.json` under `stocks_official_leap` 100k/1:1/0.01%/50-unit `TV-RULES-MAG7-MAR2026` + declared `stocks_20x_counterfactual`; real pricing under `data/intraday/` with `data/intraday_index.json` provenance and `data/official_bars/` via Alpaca IEX `https://docs.alpaca.markets/us/reference/stockbars`; no hallucinated prices) and added **`MultiSeasonCompetition.run_combined_leap_simulation()`** — a single alongside-futures entry point that reuses the same `CostScenario`/`latency_bars` for both pools, forwards `forward_held_out_count`, and returns `{futures, equities}`.
