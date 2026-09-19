@@ -1,0 +1,219 @@
+{
+  "_meta": {
+    "kind": "cme_contract_spec_capture_index",
+    "description": "Provenance for the official CME Group contract-specification page of every future in this repository's pool. Each record stores the exact response body under data/cme_specs/ with its SHA-256 and byte length; the transcribed fields are re-extractable from that body offline. A missing field is null and listed in missing_fields - it is never inferred from another product.",
+    "script": "scripts/fetch_cme_specs.py",
+    "script_version": "1",
+    "generated_utc": "2026-09-19T21:23:07+00:00",
+    "capture_environment": "local",
+    "workflow_run_url": null,
+    "product_count": 20,
+    "captured_count": 0,
+    "failed_count": 20,
+    "kept_previous_count": 0,
+    "not_a_forecast": true,
+    "engine_applies_hours": false
+  },
+  "records": [
+    {
+      "product": "BTC",
+      "tradingview_symbol": "CME:BTC1!",
+      "source_id": "CME-SPEC-BTC1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
+      "status": "failed",
+      "reason": "BTC.html not stored yet; run without --offline"
+    },
+    {
+      "product": "CL",
+      "tradingview_symbol": "NYMEX:CL1!",
+      "source_id": "CME-SPEC-CL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
+      "status": "failed",
+      "reason": "CL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "ETH",
+      "tradingview_symbol": "CME:ETH1!",
+      "source_id": "CME-SPEC-ETH1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
+      "status": "failed",
+      "reason": "ETH.html not stored yet; run without --offline"
+    },
+    {
+      "product": "HO",
+      "tradingview_symbol": "NYMEX:HO1!",
+      "source_id": "CME-SPEC-HO1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
+      "status": "failed",
+      "reason": "HO.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MBT",
+      "tradingview_symbol": "CME:MBT1!",
+      "source_id": "CME-SPEC-MBT1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
+      "status": "failed",
+      "reason": "MBT.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MCL",
+      "tradingview_symbol": "NYMEX:MCL1!",
+      "source_id": "CME-SPEC-MCL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
+      "status": "failed",
+      "reason": "MCL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MET",
+      "tradingview_symbol": "CME:MET1!",
+      "source_id": "CME-SPEC-MET1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
+      "status": "failed",
+      "reason": "MET.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MNG",
+      "tradingview_symbol": "NYMEX:MNG1!",
+      "source_id": "CME-SPEC-MNG1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
+      "status": "failed",
+      "reason": "MNG.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MSL",
+      "tradingview_symbol": "CME:MSL1!",
+      "source_id": "CME-SPEC-MSL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
+      "status": "failed",
+      "reason": "MSL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "MXP",
+      "tradingview_symbol": "CME:MXP1!",
+      "source_id": "CME-SPEC-MXP1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
+      "status": "failed",
+      "reason": "MXP.html not stored yet; run without --offline"
+    },
+    {
+      "product": "NG",
+      "tradingview_symbol": "NYMEX:NG1!",
+      "source_id": "CME-SPEC-NG1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
+      "status": "failed",
+      "reason": "NG.html not stored yet; run without --offline"
+    },
+    {
+      "product": "NQ",
+      "tradingview_symbol": "CME_MINI:NQ1!",
+      "source_id": "CME-SPEC-NQ1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
+      "status": "failed",
+      "reason": "NQ.html not stored yet; run without --offline"
+    },
+    {
+      "product": "PL",
+      "tradingview_symbol": "NYMEX:PL1!",
+      "source_id": "CME-SPEC-PL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
+      "status": "failed",
+      "reason": "PL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "QM",
+      "tradingview_symbol": "NYMEX_MINI:QM1!",
+      "source_id": "CME-SPEC-QM1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
+      "status": "failed",
+      "reason": "QM.html not stored yet; run without --offline"
+    },
+    {
+      "product": "RB",
+      "tradingview_symbol": "NYMEX:RB1!",
+      "source_id": "CME-SPEC-RB1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
+      "status": "failed",
+      "reason": "RB.html not stored yet; run without --offline"
+    },
+    {
+      "product": "SI",
+      "tradingview_symbol": "COMEX:SI1!",
+      "source_id": "CME-SPEC-SI1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+      "status": "failed",
+      "reason": "SI.html not stored yet; run without --offline"
+    },
+    {
+      "product": "SIC",
+      "tradingview_symbol": "COMEX:SIC1!",
+      "source_id": "CME-SPEC-SIC1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
+      "status": "failed",
+      "reason": "SIC.html not stored yet; run without --offline"
+    },
+    {
+      "product": "SIL",
+      "tradingview_symbol": "COMEX_MINI:SIL1!",
+      "source_id": "CME-SPEC-SIL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
+      "status": "failed",
+      "reason": "SIL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "SOL",
+      "tradingview_symbol": "CME:SOL1!",
+      "source_id": "CME-SPEC-SOL1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
+      "status": "failed",
+      "reason": "SOL.html not stored yet; run without --offline"
+    },
+    {
+      "product": "XRP",
+      "tradingview_symbol": "CME:XRP1!",
+      "source_id": "CME-SPEC-XRP1!",
+      "publisher": "CME Group Inc.",
+      "tier": "official_primary",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
+      "status": "failed",
+      "reason": "XRP.html not stored yet; run without --offline"
+    }
+  ]
+}
