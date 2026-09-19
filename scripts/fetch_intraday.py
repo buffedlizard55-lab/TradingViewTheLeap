@@ -567,6 +567,7 @@ def main() -> int:
                 "stored_sha256": hashlib.sha256(stored_text.encode("utf-8")).hexdigest(),
                 "rounding_decimals": ROUNDING_DECIMALS,
                 "max_abs_rounding_delta": 0.5 * 10 ** -ROUNDING_DECIMALS,
+                "vendor_data_granularity": result["facts"].get("vendor_data_granularity"),
                 "vendor_reported_exchange": result["facts"].get("vendor_reported_exchange"),
                 "vendor_reported_instrument_type": result["facts"].get(
                     "vendor_reported_instrument_type"),

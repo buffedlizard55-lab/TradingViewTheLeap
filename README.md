@@ -75,6 +75,14 @@ verifier-audited content, and added the four research pipelines the brief asked 
   its downstream study, division and stock rows, and the fifth is the COMEX:SIC1! vendor-vs-quote
   delta tracked as IR-22. The intraday-dependent checks turn strict the moment the capture lands.
 
+## September 19 fifteenth pass: capture lane root-caused and parallelised, NYSE calendar officially verified
+
+- **Why 0/20 intraday series landed on 2026-09-18, fixed.** Yahoo appends the live bar to every historical chunk; the v3 parser treated that out-of-window bar as fatal. `scripts/fetch_intraday.py` v4 drops and counts such bars, re-enables direct transport after a cooldown, re-freezes the 15m window inside retention. A new **per-symbol matrix workflow** (`capture-intraday-matrix.yml` + `scripts/merge_intraday_indexes.py`) captured **29/60 stock series ({'15m': 15, '1h': 9, '1d': 5})** in its first run; cron tops up until 60/60.
+- **Hourly and 15-minute divisions now run on real captured bars** (24 series, 4,611 session-boundary gaps; hourly champion `CrashColossus` C7, 15-minute `VolSpikeVince` C11 — partial pool, small P/L, reported as-is). The exec summary's hourly division is populated.
+- **IR-28 closed.** All 2016–2026 NYSE closures compared against official NYSE tables (live + archived nyse.com, ICE press releases, Nasdaq Trader); one transcription error corrected (2021-12-31 traded — Rule 7.2); verifier enforces rules == official table. CME Globex 2026 windows transcribed as annotation.
+- **Official-bars lane** (`official-bars.yml`, secret-gated, fail-closed) and an Alpaca-vs-Yahoo spot-check with a split-step detector.
+- Verification: **392 passed / 0 failed / 1 warning (IR-22)**. Details: [the three-pass review](research/implementation_review.md).
+
 ## September 19 fourteenth pass: equity holiday calendar, C14–C16 strategies, execution realism, XLSX imports
 
 - **NYSE holiday calendar (`intel/calendar.py`, new).** Rule-based 2016–2026 full-closure table (standing holidays, weekend observance, Juneteenth from 2022, two recorded special closures) annotates — never replaces — the UTC-date session baseline via `sessions_calendar_aware()`; the study reports `calendar_diagnostics` per series. Registered as `NYSE-HOURS-CALENDAR` (`https://www.nyse.com/markets/hours-calendars`); the 106-date evidence transcription stays flagged (IR-28) until a networked line-by-line re-verification.

@@ -23,6 +23,7 @@
   },
   "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-19; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately (the window was re-frozen once, on 2026-09-19, from a 2026-07-21 start to a 2026-07-28 start).",
   "rounding_decimals": 5,
+  "vendor_source_id": "YAHOO-INTRADAY-CHART",
   "fetched_at_utc": "2026-09-19T05:32:06+00:00",
   "capture_environment": "github-actions",
   "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35422148917",
@@ -152,7 +153,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:16:29+00:00"
+   "captured_at_utc": "2026-09-19T05:16:29+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "AMC",
@@ -257,7 +259,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:16:29+00:00"
+   "captured_at_utc": "2026-09-19T05:16:29+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "AMD",
@@ -341,7 +344,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:45:44+00:00"
+   "captured_at_utc": "2026-09-19T04:45:44+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "AMD",
@@ -446,7 +450,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:45:44+00:00"
+   "captured_at_utc": "2026-09-19T04:45:44+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "APP",
@@ -512,7 +517,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:00:22+00:00"
+   "captured_at_utc": "2026-09-19T05:00:22+00:00",
+   "vendor_data_granularity": "1d"
   },
   {
    "symbol": "APP",
@@ -609,7 +615,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:00:22+00:00"
+   "captured_at_utc": "2026-09-19T05:00:22+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "COIN",
@@ -717,7 +724,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:29:35+00:00"
+   "captured_at_utc": "2026-09-19T05:29:35+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "CVNA",
@@ -817,7 +825,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:45:42+00:00"
+   "captured_at_utc": "2026-09-19T04:45:42+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "ENPH",
@@ -995,7 +1004,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:04:25+00:00"
+   "captured_at_utc": "2026-09-19T05:04:25+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "HOOD",
@@ -1079,7 +1089,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:20:47+00:00"
+   "captured_at_utc": "2026-09-19T05:20:47+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "HOOD",
@@ -1137,7 +1148,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:20:47+00:00"
+   "captured_at_utc": "2026-09-19T05:20:47+00:00",
+   "vendor_data_granularity": "1d"
   },
   {
    "symbol": "HOOD",
@@ -1234,7 +1246,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:20:47+00:00"
+   "captured_at_utc": "2026-09-19T05:20:47+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "MARA",
@@ -1318,7 +1331,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:45:42+00:00"
+   "captured_at_utc": "2026-09-19T04:45:42+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "MARA",
@@ -1418,7 +1432,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:07:45+00:00"
+   "captured_at_utc": "2026-09-19T05:07:45+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "MSTR",
@@ -1518,7 +1533,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:08:36+00:00"
+   "captured_at_utc": "2026-09-19T05:08:36+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "NIO",
@@ -1623,7 +1639,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:08:36+00:00"
+   "captured_at_utc": "2026-09-19T05:08:36+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "NVAX",
@@ -1731,7 +1748,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:25:15+00:00"
+   "captured_at_utc": "2026-09-19T05:25:15+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "NVDA",
@@ -1789,7 +1807,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:25:15+00:00"
+   "captured_at_utc": "2026-09-19T05:25:15+00:00",
+   "vendor_data_granularity": "1d"
   },
   {
    "symbol": "NVDA",
@@ -1881,7 +1900,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:11:10+00:00"
+   "captured_at_utc": "2026-09-19T05:11:10+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "PLTR",
@@ -1981,7 +2001,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:04:07+00:00"
+   "captured_at_utc": "2026-09-19T05:04:07+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "PLUG",
@@ -2086,7 +2107,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:04:07+00:00"
+   "captured_at_utc": "2026-09-19T05:04:07+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "PTON",
@@ -2194,7 +2216,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:45:42+00:00"
+   "captured_at_utc": "2026-09-19T04:45:42+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "RIOT",
@@ -2299,7 +2322,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:04:25+00:00"
+   "captured_at_utc": "2026-09-19T05:04:25+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "SHOP",
@@ -2383,7 +2407,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:58:28+00:00"
+   "captured_at_utc": "2026-09-19T04:58:28+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "SHOP",
@@ -2488,7 +2513,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T04:58:28+00:00"
+   "captured_at_utc": "2026-09-19T04:58:28+00:00",
+   "vendor_data_granularity": "1h"
   },
   {
    "symbol": "SMCI",
@@ -2572,7 +2598,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:17:56+00:00"
+   "captured_at_utc": "2026-09-19T05:17:56+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "SMCI",
@@ -2630,7 +2657,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:17:56+00:00"
+   "captured_at_utc": "2026-09-19T05:17:56+00:00",
+   "vendor_data_granularity": "1d"
   },
   {
    "symbol": "SMCI",
@@ -2722,7 +2750,8 @@
    "vendor_currency": "USD",
    "vendor_exchange_timezone": "America/New_York",
    "status": "captured",
-   "captured_at_utc": "2026-09-19T05:23:47+00:00"
+   "captured_at_utc": "2026-09-19T05:23:47+00:00",
+   "vendor_data_granularity": "15m"
   },
   {
    "symbol": "TSLA",

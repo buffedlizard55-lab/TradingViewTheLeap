@@ -83,6 +83,12 @@ def merge(base: dict | None, partials: list[dict]) -> tuple[dict, list[str]]:
         if not ok:
             notes.append(f"{key[0]}[{key[1]}]: DROPPED captured record - {why}")
             del merged[key]
+            continue
+        # The vendor granularity is stored in the capture document; records written by a
+        # fetch build that omitted it from the index are back-filled from the file, never guessed.
+        if rec.get("vendor_data_granularity") is None:
+            with open(os.path.join(ROOT, rec["file"]), encoding="utf-8") as fh:
+                rec["vendor_data_granularity"] = json.load(fh).get("vendor_data_granularity")
 
     records = sorted(merged.values(), key=lambda r: (r.get("kind", ""), r["symbol"], r["interval"]))
     captured = [r for r in records if r.get("status") == "captured"]
@@ -111,6 +117,7 @@ def merge(base: dict | None, partials: list[dict]) -> tuple[dict, list[str]]:
     if template is None:
         template = (base or {}).get("_meta") or {}
     meta_out = dict(template)
+    meta_out.setdefault("vendor_source_id", "YAHOO-INTRADAY-CHART")
     meta_out.update({
         "fetched_at_utc": max(stamps) if stamps else meta_out.get("fetched_at_utc"),
         "capture_environment": meta_out.get("capture_environment", "github-actions"),
