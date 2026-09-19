@@ -365,6 +365,11 @@ class TestCaptureTransportRetry(unittest.TestCase):
                 c.append(price * 1.001)
                 v.append(100)
                 ts += step
+            # Yahoo appends the live bar (outside the requested window) to every response;
+            # observed on run 35398650536. The fetcher must drop it, not fail the series.
+            stamps.append(p2 + 10 * step)
+            o.append(price); h.append(price * 1.01); l.append(price * 0.99)
+            c.append(price * 1.001); v.append(100)
             return json.dumps({"chart": {"result": [{
                 "meta": {"symbol": ticker, "dataGranularity": interval, "gmtoffset": -14400,
                          "exchangeTimezoneName": "America/New_York"},
@@ -396,6 +401,24 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual([c["status"] for c in index["captures"]], ["captured"])
         self.assertEqual(index["_meta"]["captured_count"], 1)
+        record = index["captures"][0]
+        for chunk in record["chunk_provenance"]:
+            self.assertEqual(chunk["bars_dropped_out_of_window"], 1)
+        self.assertLessEqual(record["chunk_provenance"][0]["period1"], record["first_epoch"])
+        self.assertLessEqual(record["last_epoch"], record["chunk_provenance"][-1]["period2"])
+
+    def test_direct_transport_is_re_enabled_after_cooldown(self):
+        transport = self.fetch.Transport()
+        transport.direct_disabled = True
+        transport.direct_disabled_at = self.fetch.time.time() - 10_000
+        calls = []
+        self.fetch.Transport._get = lambda self, url: calls.append(url) or b"ok"
+        try:
+            payload, name = transport.fetch("https://example.invalid/x")
+        finally:
+            del self.fetch.Transport._get
+        self.assertEqual((payload, name), (b"ok", "direct"))
+        self.assertFalse(transport.direct_disabled)
 
     def test_a_run_that_cannot_fetch_still_writes_one_failure_record_per_series(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -407,7 +430,7 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertIn("IncompleteRead", record["error"])
         self.assertEqual(index["_meta"]["captured_count"], 0)
         self.assertEqual(index["_meta"]["failed_count"], 1)
-        self.assertEqual(index["_meta"]["script_version"], "3")
+        self.assertEqual(index["_meta"]["script_version"], "4")
 
 
 class TestEquityCalendar(unittest.TestCase):

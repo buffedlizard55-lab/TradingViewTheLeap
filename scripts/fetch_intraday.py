@@ -73,12 +73,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Epoch windows are computed once from these ISO constants and frozen so that every
 # re-capture requests the identical window. Yahoo Finance serves 15-minute bars for
 # roughly the last 60 days and hourly bars for roughly the last 730 days; both windows
-# below stay inside those limits at the capture date (2026-09-18).
+# below stay inside those limits at the capture date (2026-09-19).
 # ---------------------------------------------------------------------------
 
 INTERVAL_SPEC = {
-    "15m": {"period1": "2026-07-21T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
-            "chunk_days": 15},
+    # Re-frozen 2026-09-19 (was 2026-07-21..2026-09-19): the earlier window's start sat exactly
+    # 60 days before the capture date, at the edge of the vendor's 15m retention, and the run
+    # that was meant to land it failed for an unrelated reason (see SCRIPT_VERSION 4). A
+    # 2026-07-28 start keeps the window inside retention for the next several days of retries.
+    "15m": {"period1": "2026-07-28T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
+            "chunk_days": 14},
     "1h": {"period1": "2024-09-21T00:00:00Z", "period2": "2026-09-18T00:00:00Z",
            "chunk_days": 180},
     "1d": {"period1": "2016-01-01T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
@@ -90,8 +94,9 @@ INTERVAL_ORDER = ("15m", "1h", "1d")
 VENDOR_RETENTION_NOTE = (
     "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, "
     "2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those "
-    "limits at the capture date 2026-09-18; a later re-capture of the 15m window would fall "
-    "outside vendor retention and must be re-frozen deliberately."
+    "limits at the capture date 2026-09-19; a later re-capture of the 15m window would fall "
+    "outside vendor retention and must be re-frozen deliberately (the window was re-frozen "
+    "once, on 2026-09-19, from a 2026-07-21 start to a 2026-07-28 start)."
 )
 
 ENDPOINT_HOSTS = ("query1.finance.yahoo.com", "query2.finance.yahoo.com")
@@ -111,7 +116,14 @@ USER_AGENT = (
 # 3 -> stored bytes are EXACTLY the digested bytes (no trailing newline): the offline loader
 #      re-hashes the file on disk, so a writer that appends a newline makes every capture fail
 #      its own integrity check. Found by the eleventh-pass audit before any capture was adopted.
-SCRIPT_VERSION = "3"
+# 4 -> bars the vendor returns OUTSIDE the requested [period1, period2] window are dropped and
+#      counted per chunk (bars_dropped_out_of_window) instead of failing the series. Observed on
+#      run 35398650536 (2026-09-18): Yahoo appended the live bar at epoch 1789761600
+#      (2026-09-18T20:00Z) to every historical 15m chunk, so 18/20 symbols failed with
+#      "bar at 1789761600 outside the requested chunk" even when the transport succeeded.
+#      Direct transport is also re-enabled after a cooldown instead of staying disabled for
+#      the whole run, because the public relays answered HTTP 5xx for long stretches.
+SCRIPT_VERSION = "4"
 ROUNDING_DECIMALS = 5
 
 
@@ -174,6 +186,8 @@ class Transport:
         self.direct_attempts = direct_attempts
         self.timeout = timeout
         self.direct_disabled = False
+        self.direct_disabled_at: float | None = None
+        self.direct_cooldown_seconds = 300.0
         self.direct_429s = 0
         self.attempts_log: list[str] = []
         self.preferred_relay: str | None = None
@@ -195,6 +209,13 @@ class Transport:
 
     def fetch(self, url: str) -> tuple[bytes, str]:
         last_error: Exception | None = None
+        if (self.direct_disabled and self.direct_disabled_at is not None
+                and time.time() - self.direct_disabled_at >= self.direct_cooldown_seconds):
+            # The vendor's per-IP limit recovers within minutes; give direct one more chance
+            # rather than depending on the relays for the rest of a two-hour run.
+            self.direct_disabled = False
+            self.direct_429s = 0
+            self.log("    direct re-enabled after cooldown")
         if not self.direct_disabled:
             for attempt in range(1, self.direct_attempts + 1):
                 try:
@@ -209,7 +230,9 @@ class Transport:
                         # budget on direct calls and go straight to the relays.
                         if self.direct_429s >= 2:
                             self.direct_disabled = True
-                            self.log("    direct disabled for this run after repeated HTTP 429")
+                            self.direct_disabled_at = time.time()
+                            self.log("    direct disabled after repeated HTTP 429 "
+                                     f"(cooldown {int(self.direct_cooldown_seconds)}s)")
                     self.log(f"    direct attempt {attempt} failed: HTTP {exc.code}")
                 except (urllib.error.URLError, TimeoutError, OSError,
                         http.client.HTTPException) as exc:
@@ -273,12 +296,14 @@ def parse_chunk(payload: bytes, key: str, yahoo_ticker: str, interval: str,
             )
     bars: list[list] = []
     dropped_null = 0
+    dropped_out_of_window = 0
     for ts, o, h, l, c, v in zip(timestamps, opens, highs, lows, closes, volumes):
         if ts < chunk_start or ts > chunk_end:
-            raise RuntimeError(
-                f"{key}: bar at {ts} outside the requested chunk "
-                f"[{chunk_start}, {chunk_end}]"
-            )
+            # The vendor appends the most recent (possibly still-forming) bar to every chart
+            # response whatever window was requested. It is not part of the requested
+            # history, so it is never stored; the count is recorded in the chunk provenance.
+            dropped_out_of_window += 1
+            continue
         if None in (o, h, l, c):
             dropped_null += 1
             continue
@@ -307,7 +332,8 @@ def parse_chunk(payload: bytes, key: str, yahoo_ticker: str, interval: str,
         "vendor_data_granularity": meta.get("dataGranularity"),
         "vendor_first_trade_epoch": meta.get("firstTradeDate"),
     }
-    return bars, {"facts": facts, "dropped_null": dropped_null, "bars": len(bars)}
+    return bars, {"facts": facts, "dropped_null": dropped_null,
+                  "dropped_out_of_window": dropped_out_of_window, "bars": len(bars)}
 
 
 def capture_series(transport: Transport, key: str, yahoo: str, interval: str,
@@ -348,6 +374,7 @@ def capture_series(transport: Transport, key: str, yahoo: str, interval: str,
             "raw_response_sha256": hashlib.sha256(payload).hexdigest(),
             "bars_returned": len(bars),
             "bars_dropped_null": info["dropped_null"],
+            "bars_dropped_out_of_window": info["dropped_out_of_window"],
         })
         print(f"    chunk {chunk_start}..{chunk_end}: {len(bars)} bars via {transport_name}",
               flush=True)
