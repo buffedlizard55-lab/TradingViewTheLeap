@@ -56,12 +56,12 @@ jobs:
 
       - name: Fail if the committed site is stale
         run: |
-          if ! git diff --quiet -- index.html; then
-            echo "::error::index.html is out of date with data/. Run 'python3 scripts/build_site.py' and commit the result."
-            git diff --stat -- index.html
+          if ! git diff --quiet -- index.html docs/index.html docs/assets; then
+            echo "::error::index.html or its docs/ mirror is out of date with data/. Run 'python3 scripts/build_site.py' and commit the result."
+            git diff --stat -- index.html docs/index.html docs/assets
             exit 1
           fi
-          echo "index.html is in sync with data/ and research/."
+          echo "index.html and its docs/ mirror are in sync with data/ and research/."
 
       - name: Test return-target lab
         run: python3 -m unittest discover -s scripts -p "test_*.py" -v

@@ -2528,6 +2528,140 @@ def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
            "re-hashed, recomputed and honesty-checked")
 
 
+def check_docs_mirror(rep: Report, source_ids: dict) -> None:
+    """The committed docs/ mirror must be byte-identical to what the site builder writes.
+
+    GitHub Pages publishes the repository root, so docs/ is a convenience copy - but it is
+    committed and linked, and a hand-maintained copy silently rots (docs/index.html was two
+    derives behind before scripts/build_site.py started writing it). scripts/verify.py
+    therefore fails on any divergence, and the site-freshness lane fails if either copy is
+    older than the data it was rendered from.
+    """
+    pairs = [("index.html", "docs/index.html"),
+             ("assets/style.css", "docs/assets/style.css"),
+             ("assets/app.js", "docs/assets/app.js")]
+    for src_rel, mirror_rel in pairs:
+        src = os.path.join(ROOT, src_rel)
+        mirror = os.path.join(ROOT, mirror_rel)
+        if not os.path.exists(src):
+            continue
+        if not os.path.exists(mirror):
+            rep.fail("docs_mirror.missing", f"{mirror_rel} is absent although {src_rel} exists")
+            continue
+        with open(src, "rb") as fh:
+            a = fh.read()
+        with open(mirror, "rb") as fh:
+            b = fh.read()
+        if a != b:
+            rep.fail("docs_mirror.stale",
+                     f"{mirror_rel} differs from {src_rel} "
+                     f"({len(b)} bytes vs {len(a)}); re-run scripts/build_site.py")
+    if os.path.exists(os.path.join(ROOT, "docs", "index.html")):
+        rep.ok("docs mirror: index.html and both assets are byte-identical to the site builder's output")
+
+
+def check_full_pool_verdicts(rep: Report, source_ids: dict) -> None:
+    """Re-derive every H34-H39 verdict from the committed competition run.
+
+    The verdicts are produced by ``scripts/assign_full_pool_verdicts.py`` under a
+    pre-registered decision rule. This check imports that same rule (it does not restate it)
+    and re-runs it against ``data/stock_competition_results.json``; the committed verdict, every
+    number it consumed, and the matching status in the hypothesis register must all agree.
+    A rehearsal produced on incomplete coverage at the canonical path fails here, as does a
+    verdict for a competition run that is not the committed one.
+    """
+    doc = load_opt("data/full_pool_verdicts.json")
+    hyps = {h["id"]: h for h in load("research/hypotheses/hypotheses.json")["hypotheses"]}
+    if doc is None:
+        idx = load_opt("data/intraday_index.json")
+        pool = _volatile_pool_symbols()
+        have = set()
+        if idx:
+            for rec in idx.get("captures", []):
+                if rec.get("status") == "captured" and rec.get("kind") in (None, "equity"):
+                    if rec.get("symbol") in pool and rec.get("interval") in INTRADAY_INTERVALS:
+                        have.add((rec["symbol"], rec["interval"]))
+        if len(have) == len(pool) * len(INTRADAY_INTERVALS):
+            rep.warn("full_pool_verdicts.pending: the matrix is complete but no verdict artifact "
+                     "is committed - run scripts/assign_full_pool_verdicts.py --write-hypotheses")
+        else:
+            rep.ok(f"full-pool verdicts withheld: {len(have)}/{len(pool) * len(INTRADAY_INTERVALS)} "
+                   "series captured, so data/full_pool_verdicts.json is correctly absent")
+        return
+
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "full_pool_hypothesis_verdicts":
+        rep.fail("full_pool_verdicts.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("full_pool_verdicts.honesty", "artifact must declare not_a_forecast: true")
+    if meta.get("rehearsal_on_incomplete_coverage"):
+        rep.fail("full_pool_verdicts.rehearsal",
+                 "a rehearsal produced on incomplete coverage must not sit at "
+                 "data/full_pool_verdicts.json")
+    if meta.get("coverage_complete") is not True:
+        rep.fail("full_pool_verdicts.coverage",
+                 "verdicts are recorded although coverage_complete is not true")
+    if not meta.get("decision_rule"):
+        rep.fail("full_pool_verdicts.rule", "the pre-registered decision rule text is missing")
+
+    comp = load("data/stock_competition_results.json")
+    if meta.get("competition_generated_utc") != comp["_meta"].get("generated_utc"):
+        rep.fail("full_pool_verdicts.provenance",
+                 f"verdicts were derived from competition run "
+                 f"{meta.get('competition_generated_utc')!r} but the committed artifact is "
+                 f"{comp['_meta'].get('generated_utc')!r}")
+
+    daily = comp["divisions"]["daily"]
+    season = {r["username"]: r for r in daily["leaderboard"]}
+    fwd = {r["username"]: r for r in (daily.get("forward_held_out") or {}).get("forward_leaderboard") or []}
+    participants = daily.get("participants") or []
+
+    sys.path.insert(0, ROOT)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "assign_full_pool_verdicts", os.path.join(ROOT, "scripts", "assign_full_pool_verdicts.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    verdicts = doc.get("verdicts") or {}
+    if sorted(verdicts) != sorted(module.FULL_POOL_HYPOTHESES):
+        rep.fail("full_pool_verdicts.set",
+                 f"artifact covers {sorted(verdicts)} but the register's full-pool set is "
+                 f"{sorted(module.FULL_POOL_HYPOTHESES)}")
+    for hid, committed in verdicts.items():
+        model = committed.get("model")
+        recomputed = module.verdict_for(model, season, fwd, participants)
+        if recomputed["status"] != committed.get("status"):
+            rep.fail("full_pool_verdicts.verdict",
+                     f"{hid}: committed {committed.get('status')!r} != re-derived "
+                     f"{recomputed['status']!r} (model {model})")
+        if recomputed["control"] != committed.get("control"):
+            rep.fail("full_pool_verdicts.control",
+                     f"{hid}: control row differs from the re-derived one")
+        got = {u["username"]: u for u in committed.get("usernames") or []}
+        want = {u["username"]: u for u in recomputed["usernames"]}
+        if sorted(got) != sorted(want):
+            rep.fail("full_pool_verdicts.usernames",
+                     f"{hid}: usernames {sorted(got)} != re-derived {sorted(want)}")
+        for name, row in want.items():
+            if got.get(name) != row:
+                rep.fail("full_pool_verdicts.usernames",
+                         f"{hid}/{name}: committed row differs from the re-derived one")
+        hyp = hyps.get(hid)
+        if hyp is None:
+            rep.fail("full_pool_verdicts.register", f"{hid} is missing from the register")
+        elif hyp["status"] != committed.get("status"):
+            rep.fail("full_pool_verdicts.register",
+                     f"{hid}: register status {hyp['status']!r} != artifact "
+                     f"{committed.get('status')!r}")
+    cov = meta.get("coverage") or {}
+    if cov.get("complete") is not True:
+        rep.fail("full_pool_verdicts.coverage", "the artifact's own coverage block is not complete")
+    rep.ok(f"full-pool verdicts: {len(verdicts)} hypotheses re-derived from the committed "
+           f"competition run ({meta.get('season_editions')} editions, "
+           f"{len(daily.get('eligible_symbols') or [])} eligible symbols)")
+
+
 def check_cme_product_hours_standalone(rep: Report, source_ids: dict) -> None:
     """Audit data/cme_product_hours.json when no machine capture index backs it yet.
 
@@ -3135,6 +3269,26 @@ def self_test(rep: Report) -> None:
         scenarios.append(("cme_hours.pool", ("data/cme_product_hours.json", mutated),
                           lambda r: check_cme_specs(r, source_ids)))
 
+    fpv_doc = load_opt("data/full_pool_verdicts.json")
+    if fpv_doc is not None and fpv_doc.get("verdicts"):
+        mutated = copy.deepcopy(fpv_doc)
+        first = sorted(mutated["verdicts"])[0]
+        mutated["verdicts"][first]["status"] = (
+            "refuted" if mutated["verdicts"][first]["status"] != "refuted" else "supported")
+        scenarios.append(("full_pool_verdicts.verdict",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+        mutated = copy.deepcopy(fpv_doc)
+        mutated["_meta"]["rehearsal_on_incomplete_coverage"] = True
+        scenarios.append(("full_pool_verdicts.rehearsal",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+        mutated = copy.deepcopy(fpv_doc)
+        mutated["_meta"]["competition_generated_utc"] = "2020-01-01T00:00:00Z"
+        scenarios.append(("full_pool_verdicts.provenance",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+
     cme_index_doc = load_opt("data/cme_specs_index.json")
     if cme_index_doc is not None and cme_index_doc.get("records"):
         mutated = copy.deepcopy(cme_index_doc)
@@ -3190,6 +3344,8 @@ def main() -> int:
     check_exec_summary(rep, source_ids)
     check_tv_benchmark(rep, source_ids)
     check_cme_specs(rep, source_ids)
+    check_full_pool_verdicts(rep, source_ids)
+    check_docs_mirror(rep, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)
