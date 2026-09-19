@@ -393,6 +393,13 @@ def main() -> int:
     parser.add_argument("--interval", default="all", choices=("all",) + INTERVAL_ORDER)
     parser.add_argument("--futures-hourly", action="store_true")
     parser.add_argument("--only-failed", action="store_true")
+    parser.add_argument("--previous-index", default=None,
+                        help="index to read already-captured series from for --only-failed "
+                             "(defaults to --index); lets a per-symbol matrix job skip series the "
+                             "committed index already holds while writing its own partial index")
+    parser.add_argument("--symbols", default=None,
+                        help="comma-separated subset of pool symbols / futures TradingView symbols "
+                             "to capture (matrix jobs pass exactly one)")
     parser.add_argument("--pacing-seconds", type=float, default=1.0)
     parser.add_argument("--relay-attempts", type=int, default=2)
     parser.add_argument("--time-budget-seconds", type=float, default=0.0,
@@ -413,14 +420,27 @@ def main() -> int:
         for tv_symbol, yahoo in futures_symbols():
             jobs.append((tv_symbol, yahoo, "future", "1h"))
 
+    if args.symbols:
+        wanted = {s.strip() for s in args.symbols.split(",") if s.strip()}
+        known = {j[0] for j in jobs}
+        unknown = sorted(wanted - known)
+        if unknown:
+            raise SystemExit(f"--symbols contains symbols outside the capture plan: {unknown}")
+        jobs = [j for j in jobs if j[0] in wanted]
+
     fetched_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     records: list[dict] = []
     failures: list[dict] = []
     index_path = os.path.join(ROOT, args.index)
-    if args.only_failed and os.path.exists(index_path):
-        with open(index_path, encoding="utf-8") as fh:
+    previous_path = os.path.join(ROOT, args.previous_index) if args.previous_index else index_path
+    if args.only_failed and os.path.exists(previous_path):
+        with open(previous_path, encoding="utf-8") as fh:
             previous = json.load(fh)
         keep = [c for c in previous.get("captures", []) if c.get("status") == "captured"]
+        if args.symbols:
+            # A matrix job's partial index holds only its own symbols; the merge step
+            # re-attaches everything else from the committed index.
+            keep = [c for c in keep if c["symbol"] in wanted]
         records.extend(keep)
         done = {(c["symbol"], c["interval"]) for c in keep}
         jobs = [j for j in jobs if (j[0], j[3]) not in done]

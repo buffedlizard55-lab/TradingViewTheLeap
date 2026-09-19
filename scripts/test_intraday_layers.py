@@ -433,6 +433,53 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertEqual(index["_meta"]["script_version"], "4")
 
 
+class TestMergeIntradayIndexes(unittest.TestCase):
+    """scripts/merge_intraday_indexes.py: union of partials, never downgrading a capture."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.merge = load_module("merge_intraday_under_test", "scripts/merge_intraday_indexes.py")
+
+    def _capture_record(self, tmp_rel_dir, symbol, interval, payload=b'{"bars":[]}'):
+        import hashlib
+        rel = f"{tmp_rel_dir}/{symbol}_{interval}.json"
+        with open(os.path.join(self.merge.ROOT, rel), "wb") as fh:
+            fh.write(payload)
+        return {"symbol": symbol, "interval": interval, "kind": "equity", "status": "captured",
+                "file": rel, "stored_sha256": hashlib.sha256(payload).hexdigest(),
+                "stored_bytes": len(payload), "bar_count": 0}
+
+    def test_union_keeps_captures_and_drops_corrupt_files(self):
+        import shutil
+        rel_dir = "data/intraday/_merge_test_tmp"
+        os.makedirs(os.path.join(self.merge.ROOT, rel_dir), exist_ok=True)
+        try:
+            base = {"_meta": {"fetched_at_utc": "2026-09-18T00:00:00+00:00", "script_version": "4"},
+                    "captures": [self._capture_record(rel_dir, "AAA", "1d"),
+                                 {"symbol": "BBB", "interval": "1d", "kind": "equity",
+                                  "status": "failed", "error": "x"}]}
+            good = self._capture_record(rel_dir, "BBB", "1d", b'{"bars":[1]}')
+            corrupt = self._capture_record(rel_dir, "CCC", "1d")
+            corrupt["stored_sha256"] = "0" * 64
+            p1 = {"_meta": {"fetched_at_utc": "2026-09-19T01:00:00+00:00", "direct_429_count": 1,
+                            "elapsed_seconds": 10.0, "workflow_run_url": "https://x/1"},
+                  "captures": [good, corrupt,
+                               {"symbol": "AAA", "interval": "1d", "kind": "equity",
+                                "status": "failed", "error": "retry failed"}]}
+            merged, notes = self.merge.merge(base, [p1])
+            by = {(r["symbol"], r["interval"]): r for r in merged["captures"]}
+            self.assertEqual(by[("AAA", "1d")]["status"], "captured", "a failed retry must not downgrade")
+            self.assertEqual(by[("BBB", "1d")]["status"], "captured")
+            self.assertNotIn(("CCC", "1d"), by, "corrupt file must be dropped")
+            self.assertTrue(any("DROPPED" in n for n in notes))
+            self.assertEqual(merged["_meta"]["captured_count"], 2)
+            self.assertEqual(merged["_meta"]["direct_429_count"], 1)
+            self.assertEqual(merged["_meta"]["fetched_at_utc"], "2026-09-19T01:00:00+00:00")
+            self.assertEqual(merged["_meta"]["workflow_run_urls"], ["https://x/1"])
+        finally:
+            shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
+
+
 class TestEquityCalendar(unittest.TestCase):
     def test_known_closures_and_observance(self):
         from intel import calendar as cal
