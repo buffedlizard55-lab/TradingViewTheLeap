@@ -67,7 +67,8 @@ are labeled separately.</p>
 <p>Official-source pricing and authenticated TradingView fill validation are not complete.
 The historical rankings below are exploratory, not a verified current order queue.
 Only 11
-stock daily series are currently captured in the legacy index; the intended pool has 20 names.
+stock daily series are currently captured in the legacy index; the intended pool has 20 names. The matrix is at
+37 of 60 stock series; coverage is 37/60; H34–H39 full-pool verdicts remain withheld.
 Missing prices are never synthesized. The stock pool is our own experiment, not the eligible
 universe of the current futures-only Leap contest.</p>
 <p><a href="research/implementation_review.md">Three-pass audit and remaining blockers</a> ·
@@ -83,7 +84,7 @@ model. Everything here is a simulation of rules on historical vendor prices — 
 and not a forecast.</p>
 </div>
 <div class="callout good" style="border-left-width:6px;"><h3>⬢ UPCOMING PAPER TRADES — 3 MECHANICAL ORDER(S) AT NEXT BAR OPEN</h3>
-<p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen contrarian model on <strong>real verified pricing</strong>, sized from official rule constants (CME multipliers, TradingView caps) and labelled simulated.</p>
+<p>Based on the <strong>top-performing simulated strategies</strong> on our multi-season competition leaderboard — every row is a mechanical replay of a frozen model on <strong>captured vendor pricing</strong>. Official-provider stock bars are still blocked, so these are not exchange-verified prices; sizes use official rule constants (CME multipliers, TradingView caps) and every row is labelled simulated.</p>
 <ol class="compact"><li><strong>Close the short position and open a LONG position (~1 unit)</strong> in <code>CME:ETH1!</code> — ContrarianQueen (C5 · Capitulation pyramider, futures season rank 1), signal bar 2026-09-17.</li><li><strong>Close the open position and go FLAT (no new size)</strong> in <code>NYMEX:PL1!</code> — GapGoblin (C2 · Gap fade, futures season rank 4), signal bar 2026-09-17.</li><li><strong>ADD ~50 units to the open long position</strong> in <code>MSTR</code> — BreakoutBea (C16 · ATR-expansion breakout compounder, stocks_daily season rank 1), signal bar 2026-09-18.</li></ol>
 <p class="note">Top paper-trade signal: <code>CME:ETH1!</code> and 2 more below — see <code>Signal bar</code> for the deciding session and verify each figure in <code>data/exec_summary.json</code>.</p></div><div class="table-wrap"><table>
 <thead><tr><th>Order</th><th>Symbol</th><th>Username</th><th>Model</th><th>Division</th>
