@@ -2954,10 +2954,17 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
                     os.rmdir(expected_dir)
             except OSError:
                 pass
-        if expected != hours:
+        # Compared through hours_artifact_divergences, which ignores the two fields that
+        # record which run last wrote the file (_meta.generated_utc and _meta.omitted[].reason)
+        # and nothing else. The lane leaves this artifact untouched when it transcribes nothing,
+        # so a byte-for-byte comparison could never match on a zero-capture run - it failed
+        # every such run for a reason unrelated to whether an hour had been edited.
+        divergences = module.hours_artifact_divergences(expected, hours)
+        if divergences:
             rep.fail("cme_specs.hours_artifact",
                      "data/cme_product_hours.json is not what data/cme_specs_index.json "
-                     "regenerates; re-run scripts/fetch_cme_specs.py")
+                     "regenerates; re-run scripts/fetch_cme_specs.py; "
+                     + "; ".join(divergences[:4]))
         else:
             rows = hours.get("products") or []
             n_products = len(rows)

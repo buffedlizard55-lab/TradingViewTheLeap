@@ -447,6 +447,64 @@ class TestOfflineReproductionAudit(unittest.TestCase):
         self.assertEqual(fcs.offline_divergences(net, off), [])
 
 
+class TestHoursArtifactAudit(unittest.TestCase):
+    """The audit exists to catch an edited hour, and must not fail on run bookkeeping.
+
+    The lane leaves data/cme_product_hours.json untouched when it transcribes nothing, so a
+    fresh regeneration can never match it on _meta.generated_utc or _meta.omitted[].reason.
+    A byte-for-byte comparison therefore failed every zero-capture run for a reason that had
+    nothing to do with whether an hour had been edited.
+    """
+
+    def _doc(self, **over):
+        doc = {"_meta": {"kind": "cme_product_hours", "generated_utc": "2026-09-19T00:00:00+00:00",
+                         "product_count": 1, "engine_applies_hours": False,
+                         "omitted": [{"product": "CL", "reason": "HTTP 403"}]},
+               "products": [{"product": "SI", "tradingview_symbol": "COMEX:SI1!",
+                             "source_id": "CME-SPEC-SI1!",
+                             "spec_url": "https://www.cmegroup.com/si",
+                             "globex_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m. ET",
+                             "termination": "third last business day"}]}
+        doc.update(over)
+        return doc
+
+    def test_run_bookkeeping_is_not_a_divergence(self):
+        expected = self._doc()
+        actual = self._doc()
+        actual["_meta"]["generated_utc"] = "2026-09-20T09:00:00+00:00"
+        actual["_meta"]["omitted"] = [{"product": "CL",
+                                       "reason": "CL.html not stored yet; run without --offline"}]
+        self.assertEqual(fcs.hours_artifact_divergences(expected, actual), [])
+
+    def test_an_edited_hour_is_a_divergence(self):
+        expected = self._doc()
+        actual = self._doc()
+        actual["products"][0]["globex_hours"] = "Monday - Friday 9:00 a.m. - 5:00 p.m. CT"
+        diff = fcs.hours_artifact_divergences(expected, actual)
+        self.assertEqual(len(diff), 1)
+        self.assertIn("products[SI].globex_hours", diff[0])
+
+    def test_a_dropped_product_is_a_divergence(self):
+        expected = self._doc()
+        actual = self._doc(products=[])
+        diff = fcs.hours_artifact_divergences(expected, actual)
+        self.assertTrue(any("products[SI]" in d for d in diff))
+
+    def test_a_flipped_honesty_flag_is_a_divergence(self):
+        expected = self._doc()
+        actual = self._doc()
+        actual["_meta"]["engine_applies_hours"] = True
+        self.assertTrue(any("engine_applies_hours" in d
+                            for d in fcs.hours_artifact_divergences(expected, actual)))
+
+    def test_an_omitted_product_vanishing_is_a_divergence(self):
+        expected = self._doc()
+        actual = self._doc()
+        actual["_meta"]["omitted"] = []
+        self.assertTrue(any("_meta.omitted" in d
+                            for d in fcs.hours_artifact_divergences(expected, actual)))
+
+
 class TestHoursArtifactMerge(unittest.TestCase):
     """A failed fetch must not destroy a transcription a previous run audited."""
 

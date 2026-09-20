@@ -41,6 +41,7 @@ hand-edited transcription fails the build.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import html as html_module
 import json
@@ -470,6 +471,54 @@ TRANSPORT_KEYS = frozenset({
     "reason",
     "retained_row",  # carries the reason text of the run that failed, so it differs too
 })
+
+
+# Fields in data/cme_product_hours.json that record *which run last wrote the file* rather
+# than what CME says. The capture lane deliberately leaves this artifact untouched when it
+# transcribes nothing, so a fresh regeneration can never match it on these two: the index has
+# moved on (new timestamps, and real failure reasons replacing whatever the previous run
+# recorded) while the artifact is, correctly, still the one a run with a transcription wrote.
+# Comparing them made check_cme_specs fail on every zero-capture run for a reason that had
+# nothing to do with whether an hour had been edited - which is the only thing this audit is
+# for. Everything else, and in particular every products[] row, is compared exactly.
+HOURS_RUN_TRACKING_KEYS = frozenset({"generated_utc"})
+
+
+def _normalise_hours(doc: dict) -> dict:
+    out = copy.deepcopy(doc)
+    meta = out.get("_meta") or {}
+    for key in HOURS_RUN_TRACKING_KEYS:
+        meta.pop(key, None)
+    # omitted[].reason tracks the run that recorded the omission, not the omission itself.
+    meta["omitted"] = [{"product": o.get("product")} for o in meta.get("omitted") or []]
+    out["_meta"] = meta
+    return out
+
+
+def hours_artifact_divergences(expected: dict, actual: dict) -> list[str]:
+    """Human-readable differences between a regenerated hours artifact and the committed one."""
+    a, b = _normalise_hours(expected), _normalise_hours(actual)
+    out: list[str] = []
+    if a.get("products") != b.get("products"):
+        ea = {r.get("product"): r for r in a.get("products") or []}
+        eb = {r.get("product"): r for r in b.get("products") or []}
+        for product in sorted(set(ea) | set(eb)):
+            if product not in ea:
+                out.append(f"products[{product}]: only in the committed artifact")
+                continue
+            if product not in eb:
+                out.append(f"products[{product}]: only in the regenerated artifact")
+                continue
+            for key in sorted(set(ea[product]) | set(eb[product])):
+                if ea[product].get(key) != eb[product].get(key):
+                    out.append(f"products[{product}].{key}: regenerated="
+                               f"{ea[product].get(key)!r} committed={eb[product].get(key)!r}")
+    if a.get("_meta") != b.get("_meta"):
+        am, bm = a["_meta"], b["_meta"]
+        for key in sorted(set(am) | set(bm)):
+            if am.get(key) != bm.get(key):
+                out.append(f"_meta.{key}: regenerated={am.get(key)!r} committed={bm.get(key)!r}")
+    return out
 
 
 def substantive_records(index: dict) -> dict:
