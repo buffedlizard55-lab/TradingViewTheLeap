@@ -185,6 +185,9 @@ def rebuild_document(merged: dict[tuple[str, str], dict], base: dict | None,
 
     template = (base or {}).get("_meta") or {}
     stamps = []
+    newest_interval_spec = None
+    newest_retention_note = None
+    newest_script_version = None
     direct_429 = int(template.get("direct_429_count") or 0) if not partials else 0
     rate_limited = bool(template.get("direct_rate_limited")) if not partials else False
     elapsed = float(template.get("elapsed_seconds") or 0.0) if not partials else 0.0
@@ -199,10 +202,25 @@ def rebuild_document(merged: dict[tuple[str, str], dict], base: dict | None,
         elapsed += float(meta.get("elapsed_seconds") or 0.0)
         if meta.get("workflow_run_url") and meta["workflow_run_url"] not in run_urls:
             run_urls.append(meta["workflow_run_url"])
+        # The capture script's frozen spec can be re-frozen deliberately (chunk size, window);
+        # when it is, the merged index must report the spec the NEWEST partial actually used,
+        # not whatever the previous merge happened to hold.
+        if meta.get("interval_spec"):
+            newest_interval_spec = meta["interval_spec"]
+        if meta.get("vendor_retention_note"):
+            newest_retention_note = meta["vendor_retention_note"]
+        if meta.get("script_version"):
+            newest_script_version = meta["script_version"]
     meta_out = dict(template)
     meta_out.setdefault("kind", "intraday_capture_index")
     meta_out.setdefault("script", "scripts/fetch_intraday.py")
     meta_out.setdefault("vendor_source_id", "YAHOO-INTRADAY-CHART")
+    if newest_interval_spec is not None:
+        meta_out["interval_spec"] = newest_interval_spec
+    if newest_retention_note is not None:
+        meta_out["vendor_retention_note"] = newest_retention_note
+    if newest_script_version is not None:
+        meta_out["script_version"] = newest_script_version
     meta_out.update({
         "fetched_at_utc": max(stamps) if stamps else meta_out.get("fetched_at_utc"),
         "capture_environment": meta_out.get("capture_environment", "github-actions"),

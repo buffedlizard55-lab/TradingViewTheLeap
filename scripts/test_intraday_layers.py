@@ -430,7 +430,7 @@ class TestCaptureTransportRetry(unittest.TestCase):
         self.assertIn("IncompleteRead", record["error"])
         self.assertEqual(index["_meta"]["captured_count"], 0)
         self.assertEqual(index["_meta"]["failed_count"], 1)
-        self.assertEqual(index["_meta"]["script_version"], "4")
+        self.assertEqual(index["_meta"]["script_version"], "5")
 
 
 class TestMergeIntradayIndexes(unittest.TestCase):
@@ -476,6 +476,34 @@ class TestMergeIntradayIndexes(unittest.TestCase):
             self.assertEqual(merged["_meta"]["direct_429_count"], 1)
             self.assertEqual(merged["_meta"]["fetched_at_utc"], "2026-09-19T01:00:00+00:00")
             self.assertEqual(merged["_meta"]["workflow_run_urls"], ["https://x/1"])
+        finally:
+            shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
+
+    def test_newest_partial_spec_and_version_win(self):
+        """A deliberate capture re-freeze (script version / interval spec) must surface in the
+        merged index's _meta instead of silently keeping the previous merge's values."""
+        import shutil
+        rel_dir = "data/intraday/_merge_spec_tmp"
+        os.makedirs(os.path.join(self.merge.ROOT, rel_dir), exist_ok=True)
+        try:
+            base = {"_meta": {"fetched_at_utc": "2026-09-18T00:00:00+00:00",
+                               "script_version": "4",
+                               "interval_spec": {"1d": {"chunk_days": 3650}}},
+                    "captures": [self._capture_record(rel_dir, "AAA", "1d")]}
+            spec = {"1d": {"chunk_days": 730}}
+            p_new = {"_meta": {"fetched_at_utc": "2026-09-20T02:00:00+00:00",
+                               "script_version": "5",
+                               "interval_spec": spec,
+                               "vendor_retention_note": "note-v5"},
+                     "captures": [self._capture_record(rel_dir, "AAA", "1d")]}
+            p_old = {"_meta": {"fetched_at_utc": "2026-09-19T01:00:00+00:00",
+                               "script_version": "4",
+                               "interval_spec": {"1d": {"chunk_days": 3650}}},
+                     "captures": []}
+            merged, _ = self.merge.merge(base, [p_old, p_new])
+            self.assertEqual(merged["_meta"]["interval_spec"], spec)
+            self.assertEqual(merged["_meta"]["script_version"], "5")
+            self.assertEqual(merged["_meta"]["vendor_retention_note"], "note-v5")
         finally:
             shutil.rmtree(os.path.join(self.merge.ROOT, rel_dir), ignore_errors=True)
 

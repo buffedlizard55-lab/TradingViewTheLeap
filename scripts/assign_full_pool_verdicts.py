@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Assign the H34-H39 full-pool verdicts mechanically, from the committed competition run.
+"""Assign the H34-H39/H41 full-pool verdicts mechanically, from the committed competition run.
 
 Why this is a script and not a sentence somebody typed
 ------------------------------------------------------
-H34-H39 are the six hypotheses that claim a frozen stock model (C14-C19) beats the B1
-control on the *full* 20-stock daily pool. Each one was registered with its prediction and
+H34-H39 and H41 are the seven hypotheses that claim a frozen stock model (C14-C19, C22)
+beats the B1 control on the *full* 20-stock daily pool. Each one was registered with its prediction and
 its test written down before any full-pool result existed, and `scripts/verify.py` refuses
 to let any of them carry a `supported`/`refuted` status until the capture matrix holds all
 60 stock series (20 symbols x 15m/1h/1d, including 20/20 daily).
@@ -15,9 +15,9 @@ writes both the derivation and the resulting status. The verifier then re-runs t
 rule and fails if the committed verdict or the committed hypothesis status disagrees, so a
 hand-edited verdict cannot survive a build.
 
-The pre-registered decision rule (verbatim from the six predictions)
--------------------------------------------------------------------
-Every H34-H39 prediction has the same shape:
+The pre-registered decision rule (verbatim from the seven predictions)
+----------------------------------------------------------------------
+Every H34-H39/H41 prediction has the same shape:
 
     "the C<nn> usernames (<a>, <b>) finish ahead of VolatilityVera (B1) by season realized
      P/L in the primary profile, in-sample and forward-held-out alike."
@@ -60,7 +60,7 @@ VOLATILE_PATH = os.path.join(ROOT, "data", "volatile_stocks.json")
 OUT_PATH = os.path.join(ROOT, "data", "full_pool_verdicts.json")
 
 INTERVALS = ("15m", "1h", "1d")
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42")
 CONTROL_USERNAME = "VolatilityVera"
 CONTROL_MODEL = "B1"
 
@@ -211,7 +211,8 @@ def main() -> int:
 
     hyps = {h["id"]: h for h in load(HYPOTHESES_PATH)["hypotheses"]}
     models = {"H34": "C14", "H35": "C15", "H36": "C16",
-              "H37": "C17", "H38": "C18", "H39": "C19"}
+              "H37": "C17", "H38": "C18", "H39": "C19",
+              "H41": "C22", "H42": "C19A"}
 
     verdicts = {}
     for hid in FULL_POOL_HYPOTHESES:
@@ -223,7 +224,7 @@ def main() -> int:
         "_meta": {
             "kind": "full_pool_hypothesis_verdicts",
             "description": (
-                "Mechanical verdicts for H34-H39, derived from data/stock_competition_results.json "
+                "Mechanical verdicts for H34-H39 and H41, derived from data/stock_competition_results.json "
                 "by the pre-registered decision rule below. scripts/verify.py re-runs the same "
                 "rule and fails if this file or the hypothesis register disagrees."
             ),
@@ -270,6 +271,15 @@ def main() -> int:
             row["status"] = v["status"]
             names = ", ".join(u["username"] for u in v["usernames"])
             trades = ", ".join(f"{u['username']} {u['total_trades']}" for u in v["usernames"])
+            # Supersede any earlier mechanical verdict lines (re-running the assignment
+            # after a roster/coverage change must not stack near-duplicate evidence;
+            # non-verdict history lines are untouched).
+            row["evidence"] = [
+                e for e in row["evidence"]
+                if not str(e).startswith(
+                    "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py"
+                )
+            ]
             row["evidence"].append(
                 f"Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py "
                 f"on {stamp}: coverage {cov['series_captured']}/{cov['series_required']} series "
@@ -284,7 +294,7 @@ def main() -> int:
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(register, fh, indent=2)
             fh.write("\n")
-        print("hypotheses.json updated for H34-H39")
+        print("hypotheses.json updated for H34-H39, H41 and H42")
 
     return 0
 

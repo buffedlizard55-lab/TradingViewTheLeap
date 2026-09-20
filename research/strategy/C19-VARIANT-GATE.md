@@ -1,14 +1,21 @@
 # C19 follow-up gate: two-stage absorption variant
 
-**Status: proposal only — implemented and frozen as model `C19A`, not rostered, not
-backtested on the live pool, and not a recommendation.**
+**Status: GATE FIRED 2026-09-20 — C19A registered as hypothesis H42.** The matrix reached
+60/60 (20/20 daily) and the full-pool run assigned H39 = inconclusive (frozen C19 zero-fire:
+HammerHank and DoubleTapDora both 0 trades, exactly the pre-registered trigger below).
+C19A was then rostered the same day on the FULL 20-stock daily pool under the new usernames
+`TwoStepTessa` and `LagLiquidationLeo` (frozen parameters untouched; C19 stays frozen on its
+original six-symbol pool). First full-pool result: C19A also zero-fire -> H42 inconclusive
+(335 stage-1 liquidation events pool-wide 2016-2026, none completed the stage-2 absorption —
+the second low kept breaking more than 0.25 ATR below the first). Not a recommendation.
 
 ## Why this exists
 
 Frozen C19 (`intel/stock_strategies.py`) requires two consecutive closes each down by at least
 1.5 ATR, with the second bar closing in the top half of its own range and volume confirmation.
-The current committed capture is only **38/60 stock series** (daily **11/20**; 15m=16, 1h=11
-including salvaged MARA 1h). The recorded zero-fire result on the partial pool cannot establish
+Coverage history: 38/60 when this gate was written (2026-09-19), 58/60 on 2026-09-20 (daily
+19/20 — PLUG[1d] and SMCI[1h] outstanding), and the gate fires only at 60/60 with daily 20/20.
+The recorded zero-fire result on the partial pool cannot establish
 that the hypothesis is false. A full-pool run must happen first.
 
 If C19 still has zero fires after the matrix reaches 60/60 and the competition is re-derived, this

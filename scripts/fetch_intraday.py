@@ -86,7 +86,7 @@ INTERVAL_SPEC = {
     "1h": {"period1": "2024-09-21T00:00:00Z", "period2": "2026-09-18T00:00:00Z",
            "chunk_days": 180},
     "1d": {"period1": "2016-01-01T00:00:00Z", "period2": "2026-09-19T00:00:00Z",
-           "chunk_days": 3650},
+           "chunk_days": 730},
 }
 
 INTERVAL_ORDER = ("15m", "1h", "1d")
@@ -123,7 +123,16 @@ USER_AGENT = (
 #      "bar at 1789761600 outside the requested chunk" even when the transport succeeded.
 #      Direct transport is also re-enabled after a cooldown instead of staying disabled for
 #      the whole run, because the public relays answered HTTP 5xx for long stretches.
-SCRIPT_VERSION = "4"
+# 5 -> daily chunking tightened from 3650 to 730 days. The series window is UNCHANGED
+#      (2016-01-01..2026-09-19); only the request size shrinks. The 10-year single chunk was
+#      a several-hundred-kilobyte response that the public relays repeatedly timed out or
+#      truncated (PLUG[1d] chunk 1451606400 failed every one of four retry passes on run
+#      35479263003 after RIOT's identical window succeeded, i.e. the window is fetchable but
+#      the oversized body is not reliably relayable). Two-year chunks are ~500 bars each.
+#      Existing captures keep their own recorded chunk provenance; only new (re-)captures
+#      use the tighter chunking, and the merged index's _meta.interval_spec is updated by
+#      scripts/merge_intraday_indexes.py from the newest partial.
+SCRIPT_VERSION = "5"
 ROUNDING_DECIMALS = 5
 
 

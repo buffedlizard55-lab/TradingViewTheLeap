@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C21).
+"""Contrarian strategy library for the volatile-equity division (C6-C22).
 
-The sixteen contrarian models here are pre-registered for the 20-stock volatile pool
+The seventeen contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -23,11 +23,24 @@ Why these shapes:
   the deliberate paper-tournament tail bet that either ruins the edition or harvests
   the violent snapback at multiplied size.
 - C19A is a structurally new two-stage absorption model (not a C19 parameter retune).
-  It lives in STOCK_MODEL_IDS so the engine can generate decisions, but it is listed
-  in GATED_STOCK_MODEL_IDS and is NOT rostered until the matrix is 60/60 and frozen
-  C19 is still zero-fire (research/strategy/C19-VARIANT-GATE.md).
+  It was frozen behind GATED_STOCK_MODEL_IDS until the 60/60 matrix confirmed frozen
+  C19 zero-fire (H39 inconclusive, assigned 2026-09-20 at full coverage); it is now
+  rostered on the full 20-stock daily pool as hypothesis H42 under the usernames
+  TwoStepTessa / LagLiquidationLeo (research/strategy/C19-VARIANT-GATE.md).
 - C20 (failed-breakdown spring) and C21 (wide-to-narrow climax reversal) are
   additional unique shapes, rostered under new usernames.
+- C22 (volume-drought ignition) is the volume-compression dual of C11's price
+  compression: five consecutive sessions each printing at most 0.6x their own
+  20-session average volume mark quiet accumulation / seller withdrawal; a session
+  that then trades at least 2.5x average volume and closes in the top 40% of its
+  range, above its own open, is demand discovery, and the expansion phase is
+  harvested long with pyramiding. The drought window is measured on the sessions
+  strictly before the ignition bar, and the ignition bar's own volume is compared
+  with the same 20-session baseline, so the pattern cannot look at the fill it
+  triggers. The ignition thresholds were re-frozen once (3.0x / top-30% -> 2.5x /
+  top-40%) on 2026-09-20 BEFORE any full-pool run, because the drafted pair
+  produced zero ignition candidates across ~10 years of the six committed pool
+  names while the strongest real candidates missed only on the close filter.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -47,10 +60,12 @@ from .contrarian import Decision, warmup as contrarian_warmup
 from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
-                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21")
-# C19A is implemented and frozen, but must not be rostered until the matrix is 60/60
-# including 20/20 daily and frozen C19 is still zero-fire. See C19-VARIANT-GATE.md.
-GATED_STOCK_MODEL_IDS = ("C19A",)
+                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22")
+# C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
+# zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
+# pool. The tuple stays (empty but present) so future gated variants have a home.
+# See C19-VARIANT-GATE.md.
+GATED_STOCK_MODEL_IDS = ()
 CONTROL_MODEL_IDS = ("B1",)
 
 MODEL_NAMES = {
@@ -71,6 +86,7 @@ MODEL_NAMES = {
     "C19A": "Delayed two-stage absorption (gated)",
     "C20": "Failed-breakdown spring",
     "C21": "Wide-to-narrow climax reversal",
+    "C22": "Volume-drought ignition",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -95,6 +111,7 @@ MODEL_CLAIMS = {
     "C19A": "A first liquidation bar (>=1.5 ATR close-to-close drop on >=2x volume) plus a second liquidation bar within the next three sessions (>=1.0 ATR down, low not more than 0.25 ATR below the first low, close in the top 40% of its range) is delayed absorption rather than a continuing cascade; long the next open and pyramid on +1 ATR closes (max 3 adds). Structurally distinct from frozen C19 (not a parameter retune).",
     "C20": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
     "C21": "A climax bar whose range is >=2.5 ATR followed by a bar whose range is at most half of that climax, closing in the opposite direction, is a wide-to-narrow reversal: long after a down climax, short after an up climax.",
+    "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 2.5x that average volume, above its own open, and closes in the top 40% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding. (Thresholds re-frozen once on 2026-09-20, before any full-pool run: the drafted 3.0x / top-30% combination produced zero ignition candidates across ~10 years of the six committed pool names, missing the strongest real candidates only on the close-position filter; see the seventeenth-pass audit.)",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -235,6 +252,16 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "inside_range_fraction": 0.5,
         "hold_bars": 6,
     },
+    "C22": {
+        "drought_bars": 5,
+        "drought_volume_fraction": 0.6,
+        "volume_length": 20,
+        "ignition_volume_mult": 2.5,
+        "close_tail_fraction": 0.4,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 12,
+    },
     "B1": {},
 }
 
@@ -302,6 +329,11 @@ VARIANTS: dict[str, dict[str, dict]] = {
     "C21": {
         "tight": {"climax_atr_mult": 2.0, "inside_range_fraction": 0.4, "hold_bars": 4},
     },
+    "C22": {
+        "deep": {"drought_bars": 8, "drought_volume_fraction": 0.5,
+                 "ignition_volume_mult": 3.0, "close_tail_fraction": 0.35,
+                 "max_adds": 5, "hold_bars": 15},
+    },
     "B1": {},
 }
 
@@ -353,6 +385,9 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model == "C21":
         # ATR(14) on the climax bar and the following inside bar.
         return 16
+    if model == "C22":
+        # the volume baseline, ATR(14), and the full drought window behind the ignition bar.
+        return max(p.get("volume_length", 20), 14) + p.get("drought_bars", 5) + 2
     raise ValueError(f"unknown stock model {model!r}")
 
 
@@ -1036,6 +1071,64 @@ def generate_stock_decisions(
                 emit(i, "short", "wide-to-narrow up-climax reversal")
                 position = "short"
                 held = 0
+    elif model == "C22":
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        db = p["drought_bars"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < db:
+                    continue
+                # Drought: every one of the db sessions strictly before the candidate
+                # ignition bar printed at most the drought fraction of its own trailing
+                # volume baseline (which includes that session itself, exactly as the
+                # ignition comparison below includes the ignition bar itself).
+                drought = True
+                for k in range(1, db + 1):
+                    base = vol_avg[i - k]
+                    if base is None or base <= 0:
+                        drought = False
+                        break
+                    if float(bars[i - k].volume or 0) > p["drought_volume_fraction"] * base:
+                        drought = False
+                        break
+                if not drought:
+                    continue
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0:
+                    continue
+                close_pos = (bar.close - bar.low) / rng
+                ignition = (
+                    float(bar.volume or 0) >= p["ignition_volume_mult"] * va
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                    and bar.close > bar.open
+                )
+                if ignition:
+                    emit(i, "long", "volume-drought ignition long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
 
     return decisions
 

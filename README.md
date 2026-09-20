@@ -1,12 +1,14 @@
-> **2026-09-18 audit (updated 2026-09-19):** Official intraday acquisition is credential-blocked;
-> the vendor intraday pool is partial (37/60 stock series: 16×15m, 10×1h, 11×1d — see
-> `data/intraday_index.json`), not the full 20-stock pool.
-> No authenticated TradingView exports are available. Do not treat historical
-> candidates as current orders. See [the three-pass review](research/implementation_review.md)
-> for fixes, verified official links, test results and next-session priorities.
->
-> New free-provider route: `make official-bars` (direct Alpaca IEX; authorized
-> environment credentials required; no paid data or relay fallback).
+> **2026-09-20 audit:** The volatile-stock matrix is complete — **60/60 series captured**
+> (20×15m + 20×1h + 20×1d, CI capture lane with byte-level SHA-256 provenance; see
+> `data/intraday_index.json`). Full-pool verdicts were assigned at 60/60:
+> H34/H37 partially supported, H36 supported, H35/H38 refuted, H39 (C19) and H41 (C22)
+> inconclusive zero-fire; the pre-registered gate then fired and the new variant C19-A was
+> registered as H42 (also zero-fire → inconclusive on its first full-pool run). Captures are
+> Yahoo vendor-tier, not exchange-verified: the Alpaca IEX route (`make official-bars`)
+> remains blocked on environment credentials, and no authenticated TradingView Strategy
+> Report export is available. Do not treat historical candidates as current orders. See
+> [the three-pass review](research/implementation_review.md) for fixes, verified official
+> links, test results and next-session priorities.
 
 # TradingView The Leap — evidence-first research lab
 

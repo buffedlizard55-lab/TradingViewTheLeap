@@ -7,7 +7,7 @@
    "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
    "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "source_count": 101,
+  "source_count": 102,
   "reverified_utc": "2026-09-19",
   "reverification_note": "2026-09-19 eleventh pass (~19:35Z): contest page and landing page both displayed 99,727 participants. Ranks 1/50/100/250 were byte-identical to R10 (HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50). H44 records frontier stasis with a +64 participant rise. No IR-30. CME hours transcribed for SI/ETH/BTC only."
  },
@@ -1777,6 +1777,20 @@
    ],
    "evidence_file": "research/evidence/TV-THELEAP-LANDING-R11.md",
    "official_source": true
+  },
+  {
+   "source_id": "ALPACA-STOCKBARS-DOCS",
+   "publisher": "Alpaca (brokerage and market-data API provider; authoritative for its own API, not an exchange, regulator or the contest organiser)",
+   "tier": "official_secondary",
+   "official_source": true,
+   "title": "Alpaca US equity bars API reference (IEX feed, /v2/stocks/{symbol}/bars) - the credential-gated official-provider route used by .github/workflows/official-bars.yml",
+   "url": "https://docs.alpaca.markets/us/reference/stockbars",
+   "accessed_utc": "2026-09-20",
+   "used_for": [
+    "Documents the official-provider bar endpoint the official-bars lane calls when repository secrets APCA_API_KEY_ID / APCA_API_SECRET_KEY are present",
+    "States the IEX feed and split-adjustment semantics recorded in data/official_bars/availability.json"
+   ],
+   "evidence_file": "research/evidence/ALPACA-OFFICIAL-BARS-ROUTE.md"
   }
  ]
 }

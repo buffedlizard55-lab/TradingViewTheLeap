@@ -1,7 +1,7 @@
 {
  "_meta": {
   "kind": "stock_competition_roster",
-  "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C21 in intel/stock_strategies.py; C19A is implemented but gated and not rostered — see research/strategy/C19-VARIANT-GATE.md), the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
+  "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C22 in intel/stock_strategies.py; C19A (delayed two-stage absorption) was registered 2026-09-20 on the full 20-stock daily pool as hypothesis H42 after the 60/60 matrix confirmed H39/C19 inconclusive \u2014 see research/strategy/C19-VARIANT-GATE.md), the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
   "created_utc": "2026-09-18",
   "engine": "intel-competition-3",
   "rules_source_ids": [
@@ -13,8 +13,8 @@
   ],
   "primary_profile": "stocks_official_leap",
   "counterfactual_profile": "stocks_20x_counterfactual",
-  "participant_count": 42,
-  "daily_participants": 38,
+  "participant_count": 46,
+  "daily_participants": 42,
   "hourly_participants": 4,
   "deployment_fraction": 1.0,
   "deployment_note": "Every participant deploys 100% of available buying power on each new entry or add tranche, up to the rule cap of the profile. This is deliberate: the brief for the paper division is maximum simulated return, not risk management. Ruin (equity <= 0) is terminal because the official rules forbid account resets.",
@@ -656,6 +656,64 @@
    ]
   },
   {
+   "username": "TwoStepTessa",
+   "kind": "contrarian",
+   "model": "C19A",
+   "variant": null,
+   "division": "daily",
+   "pool": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
+    "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
+    "MSTR",
+    "NIO",
+    "PLTR",
+    "AMC",
+    "SMCI",
+    "HOOD",
+    "TSLA",
+    "NVDA",
+    "COIN",
+    "PTON"
+   ]
+  },
+  {
+   "username": "LagLiquidationLeo",
+   "kind": "contrarian",
+   "model": "C19A",
+   "variant": null,
+   "division": "daily",
+   "pool": [
+    "ENPH",
+    "AMD",
+    "MARA",
+    "CVNA",
+    "GME",
+    "RIOT",
+    "SHOP",
+    "NVAX",
+    "APP",
+    "PLUG",
+    "MSTR",
+    "NIO",
+    "PLTR",
+    "AMC",
+    "SMCI",
+    "HOOD",
+    "TSLA",
+    "NVDA",
+    "COIN",
+    "PTON"
+   ]
+  },
+  {
    "username": "SpringSally",
    "kind": "contrarian",
    "model": "C20",
@@ -713,6 +771,36 @@
     "PLTR",
     "SMCI",
     "AMD"
+   ]
+  },
+  {
+   "username": "DroughtDynamo",
+   "kind": "contrarian",
+   "model": "C22",
+   "variant": null,
+   "division": "daily",
+   "pool": [
+    "MSTR",
+    "MARA",
+    "RIOT",
+    "SMCI",
+    "CVNA",
+    "HOOD"
+   ]
+  },
+  {
+   "username": "SlowFuseSal",
+   "kind": "contrarian",
+   "model": "C22",
+   "variant": "deep",
+   "division": "daily",
+   "pool": [
+    "MSTR",
+    "MARA",
+    "RIOT",
+    "SMCI",
+    "CVNA",
+    "HOOD"
    ]
   }
  ]
