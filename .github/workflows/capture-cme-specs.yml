@@ -94,22 +94,47 @@ jobs:
           [ -f data/cme_specs_index.json ] || exit 0
           cp data/cme_specs_index.json /tmp/index_from_network.json
           cp data/cme_product_hours.json /tmp/hours_from_network.json
+
+          captured=$(python3 -c "import json;print(json.load(open('data/cme_specs_index.json'))['_meta'].get('captured_count',0))")
+          if [ "$captured" -eq 0 ]; then
+            # Nothing arrived over the network, so there is no stored HTML to re-extract
+            # from. Running --offline here would rewrite every record's reason to
+            # "<PRODUCT>.html not stored yet" and destroy the real transport error - which
+            # is exactly what the first run of this lane did (commit 4f5604f: 20/20 failed,
+            # every reason replaced, capture_environment "local" betraying the offline pass).
+            echo "::warning::0 products captured over the network; skipping the offline re-extraction so the real failure reasons survive into the commit"
+            exit 0
+          fi
+
           python3 scripts/fetch_cme_specs.py --offline
-          python3 - <<'PY'
-          import json
-          def fields(path):
-              doc = json.load(open(path))
-              return {r["product"]: {k: v for k, v in r.items()
-                                     if k not in ("accessed_utc", "http_status",
-                                                  "transport", "status")}
-                      for r in doc["records"]}
-          a = fields("/tmp/index_from_network.json")
-          b = fields("data/cme_specs_index.json")
-          assert a == b, "offline re-extraction diverged from the network extraction"
-          print(f"::notice::{len(b)} product transcriptions reproduce exactly from stored HTML")
+          rc=0
+          # The comparison itself lives in scripts/fetch_cme_specs.py (offline_divergences)
+          # so it is unit-testable: it dropped to a hand-rolled set of ignored keys inline
+          # here, which would have failed every partial capture on transport metadata that
+          # legitimately differs between the two passes.
+          python3 - <<'PY' || rc=$?
+          import json, sys
+          sys.path.insert(0, "scripts")
+          import fetch_cme_specs as fcs
+          net = json.load(open("/tmp/index_from_network.json"))
+          off = json.load(open("data/cme_specs_index.json"))
+          diff = fcs.offline_divergences(net, off)
+          if diff:
+              for line in diff:
+                  print(f"::error::offline divergence: {line}")
+              sys.exit(1)
+          print(f"::notice::{len(net['records'])} product transcriptions reproduce exactly "
+                "from stored HTML")
           PY
+          # Restore unconditionally. The restore used to sit after the assertion, so a
+          # failed comparison aborted the step with the offline-mangled index still on
+          # disk - and the commit step (if: always) then committed the mangled copy.
           cp /tmp/index_from_network.json data/cme_specs_index.json
           cp /tmp/hours_from_network.json data/cme_product_hours.json
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::the offline re-extraction did not reproduce the network extraction"
+            exit "$rc"
+          fi
 
       - name: Commit whatever was transcribed (evidence must survive a red run)
         if: always()

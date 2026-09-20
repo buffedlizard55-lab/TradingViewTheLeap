@@ -340,6 +340,19 @@ def build(args: argparse.Namespace) -> int:
         records.append(record)
 
     captured = [r for r in records if r["status"] == "captured"]
+
+    # Provenance keys that describe a historical fact about this index rather than this run.
+    # _meta is rebuilt from scratch every run, so without carrying these forward the record
+    # that an earlier offline pass destroyed the per-record failure reasons would silently
+    # disappear on the next capture, and the carried rows would start quoting the overwritten
+    # "<file> not stored yet" text as if it were the finding.
+    prior_meta: dict = {}
+    if INDEX_PATH.exists():
+        try:
+            prior_meta = json.loads(INDEX_PATH.read_text(encoding="utf-8")).get("_meta") or {}
+        except (json.JSONDecodeError, OSError):
+            prior_meta = {}
+
     index = {
         "_meta": {
             "kind": "cme_contract_spec_capture_index",
@@ -364,8 +377,46 @@ def build(args: argparse.Namespace) -> int:
         },
         "records": records,
     }
+    for carried_key in ("provenance_note", "reasons_overwritten_by_offline_pass"):
+        if carried_key in prior_meta:
+            index["_meta"][carried_key] = prior_meta[carried_key]
+
+    # Carry forward, onto the index record itself, any row a previous run already audited for
+    # a product this run could not transcribe. Storing it here (rather than merging from the
+    # artifact at write time) keeps write_hours_artifact() a pure function of the index, which
+    # is what makes the offline audit meaningful.
+    previous_hours_rows: dict[str, dict] = {}
+    if HOURS_PATH.exists():
+        try:
+            previous_hours_rows = {
+                r["product"]: r
+                for r in json.loads(HOURS_PATH.read_text(encoding="utf-8")).get("products") or []
+            }
+        except (json.JSONDecodeError, OSError):
+            previous_hours_rows = {}
+    for rec in records:
+        if rec["status"] == "captured":
+            continue
+        kept = previous_hours_rows.get(rec["product"])
+        if not kept:
+            continue
+        row = dict(kept)
+        row["retained_from_previous"] = True
+        row["retained_reason"] = retained_reason(rec["product"], rec.get("reason"),
+                                                 index["_meta"])
+        rec["retained_row"] = row
+
     INDEX_PATH.write_text(json.dumps(index, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-    write_hours_artifact(index)
+
+    if captured:
+        write_hours_artifact(index)
+    else:
+        # A run that transcribed nothing must not overwrite a transcription that a previous
+        # run (or a careful hand reading of the official page) already audited. The first run
+        # of this lane did exactly that: 20/20 fetches failed and data/cme_product_hours.json
+        # lost all three of its hand-transcribed products (commit 4f5604f).
+        print("no product transcribed this run; data/cme_product_hours.json left untouched so "
+              "the existing audited transcription is not destroyed")
 
     print(
         f"cme specs: {len(captured)}/{len(records)} products transcribed "
@@ -380,14 +431,98 @@ def build(args: argparse.Namespace) -> int:
     return 0
 
 
+# Keys that describe *how* a page was reached rather than *what it said*. The offline
+# re-extraction audit re-derives the transcription from stored HTML, so these legitimately
+# differ between the network pass and the offline pass - a product that failed live carries
+# the transport error, and offline it carries "<file> not stored yet". Comparing them would
+# fail the audit on every partial capture for a reason that has nothing to do with whether the
+# stored bytes still say what was transcribed. That comparison lived inline in the workflow
+# and never fired, because every run so far captured zero products and the step was skipped.
+def retained_reason(product: str, reason: str | None, index_meta: dict) -> str:
+    """Explain why a previously audited row is being carried, without inventing a cause.
+
+    The reason is embedded only when it is one this run actually produced. The first offline
+    pass of this lane overwrote every record's reason with "<PRODUCT>.html not stored yet;
+    run without --offline" and the commit step saved that (clobber bug #2), so the index's
+    ``_meta`` now records the loss. Embedding that string verbatim would launder a destroyed
+    transport error into the hours artifact as if it were the finding, so when the index says
+    the reasons were overwritten this says so instead.
+    """
+    if index_meta.get("reasons_overwritten_by_offline_pass"):
+        return (
+            f"this run could not transcribe {product}; the failure reason recorded in "
+            "data/cme_specs_index.json was destroyed by an earlier offline re-extraction pass "
+            "and is not recoverable (see that index's _meta.provenance_note); the previously "
+            "audited row is kept unchanged"
+        )
+    cause = f" ({reason})" if reason else ""
+    return (
+        f"this run could not transcribe {product}{cause}; "
+        "the previously audited row is kept unchanged"
+    )
+
+
+TRANSPORT_KEYS = frozenset({
+    "accessed_utc",
+    "http_status",
+    "transport",
+    "status",
+    "reason",
+    "retained_row",  # carries the reason text of the run that failed, so it differs too
+})
+
+
+def substantive_records(index: dict) -> dict:
+    """Project an index down to the transcription itself, dropping transport metadata."""
+    return {
+        rec["product"]: {k: v for k, v in rec.items() if k not in TRANSPORT_KEYS}
+        for rec in index["records"]
+    }
+
+
+def offline_divergences(network_index: dict, offline_index: dict) -> list[str]:
+    """Return human-readable differences between a network pass and its offline replay.
+
+    Empty means the stored HTML reproduces the committed transcription exactly.
+    """
+    a = substantive_records(network_index)
+    b = substantive_records(offline_index)
+    out: list[str] = []
+    for product in sorted(set(a) | set(b)):
+        if product not in a:
+            out.append(f"{product}: only present in the offline pass")
+            continue
+        if product not in b:
+            out.append(f"{product}: only present in the network pass")
+            continue
+        for key in sorted(set(a[product]) | set(b[product])):
+            if a[product].get(key) != b[product].get(key):
+                out.append(f"{product}.{key}: network={a[product].get(key)!r} "
+                           f"offline={b[product].get(key)!r}")
+    return out
+
+
 def write_hours_artifact(index: dict) -> None:
-    """Rebuild data/cme_product_hours.json verbatim from the capture index."""
+    """Rebuild data/cme_product_hours.json from the capture index alone.
+
+    This is deliberately a pure function of ``index``: a product this run transcribed becomes a
+    new row, and a product it could *not* transcribe carries the row a previous run (or a hand
+    reading of the official page) already audited, stored on the index record as
+    ``retained_row`` and marked ``retained_from_previous``. Nothing is read from the artifact
+    being rebuilt, so the verifier can regenerate the file and compare it byte for byte - a
+    hand-edited hour therefore always diverges, instead of being fed back in as its own
+    "previous" value and reproducing itself.
+    """
     products = []
     omitted = []
     for rec in index["records"]:
         fields = rec.get("fields") or {}
         if rec["status"] != "captured" or not fields.get("trading_hours"):
-            omitted.append({"product": rec["product"], "reason": rec.get("reason")})
+            kept = rec.get("retained_row")
+            if kept:
+                products.append(dict(kept))
+            else:
+                omitted.append({"product": rec["product"], "reason": rec.get("reason")})
             continue
         extra = fields.get("additional_hours_rows") or {}
         products.append(
@@ -432,6 +567,10 @@ def write_hours_artifact(index: dict) -> None:
             "capture_index": "data/cme_specs_index.json",
             "raw_html_dir": "data/cme_specs",
             "product_count": len(products),
+            "machine_transcribed_count": len([r for r in products
+                                              if not r.get("retained_from_previous")]),
+            "retained_from_previous_count": len([r for r in products
+                                                 if r.get("retained_from_previous")]),
             "omitted": omitted,
         },
         "products": products,

@@ -3,7 +3,7 @@
     "kind": "cme_roll_schedule",
     "description": "Front-contract termination dates for every pooled future, derived from the official termination rule of each product by the codecs in intel/cme_roll.py. A product with no codec carries an empty list and a reason; no date is inferred from another product. scripts/verify.py re-runs every codec and re-compares each quoted rule sentence against data/cme_product_hours.json.",
     "engine": "cme-roll-1",
-    "generated_utc": "2026-09-19T21:03:19+00:00",
+    "generated_utc": "2026-09-20T00:10:23+00:00",
     "module": {
       "module": "intel/cme_roll.py",
       "calendar_version": "nyse-holidays-2",

@@ -3,14 +3,14 @@
   "kind": "executive_summary_recommendations",
   "description": "Machine-derived 'what would be placed next' table for the top-performing usernames of the repository's own paper competitions. Orders are mechanical replays of frozen models on committed vendor bars; sizes are indicative and computed from the official rule constants at the last captured close.",
   "engine": "exec-summary-1",
-  "generated_utc": "2026-09-19T20:08:00+00:00",
+  "generated_utc": "2026-09-19T21:55:36+00:00",
   "top_n_per_division": 3,
   "divisions": [
    "futures",
    "stocks_daily",
    "stocks_hourly"
   ],
-  "pending_order_count": 3,
+  "pending_order_count": 4,
   "sizing_note": "Indicative sizes use the official rule constants only: futures = 250,000 x 20 buying power with the section-08 per-symbol cap; stocks edition = 100,000 x 1 with a 50-unit cap. Actual size in a live account depends on the real equity and the fill price.",
   "honesty_note": "This is a simulation of mechanical rules on vendor history for a PAPER competition. It is not investment advice, not a forecast, and not a claim that any of these orders would win a prize. Historical and simulated returns do not imply future results.",
   "not_a_forecast": true
@@ -310,27 +310,27 @@
     },
     {
      "season_rank": 2,
+     "username": "EmaEddie",
+     "season_realized_pnl_usd": 14376.43,
+     "best_edition_multiple": 1.031404
+    },
+    {
+     "season_rank": 3,
      "username": "TurboTad",
      "season_realized_pnl_usd": 9571.19,
      "best_edition_multiple": 1.044176
     },
     {
-     "season_rank": 3,
+     "season_rank": 4,
      "username": "VolcanoVic",
      "season_realized_pnl_usd": 8555.75,
      "best_edition_multiple": 1.057986
     },
     {
-     "season_rank": 4,
-     "username": "EmaEddie",
-     "season_realized_pnl_usd": 8315.93,
-     "best_edition_multiple": 1.032395
-    },
-    {
      "season_rank": 5,
-     "username": "VolSpikeVince",
-     "season_realized_pnl_usd": 5990.27,
-     "best_edition_multiple": 1.045263
+     "username": "MartingaleMax",
+     "season_realized_pnl_usd": 6189.89,
+     "best_edition_multiple": 1.063691
     }
    ],
    "recommendations": [
@@ -393,6 +393,166 @@
      ]
     },
     {
+     "username": "EmaEddie",
+     "division": "stocks_daily",
+     "model": "S2",
+     "model_name": "S2",
+     "variant": null,
+     "params_label": "default",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 14376.43,
+     "season_rank": 2,
+     "best_edition_multiple": 1.031404,
+     "entry_condition": "Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).",
+     "as_of_last_bar": "2026-09-18",
+     "open_positions": [
+      {
+       "symbol": "ENPH",
+       "side": "short",
+       "since": "2026-07-09",
+       "last_close": 34.64
+      },
+      {
+       "symbol": "AMD",
+       "side": "short",
+       "since": "2024-07-25",
+       "last_close": 559.82001
+      },
+      {
+       "symbol": "MARA",
+       "side": "short",
+       "since": "2024-08-06",
+       "last_close": 13.24
+      },
+      {
+       "symbol": "CVNA",
+       "side": "short",
+       "since": "2025-10-20",
+       "last_close": 65.11
+      },
+      {
+       "symbol": "GME",
+       "side": "short",
+       "since": "2026-05-15",
+       "last_close": 22.64
+      },
+      {
+       "symbol": "SHOP",
+       "side": "long",
+       "since": "2025-11-25",
+       "last_close": 128.5
+      },
+      {
+       "symbol": "NVAX",
+       "side": "long",
+       "since": "2026-06-30",
+       "last_close": 10.11
+      },
+      {
+       "symbol": "APP",
+       "side": "short",
+       "since": "2026-01-22",
+       "last_close": 308.06
+      },
+      {
+       "symbol": "MSTR",
+       "side": "short",
+       "since": "2024-08-12",
+       "last_close": 153.92
+      },
+      {
+       "symbol": "NIO",
+       "side": "long",
+       "since": "2025-07-18",
+       "last_close": 3.66
+      },
+      {
+       "symbol": "PLTR",
+       "side": "long",
+       "since": "2026-08-06",
+       "last_close": 177.64
+      },
+      {
+       "symbol": "AMC",
+       "side": "long",
+       "since": "2025-05-28",
+       "last_close": 2.7
+      },
+      {
+       "symbol": "SMCI",
+       "side": "short",
+       "since": "2026-07-01",
+       "last_close": 39.09
+      },
+      {
+       "symbol": "HOOD",
+       "side": "long",
+       "since": "2025-12-08",
+       "last_close": 119.82
+      },
+      {
+       "symbol": "TSLA",
+       "side": "short",
+       "since": "2026-07-09",
+       "last_close": 364.26999
+      },
+      {
+       "symbol": "NVDA",
+       "side": "short",
+       "since": "2026-03-06",
+       "last_close": 222.27
+      },
+      {
+       "symbol": "COIN",
+       "side": "short",
+       "since": "2024-08-06",
+       "last_close": 194.25
+      },
+      {
+       "symbol": "PTON",
+       "side": "long",
+       "since": "2024-08-26",
+       "last_close": 4.97
+      }
+     ],
+     "pending_orders": [
+      {
+       "symbol": "GME",
+       "action": "exit and reverse to LONG",
+       "reason": "baseline reverse entry",
+       "decided_on": "2026-09-18",
+       "decided_close": 22.64,
+       "order_type": "market at the next bar open of the same series",
+       "sizing_rule": "the exit leg closes the position the model already holds; the entry leg is sized by the rule below",
+       "indicative_size_units": 50,
+       "indicative_size_note": "indicative only: computed from the last captured close and the official rule constants; the actual fill price at the next open is unknown",
+       "indicative_size_label": "~50 units"
+      }
+     ],
+     "waiting_for": null,
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH",
+      "AMD",
+      "MARA",
+      "CVNA",
+      "GME",
+      "SHOP",
+      "NVAX",
+      "APP",
+      "MSTR",
+      "NIO",
+      "PLTR",
+      "AMC",
+      "SMCI",
+      "HOOD",
+      "TSLA",
+      "NVDA",
+      "COIN",
+      "PTON"
+     ]
+    },
+    {
      "username": "TurboTad",
      "division": "stocks_daily",
      "model": "C13",
@@ -401,7 +561,7 @@
      "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
      "rule_profile": "stocks_official_leap",
      "season_realized_pnl_usd": 9571.19,
-     "season_rank": 2,
+     "season_rank": 3,
      "best_edition_multiple": 1.044176,
      "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "as_of_last_bar": "2026-09-18",
@@ -416,32 +576,6 @@
       "SMCI",
       "AMD"
      ]
-    },
-    {
-     "username": "VolcanoVic",
-     "division": "stocks_daily",
-     "model": "C16",
-     "model_name": "ATR-expansion breakout compounder",
-     "variant": null,
-     "params_label": "default",
-     "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 8555.75,
-     "season_rank": 3,
-     "best_edition_multiple": 1.057986,
-     "entry_condition": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
-     "as_of_last_bar": "2026-09-18",
-     "open_positions": [],
-     "pending_orders": [],
-     "waiting_for": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
-     "strategy_kind": "signal_timed",
-     "symbols_watched": [
-      "ENPH",
-      "TSLA",
-      "NVDA",
-      "AMD",
-      "APP",
-      "SMCI"
-     ]
     }
    ]
   },
@@ -455,32 +589,32 @@
     {
      "season_rank": 1,
      "username": "TurboTad",
-     "season_realized_pnl_usd": 16406.21,
-     "best_edition_multiple": 1.081263
+     "season_realized_pnl_usd": 14242.9,
+     "best_edition_multiple": 1.074408
     },
     {
      "season_rank": 2,
      "username": "VolSpikeVince",
-     "season_realized_pnl_usd": 14685.36,
-     "best_edition_multiple": 1.073475
+     "season_realized_pnl_usd": 10293.52,
+     "best_edition_multiple": 1.073382
     },
     {
      "season_rank": 3,
-     "username": "VolatilityVera",
-     "season_realized_pnl_usd": 11377.23,
-     "best_edition_multiple": 1.089121
-    },
-    {
-     "season_rank": 4,
      "username": "BreakoutBea",
-     "season_realized_pnl_usd": 10097.95,
+     "season_realized_pnl_usd": 10174.7,
      "best_edition_multiple": 1.13362
     },
     {
-     "season_rank": 5,
+     "season_rank": 4,
      "username": "CrashColossus",
-     "season_realized_pnl_usd": 3950.35,
-     "best_edition_multiple": 1.062086
+     "season_realized_pnl_usd": 4787.84,
+     "best_edition_multiple": 1.062763
+    },
+    {
+     "season_rank": 5,
+     "username": "SqueezeSage",
+     "season_realized_pnl_usd": 2448.1,
+     "best_edition_multiple": 1.013734
     }
    ],
    "recommendations": [
@@ -492,9 +626,9 @@
      "variant": "runner",
      "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 16406.21,
+     "season_realized_pnl_usd": 14242.9,
      "season_rank": 1,
-     "best_edition_multiple": 1.081263,
+     "best_edition_multiple": 1.074408,
      "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "as_of_last_bar": "2026-09-17",
      "open_positions": [],
@@ -502,6 +636,8 @@
      "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
+      "ENPH",
+      "NVDA",
       "TSLA",
       "AMD"
      ]
@@ -514,9 +650,9 @@
      "variant": "patient",
      "params_label": "add_atr_step=1.5, hold_bars=15, max_adds=3",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 14685.36,
+     "season_realized_pnl_usd": 10293.52,
      "season_rank": 2,
-     "best_edition_multiple": 1.073475,
+     "best_edition_multiple": 1.073382,
      "entry_condition": "Extreme volatility compression (20-day standard deviation <= 1.2 ATR) followed by a >=2.5x volume expansion breakout signals institutional accumulation; buying the breakout and pyramiding every 1 ATR captures explosive multi-day trending expansions.",
      "as_of_last_bar": "2026-09-17",
      "open_positions": [
@@ -531,42 +667,10 @@
      "waiting_for": "Extreme volatility compression (20-day standard deviation <= 1.2 ATR) followed by a >=2.5x volume expansion breakout signals institutional accumulation; buying the breakout and pyramiding every 1 ATR captures explosive multi-day trending expansions.",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
+      "ENPH",
       "TSLA",
+      "NVDA",
       "AMD"
-     ]
-    },
-    {
-     "username": "VolatilityVera",
-     "division": "stocks_hourly",
-     "model": "B1",
-     "model_name": "Volatility leader, always long (control)",
-     "variant": null,
-     "params_label": "default",
-     "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 11377.23,
-     "season_rank": 3,
-     "best_edition_multiple": 1.089121,
-     "entry_condition": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
-     "as_of_last_bar": "2026-09-17",
-     "open_positions": [],
-     "pending_orders": [],
-     "waiting_for": "nothing further: this is the buy-and-hold control and it places no timing orders",
-     "strategy_kind": "buy_and_hold_control",
-     "symbols_watched": [
-      "AMD",
-      "MARA",
-      "GME",
-      "RIOT",
-      "SHOP",
-      "APP",
-      "PLUG",
-      "MSTR",
-      "NIO",
-      "PLTR",
-      "AMC",
-      "HOOD",
-      "TSLA",
-      "COIN"
      ]
     },
     {
@@ -577,8 +681,8 @@
      "variant": "runner",
      "params_label": "atr_expansion_mult=1.1, hold_bars=20, lookback=30, max_adds=8",
      "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 10097.95,
-     "season_rank": 4,
+     "season_realized_pnl_usd": 10174.7,
+     "season_rank": 3,
      "best_edition_multiple": 1.13362,
      "entry_condition": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
      "as_of_last_bar": "2026-09-17",
@@ -594,11 +698,37 @@
      "waiting_for": "A close above the 20-session high while ATR(14) itself expands (>=1.2x its value 5 bars ago) is a volatility-backed breakout rather than a thin-air print; pyramiding every 0.5 ATR compounds the expansion phase.",
      "strategy_kind": "signal_timed",
      "symbols_watched": [
+      "ENPH",
       "MSTR",
       "COIN",
       "HOOD",
       "SHOP",
       "PLTR"
+     ]
+    },
+    {
+     "username": "CrashColossus",
+     "division": "stocks_hourly",
+     "model": "C7",
+     "model_name": "Capitulation pyramider (equity)",
+     "variant": "patient",
+     "params_label": "add_atr_step=2.0, crash_atr_mult=2.5, max_adds=3",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 4787.84,
+     "season_rank": 4,
+     "best_edition_multiple": 1.062763,
+     "entry_condition": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "as_of_last_bar": "2026-09-17",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "A single-session collapse of >=2 ATR on >=1.5x average volume is forced selling rather than news; buying it and pyramiding on each further 1 ATR of recovery concentrates capital into the rare violent reversals the placement arithmetic requires.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH",
+      "TSLA",
+      "NVDA",
+      "AMD",
+      "SHOP"
      ]
     }
    ]

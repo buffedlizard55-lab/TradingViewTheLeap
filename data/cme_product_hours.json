@@ -9,19 +9,13 @@
     "source_ids": [],
     "capture_index": "data/cme_specs_index.json",
     "raw_html_dir": "data/cme_specs",
-    "product_count": 0,
+    "product_count": 3,
+    "machine_transcribed_count": 0,
+    "retained_from_previous_count": 3,
     "omitted": [
-      {
-        "product": "BTC",
-        "reason": "BTC.html not stored yet; run without --offline"
-      },
       {
         "product": "CL",
         "reason": "CL.html not stored yet; run without --offline"
-      },
-      {
-        "product": "ETH",
-        "reason": "ETH.html not stored yet; run without --offline"
       },
       {
         "product": "HO",
@@ -72,10 +66,6 @@
         "reason": "RB.html not stored yet; run without --offline"
       },
       {
-        "product": "SI",
-        "reason": "SI.html not stored yet; run without --offline"
-      },
-      {
         "product": "SIC",
         "reason": "SIC.html not stored yet; run without --offline"
       },
@@ -93,5 +83,46 @@
       }
     ]
   },
-  "products": []
+  "products": [
+    {
+      "product": "BTC",
+      "tradingview_symbol": "CME:BTC1!",
+      "source_id": "CME-SPEC-BTC1!",
+      "spec_url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
+      "accessed_utc": "2026-09-19",
+      "globex_hours": "24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT",
+      "tas_hours": "24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT",
+      "termination": "Outright: 4:00 p.m. London time on the last Friday of the contract month; if that Friday is not both a London and U.S. business day, the prior such business day. TAS: 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date.",
+      "roll_dates": [],
+      "retained_from_previous": true,
+      "retained_reason": "this run could not transcribe BTC; the failure reason recorded in data/cme_specs_index.json was destroyed by an earlier offline re-extraction pass and is not recoverable (see that index's _meta.provenance_note); the previously audited row is kept unchanged"
+    },
+    {
+      "product": "ETH",
+      "tradingview_symbol": "CME:ETH1!",
+      "source_id": "CME-SPEC-ETH1!",
+      "spec_url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
+      "accessed_utc": "2026-09-19",
+      "globex_hours": "24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT",
+      "tas_hours": "24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT",
+      "termination": "Outright: 4:00 p.m. London time on the last Friday of the contract month; if that Friday is not both a London and U.S. business day, the prior such business day. TAS: 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date.",
+      "roll_dates": [],
+      "retained_from_previous": true,
+      "retained_reason": "this run could not transcribe ETH; the failure reason recorded in data/cme_specs_index.json was destroyed by an earlier offline re-extraction pass and is not recoverable (see that index's _meta.provenance_note); the previously audited row is kept unchanged"
+    },
+    {
+      "product": "SI",
+      "tradingview_symbol": "COMEX:SI1!",
+      "source_id": "CME-SPEC-SI1!",
+      "spec_url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+      "accessed_utc": "2026-09-19",
+      "globex_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)",
+      "tas_hours": "Sunday - Friday 6:00 p.m. - 1:25 p.m. (5:00 p.m. - 12:25 p.m. CT)",
+      "clearport_hours": "Sunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+      "termination": "12:25 p.m. CT on the third last business day of the contract month",
+      "roll_dates": [],
+      "retained_from_previous": true,
+      "retained_reason": "this run could not transcribe SI; the failure reason recorded in data/cme_specs_index.json was destroyed by an earlier offline re-extraction pass and is not recoverable (see that index's _meta.provenance_note); the previously audited row is kept unchanged"
+    }
+  ]
 }

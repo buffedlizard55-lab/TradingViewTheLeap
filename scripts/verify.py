@@ -2936,23 +2936,37 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
         real_target = module.HOURS_PATH
         try:
             module.HOURS_PATH = __import__("pathlib").Path(target)
+            # write_hours_artifact is a pure function of the index (retained rows live on the
+            # index records), so this regeneration is a genuine independent check: feeding the
+            # committed artifact back in as its own "previous" would reproduce any corruption.
             module.write_hours_artifact(index)
             with open(target, encoding="utf-8") as fh:
                 expected = json.load(fh)
         finally:
             module.HOURS_PATH = real_target
-            os.remove(target)
-            os.rmdir(expected_dir)
+            # Guarded: if the regeneration raised before writing, an unguarded os.remove()
+            # would mask the real error with FileNotFoundError, and the leftover directory
+            # would then break every subsequent run as well.
+            try:
+                if os.path.exists(target):
+                    os.remove(target)
+                if os.path.isdir(expected_dir):
+                    os.rmdir(expected_dir)
+            except OSError:
+                pass
         if expected != hours:
             rep.fail("cme_specs.hours_artifact",
                      "data/cme_product_hours.json is not what data/cme_specs_index.json "
                      "regenerates; re-run scripts/fetch_cme_specs.py")
         else:
-            n_products = len(hours.get("products") or [])
+            rows = hours.get("products") or []
+            n_products = len(rows)
+            n_retained = len([r for r in rows if r.get("retained_from_previous")])
             n_omitted = len(hours.get("_meta", {}).get("omitted") or [])
-            if n_products != captured:
+            if n_products - n_retained != captured:
                 rep.fail("cme_specs.hours_artifact",
-                         f"hours artifact lists {n_products} products but {captured} were captured")
+                         f"hours artifact lists {n_products} products ({n_retained} retained from "
+                         f"a previous run) but {captured} were captured this run")
             rep.ok(f"CME contract specs: {captured}/{len(records)} pooled futures transcribed "
                    f"verbatim and reproduced from stored HTML ({n_omitted} explicitly omitted)")
             return
@@ -3361,19 +3375,36 @@ def self_test(rep: Report) -> None:
         scenarios.append(("cme_roll.tally", ("data/cme_roll_schedule.json", mutated),
                           lambda r: check_cme_roll_schedule(r, source_ids)))
 
+    # The hours artifact is audited by two different code paths, and a scenario that targets
+    # the wrong one silently never fires - which is how these four self-tests went stale when
+    # the capture index first landed. Register each against the path that is actually live.
+    cme_index_doc = load_opt("data/cme_specs_index.json")
     cme_hours_doc = load_opt("data/cme_product_hours.json")
-    if cme_hours_doc is not None and cme_hours_doc.get("products"):
+    if cme_index_doc is None:
+        # Standalone path: no machine capture index, so the hand-transcribed rows are audited
+        # directly (source registration, honesty flags, full pool accounting).
+        if cme_hours_doc is not None and cme_hours_doc.get("products"):
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["products"][0]["spec_url"] = "https://www.cmegroup.com/wrong-page.html"
+            scenarios.append(("cme_hours.url", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["_meta"]["engine_applies_hours"] = True
+            scenarios.append(("cme_hours.honesty", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["_meta"]["omitted"] = []
+            scenarios.append(("cme_hours.pool", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+    elif cme_hours_doc is not None:
+        # Index path: the artifact must equal what the index regenerates, so corrupting a row
+        # is what proves the check.
         mutated = copy.deepcopy(cme_hours_doc)
-        mutated["products"][0]["spec_url"] = "https://www.cmegroup.com/wrong-page.html"
-        scenarios.append(("cme_hours.url", ("data/cme_product_hours.json", mutated),
-                          lambda r: check_cme_specs(r, source_ids)))
-        mutated = copy.deepcopy(cme_hours_doc)
-        mutated["_meta"]["engine_applies_hours"] = True
-        scenarios.append(("cme_hours.honesty", ("data/cme_product_hours.json", mutated),
-                          lambda r: check_cme_specs(r, source_ids)))
-        mutated = copy.deepcopy(cme_hours_doc)
-        mutated["_meta"]["omitted"] = []
-        scenarios.append(("cme_hours.pool", ("data/cme_product_hours.json", mutated),
+        if mutated.get("products"):
+            mutated["products"][0]["globex_hours"] = "Monday - Friday 9:00 a.m. - 5:00 p.m. CT"
+        else:
+            mutated["_meta"]["product_count"] = (mutated["_meta"].get("product_count") or 0) + 1
+        scenarios.append(("cme_specs.hours_artifact", ("data/cme_product_hours.json", mutated),
                           lambda r: check_cme_specs(r, source_ids)))
 
     fpv_doc = load_opt("data/full_pool_verdicts.json")
@@ -3396,16 +3427,18 @@ def self_test(rep: Report) -> None:
                           ("data/full_pool_verdicts.json", mutated),
                           lambda r: check_full_pool_verdicts(r, source_ids)))
 
-    cme_index_doc = load_opt("data/cme_specs_index.json")
     if cme_index_doc is not None and cme_index_doc.get("records"):
-        mutated = copy.deepcopy(cme_index_doc)
-        for row in mutated["records"]:
-            if row.get("status") == "captured":
-                row.setdefault("fields", {})["trading_hours"] = (
-                    "Monday - Friday 9:00 a.m. - 5:00 p.m. CT")
-                break
-        scenarios.append(("cme_specs.transcription", ("data/cme_specs_index.json", mutated),
-                          lambda r: check_cme_specs(r, source_ids)))
+        # The transcription check re-extracts from stored HTML, so it can only be proven when
+        # at least one product actually has a captured record to corrupt.
+        if any(r.get("status") == "captured" for r in cme_index_doc["records"]):
+            mutated = copy.deepcopy(cme_index_doc)
+            for row in mutated["records"]:
+                if row.get("status") == "captured":
+                    row.setdefault("fields", {})["trading_hours"] = (
+                        "Monday - Friday 9:00 a.m. - 5:00 p.m. CT")
+                    break
+            scenarios.append(("cme_specs.transcription", ("data/cme_specs_index.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
         mutated = copy.deepcopy(cme_index_doc)
         mutated["_meta"]["captured_count"] = (mutated["_meta"].get("captured_count") or 0) + 1
         scenarios.append(("cme_specs.tally", ("data/cme_specs_index.json", mutated),

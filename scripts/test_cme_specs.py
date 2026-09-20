@@ -143,6 +143,103 @@ class TestBuildFailClosed(unittest.TestCase):
                 self.assertEqual(rec["status"], "failed")
                 self.assertIn("timed out", rec["reason"])
 
+    def test_a_total_wipe_carries_the_previous_row_onto_the_index(self):
+        """Regression guard for commit 4f5604f.
+
+        The first run of this lane had 20/20 fetches fail, and the artifact writer rebuilt
+        data/cme_product_hours.json from the capture index alone - so all three hand-read
+        transcriptions (SI, ETH, BTC) were deleted and committed. build() must now leave the
+        artifact untouched *and* carry each audited row onto its index record as
+        ``retained_row``, which is what lets write_hours_artifact() stay a pure function of
+        the index so the verifier can regenerate and compare it.
+        """
+        import json
+        import tempfile
+        from pathlib import Path
+
+        def boom(url, timeout=25):
+            raise RuntimeError(f"GET failed with every header set: {url} (timed out)")
+
+        previous = {"products": [{
+            "product": "SI", "tradingview_symbol": "COMEX:SI1!",
+            "source_id": "CME-SPEC-SI1!",
+            "spec_url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+            "globex_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m. ET",
+            "termination": "12:25 p.m. CT on the third last business day of the contract month",
+        }]}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            hours_path = Path(tmp) / "hours.json"
+            hours_path.write_text(json.dumps(previous), encoding="utf-8")
+            saved = fcs.HOURS_PATH
+            fcs.HOURS_PATH = hours_path
+            try:
+                rc = self._run(boom, tmp)
+                self.assertEqual(rc, 2)
+                # (a) the audited transcription is not destroyed
+                doc = json.loads(hours_path.read_text(encoding="utf-8"))
+                self.assertEqual([r["product"] for r in doc["products"]], ["SI"])
+                # (b) ... and the row was carried onto the index record
+                idx = json.load(open(os.path.join(tmp, "index.json")))
+                carried = {r["product"]: r.get("retained_row") for r in idx["records"]}
+                self.assertIsNotNone(carried["SI"], "SI row must ride on its index record")
+                self.assertTrue(carried["SI"]["retained_from_previous"])
+                self.assertIn("timed out", carried["SI"]["retained_reason"])
+                self.assertEqual(
+                    carried["SI"]["globex_hours"], previous["products"][0]["globex_hours"])
+                # a product that was never transcribed gets no phantom row
+                self.assertIsNone(carried["NQ"])
+                # (c) regenerating from that index reproduces the audited hours exactly
+                fcs.write_hours_artifact(idx)
+                again = json.loads(hours_path.read_text(encoding="utf-8"))
+                self.assertEqual([r["product"] for r in again["products"]], ["SI"])
+                self.assertEqual(again["products"][0]["globex_hours"],
+                                 previous["products"][0]["globex_hours"])
+            finally:
+                fcs.HOURS_PATH = saved
+
+    def test_provenance_keys_survive_a_rebuild(self):
+        """_meta is rebuilt from scratch each run, so an honesty annotation must be carried.
+
+        Without this the record that an earlier offline pass destroyed the per-record failure
+        reasons would silently vanish on the next capture, and the carried rows would start
+        quoting the overwritten "<file> not stored yet" text as if it were the finding.
+        """
+        import json
+        import tempfile
+        from pathlib import Path
+
+        def boom(url, timeout=25):
+            raise RuntimeError(f"GET failed with every header set: {url} (timed out)")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            hours_path = Path(tmp) / "hours.json"
+            hours_path.write_text(json.dumps({"products": [{
+                "product": "SI", "tradingview_symbol": "COMEX:SI1!",
+                "source_id": "CME-SPEC-SI1!",
+                "spec_url": "https://www.cmegroup.com/si",
+                "globex_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m. ET",
+            }]}), encoding="utf-8")
+            index_path = Path(tmp) / "index.json"
+            index_path.write_text(json.dumps({"_meta": {
+                "provenance_note": "an earlier offline pass destroyed the reasons",
+                "reasons_overwritten_by_offline_pass": True,
+            }, "records": []}), encoding="utf-8")
+            saved = fcs.HOURS_PATH
+            fcs.HOURS_PATH = hours_path
+            try:
+                rc = self._run(boom, tmp)
+                self.assertEqual(rc, 2)
+                doc = json.loads(index_path.read_text(encoding="utf-8"))
+                self.assertTrue(doc["_meta"]["reasons_overwritten_by_offline_pass"])
+                self.assertIn("destroyed", doc["_meta"]["provenance_note"])
+                si = [r for r in doc["records"] if r["product"] == "SI"][0]
+                # ... and the carried row therefore refuses to quote the bogus reason
+                self.assertNotIn("not stored yet", si["retained_row"]["retained_reason"])
+                self.assertIn("not recoverable", si["retained_row"]["retained_reason"])
+            finally:
+                fcs.HOURS_PATH = saved
+
     def test_a_page_without_a_trading_hours_row_is_refused(self):
         import json
         import tempfile
@@ -266,6 +363,158 @@ class TestHoursArtifact(unittest.TestCase):
         self.assertEqual(doc["products"][0]["globex_hours"], "Sun-Fri")
         self.assertEqual([o["product"] for o in doc["_meta"]["omitted"]], ["PL"])
         self.assertEqual(doc["_meta"]["omitted"][0]["reason"], "HTTP 404")
+
+
+class TestRetainedReasonHonesty(unittest.TestCase):
+    """A carried-forward row must not launder a destroyed failure reason into a finding."""
+
+    def test_a_live_reason_is_quoted(self):
+        text = fcs.retained_reason("SI", "URLError: connection refused", {})
+        self.assertIn("URLError: connection refused", text)
+        self.assertIn("kept unchanged", text)
+
+    def test_a_destroyed_reason_says_it_was_destroyed(self):
+        # The first offline pass overwrote every reason with "<file> not stored yet" and the
+        # commit step saved that, so the index records the loss. Quoting it verbatim would
+        # present a destroyed transport error as the finding.
+        meta = {"reasons_overwritten_by_offline_pass": True,
+                "provenance_note": "reasons destroyed"}
+        text = fcs.retained_reason("SI", "specs/SI.html not stored yet; run without --offline",
+                                   meta)
+        self.assertNotIn("not stored yet", text)
+        self.assertIn("destroyed", text)
+        self.assertIn("not recoverable", text)
+        self.assertIn("kept unchanged", text)
+
+    def test_no_reason_yet_is_not_rendered_as_none(self):
+        text = fcs.retained_reason("NQ", None, {})
+        self.assertNotIn("None", text)
+        self.assertIn("kept unchanged", text)
+
+
+class TestOfflineReproductionAudit(unittest.TestCase):
+    """The stored HTML must reproduce the committed transcription - and only that.
+
+    The audit re-extracts offline, so transport metadata legitimately differs between the
+    two passes. Comparing it would fail every partial capture for a reason unrelated to
+    whether the bytes still say what was transcribed.
+    """
+
+    def _rec(self, **over):
+        rec = {"product": "SI", "tradingview_symbol": "COMEX:SI1!",
+               "source_id": "CME-SPEC-SI1!",
+               "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+               "status": "failed", "reason": "URLError: connection refused",
+               "raw_sha256": "aa", "raw_bytes": 10,
+               "fields": {"trading_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m."}}
+        rec.update(over)
+        return rec
+
+    def test_transport_metadata_difference_is_not_a_divergence(self):
+        net = {"records": [self._rec()]}
+        off = {"records": [self._rec(
+            status="failed",
+            reason="specs/SI.html not stored yet; run without --offline",
+            accessed_utc="2026-09-20T00:00:00+00:00",
+            transport="stored_html", http_status=200,
+            retained_row={"product": "SI", "globex_hours": "x"})]}
+        self.assertEqual(fcs.offline_divergences(net, off), [])
+
+    def test_an_edited_hour_is_a_divergence(self):
+        net = {"records": [self._rec()]}
+        off = {"records": [self._rec(
+            fields={"trading_hours": "Monday - Friday 9:00 a.m. - 5:00 p.m. CT"})]}
+        diff = fcs.offline_divergences(net, off)
+        self.assertEqual(len(diff), 1)
+        self.assertIn("SI.fields", diff[0])
+
+    def test_a_changed_hash_is_a_divergence(self):
+        net = {"records": [self._rec()]}
+        off = {"records": [self._rec(raw_sha256="bb")]}
+        self.assertTrue(any("raw_sha256" in d for d in fcs.offline_divergences(net, off)))
+
+    def test_a_vanished_product_is_reported(self):
+        net = {"records": [self._rec()]}
+        off = {"records": []}
+        diff = fcs.offline_divergences(net, off)
+        self.assertTrue(any("only present in the network pass" in d for d in diff))
+
+    def test_a_full_capture_passes_clean(self):
+        net = {"records": [self._rec(status="captured", reason=None,
+                                    accessed_utc="2026-09-19T00:00:00+00:00")]}
+        off = {"records": [self._rec(status="captured", reason=None,
+                                    accessed_utc="2026-09-19T03:00:00+00:00")]}
+        self.assertEqual(fcs.offline_divergences(net, off), [])
+
+
+class TestHoursArtifactMerge(unittest.TestCase):
+    """A failed fetch must not destroy a transcription a previous run audited."""
+
+    def _write(self, index, tmp):
+        """write_hours_artifact is a pure function of the index, so nothing else is passed in.
+
+        Retained rows ride on the index record (``retained_row``) rather than being merged from
+        the artifact being rebuilt - that is what lets the verifier regenerate the file and
+        compare it, instead of feeding a hand-edited hour back in as its own previous value.
+        """
+        import json
+        from pathlib import Path
+
+        target = os.path.join(tmp, "hours.json")
+        original = fcs.HOURS_PATH
+        try:
+            fcs.HOURS_PATH = Path(target)
+            fcs.write_hours_artifact(index)
+            with open(target, encoding="utf-8") as fh:
+                return json.load(fh)
+        finally:
+            fcs.HOURS_PATH = original
+
+    PREVIOUS = {"products": [{
+        "product": "SI", "tradingview_symbol": "COMEX:SI1!",
+        "source_id": "CME-SPEC-SI1!",
+        "spec_url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+        "globex_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m.",
+        "termination": "third last business day",
+    }]}
+
+    def test_a_failed_product_keeps_its_previous_row_and_says_why(self):
+        import tempfile
+
+        index = {"_meta": {"generated_utc": "2026-09-19T00:00:00+00:00"},
+                 "records": [{"product": "SI", "tradingview_symbol": "COMEX:SI1!",
+                              "source_id": "CME-SPEC-SI1!",
+                              "url": "https://www.cmegroup.com/si",
+                              "status": "failed", "reason": "HTTP 403",
+                              "retained_row": dict(
+                                  self.PREVIOUS["products"][0],
+                                  retained_from_previous=True,
+                                  retained_reason=(
+                                      "this run could not transcribe SI (HTTP 403); the "
+                                      "previously audited row is kept unchanged"))}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = self._write(index, tmp)
+        self.assertEqual(doc["_meta"]["product_count"], 1)
+        row = doc["products"][0]
+        self.assertTrue(row["retained_from_previous"])
+        self.assertIn("HTTP 403", row["retained_reason"])
+        self.assertEqual(row["globex_hours"], "Sunday - Friday 6:00 p.m. - 5:00 p.m.")
+        self.assertEqual(doc["_meta"]["retained_from_previous_count"], 1)
+        self.assertEqual(doc["_meta"]["machine_transcribed_count"], 0)
+        self.assertEqual(doc["_meta"]["omitted"], [])
+
+    def test_a_product_with_no_previous_row_is_omitted_with_a_reason(self):
+        import tempfile
+
+        index = {"_meta": {"generated_utc": "2026-09-19T00:00:00+00:00"},
+                 "records": [{"product": "NQ", "tradingview_symbol": "CME_MINI:NQ1!",
+                              "source_id": "CME-SPEC-NQ1!",
+                              "url": "https://www.cmegroup.com/nq",
+                              "status": "failed", "reason": "HTTP 503"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = self._write(index, tmp)
+        self.assertEqual(doc["products"], [])
+        self.assertEqual(doc["_meta"]["omitted"], [{"product": "NQ", "reason": "HTTP 503"}])
 
 
 if __name__ == "__main__":
