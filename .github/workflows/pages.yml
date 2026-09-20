@@ -5,6 +5,14 @@ on:
     branches: [main, "arena/**"]
   pull_request:
   workflow_dispatch:
+  # A commit made with the workflow token does not re-trigger workflows, so when the
+  # "Derive intraday research artifacts" lane commits freshly derived artifacts the verify
+  # run that was already racing it stays red with no green successor (observed on main at
+  # cca9b0d: verify failed on the pre-derive tree while derive was committing 11851d0).
+  # Re-running here closes that gap. IR-31.
+  workflow_run:
+    workflows: ["Derive intraday research artifacts"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -14,7 +22,12 @@ jobs:
     name: Verify research data and site freshness
     runs-on: ubuntu-latest
     steps:
+      # For a workflow_run event, check out the commit the derive lane produced, not the
+      # default branch. fetch-depth: 0 because that SHA is not the tip of any local ref.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -56,12 +69,12 @@ jobs:
 
       - name: Fail if the committed site is stale
         run: |
-          if ! git diff --quiet -- index.html; then
-            echo "::error::index.html is out of date with data/. Run 'python3 scripts/build_site.py' and commit the result."
-            git diff --stat -- index.html
+          if ! git diff --quiet -- index.html docs/index.html docs/assets; then
+            echo "::error::index.html or its docs/ mirror is out of date with data/. Run 'python3 scripts/build_site.py' and commit the result."
+            git diff --stat -- index.html docs/index.html docs/assets
             exit 1
           fi
-          echo "index.html is in sync with data/ and research/."
+          echo "index.html and its docs/ mirror are in sync with data/ and research/."
 
       - name: Test return-target lab
         run: python3 -m unittest discover -s scripts -p "test_*.py" -v

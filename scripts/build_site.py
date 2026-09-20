@@ -1694,6 +1694,27 @@ def main() -> int:
     with open(os.path.join(ROOT, ".nojekyll"), "w", encoding="utf-8") as fh:
         fh.write("")
     print(f"wrote {os.path.relpath(path, ROOT)} ({os.path.getsize(path) / 1024:.1f} KB)")
+
+    # docs/ mirror. GitHub Pages for this repository is configured in LEGACY mode against
+    # the root of `main`, so docs/ is not what publishes - but the directory is committed
+    # and has been linked to, and a hand-copied mirror goes stale the first time anyone
+    # forgets (it already had: docs/index.html was two derives behind). Writing it here
+    # makes staleness impossible, and scripts/verify.py fails the build if the two copies
+    # or their stylesheets diverge.
+    mirror = os.path.join(ROOT, "docs")
+    os.makedirs(os.path.join(mirror, "assets"), exist_ok=True)
+    with open(os.path.join(mirror, "index.html"), "w", encoding="utf-8") as fh:
+        fh.write(html_text)
+    with open(os.path.join(mirror, ".nojekyll"), "w", encoding="utf-8") as fh:
+        fh.write("")
+    for name in ("style.css", "app.js"):
+        src = os.path.join(ROOT, "assets", name)
+        if os.path.exists(src):
+            with open(src, encoding="utf-8") as fh:
+                payload = fh.read()
+            with open(os.path.join(mirror, "assets", name), "w", encoding="utf-8") as fh:
+                fh.write(payload)
+    print(f"wrote {os.path.relpath(os.path.join(mirror, 'index.html'), ROOT)} (mirror)")
     return 0
 
 

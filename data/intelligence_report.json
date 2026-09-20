@@ -145,9 +145,9 @@
       ],
       "captured_series": 20,
       "failed_series": 0,
-      "intraday_captured_series": 38,
-      "intraday_captured_bars": 78789,
-      "intraday_index_stamp": "2026-09-19T15:59:03+00:00",
+      "intraday_captured_series": 57,
+      "intraday_captured_bars": 126887,
+      "intraday_index_stamp": "2026-09-19T21:55:36+00:00",
       "boundary": "Yahoo front-month continuous futures are vendor evidence with unadjusted roll splices; they are not official TradingView contest fills. Intraday equity/futures bars are vendor prints under the same boundary."
     },
     "repository_simulation": {
@@ -210,16 +210,16 @@
       ],
       "next_step": "Top up any series the vendor rate-limited (scripts/fetch_intraday.py --only-failed) and re-run the study after each capture.",
       "detail": {
-        "captured_series": 38,
+        "captured_series": 57,
         "by_interval": {
-          "15m": 16,
-          "1h": 11,
-          "1d": 11
+          "15m": 20,
+          "1d": 18,
+          "1h": 19
         },
-        "captured_bar_total": 78789,
-        "failed_or_not_attempted": 42,
+        "captured_bar_total": 126887,
+        "failed_or_not_attempted": 23,
         "index": "data/intraday_index.json",
-        "index_stamp": "2026-09-19T15:59:03+00:00",
+        "index_stamp": "2026-09-19T21:55:36+00:00",
         "vendor_rate_limited_direct": true,
         "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
       }
@@ -259,7 +259,7 @@
       ],
       "next_step": "Re-derive after every capture and after every competition re-run; the sizes are indicative rule-arithmetic, never advice.",
       "detail": {
-        "pending_order_count": 3,
+        "pending_order_count": 4,
         "divisions": [
           "futures",
           "stocks_daily",
@@ -568,16 +568,16 @@
   },
   "coverage": {
     "intraday_capture": {
-      "captured_series": 38,
+      "captured_series": 57,
       "by_interval": {
-        "15m": 16,
-        "1h": 11,
-        "1d": 11
+        "15m": 20,
+        "1d": 18,
+        "1h": 19
       },
-      "captured_bar_total": 78789,
-      "failed_or_not_attempted": 42,
+      "captured_bar_total": 126887,
+      "failed_or_not_attempted": 23,
       "index": "data/intraday_index.json",
-      "index_stamp": "2026-09-19T15:59:03+00:00",
+      "index_stamp": "2026-09-19T21:55:36+00:00",
       "vendor_rate_limited_direct": true,
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },

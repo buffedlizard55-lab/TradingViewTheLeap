@@ -1,0 +1,813 @@
+{
+  "_meta": {
+    "kind": "cme_roll_schedule",
+    "description": "Front-contract termination dates for every pooled future, derived from the official termination rule of each product by the codecs in intel/cme_roll.py. A product with no codec carries an empty list and a reason; no date is inferred from another product. scripts/verify.py re-runs every codec and re-compares each quoted rule sentence against data/cme_product_hours.json.",
+    "engine": "cme-roll-1",
+    "generated_utc": "2026-09-20T00:10:23+00:00",
+    "module": {
+      "module": "intel/cme_roll.py",
+      "calendar_version": "nyse-holidays-2",
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "coded_products": [
+        "BTC",
+        "CL",
+        "ETH",
+        "SI"
+      ],
+      "coded_rule_names": {
+        "BTC": "cme_btc_last_friday",
+        "CL": "nymex_cl_three_business_days_before_prior_month_25th",
+        "ETH": "cme_eth_last_friday",
+        "SI": "comex_si_third_last_business_day"
+      }
+    },
+    "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+    "hours_artifact": "data/cme_product_hours.json",
+    "product_count": 20,
+    "products_with_dates": 3,
+    "products_without_dates": 17,
+    "roll_date_count": 72,
+    "not_a_forecast": true,
+    "engine_wiring": {
+      "wired_into_competition": false,
+      "note": "intel/competition.py accepts roll_dates= and force-closes at the roll bar's open, but scripts/run_competition.py does not pass them yet: doing so changes the published futures season and needs its own before/after comparison. The schedule is committed and audited; the wiring is a separate, tracked step."
+    },
+    "declared_limitations": [
+      "Business days come from the NYSE full-closure table, not a transcribed CME Globex closure set; where the two differ a derived date can be off by one session (IR-30).",
+      "The cryptocurrency codecs apply the rule's London-business-day leg as 'not a weekend' because only the U.S. leg is checkable here.",
+      "Dates are the termination dates of successive contract months, which is the boundary at which a 1! continuous series changes front contract; the repository holds vendor continuous bars, not per-bar contract identity, so the mapping is by rule and not by observed contract switch."
+    ]
+  },
+  "products": [
+    {
+      "product": "BTC",
+      "rule_codec": "cme_btc_last_friday",
+      "rule_verbatim": "Outright: 4:00 p.m. London time on the last Friday of the contract month; if that Friday is not both a London and U.S. business day, the prior such business day. TAS: 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+      "roll_dates": [
+        {
+          "contract_month": "2024-09",
+          "termination_date": "2024-09-27"
+        },
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-10-25"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-11-29"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-12-27"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2025-01-31"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-02-28"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-03-28"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-04-25"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-05-30"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-06-27"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-07-25"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-08-29"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-09-26"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-10-31"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-11-28"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-12-26"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2026-01-30"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-02-27"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-03-27"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-04-24"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-05-29"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-06-26"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-07-31"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-08-28"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-27",
+        "2024-10-25",
+        "2024-11-29",
+        "2024-12-27",
+        "2025-01-31",
+        "2025-02-28",
+        "2025-03-28",
+        "2025-04-25",
+        "2025-05-30",
+        "2025-06-27",
+        "2025-07-25",
+        "2025-08-29",
+        "2025-09-26",
+        "2025-10-31",
+        "2025-11-28",
+        "2025-12-26",
+        "2026-01-30",
+        "2026-02-27",
+        "2026-03-27",
+        "2026-04-24",
+        "2026-05-29",
+        "2026-06-26",
+        "2026-07-31",
+        "2026-08-28"
+      ],
+      "reason": null,
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:BTC1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": true
+    },
+    {
+      "product": "ETH",
+      "rule_codec": "cme_eth_last_friday",
+      "rule_verbatim": "Outright: 4:00 p.m. London time on the last Friday of the contract month; if that Friday is not both a London and U.S. business day, the prior such business day. TAS: 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+      "roll_dates": [
+        {
+          "contract_month": "2024-09",
+          "termination_date": "2024-09-27"
+        },
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-10-25"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-11-29"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-12-27"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2025-01-31"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-02-28"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-03-28"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-04-25"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-05-30"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-06-27"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-07-25"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-08-29"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-09-26"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-10-31"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-11-28"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-12-26"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2026-01-30"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-02-27"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-03-27"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-04-24"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-05-29"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-06-26"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-07-31"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-08-28"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-27",
+        "2024-10-25",
+        "2024-11-29",
+        "2024-12-27",
+        "2025-01-31",
+        "2025-02-28",
+        "2025-03-28",
+        "2025-04-25",
+        "2025-05-30",
+        "2025-06-27",
+        "2025-07-25",
+        "2025-08-29",
+        "2025-09-26",
+        "2025-10-31",
+        "2025-11-28",
+        "2025-12-26",
+        "2026-01-30",
+        "2026-02-27",
+        "2026-03-27",
+        "2026-04-24",
+        "2026-05-29",
+        "2026-06-26",
+        "2026-07-31",
+        "2026-08-28"
+      ],
+      "reason": null,
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:ETH1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": true
+    },
+    {
+      "product": "MBT",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:MBT1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "MET",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:MET1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "MSL",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:MSL1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "MXP",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:MXP1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "SOL",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:SOL1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "XRP",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME:XRP1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "NQ",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "CME_MINI:NQ1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "SI",
+      "rule_codec": "comex_si_third_last_business_day",
+      "rule_verbatim": "12:25 p.m. CT on the third last business day of the contract month",
+      "codec_note": null,
+      "roll_dates": [
+        {
+          "contract_month": "2024-09",
+          "termination_date": "2024-09-26"
+        },
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-10-29"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-11-26"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-12-27"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2025-01-29"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-02-26"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-03-27"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-04-28"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-05-28"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-06-26"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-07-29"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-08-27"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-09-26"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-10-29"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-11-25"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-12-29"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2026-01-28"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-02-25"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-03-27"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-04-28"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-05-27"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-06-26"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-07-29"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-08-27"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-26",
+        "2024-10-29",
+        "2024-11-26",
+        "2024-12-27",
+        "2025-01-29",
+        "2025-02-26",
+        "2025-03-27",
+        "2025-04-28",
+        "2025-05-28",
+        "2025-06-26",
+        "2025-07-29",
+        "2025-08-27",
+        "2025-09-26",
+        "2025-10-29",
+        "2025-11-25",
+        "2025-12-29",
+        "2026-01-28",
+        "2026-02-25",
+        "2026-03-27",
+        "2026-04-28",
+        "2026-05-27",
+        "2026-06-26",
+        "2026-07-29",
+        "2026-08-27"
+      ],
+      "reason": null,
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "COMEX:SI1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": true
+    },
+    {
+      "product": "SIC",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "COMEX:SIC1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "SIL",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "COMEX_MINI:SIL1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "CL",
+      "rule_codec": "nymex_cl_three_business_days_before_prior_month_25th",
+      "rule_verbatim": "Trading terminates 3 business day before the 25th calendar day of the month prior to the contract month. If the 25th calendar day is not a business day, trading terminates 4 business days before the 25th calendar day of the month prior to the contract month.",
+      "codec_note": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "CL: no transcribed termination rule to compare against",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:CL1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": false
+    },
+    {
+      "product": "HO",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:HO1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "MCL",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:MCL1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "MNG",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:MNG1!",
+      "captured_bar_window": {
+        "start": "2026-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "NG",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:NG1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "PL",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:PL1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "RB",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX:RB1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    },
+    {
+      "product": "QM",
+      "rule_codec": null,
+      "rule_verbatim": null,
+      "roll_dates": [],
+      "termination_dates_iso": [],
+      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "window_clamped": null,
+      "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
+      "tradingview_symbol": "NYMEX_MINI:QM1!",
+      "captured_bar_window": {
+        "start": "2024-09-17",
+        "end": "2026-09-17"
+      },
+      "rule_matches_transcription": null
+    }
+  ]
+}

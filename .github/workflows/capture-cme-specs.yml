@@ -1,0 +1,158 @@
+name: Capture official CME contract specs
+
+# Transcribes the official CME Group contract-specification page of every future in this
+# repository's pool. The sandbox this project is written in has no egress to cmegroup.com,
+# so the fetch happens here, on a GitHub-hosted runner, over plain HTTPS.
+#
+# What the lane stores (nothing else):
+#   data/cme_specs/<PRODUCT>.html   the exact response body, byte for byte
+#   data/cme_specs_index.json       URL, HTTP status, byte length, SHA-256, extracted fields
+#   data/cme_product_hours.json     verbatim hours / termination / listing rules per product
+#
+# Fail-closed AND fail-readable. A product whose page does not answer 200, or that exposes no
+# "Trading Hours" row, is recorded as failed with the reason - it is never filled in from a
+# neighbouring product or from memory. The index and whatever HTML did arrive are committed
+# even when the job ends red, because run logs are served from a blob host this project's
+# research sandbox cannot reach (IR-27): a lane whose evidence cannot be read cannot be
+# debugged. The final step then fails the job unless every product transcribed, so an
+# incomplete table is visible as a red check and never mistaken for complete.
+#
+# The committed transcription is re-audited offline: scripts/verify.py re-runs the same
+# extractor against the stored HTML and fails on any divergence, so a hand-edited hour or
+# an invented expiry cannot survive a build.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - "scripts/fetch_cme_specs.py"
+      - ".github/workflows/capture-cme-specs.yml"
+  schedule:
+    # Weekly re-transcription so a CME hours or listing-rule change is picked up and the
+    # diff is visible in the commit rather than silently absorbed.
+    - cron: "40 3 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: capture-cme-specs-${{ github.ref }}
+  # A superseded transcription run has no value: the newest commit is the one whose
+  # pages we want, and these runs can sit on a slow origin for many minutes.
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    name: Transcribe the official CME contract-spec pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch and transcribe
+        continue-on-error: true
+        env:
+          CAPTURE_ENV: github-actions
+          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 scripts/fetch_cme_specs.py
+
+      - name: Report what landed (always, because run logs are unreachable from the sandbox)
+        if: always()
+        run: |
+          if [ ! -f data/cme_specs_index.json ]; then
+            echo "::error::no data/cme_specs_index.json was written at all"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json
+          doc = json.load(open("data/cme_specs_index.json"))
+          meta = doc["_meta"]
+          print(f"captured {meta['captured_count']}/{meta['product_count']} "
+                f"(failed={meta['failed_count']}, kept_previous={meta['kept_previous_count']})")
+          for rec in doc["records"]:
+              mark = "ok  " if rec["status"] == "captured" else "MISS"
+              extra = ""
+              if rec["status"] == "captured":
+                  miss = rec.get("missing_fields") or []
+                  extra = f" http={rec.get('http_status')} bytes={rec.get('raw_bytes')}"
+                  if miss:
+                      extra += f" missing_fields={miss}"
+              else:
+                  extra = f" {rec.get('reason')}"
+              print(f"  {mark} {rec['product']:<5} {rec['status']:<14}{extra}")
+          PY
+
+      - name: Re-extract offline from the stored HTML and require equality
+        if: always()
+        run: |
+          [ -f data/cme_specs_index.json ] || exit 0
+          cp data/cme_specs_index.json /tmp/index_from_network.json
+          cp data/cme_product_hours.json /tmp/hours_from_network.json
+
+          captured=$(python3 -c "import json;print(json.load(open('data/cme_specs_index.json'))['_meta'].get('captured_count',0))")
+          if [ "$captured" -eq 0 ]; then
+            # Nothing arrived over the network, so there is no stored HTML to re-extract
+            # from. Running --offline here would rewrite every record's reason to
+            # "<PRODUCT>.html not stored yet" and destroy the real transport error - which
+            # is exactly what the first run of this lane did (commit 4f5604f: 20/20 failed,
+            # every reason replaced, capture_environment "local" betraying the offline pass).
+            echo "::warning::0 products captured over the network; skipping the offline re-extraction so the real failure reasons survive into the commit"
+            exit 0
+          fi
+
+          python3 scripts/fetch_cme_specs.py --offline
+          rc=0
+          # The comparison itself lives in scripts/fetch_cme_specs.py (offline_divergences)
+          # so it is unit-testable: it dropped to a hand-rolled set of ignored keys inline
+          # here, which would have failed every partial capture on transport metadata that
+          # legitimately differs between the two passes.
+          python3 - <<'PY' || rc=$?
+          import json, sys
+          sys.path.insert(0, "scripts")
+          import fetch_cme_specs as fcs
+          net = json.load(open("/tmp/index_from_network.json"))
+          off = json.load(open("data/cme_specs_index.json"))
+          diff = fcs.offline_divergences(net, off)
+          if diff:
+              for line in diff:
+                  print(f"::error::offline divergence: {line}")
+              sys.exit(1)
+          print(f"::notice::{len(net['records'])} product transcriptions reproduce exactly "
+                "from stored HTML")
+          PY
+          # Restore unconditionally. The restore used to sit after the assertion, so a
+          # failed comparison aborted the step with the offline-mangled index still on
+          # disk - and the commit step (if: always) then committed the mangled copy.
+          cp /tmp/index_from_network.json data/cme_specs_index.json
+          cp /tmp/hours_from_network.json data/cme_product_hours.json
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::the offline re-extraction did not reproduce the network extraction"
+            exit "$rc"
+          fi
+
+      - name: Commit whatever was transcribed (evidence must survive a red run)
+        if: always()
+        run: |
+          bash .github/scripts/commit_capture.sh \
+            "capture: official CME contract specs for the pooled futures (automated)" \
+            data/cme_specs data/cme_specs_index.json data/cme_product_hours.json
+
+      - name: Fail unless every pooled future transcribed
+        if: always()
+        run: |
+          [ -f data/cme_specs_index.json ] || { echo "::error::nothing transcribed"; exit 1; }
+          python3 - <<'PY'
+          import json, sys
+          meta = json.load(open("data/cme_specs_index.json"))["_meta"]
+          if meta["captured_count"] != meta["product_count"]:
+              print(f"::error::only {meta['captured_count']}/{meta['product_count']} pooled futures "
+                    "transcribed; see data/cme_specs_index.json for each reason")
+              sys.exit(1)
+          print(f"::notice::all {meta['product_count']} pooled futures transcribed")
+          PY

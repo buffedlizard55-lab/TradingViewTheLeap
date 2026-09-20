@@ -58,10 +58,10 @@ site:
 
 # Fail if index.html is not in sync with the data it was rendered from.
 freshness: site
-	@git diff --quiet -- index.html || { \
-	  echo "index.html is stale. Run 'python3 scripts/build_site.py' and commit."; \
-	  git diff --stat -- index.html; exit 1; }
-	@echo "index.html is in sync with data/ and research/."
+	@git diff --quiet -- index.html docs/index.html docs/assets || { \
+	  echo "index.html or its docs/ mirror is stale. Run 'python3 scripts/build_site.py' and commit."; \
+	  git diff --stat -- index.html docs/index.html docs/assets; exit 1; }
+	@echo "index.html and its docs/ mirror are in sync with data/ and research/."
 
 serve: site
 	python3 -m http.server 8000 --bind 0.0.0.0

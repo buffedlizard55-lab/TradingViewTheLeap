@@ -73,7 +73,9 @@ jobs:
     name: ${{ matrix.symbol }}
     needs: plan
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    # 4 retry passes x 540 s + 3 x 45 s backoff for a single symbol, and 2 x 1500 s for the
+    # 20-series hourly futures job: the worst case needs ~52 minutes.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       max-parallel: 6
@@ -84,33 +86,88 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Capture this symbol (all requested intervals)
+      - name: Capture this symbol (all requested intervals, retried in-job)
         continue-on-error: true
         env:
           CAPTURE_ENV: github-actions
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -o pipefail
-          mkdir -p partial/${{ matrix.symbol }}
-          extra=""
-          if [ "${{ needs.plan.outputs.only_failed }}" = "true" ] && [ -f data/intraday_index.json ]; then
-            extra="--only-failed --previous-index data/intraday_index.json"
-          fi
-          if [ "${{ matrix.symbol }}" = "__FUTURES_1H__" ]; then
-            # Futures hourly set: every captured daily future, hourly only.
-            syms=$(python3 -c "import json;print(','.join(r['tradingview_symbol'] for r in json.load(open('data/market_history_index.json'))['captures'] if r['status']=='captured'))")
-            if [ "${{ needs.plan.outputs.interval }}" != "all" ] && [ "${{ needs.plan.outputs.interval }}" != "1h" ]; then
-              echo "::notice::futures job skipped: interval ${{ needs.plan.outputs.interval }} is not hourly"; exit 0
-            fi
-            python3 scripts/fetch_intraday.py --interval 1h --futures-hourly --symbols "$syms" $extra \
-              --out-dir data/intraday --index "partial/${{ matrix.symbol }}/intraday_index.json" \
-              --pacing-seconds 1.0 --time-budget-seconds 1800 2>&1 | tee partial/${{ matrix.symbol }}/log.txt
+          SYM="${{ matrix.symbol }}"
+          PARTIAL="partial/${SYM}"
+          mkdir -p "$PARTIAL"
+
+          # One symbol per runner means the vendor's per-IP HTTP 429 and the public
+          # relays' outages are the only thing standing between a series and its bars,
+          # and both are transient. So retry the *same* series in-job with a backoff
+          # instead of waiting up to 12 hours for the next cron sweep: each pass reads
+          # what the previous pass stored (--previous-index on this job's own partial
+          # index, or the committed index on the first pass) and skips it, so a pass
+          # only ever re-requests the series that are still missing. Nothing is
+          # duplicated and nothing is downgraded - fetch_intraday.py preserves captured
+          # records verbatim.
+          if [ "$SYM" = "__FUTURES_1H__" ]; then
+            PASSES=2; BUDGET=1500; BACKOFF=60
           else
-            python3 scripts/fetch_intraday.py --interval "${{ needs.plan.outputs.interval }}" \
-              --symbols "${{ matrix.symbol }}" $extra \
-              --out-dir data/intraday --index "partial/${{ matrix.symbol }}/intraday_index.json" \
-              --pacing-seconds 1.0 --time-budget-seconds 1800 2>&1 | tee partial/${{ matrix.symbol }}/log.txt
+            PASSES=4; BUDGET=540; BACKOFF=45
           fi
+
+          pass=1
+          while [ "$pass" -le "$PASSES" ]; do
+            if [ "$pass" -eq 1 ] && [ "${{ needs.plan.outputs.only_failed }}" = "true" ] \
+               && [ -f data/intraday_index.json ]; then
+              PREV="data/intraday_index.json"
+            else
+              PREV="$PARTIAL/intraday_index.json"
+            fi
+            extra="--only-failed --previous-index $PREV"
+            if [ "$pass" -eq 1 ] && [ ! -f "$PREV" ]; then extra=""; fi
+
+            echo "::group::${SYM} pass ${pass}/${PASSES} (previous index: ${PREV})"
+            if [ "$SYM" = "__FUTURES_1H__" ]; then
+              # Futures hourly set: every captured daily future, hourly only.
+              syms=$(python3 -c "import json;print(','.join(r['tradingview_symbol'] for r in json.load(open('data/market_history_index.json'))['captures'] if r['status']=='captured'))")
+              if [ "${{ needs.plan.outputs.interval }}" != "all" ] \
+                 && [ "${{ needs.plan.outputs.interval }}" != "1h" ]; then
+                echo "::notice::futures job skipped: interval ${{ needs.plan.outputs.interval }} is not hourly"
+                exit 0
+              fi
+              python3 scripts/fetch_intraday.py --interval 1h --futures-hourly --symbols "$syms" $extra \
+                --out-dir data/intraday --index "$PARTIAL/intraday_index.json" \
+                --pacing-seconds 1.0 --relay-attempts 3 --time-budget-seconds "$BUDGET" 2>&1 \
+                | tee -a "$PARTIAL/log.txt"
+            else
+              python3 scripts/fetch_intraday.py --interval "${{ needs.plan.outputs.interval }}" \
+                --symbols "$SYM" $extra \
+                --out-dir data/intraday --index "$PARTIAL/intraday_index.json" \
+                --pacing-seconds 1.0 --relay-attempts 3 --time-budget-seconds "$BUDGET" 2>&1 \
+                | tee -a "$PARTIAL/log.txt"
+            fi
+            echo "::endgroup::"
+
+            # Stop as soon as this job holds every series it was asked for.
+            if python3 - "$PARTIAL/intraday_index.json" <<'PY'
+          import json, sys, os
+          path = sys.argv[1]
+          if not os.path.exists(path):
+              raise SystemExit(1)
+          doc = json.load(open(path))
+          meta = doc.get("_meta", {})
+          outstanding = int(meta.get("failed_count", 0)) + int(meta.get("not_attempted_count", 0))
+          print(f"captured={meta.get('captured_count')} outstanding={outstanding}")
+          raise SystemExit(0 if outstanding == 0 else 1)
+          PY
+            then
+              echo "::notice::${SYM}: complete after pass ${pass}"
+              break
+            fi
+            pass=$((pass + 1))
+            if [ "$pass" -le "$PASSES" ]; then
+              echo "::notice::${SYM}: series still missing - backing off ${BACKOFF}s before pass ${pass}"
+              sleep "$BACKOFF"
+            fi
+          done
+
       - name: Collect the files this job stored
         run: |
           mkdir -p partial/${{ matrix.symbol }}/intraday

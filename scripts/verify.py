@@ -2528,6 +2528,459 @@ def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
            "re-hashed, recomputed and honesty-checked")
 
 
+def check_cme_roll_schedule(rep: Report, source_ids: dict) -> None:
+    """Re-derive every committed roll date from the official rule text it came from.
+
+    `data/cme_roll_schedule.json` is produced by `scripts/build_cme_roll_schedule.py` from the
+    rule codecs in `intel/cme_roll.py`. This check imports those same codecs (it does not
+    restate them), re-runs each product over its recorded window, and requires the committed
+    dates to match exactly. It also re-compares every codec's quoted sentence against the
+    transcribed termination rule in `data/cme_product_hours.json`, so a CME rewording or a
+    hand-edited date fails the build instead of silently shifting a roll.
+    """
+    doc = load_opt("data/cme_roll_schedule.json")
+    if doc is None:
+        rep.ok("CME roll schedule: data/cme_roll_schedule.json not built yet; the engine runs "
+               "without roll_dates and says so")
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "cme_roll_schedule":
+        rep.fail("cme_roll.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("cme_roll.honesty", "artifact must declare not_a_forecast: true")
+    wiring = meta.get("engine_wiring") or {}
+    if "wired_into_competition" not in wiring:
+        rep.fail("cme_roll.wiring", "the artifact must state whether the schedule is wired into "
+                                    "the competition engine")
+
+    sys.path.insert(0, ROOT)
+    from intel import cme_roll  # noqa: E402
+    from datetime import date as _date
+
+    hours = load_opt("data/cme_product_hours.json") or {}
+    by_product = {p["product"]: p for p in hours.get("products") or []}
+
+    if meta.get("business_day_basis") != cme_roll.BUSINESS_DAY_BASIS:
+        rep.fail("cme_roll.basis", "the declared business-day basis does not match intel/cme_roll.py")
+
+    products = doc.get("products") or []
+    pool = {r["tradingview_symbol"] for r in load("data/market_history_index.json")["captures"]}
+    if {p.get("tradingview_symbol") for p in products} != pool:
+        rep.fail("cme_roll.pool", "the schedule does not cover exactly the pooled futures")
+
+    dated = 0
+    total = 0
+    for row in products:
+        product = row.get("product")
+        window = row.get("captured_bar_window")
+        if not window:
+            if row.get("roll_dates"):
+                rep.fail("cme_roll.window", f"{product}: dates without a recorded bar window")
+            if not row.get("reason"):
+                rep.fail("cme_roll.reason", f"{product}: no dates and no reason")
+            continue
+        start = _date.fromisoformat(window["start"])
+        end = _date.fromisoformat(window["end"])
+        recomputed = cme_roll.roll_dates(product, start, end)
+        if product in cme_roll.RULE_CODECS:
+            ok, why = cme_roll.codec_matches_transcription(
+                product, (by_product.get(product) or {}).get("termination"))
+            if not ok:
+                # A codec whose quoted sentence no longer matches the official transcription
+                # must not contribute dates; the builder clears them and says why.
+                if row.get("roll_dates"):
+                    rep.fail("cme_roll.rule_drift", f"{why} but dates were still committed")
+                if not row.get("reason"):
+                    rep.fail("cme_roll.rule_drift", f"{product}: rule drift with no reason recorded")
+                continue
+        want = recomputed["termination_dates_iso"]
+        got = row.get("termination_dates_iso")
+        if got is None:
+            got = [r["termination_date"] for r in row.get("roll_dates") or []]
+        if got != want:
+            rep.fail("cme_roll.dates",
+                     f"{product}: committed {len(got)} roll dates differ from the {len(want)} "
+                     "re-derived from the official rule over the same window")
+            continue
+        if row.get("roll_dates"):
+            dated += 1
+            total += len(row["roll_dates"])
+        if row.get("roll_dates") and not row.get("rule_matches_transcription"):
+            rep.fail("cme_roll.rule_drift", f"{product}: dates committed although the rule text "
+                                            "was not confirmed against the transcription")
+    if dated != meta.get("products_with_dates"):
+        rep.fail("cme_roll.tally",
+                 f"_meta.products_with_dates {meta.get('products_with_dates')} != {dated}")
+    if total != meta.get("roll_date_count"):
+        rep.fail("cme_roll.tally", f"_meta.roll_date_count {meta.get('roll_date_count')} != {total}")
+    if len(products) != meta.get("product_count"):
+        rep.fail("cme_roll.tally", f"_meta.product_count {meta.get('product_count')} != {len(products)}")
+    rep.ok(f"CME roll schedule: {total} roll dates across {dated}/{len(products)} products "
+           f"re-derived from the official termination rules; "
+           f"{len(products) - dated} products declare no dates with a reason")
+
+
+def check_docs_mirror(rep: Report, source_ids: dict) -> None:
+    """The committed docs/ mirror must be byte-identical to what the site builder writes.
+
+    GitHub Pages publishes the repository root, so docs/ is a convenience copy - but it is
+    committed and linked, and a hand-maintained copy silently rots (docs/index.html was two
+    derives behind before scripts/build_site.py started writing it). scripts/verify.py
+    therefore fails on any divergence, and the site-freshness lane fails if either copy is
+    older than the data it was rendered from.
+    """
+    pairs = [("index.html", "docs/index.html"),
+             ("assets/style.css", "docs/assets/style.css"),
+             ("assets/app.js", "docs/assets/app.js")]
+    for src_rel, mirror_rel in pairs:
+        src = os.path.join(ROOT, src_rel)
+        mirror = os.path.join(ROOT, mirror_rel)
+        if not os.path.exists(src):
+            continue
+        if not os.path.exists(mirror):
+            rep.fail("docs_mirror.missing", f"{mirror_rel} is absent although {src_rel} exists")
+            continue
+        with open(src, "rb") as fh:
+            a = fh.read()
+        with open(mirror, "rb") as fh:
+            b = fh.read()
+        if a != b:
+            rep.fail("docs_mirror.stale",
+                     f"{mirror_rel} differs from {src_rel} "
+                     f"({len(b)} bytes vs {len(a)}); re-run scripts/build_site.py")
+    if os.path.exists(os.path.join(ROOT, "docs", "index.html")):
+        rep.ok("docs mirror: index.html and both assets are byte-identical to the site builder's output")
+
+
+def check_full_pool_verdicts(rep: Report, source_ids: dict) -> None:
+    """Re-derive every H34-H39 verdict from the committed competition run.
+
+    The verdicts are produced by ``scripts/assign_full_pool_verdicts.py`` under a
+    pre-registered decision rule. This check imports that same rule (it does not restate it)
+    and re-runs it against ``data/stock_competition_results.json``; the committed verdict, every
+    number it consumed, and the matching status in the hypothesis register must all agree.
+    A rehearsal produced on incomplete coverage at the canonical path fails here, as does a
+    verdict for a competition run that is not the committed one.
+    """
+    doc = load_opt("data/full_pool_verdicts.json")
+    hyps = {h["id"]: h for h in load("research/hypotheses/hypotheses.json")["hypotheses"]}
+    if doc is None:
+        idx = load_opt("data/intraday_index.json")
+        pool = _volatile_pool_symbols()
+        have = set()
+        if idx:
+            for rec in idx.get("captures", []):
+                if rec.get("status") == "captured" and rec.get("kind") in (None, "equity"):
+                    if rec.get("symbol") in pool and rec.get("interval") in INTRADAY_INTERVALS:
+                        have.add((rec["symbol"], rec["interval"]))
+        if len(have) == len(pool) * len(INTRADAY_INTERVALS):
+            rep.warn("full_pool_verdicts.pending: the matrix is complete but no verdict artifact "
+                     "is committed - run scripts/assign_full_pool_verdicts.py --write-hypotheses")
+        else:
+            rep.ok(f"full-pool verdicts withheld: {len(have)}/{len(pool) * len(INTRADAY_INTERVALS)} "
+                   "series captured, so data/full_pool_verdicts.json is correctly absent")
+        return
+
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "full_pool_hypothesis_verdicts":
+        rep.fail("full_pool_verdicts.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("full_pool_verdicts.honesty", "artifact must declare not_a_forecast: true")
+    if meta.get("rehearsal_on_incomplete_coverage"):
+        rep.fail("full_pool_verdicts.rehearsal",
+                 "a rehearsal produced on incomplete coverage must not sit at "
+                 "data/full_pool_verdicts.json")
+    if meta.get("coverage_complete") is not True:
+        rep.fail("full_pool_verdicts.coverage",
+                 "verdicts are recorded although coverage_complete is not true")
+    if not meta.get("decision_rule"):
+        rep.fail("full_pool_verdicts.rule", "the pre-registered decision rule text is missing")
+
+    comp = load("data/stock_competition_results.json")
+    if meta.get("competition_generated_utc") != comp["_meta"].get("generated_utc"):
+        rep.fail("full_pool_verdicts.provenance",
+                 f"verdicts were derived from competition run "
+                 f"{meta.get('competition_generated_utc')!r} but the committed artifact is "
+                 f"{comp['_meta'].get('generated_utc')!r}")
+
+    daily = comp["divisions"]["daily"]
+    season = {r["username"]: r for r in daily["leaderboard"]}
+    fwd = {r["username"]: r for r in (daily.get("forward_held_out") or {}).get("forward_leaderboard") or []}
+    participants = daily.get("participants") or []
+
+    sys.path.insert(0, ROOT)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "assign_full_pool_verdicts", os.path.join(ROOT, "scripts", "assign_full_pool_verdicts.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    verdicts = doc.get("verdicts") or {}
+    if sorted(verdicts) != sorted(module.FULL_POOL_HYPOTHESES):
+        rep.fail("full_pool_verdicts.set",
+                 f"artifact covers {sorted(verdicts)} but the register's full-pool set is "
+                 f"{sorted(module.FULL_POOL_HYPOTHESES)}")
+    for hid, committed in verdicts.items():
+        model = committed.get("model")
+        recomputed = module.verdict_for(model, season, fwd, participants)
+        if recomputed["status"] != committed.get("status"):
+            rep.fail("full_pool_verdicts.verdict",
+                     f"{hid}: committed {committed.get('status')!r} != re-derived "
+                     f"{recomputed['status']!r} (model {model})")
+        if recomputed["control"] != committed.get("control"):
+            rep.fail("full_pool_verdicts.control",
+                     f"{hid}: control row differs from the re-derived one")
+        got = {u["username"]: u for u in committed.get("usernames") or []}
+        want = {u["username"]: u for u in recomputed["usernames"]}
+        if sorted(got) != sorted(want):
+            rep.fail("full_pool_verdicts.usernames",
+                     f"{hid}: usernames {sorted(got)} != re-derived {sorted(want)}")
+        for name, row in want.items():
+            if got.get(name) != row:
+                rep.fail("full_pool_verdicts.usernames",
+                         f"{hid}/{name}: committed row differs from the re-derived one")
+        hyp = hyps.get(hid)
+        if hyp is None:
+            rep.fail("full_pool_verdicts.register", f"{hid} is missing from the register")
+        elif hyp["status"] != committed.get("status"):
+            rep.fail("full_pool_verdicts.register",
+                     f"{hid}: register status {hyp['status']!r} != artifact "
+                     f"{committed.get('status')!r}")
+    cov = meta.get("coverage") or {}
+    if cov.get("complete") is not True:
+        rep.fail("full_pool_verdicts.coverage", "the artifact's own coverage block is not complete")
+    rep.ok(f"full-pool verdicts: {len(verdicts)} hypotheses re-derived from the committed "
+           f"competition run ({meta.get('season_editions')} editions, "
+           f"{len(daily.get('eligible_symbols') or [])} eligible symbols)")
+
+
+def check_cme_product_hours_standalone(rep: Report, source_ids: dict) -> None:
+    """Audit data/cme_product_hours.json when no machine capture index backs it yet.
+
+    Every product row must name a registered ``CME-SPEC-*`` source whose URL equals the row's
+    ``spec_url``, the artifact must declare that the engine does not apply the hours, and every
+    product whose page was *not* read must appear in ``_meta.omitted`` with a reason rather than
+    simply being absent.
+    """
+    hours = load_opt("data/cme_product_hours.json")
+    if hours is None:
+        rep.warn("cme_hours.absent: data/cme_product_hours.json is absent - no product-specific "
+                 "CME hours are transcribed")
+        return
+    meta = hours.get("_meta", {})
+    if meta.get("kind") != "cme_product_hours_transcription":
+        rep.fail("cme_hours.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("engine_applies_hours") is not False:
+        rep.fail("cme_hours.honesty", "the artifact must declare engine_applies_hours: false - the "
+                                      "simulation does not drop sessions from these hours")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("cme_hours.honesty", "the artifact must declare not_a_forecast: true")
+    products = hours.get("products") or []
+    if not products:
+        rep.fail("cme_hours.products", "artifact has no products")
+    seen = set()
+    for row in products:
+        product = row.get("product")
+        if product in seen:
+            rep.fail("cme_hours.duplicate", f"duplicate product row {product}")
+        seen.add(product)
+        source_id = row.get("source_id")
+        src = source_ids.get(source_id) if isinstance(source_ids, dict) else None
+        if src is None:
+            rep.fail("cme_hours.source", f"{product}: {source_id} is not a registered source")
+            continue
+        if src.get("tier") != "official_primary":
+            rep.fail("cme_hours.tier", f"{product}: {source_id} is tier {src.get('tier')!r}")
+        if src.get("url") != row.get("spec_url"):
+            rep.fail("cme_hours.url", f"{product}: spec_url {row.get('spec_url')!r} != registered "
+                                      f"{src.get('url')!r}")
+        if not row.get("globex_hours"):
+            rep.fail("cme_hours.hours", f"{product}: row carries no verbatim trading hours")
+    omitted = {o.get("product") for o in meta.get("omitted") or []}
+    for row in meta.get("omitted") or []:
+        if not row.get("reason"):
+            rep.fail("cme_hours.omitted_reason", f"{row.get('product')}: omitted without a reason")
+    pool = {r["tradingview_symbol"].split(":")[-1].split("1!")[0]
+            for r in load("data/market_history_index.json")["captures"]}
+    unaccounted = pool - seen - omitted
+    if unaccounted:
+        rep.fail("cme_hours.pool", f"pooled futures with neither hours nor an explicit omission: "
+                                   f"{sorted(unaccounted)}")
+    rep.ok(f"CME product hours: {len(products)} transcribed, {len(omitted)} explicitly omitted, "
+           "every row traced to a registered official CME spec page")
+
+
+def check_cme_specs(rep: Report, source_ids: dict) -> None:
+    """Audit the official CME contract-spec transcription against its own stored HTML.
+
+    The transcription is the only place product-specific Globex hours live, so it must be
+    reproducible: every captured record's fields are re-extracted from the raw response body
+    kept under ``data/cme_specs/`` and compared field for field, the body is re-hashed against
+    the recorded SHA-256, every URL must equal the one registered for that ``CME-SPEC-*``
+    source, and ``data/cme_product_hours.json`` must be byte-identical to what the capture
+    index regenerates. A hand-edited hour, an invented expiry or a silently dropped product
+    therefore fails the build.
+
+    Skipped with a warning when the capture lane has not landed yet - the repository must not
+    claim hours it has not transcribed.
+    """
+    import hashlib
+    import importlib.util
+
+    index = load_opt("data/cme_specs_index.json")
+    if index is None:
+        check_cme_product_hours_standalone(rep, source_ids)
+        rep.warn("cme_specs.capture_missing: data/cme_specs_index.json is absent - the official "
+                 "contract-spec lane (.github/workflows/capture-cme-specs.yml) has not landed; "
+                 "product-specific hours remain transcribed for only the products whose page was "
+                 "read by hand")
+        return
+    meta = index.get("_meta", {})
+    if meta.get("kind") != "cme_contract_spec_capture_index":
+        rep.fail("cme_specs.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("cme_specs.honesty", "capture index must declare not_a_forecast: true")
+    records = index.get("records") or []
+    if not records:
+        rep.fail("cme_specs.records", "capture index has no records")
+        return
+
+    spec = importlib.util.spec_from_file_location(
+        "fetch_cme_specs", os.path.join(ROOT, "scripts", "fetch_cme_specs.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    sources = {s["source_id"]: s for s in load("research/sources/sources.json")["sources"]}
+    pool = {r["tradingview_symbol"] for r in load("data/market_history_index.json")["captures"]}
+
+    captured = 0
+    seen_products: set = set()
+    seen_symbols: set = set()
+    for rec in records:
+        product = rec.get("product")
+        if product in seen_products:
+            rep.fail("cme_specs.duplicate", f"duplicate record for product {product}")
+        seen_products.add(product)
+        symbol = rec.get("tradingview_symbol")
+        seen_symbols.add(symbol)
+        if symbol not in pool:
+            rep.fail("cme_specs.pool", f"{product}: {symbol} is not a captured pooled future")
+
+        source_id = rec.get("source_id")
+        src = sources.get(source_id)
+        if src is None:
+            rep.fail("cme_specs.source", f"{product}: {source_id} is not a registered source")
+            continue
+        if src.get("tier") != "official_primary":
+            rep.fail("cme_specs.tier", f"{product}: {source_id} is tier {src.get('tier')!r}, "
+                                       "not official_primary")
+        if src.get("url") != rec.get("url"):
+            rep.fail("cme_specs.url", f"{product}: url {rec.get('url')!r} != registered "
+                                      f"{src.get('url')!r}")
+
+        if rec.get("status") != "captured":
+            if not rec.get("reason"):
+                rep.fail("cme_specs.reason", f"{product}: status {rec.get('status')!r} without a reason")
+            continue
+
+        rel = rec.get("file")
+        path = os.path.join(ROOT, rel) if rel else None
+        if not rel or not os.path.exists(path):
+            rep.fail("cme_specs.file", f"{product}: stored HTML {rel!r} is missing")
+            continue
+        with open(path, "rb") as fh:
+            body = fh.read()
+        digest = hashlib.sha256(body).hexdigest()
+        if digest != rec.get("raw_sha256"):
+            rep.fail("cme_specs.sha256", f"{product}: {rel} hashes to {digest[:12]}... "
+                                         f"!= index {str(rec.get('raw_sha256'))[:12]}...")
+        if rec.get("raw_bytes") != len(body):
+            rep.fail("cme_specs.bytes", f"{product}: {rel} is {len(body)} bytes "
+                                        f"!= raw_bytes {rec.get('raw_bytes')}")
+
+        fields, missing = module.extract_spec_fields(body.decode("utf-8", "replace"))
+        if fields != rec.get("fields"):
+            diff = [k for k in set(fields) | set(rec.get("fields") or {})
+                    if fields.get(k) != (rec.get("fields") or {}).get(k)]
+            rep.fail("cme_specs.transcription",
+                     f"{product}: committed fields differ from the stored HTML for {sorted(diff)}; "
+                     "re-run scripts/fetch_cme_specs.py --offline")
+        if sorted(missing) != sorted(rec.get("missing_fields") or []):
+            rep.fail("cme_specs.missing_fields",
+                     f"{product}: missing_fields {rec.get('missing_fields')} != re-derived {sorted(missing)}")
+        if not (rec.get("fields") or {}).get("trading_hours"):
+            rep.fail("cme_specs.hours", f"{product}: marked captured without trading hours")
+        captured += 1
+
+    if captured != meta.get("captured_count"):
+        rep.fail("cme_specs.tally", f"_meta.captured_count {meta.get('captured_count')} != {captured}")
+    failed = len([r for r in records if r.get("status") == "failed"])
+    if failed != meta.get("failed_count"):
+        rep.fail("cme_specs.tally", f"_meta.failed_count {meta.get('failed_count')} != {failed}")
+    if len(records) != meta.get("product_count"):
+        rep.fail("cme_specs.tally", f"_meta.product_count {meta.get('product_count')} != {len(records)}")
+    if seen_symbols != pool:
+        rep.fail("cme_specs.pool",
+                 f"transcribed {len(seen_symbols)} of {len(pool)} pooled futures; "
+                 f"missing {sorted(pool - seen_symbols)}")
+
+    # data/cme_product_hours.json must be exactly what the index regenerates.
+    hours = load_opt("data/cme_product_hours.json")
+    if hours is None:
+        rep.fail("cme_specs.hours_artifact", "data/cme_product_hours.json is absent although the "
+                                             "capture index exists")
+    else:
+        expected_dir = os.path.join(ROOT, "data", "_cme_hours_expected")
+        os.makedirs(expected_dir, exist_ok=True)
+        target = os.path.join(expected_dir, "hours.json")
+        real_target = module.HOURS_PATH
+        try:
+            module.HOURS_PATH = __import__("pathlib").Path(target)
+            # write_hours_artifact is a pure function of the index (retained rows live on the
+            # index records), so this regeneration is a genuine independent check: feeding the
+            # committed artifact back in as its own "previous" would reproduce any corruption.
+            module.write_hours_artifact(index)
+            with open(target, encoding="utf-8") as fh:
+                expected = json.load(fh)
+        finally:
+            module.HOURS_PATH = real_target
+            # Guarded: if the regeneration raised before writing, an unguarded os.remove()
+            # would mask the real error with FileNotFoundError, and the leftover directory
+            # would then break every subsequent run as well.
+            try:
+                if os.path.exists(target):
+                    os.remove(target)
+                if os.path.isdir(expected_dir):
+                    os.rmdir(expected_dir)
+            except OSError:
+                pass
+        # Compared through hours_artifact_divergences, which ignores the two fields that
+        # record which run last wrote the file (_meta.generated_utc and _meta.omitted[].reason)
+        # and nothing else. The lane leaves this artifact untouched when it transcribes nothing,
+        # so a byte-for-byte comparison could never match on a zero-capture run - it failed
+        # every such run for a reason unrelated to whether an hour had been edited.
+        divergences = module.hours_artifact_divergences(expected, hours)
+        if divergences:
+            rep.fail("cme_specs.hours_artifact",
+                     "data/cme_product_hours.json is not what data/cme_specs_index.json "
+                     "regenerates; re-run scripts/fetch_cme_specs.py; "
+                     + "; ".join(divergences[:4]))
+        else:
+            rows = hours.get("products") or []
+            n_products = len(rows)
+            n_retained = len([r for r in rows if r.get("retained_from_previous")])
+            n_omitted = len(hours.get("_meta", {}).get("omitted") or [])
+            if n_products - n_retained != captured:
+                rep.fail("cme_specs.hours_artifact",
+                         f"hours artifact lists {n_products} products ({n_retained} retained from "
+                         f"a previous run) but {captured} were captured this run")
+            rep.ok(f"CME contract specs: {captured}/{len(records)} pooled futures transcribed "
+                   f"verbatim and reproduced from stored HTML ({n_omitted} explicitly omitted)")
+            return
+    rep.ok(f"CME contract specs: {captured}/{len(records)} pooled futures transcribed verbatim "
+           "and reproduced from stored HTML")
+
+
 # ---------------------------------------------------------------------------
 # Self-test: prove each check can actually fail
 # ---------------------------------------------------------------------------
@@ -2914,6 +3367,90 @@ def self_test(rep: Report) -> None:
                       ("data/competition/stock_roster.json", fake_roster),
                       lambda r: check_stock_roster_gates(r)))
 
+    roll_doc = load_opt("data/cme_roll_schedule.json")
+    if roll_doc is not None and any(p.get("roll_dates") for p in roll_doc.get("products") or []):
+        mutated = copy.deepcopy(roll_doc)
+        for row in mutated["products"]:
+            if row.get("roll_dates"):
+                row["termination_dates_iso"] = row["termination_dates_iso"][:-1]
+                row["roll_dates"] = row["roll_dates"][:-1]
+                break
+        scenarios.append(("cme_roll.dates", ("data/cme_roll_schedule.json", mutated),
+                          lambda r: check_cme_roll_schedule(r, source_ids)))
+        mutated = copy.deepcopy(roll_doc)
+        mutated["_meta"]["roll_date_count"] = (mutated["_meta"].get("roll_date_count") or 0) + 1
+        scenarios.append(("cme_roll.tally", ("data/cme_roll_schedule.json", mutated),
+                          lambda r: check_cme_roll_schedule(r, source_ids)))
+
+    # The hours artifact is audited by two different code paths, and a scenario that targets
+    # the wrong one silently never fires - which is how these four self-tests went stale when
+    # the capture index first landed. Register each against the path that is actually live.
+    cme_index_doc = load_opt("data/cme_specs_index.json")
+    cme_hours_doc = load_opt("data/cme_product_hours.json")
+    if cme_index_doc is None:
+        # Standalone path: no machine capture index, so the hand-transcribed rows are audited
+        # directly (source registration, honesty flags, full pool accounting).
+        if cme_hours_doc is not None and cme_hours_doc.get("products"):
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["products"][0]["spec_url"] = "https://www.cmegroup.com/wrong-page.html"
+            scenarios.append(("cme_hours.url", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["_meta"]["engine_applies_hours"] = True
+            scenarios.append(("cme_hours.honesty", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+            mutated = copy.deepcopy(cme_hours_doc)
+            mutated["_meta"]["omitted"] = []
+            scenarios.append(("cme_hours.pool", ("data/cme_product_hours.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+    elif cme_hours_doc is not None:
+        # Index path: the artifact must equal what the index regenerates, so corrupting a row
+        # is what proves the check.
+        mutated = copy.deepcopy(cme_hours_doc)
+        if mutated.get("products"):
+            mutated["products"][0]["globex_hours"] = "Monday - Friday 9:00 a.m. - 5:00 p.m. CT"
+        else:
+            mutated["_meta"]["product_count"] = (mutated["_meta"].get("product_count") or 0) + 1
+        scenarios.append(("cme_specs.hours_artifact", ("data/cme_product_hours.json", mutated),
+                          lambda r: check_cme_specs(r, source_ids)))
+
+    fpv_doc = load_opt("data/full_pool_verdicts.json")
+    if fpv_doc is not None and fpv_doc.get("verdicts"):
+        mutated = copy.deepcopy(fpv_doc)
+        first = sorted(mutated["verdicts"])[0]
+        mutated["verdicts"][first]["status"] = (
+            "refuted" if mutated["verdicts"][first]["status"] != "refuted" else "supported")
+        scenarios.append(("full_pool_verdicts.verdict",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+        mutated = copy.deepcopy(fpv_doc)
+        mutated["_meta"]["rehearsal_on_incomplete_coverage"] = True
+        scenarios.append(("full_pool_verdicts.rehearsal",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+        mutated = copy.deepcopy(fpv_doc)
+        mutated["_meta"]["competition_generated_utc"] = "2020-01-01T00:00:00Z"
+        scenarios.append(("full_pool_verdicts.provenance",
+                          ("data/full_pool_verdicts.json", mutated),
+                          lambda r: check_full_pool_verdicts(r, source_ids)))
+
+    if cme_index_doc is not None and cme_index_doc.get("records"):
+        # The transcription check re-extracts from stored HTML, so it can only be proven when
+        # at least one product actually has a captured record to corrupt.
+        if any(r.get("status") == "captured" for r in cme_index_doc["records"]):
+            mutated = copy.deepcopy(cme_index_doc)
+            for row in mutated["records"]:
+                if row.get("status") == "captured":
+                    row.setdefault("fields", {})["trading_hours"] = (
+                        "Monday - Friday 9:00 a.m. - 5:00 p.m. CT")
+                    break
+            scenarios.append(("cme_specs.transcription", ("data/cme_specs_index.json", mutated),
+                              lambda r: check_cme_specs(r, source_ids)))
+        mutated = copy.deepcopy(cme_index_doc)
+        mutated["_meta"]["captured_count"] = (mutated["_meta"].get("captured_count") or 0) + 1
+        scenarios.append(("cme_specs.tally", ("data/cme_specs_index.json", mutated),
+                          lambda r: check_cme_specs(r, source_ids)))
+
     for expected, (path, payload), runner in scenarios:
         r = Report()
         with _LoadShim(path, payload):
@@ -2953,6 +3490,10 @@ def main() -> int:
     check_stock_competition(rep, source_ids)
     check_exec_summary(rep, source_ids)
     check_tv_benchmark(rep, source_ids)
+    check_cme_specs(rep, source_ids)
+    check_full_pool_verdicts(rep, source_ids)
+    check_docs_mirror(rep, source_ids)
+    check_cme_roll_schedule(rep, source_ids)
     hyp_ids: set = set()
     check_hypotheses(rep, source_ids, hyp_ids)
     check_irregularities(rep, source_ids, hyp_ids)
