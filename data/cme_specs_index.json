@@ -4,9 +4,9 @@
     "description": "Provenance for the official CME Group contract-specification page of every future in this repository's pool. Each record stores the exact response body under data/cme_specs/ with its SHA-256 and byte length; the transcribed fields are re-extractable from that body offline. A missing field is null and listed in missing_fields - it is never inferred from another product.",
     "script": "scripts/fetch_cme_specs.py",
     "script_version": "1",
-    "generated_utc": "2026-09-19T21:23:07+00:00",
-    "capture_environment": "local",
-    "workflow_run_url": null,
+    "generated_utc": "2026-09-20T00:22:36+00:00",
+    "capture_environment": "github-actions",
+    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35478225291",
     "product_count": 20,
     "captured_count": 0,
     "failed_count": 20,
@@ -25,7 +25,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
       "status": "failed",
-      "reason": "BTC.html not stored yet; run without --offline",
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs (HTTP Error 403: Forbidden)",
       "retained_row": {
         "product": "BTC",
         "tradingview_symbol": "CME:BTC1!",
@@ -48,7 +48,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
       "status": "failed",
-      "reason": "CL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "ETH",
@@ -58,7 +58,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
       "status": "failed",
-      "reason": "ETH.html not stored yet; run without --offline",
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs (HTTP Error 403: Forbidden)",
       "retained_row": {
         "product": "ETH",
         "tradingview_symbol": "CME:ETH1!",
@@ -81,7 +81,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
       "status": "failed",
-      "reason": "HO.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MBT",
@@ -91,7 +91,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
       "status": "failed",
-      "reason": "MBT.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MCL",
@@ -101,7 +101,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
       "status": "failed",
-      "reason": "MCL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MET",
@@ -111,7 +111,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
       "status": "failed",
-      "reason": "MET.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MNG",
@@ -121,7 +121,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
       "status": "failed",
-      "reason": "MNG.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MSL",
@@ -131,7 +131,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
       "status": "failed",
-      "reason": "MSL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs (HTTP Error 403: Forbidden)"
     },
     {
       "product": "MXP",
@@ -141,7 +141,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
       "status": "failed",
-      "reason": "MXP.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs (HTTP Error 403: Forbidden)"
     },
     {
       "product": "NG",
@@ -151,7 +151,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
       "status": "failed",
-      "reason": "NG.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "NQ",
@@ -161,7 +161,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
       "status": "failed",
-      "reason": "NQ.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "PL",
@@ -171,7 +171,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
       "status": "failed",
-      "reason": "PL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "QM",
@@ -181,7 +181,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
       "status": "failed",
-      "reason": "QM.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "RB",
@@ -191,7 +191,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
       "status": "failed",
-      "reason": "RB.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "SI",
@@ -201,7 +201,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
       "status": "failed",
-      "reason": "SI.html not stored yet; run without --offline",
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html (HTTP Error 403: Forbidden)",
       "retained_row": {
         "product": "SI",
         "tradingview_symbol": "COMEX:SI1!",
@@ -225,7 +225,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
       "status": "failed",
-      "reason": "SIC.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "SIL",
@@ -235,7 +235,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
       "status": "failed",
-      "reason": "SIL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html (HTTP Error 403: Forbidden)"
     },
     {
       "product": "SOL",
@@ -245,7 +245,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
       "status": "failed",
-      "reason": "SOL.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs (HTTP Error 403: Forbidden)"
     },
     {
       "product": "XRP",
@@ -255,7 +255,7 @@
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
       "status": "failed",
-      "reason": "XRP.html not stored yet; run without --offline"
+      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html (HTTP Error 403: Forbidden)"
     }
   ]
 }
