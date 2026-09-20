@@ -3,7 +3,7 @@
   "kind": "pine_vs_python_fill_benchmark",
   "description": "Comparison of exported Pine Strategy Report fills against the repository's Python fill model on the same committed vendor bars, plus a strict import audit of every export (header, column mapping, SHA-256, rejected rows, arithmetic P/L cross-check).",
   "engine": "tv-benchmark-1",
-  "generated_utc": "2026-09-20T03:46:45+00:00",
+  "generated_utc": "2026-09-20T08:18:12+00:00",
   "scenario": {
    "key": "moderate",
    "label": "commission $1.50/contract/side + slippage 5% of ATR(14) per leg",

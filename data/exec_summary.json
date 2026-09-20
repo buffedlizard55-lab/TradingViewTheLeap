@@ -3,7 +3,7 @@
   "kind": "executive_summary_recommendations",
   "description": "Machine-derived 'what would be placed next' table for the top-performing usernames of the repository's own paper competitions. Orders are mechanical replays of frozen models on committed vendor bars; sizes are indicative and computed from the official rule constants at the last captured close.",
   "engine": "exec-summary-1",
-  "generated_utc": "2026-09-20T03:46:45+00:00",
+  "generated_utc": "2026-09-20T08:18:12+00:00",
   "top_n_per_division": 3,
   "divisions": [
    "futures",
