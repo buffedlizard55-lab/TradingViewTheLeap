@@ -108,6 +108,83 @@ class TestExtractSpecFields(unittest.TestCase):
                          fcs.extract_spec_fields(SPEC_PAGE))
 
 
+class TestZeroCaptureResilience(unittest.TestCase):
+    """A 403'd runner pass must preserve the audited evidence AND stay verifiable.
+
+    cmegroup.com answers HTTP 403 to GitHub-hosted runners (IR-33), so the committed
+    capture lane periodically rewrites data/cme_specs_index.json with zero captures.
+    The committed hours artifact is deliberately left untouched on such a run - which
+    means the verifier's regeneration from the new index must still reproduce the
+    committed artifact byte-for-byte, or main goes red on the next runner pass.
+    """
+
+    def test_a_total_403_pass_keeps_machine_rows_and_stays_regenerable(self):
+        import argparse
+        import json
+        import shutil
+        import tempfile
+        from pathlib import Path
+
+        tmp = Path(tempfile.mkdtemp(prefix="cme403-"))
+        try:
+            shutil.copytree(Path(fcs.SPECS_DIR), tmp / "specs")
+            shutil.copy(Path(fcs.INDEX_PATH), tmp / "index.json")
+            shutil.copy(Path(fcs.HOURS_PATH), tmp / "hours.json")
+            committed_hours = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+
+            saved = (fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH)
+            try:
+                fcs.SPECS_DIR = tmp / "specs"
+                fcs.INDEX_PATH = tmp / "index.json"
+                fcs.HOURS_PATH = tmp / "hours.json"
+
+                def boom(url, timeout=25):
+                    raise RuntimeError(f"GET failed with every header set: {url} (timed out)")
+
+                fcs.fetch = boom
+                rc = fcs.build(argparse.Namespace(offline=False, timeout=5,
+                                                  allow_failures=True))
+                self.assertEqual(rc, 0)
+
+                doc = json.loads((tmp / "index.json").read_text(encoding="utf-8"))
+                by_product = {r["product"]: r for r in doc["records"]}
+                machine = [r for r in doc["records"]
+                           if r["status"] in ("captured", "kept_previous")
+                           and (r.get("fields") or {}).get("trading_hours")]
+                self.assertEqual(len(machine), 17,
+                                 "the 17 adopted machine transcriptions must survive")
+                for r in machine:
+                    self.assertEqual(r["status"], "kept_previous")
+                    self.assertEqual(r.get("body_format"), "markdown",
+                                     "body_format must be carried or the verifier cannot "
+                                     "dispatch the markdown extractor")
+                    self.assertNotIn("retained_row", r,
+                                     "a machine row must not be re-labelled hand-read")
+                for product in ("BTC", "ETH", "SI"):
+                    rec = by_product[product]
+                    self.assertEqual(rec["status"], "failed")
+                    self.assertIn("retained_row", rec)
+                    # The retained explanation is preserved verbatim, not recomputed from
+                    # this run's transport error, so consecutive failures are byte-stable.
+                    committed_reason = next(
+                        p["retained_reason"] for p in committed_hours["products"]
+                        if p["product"] == product)
+                    self.assertEqual(rec["retained_row"].get("retained_reason"),
+                                     committed_reason)
+
+                # The invariant the verifier checks: the artifact regenerated from the
+                # post-403 index matches the committed artifact (which the run leaves
+                # untouched) on every compared field.
+                fcs.write_hours_artifact(doc)
+                regenerated = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+                self.assertEqual(fcs.hours_artifact_divergences(regenerated,
+                                                                committed_hours), [])
+            finally:
+                fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH = saved
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 class TestMarkdownExtraction(unittest.TestCase):
     """The arena-fetch-page adoption lane parses the proxy's markdown pipe tables.
 

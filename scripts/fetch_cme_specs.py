@@ -386,15 +386,21 @@ def build(args: argparse.Namespace) -> int:
             record["status"] = "failed"
             record["reason"] = f"{type(exc).__name__}: {exc}"
             # Keep the previous successful extraction so a transient network failure does
-            # not erase an audited transcription.
+            # not erase an audited transcription. body_format and the agent-fetch
+            # provenance keys MUST be carried too: verify.py dispatches its re-extraction
+            # by body_format, so losing it on a kept_previous transition would make the
+            # next 403'd runner pass commit an index whose markdown bodies are audited
+            # through the HTML extractor (and fail).
             if previous.get(product, {}).get("status") == "captured":
                 record["status"] = "kept_previous"
                 record["reason"] = (
                     f"fetch failed ({type(exc).__name__}); previous stored extraction kept: {exc}"
                 )
-                record.update({k: previous[product].get(k) for k in
-                               ("accessed_utc", "http_status", "transport", "raw_bytes",
-                                "raw_sha256", "file", "fields", "missing_fields")})
+                carry = ("accessed_utc", "http_status", "transport", "body_format",
+                         "raw_bytes", "raw_sha256", "file", "fields", "missing_fields",
+                         "agent_fetch_chunks", "agent_fetch_total_chunks", "capture_scope")
+                record.update({k: previous[product].get(k) for k in carry
+                               if previous[product].get(k) is not None})
             records.append(record)
             continue
 
@@ -488,15 +494,25 @@ def build(args: argparse.Namespace) -> int:
         except (json.JSONDecodeError, OSError):
             previous_hours_rows = {}
     for rec in records:
-        if rec["status"] == "captured":
+        if rec["status"] in ("captured", "kept_previous") and (rec.get("fields") or {}).get("trading_hours"):
+            # kept_previous with a complete carried extraction is a MACHINE row whose
+            # transcription is unchanged (only this run's fetch failed); it must not be
+            # re-labelled as a hand-read retained row, or the hours artifact the
+            # verifier regenerates from this index stops matching the committed one.
             continue
         kept = previous_hours_rows.get(rec["product"])
         if not kept:
             continue
         row = dict(kept)
         row["retained_from_previous"] = True
-        row["retained_reason"] = retained_reason(rec["product"], rec.get("reason"),
-                                                 index["_meta"])
+        # A row that was already retained keeps its existing explanation verbatim:
+        # recomputing it from this run's transport error would change the text on every
+        # zero-capture runner pass (the artifact is deliberately left untouched then),
+        # and the verifier's byte-level regeneration would diverge from the commit.
+        row["retained_reason"] = (kept.get("retained_reason")
+                                  if kept.get("retained_from_previous")
+                                  else retained_reason(rec["product"], rec.get("reason"),
+                                                       index["_meta"]))
         rec["retained_row"] = row
 
     INDEX_PATH.write_text(json.dumps(index, indent=2, sort_keys=False) + "\n", encoding="utf-8")
@@ -658,7 +674,8 @@ def write_hours_artifact(index: dict) -> None:
     omitted = []
     for rec in index["records"]:
         fields = rec.get("fields") or {}
-        if rec["status"] != "captured" or not fields.get("trading_hours"):
+        machine = rec["status"] in ("captured", "kept_previous") and bool(fields.get("trading_hours"))
+        if not machine:
             kept = rec.get("retained_row")
             if kept:
                 products.append(dict(kept))
@@ -704,7 +721,8 @@ def write_hours_artifact(index: dict) -> None:
             "engine_applies_hours": False,
             "roll_dates_transcribed": False,
             "source_ids": sorted({r["source_id"] for r in index["records"]
-                                  if r["status"] == "captured"}),
+                                  if r["status"] in ("captured", "kept_previous")
+                                  and (r.get("fields") or {}).get("trading_hours")}),
             "capture_index": "data/cme_specs_index.json",
             "raw_html_dir": "data/cme_specs",
             "product_count": len(products),

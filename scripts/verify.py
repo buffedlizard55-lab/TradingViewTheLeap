@@ -2882,9 +2882,15 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
             rep.fail("cme_specs.url", f"{product}: url {rec.get('url')!r} != registered "
                                       f"{src.get('url')!r}")
 
-        if rec.get("status") != "captured":
+        if rec.get("status") not in ("captured", "kept_previous"):
             if not rec.get("reason"):
                 rep.fail("cme_specs.reason", f"{product}: status {rec.get('status')!r} without a reason")
+            continue
+        if rec.get("status") == "kept_previous" and not (rec.get("fields") or {}).get("trading_hours"):
+            # A kept_previous record without a complete carried extraction is a retained
+            # hand-read row: audit the reason but not a body that does not exist.
+            if not rec.get("reason"):
+                rep.fail("cme_specs.reason", f"{product}: kept_previous without a reason")
             continue
 
         rel = rec.get("file")
@@ -2923,9 +2929,22 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
             rep.fail("cme_specs.hours", f"{product}: marked captured without trading hours")
         captured += 1
 
-    if captured != meta.get("captured_count"):
-        rep.fail("cme_specs.tally", f"_meta.captured_count {meta.get('captured_count')} != {captured}")
-    failed = len([r for r in records if r.get("status") == "failed"])
+    n_status = lambda s: len([r for r in records if r.get("status") == s])  # noqa: E731
+    if n_status("captured") != meta.get("captured_count"):
+        rep.fail("cme_specs.tally",
+                 f"_meta.captured_count {meta.get('captured_count')} != {n_status('captured')}")
+    if n_status("kept_previous") != meta.get("kept_previous_count"):
+        rep.fail("cme_specs.tally",
+                 f"_meta.kept_previous_count {meta.get('kept_previous_count')} != "
+                 f"{n_status('kept_previous')}")
+    if captured != n_status("captured") + n_status("kept_previous"):
+        # `captured` counts every fully-audited record (captured + kept_previous with a
+        # complete carried extraction); a divergence means a kept_previous record is
+        # being audited without fields, or a captured record failed its audit early.
+        rep.fail("cme_specs.tally",
+                 f"audited {captured} records but the index holds "
+                 f"{n_status('captured')} captured + {n_status('kept_previous')} kept_previous")
+    failed = n_status("failed")
     if failed != meta.get("failed_count"):
         rep.fail("cme_specs.tally", f"_meta.failed_count {meta.get('failed_count')} != {failed}")
     if len(records) != meta.get("product_count"):
@@ -2981,10 +3000,19 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
             n_products = len(rows)
             n_retained = len([r for r in rows if r.get("retained_from_previous")])
             n_omitted = len(hours.get("_meta", {}).get("omitted") or [])
-            if n_products - n_retained != captured:
+            # Machine rows must match the records that hold a machine transcription:
+            # captured this run OR kept_previous with a complete carried extraction
+            # (a zero-capture runner pass keeps all of them machine-transcribed).
+            machine_records = sum(
+                1 for r in records
+                if r.get("status") in ("captured", "kept_previous")
+                and (r.get("fields") or {}).get("trading_hours")
+            )
+            if n_products - n_retained != machine_records:
                 rep.fail("cme_specs.hours_artifact",
                          f"hours artifact lists {n_products} products ({n_retained} retained from "
-                         f"a previous run) but {captured} were captured this run")
+                         f"a previous run) but {machine_records} records hold a machine "
+                         f"transcription ({captured} captured this run)")
             rep.ok(f"CME contract specs: {captured}/{len(records)} pooled futures transcribed "
                    f"verbatim and reproduced from stored HTML ({n_omitted} explicitly omitted)")
             return
