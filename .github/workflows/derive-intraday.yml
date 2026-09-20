@@ -112,7 +112,8 @@ jobs:
           git add data/intraday_study.json data/stock_competition_results.json \
                   data/full_pool_verdicts.json research/hypotheses/hypotheses.json \
                   data/exec_summary.json data/tv_benchmark.json \
-                  data/intelligence_report.json index.html
+                  data/intelligence_report.json index.html docs/index.html \
+                  assets docs/assets
           if git diff --cached --quiet; then
             echo "::notice::no derived artifact changed"
             exit 0
