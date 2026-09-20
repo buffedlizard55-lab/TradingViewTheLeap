@@ -3,7 +3,7 @@
     "kind": "cme_roll_schedule",
     "description": "Front-contract termination dates for every pooled future, derived from the official termination rule of each product by the codecs in intel/cme_roll.py. A product with no codec carries an empty list and a reason; no date is inferred from another product. scripts/verify.py re-runs every codec and re-compares each quoted rule sentence against data/cme_product_hours.json.",
     "engine": "cme-roll-1",
-    "generated_utc": "2026-09-20T00:10:23+00:00",
+    "generated_utc": "2026-09-20T05:30:58+00:00",
     "module": {
       "module": "intel/cme_roll.py",
       "calendar_version": "nyse-holidays-2",
@@ -12,21 +12,49 @@
         "BTC",
         "CL",
         "ETH",
-        "SI"
+        "HO",
+        "MBT",
+        "MET",
+        "MNG",
+        "MSL",
+        "MXP",
+        "NG",
+        "NQ",
+        "PL",
+        "RB",
+        "SI",
+        "SIC",
+        "SIL",
+        "SOL",
+        "XRP"
       ],
       "coded_rule_names": {
         "BTC": "cme_btc_last_friday",
         "CL": "nymex_cl_three_business_days_before_prior_month_25th",
         "ETH": "cme_eth_last_friday",
-        "SI": "comex_si_third_last_business_day"
+        "HO": "nymex_ho_last_bd_prior_month",
+        "MBT": "cme_mbt_last_friday",
+        "MET": "cme_met_last_friday",
+        "MNG": "nymex_mng_fourth_last_bd_prior_month",
+        "MSL": "cme_msl_last_friday",
+        "MXP": "cme_mxp_last_friday",
+        "NG": "nymex_ng_third_last_bd_prior_month",
+        "NQ": "cme_nq_third_friday_quarterly",
+        "PL": "nymex_pl_third_last_bd_contract_month",
+        "RB": "nymex_rb_last_bd_prior_month",
+        "SI": "comex_si_third_last_business_day",
+        "SIC": "comex_sic_third_last_bd_prior_month",
+        "SIL": "comex_sil_third_last_bd_contract_month",
+        "SOL": "cme_sol_last_friday",
+        "XRP": "cme_xrp_last_friday"
       }
     },
     "business_day_basis": "NYSE full-closure table (intel/calendar.py, version nyse-holidays-2); CME Globex closure dates are NOT independently transcribed - see https://www.cmegroup.com/trading-hours.html and irregularity IR-30",
     "hours_artifact": "data/cme_product_hours.json",
     "product_count": 20,
-    "products_with_dates": 3,
-    "products_without_dates": 17,
-    "roll_date_count": 72,
+    "products_with_dates": 10,
+    "products_without_dates": 10,
+    "roll_date_count": 196,
     "not_a_forecast": true,
     "engine_wiring": {
       "wired_into_competition": false,
@@ -35,6 +63,8 @@
     "declared_limitations": [
       "Business days come from the NYSE full-closure table, not a transcribed CME Globex closure set; where the two differ a derived date can be off by one session (IR-30).",
       "The cryptocurrency codecs apply the rule's London-business-day leg as 'not a weekend' because only the U.S. leg is checkable here.",
+      "NQ's published rule names the 3rd Friday of the contract month with no business-day adjustment; when that Friday is an exchange closure (e.g. 2026-06-19, the Juneteenth holiday) the actual last trading session precedes the derived date by one session.",
+      "MCL and QM publish a two-disjunct termination sentence ('1 business day before the corresponding CL contract month OR 4/5 business days before the 25th...') whose relative precedence is not stated; they carry no codec and no dates rather than an interpretation.",
       "Dates are the termination dates of successive contract months, which is the boundary at which a 1! continuous series changes front contract; the repository holds vendor continuous bars, not per-bar contract identity, so the mapping is by rule and not by observed contract switch."
     ]
   },
@@ -327,11 +357,12 @@
     },
     {
       "product": "MBT",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_mbt_last_friday",
+      "rule_verbatim": "Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or the U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_mbt_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -343,15 +374,16 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "MET",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_met_last_friday",
+      "rule_verbatim": "Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month that is either a London or U.S. business day. If the last Friday of the contract month day is not a business day in both London and the U.S., trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_met_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -363,15 +395,16 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "MSL",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_msl_last_friday",
+      "rule_verbatim": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_msl_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -383,15 +416,16 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "MXP",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_mxp_last_friday",
+      "rule_verbatim": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_mxp_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -403,15 +437,16 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "SOL",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_sol_last_friday",
+      "rule_verbatim": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_sol_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -423,15 +458,16 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "XRP",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "cme_xrp_last_friday",
+      "rule_verbatim": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+      "codec_note": "the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec cme_xrp_last_friday; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -443,15 +479,58 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "NQ",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "cme_nq_third_friday_quarterly",
+      "rule_verbatim": "Trading terminates at 9:30 a.m. ET on the 3rd Friday of the contract month.\nTACO trading terminates at 9:30 a.m. ET on the Thursday before the 3rd Friday of the contract month.\nBTIC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of contract month.\nTMAC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of the contract month.",
+      "codec_note": "quarterly listing (Mar, Jun, Sep, Dec) per the product's own Listed Contracts row; non-quarterly months are not listed and yield no date. The published rule names the 3rd Friday with no business-day adjustment: when that Friday is an exchange closure (e.g. 2026-06-19, the Juneteenth holiday) the actual last trading session precedes the derived date by one session",
+      "roll_dates": [
+        {
+          "contract_month": "2024-09",
+          "termination_date": "2024-09-20"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-12-20"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-03-21"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-06-20"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-09-19"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-12-19"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-03-20"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-06-19"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-20",
+        "2024-12-20",
+        "2025-03-21",
+        "2025-06-20",
+        "2025-09-19",
+        "2025-12-19",
+        "2026-03-20",
+        "2026-06-19"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -463,7 +542,7 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "SI",
@@ -610,11 +689,12 @@
     },
     {
       "product": "SIC",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "comex_sic_third_last_bd_prior_month",
+      "rule_verbatim": "Trading terminates at 12:25 p.m. CT on the third last business day of the month prior to the contract month.",
+      "codec_note": null,
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec comex_sic_third_last_bd_prior_month; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -626,15 +706,78 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "SIL",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "comex_sil_third_last_bd_contract_month",
+      "rule_verbatim": "Trading terminates on the third last business day of the contract month.",
+      "codec_note": "the product also lists 3 consecutive rolling months (see its Listed Contracts row); that rolling part is not knowable for a historical window, so only the fixed Jan/Mar/May/Jul/Sep/Dec cycle is dated - the schedule under-counts SIL roll boundaries",
+      "roll_dates": [
+        {
+          "contract_month": "2024-09",
+          "termination_date": "2024-09-26"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-12-27"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2025-01-29"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-03-27"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-05-28"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-07-29"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-09-26"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-12-29"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2026-01-28"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-03-27"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-05-27"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-07-29"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-26",
+        "2024-12-27",
+        "2025-01-29",
+        "2025-03-27",
+        "2025-05-28",
+        "2025-07-29",
+        "2025-09-26",
+        "2025-12-29",
+        "2026-01-28",
+        "2026-03-27",
+        "2026-05-27",
+        "2026-07-29"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -646,16 +789,138 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "CL",
       "rule_codec": "nymex_cl_three_business_days_before_prior_month_25th",
       "rule_verbatim": "Trading terminates 3 business day before the 25th calendar day of the month prior to the contract month. If the 25th calendar day is not a business day, trading terminates 4 business days before the 25th calendar day of the month prior to the contract month.",
       "codec_note": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "CL: no transcribed termination rule to compare against",
+      "roll_dates": [
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-09-20"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-10-22"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-11-20"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2024-12-19"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-01-21"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-02-20"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-03-20"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-04-22"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-05-20"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-06-20"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-07-22"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-08-20"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-09-22"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-10-21"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-11-20"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2025-12-19"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-01-20"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-02-20"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-03-20"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-04-21"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-05-19"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-06-22"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-07-21"
+        },
+        {
+          "contract_month": "2026-09",
+          "termination_date": "2026-08-20"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-20",
+        "2024-10-22",
+        "2024-11-20",
+        "2024-12-19",
+        "2025-01-21",
+        "2025-02-20",
+        "2025-03-20",
+        "2025-04-22",
+        "2025-05-20",
+        "2025-06-20",
+        "2025-07-22",
+        "2025-08-20",
+        "2025-09-22",
+        "2025-10-21",
+        "2025-11-20",
+        "2025-12-19",
+        "2026-01-20",
+        "2026-02-20",
+        "2026-03-20",
+        "2026-04-21",
+        "2026-05-19",
+        "2026-06-22",
+        "2026-07-21",
+        "2026-08-20"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -667,15 +932,138 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": false
+      "rule_matches_transcription": true
     },
     {
       "product": "HO",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "nymex_ho_last_bd_prior_month",
+      "rule_verbatim": "Trading terminates on the last business day of the month prior to the contract month.",
+      "codec_note": null,
+      "roll_dates": [
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-09-30"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-10-31"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-11-29"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2024-12-31"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-01-31"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-02-28"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-03-31"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-04-30"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-05-30"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-06-30"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-07-31"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-08-29"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-09-30"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-10-31"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-11-28"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2025-12-31"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-01-30"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-02-27"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-03-31"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-04-30"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-05-29"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-06-30"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-07-31"
+        },
+        {
+          "contract_month": "2026-09",
+          "termination_date": "2026-08-31"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-30",
+        "2024-10-31",
+        "2024-11-29",
+        "2024-12-31",
+        "2025-01-31",
+        "2025-02-28",
+        "2025-03-31",
+        "2025-04-30",
+        "2025-05-30",
+        "2025-06-30",
+        "2025-07-31",
+        "2025-08-29",
+        "2025-09-30",
+        "2025-10-31",
+        "2025-11-28",
+        "2025-12-31",
+        "2026-01-30",
+        "2026-02-27",
+        "2026-03-31",
+        "2026-04-30",
+        "2026-05-29",
+        "2026-06-30",
+        "2026-07-31",
+        "2026-08-31"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -687,7 +1075,7 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "MCL",
@@ -711,11 +1099,12 @@
     },
     {
       "product": "MNG",
-      "rule_codec": null,
-      "rule_verbatim": null,
+      "rule_codec": "nymex_mng_fourth_last_bd_prior_month",
+      "rule_verbatim": "Trading terminates on the 4th last business day of the month prior to the contract month.",
+      "codec_note": null,
       "roll_dates": [],
       "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "reason": "the captured daily-bar window 2026-09-17..2026-09-17 contains no contract-month termination date for the codec nymex_mng_fourth_last_bd_prior_month; the schedule covers only the sessions this repository holds",
       "window": {
         "start": "2026-09-17",
         "end": "2026-09-17"
@@ -727,15 +1116,138 @@
         "start": "2026-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "NG",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "nymex_ng_third_last_bd_prior_month",
+      "rule_verbatim": "Trading terminates on the 3rd last business day of the month prior to the contract month.",
+      "codec_note": null,
+      "roll_dates": [
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-09-26"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-10-29"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-11-26"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2024-12-27"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-01-29"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-02-26"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-03-27"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-04-28"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-05-28"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-06-26"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-07-29"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-08-27"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-09-26"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-10-29"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-11-25"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2025-12-29"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-01-28"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-02-25"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-03-27"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-04-28"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-05-27"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-06-26"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-07-29"
+        },
+        {
+          "contract_month": "2026-09",
+          "termination_date": "2026-08-27"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-26",
+        "2024-10-29",
+        "2024-11-26",
+        "2024-12-27",
+        "2025-01-29",
+        "2025-02-26",
+        "2025-03-27",
+        "2025-04-28",
+        "2025-05-28",
+        "2025-06-26",
+        "2025-07-29",
+        "2025-08-27",
+        "2025-09-26",
+        "2025-10-29",
+        "2025-11-25",
+        "2025-12-29",
+        "2026-01-28",
+        "2026-02-25",
+        "2026-03-27",
+        "2026-04-28",
+        "2026-05-27",
+        "2026-06-26",
+        "2026-07-29",
+        "2026-08-27"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -747,15 +1259,58 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "PL",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "nymex_pl_third_last_bd_contract_month",
+      "rule_verbatim": "Trading terminates on the third last business day of the contract month.",
+      "codec_note": "the product also lists 3 consecutive rolling months (see its Listed Contracts row); that rolling part is not knowable for a historical window, so only the fixed Jan/Apr/Jul/Oct cycle is dated - the schedule under-counts PL roll boundaries",
+      "roll_dates": [
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-10-29"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2025-01-29"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-04-28"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-07-29"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-10-29"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2026-01-28"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-04-28"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-07-29"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-10-29",
+        "2025-01-29",
+        "2025-04-28",
+        "2025-07-29",
+        "2025-10-29",
+        "2026-01-28",
+        "2026-04-28",
+        "2026-07-29"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -767,15 +1322,138 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "RB",
-      "rule_codec": null,
-      "rule_verbatim": null,
-      "roll_dates": [],
-      "termination_dates_iso": [],
-      "reason": "termination rule has no codec in intel/cme_roll.py; dates are not inferred from another product",
+      "rule_codec": "nymex_rb_last_bd_prior_month",
+      "rule_verbatim": "Trading terminates on the last business day of the month prior to the contract month.",
+      "codec_note": null,
+      "roll_dates": [
+        {
+          "contract_month": "2024-10",
+          "termination_date": "2024-09-30"
+        },
+        {
+          "contract_month": "2024-11",
+          "termination_date": "2024-10-31"
+        },
+        {
+          "contract_month": "2024-12",
+          "termination_date": "2024-11-29"
+        },
+        {
+          "contract_month": "2025-01",
+          "termination_date": "2024-12-31"
+        },
+        {
+          "contract_month": "2025-02",
+          "termination_date": "2025-01-31"
+        },
+        {
+          "contract_month": "2025-03",
+          "termination_date": "2025-02-28"
+        },
+        {
+          "contract_month": "2025-04",
+          "termination_date": "2025-03-31"
+        },
+        {
+          "contract_month": "2025-05",
+          "termination_date": "2025-04-30"
+        },
+        {
+          "contract_month": "2025-06",
+          "termination_date": "2025-05-30"
+        },
+        {
+          "contract_month": "2025-07",
+          "termination_date": "2025-06-30"
+        },
+        {
+          "contract_month": "2025-08",
+          "termination_date": "2025-07-31"
+        },
+        {
+          "contract_month": "2025-09",
+          "termination_date": "2025-08-29"
+        },
+        {
+          "contract_month": "2025-10",
+          "termination_date": "2025-09-30"
+        },
+        {
+          "contract_month": "2025-11",
+          "termination_date": "2025-10-31"
+        },
+        {
+          "contract_month": "2025-12",
+          "termination_date": "2025-11-28"
+        },
+        {
+          "contract_month": "2026-01",
+          "termination_date": "2025-12-31"
+        },
+        {
+          "contract_month": "2026-02",
+          "termination_date": "2026-01-30"
+        },
+        {
+          "contract_month": "2026-03",
+          "termination_date": "2026-02-27"
+        },
+        {
+          "contract_month": "2026-04",
+          "termination_date": "2026-03-31"
+        },
+        {
+          "contract_month": "2026-05",
+          "termination_date": "2026-04-30"
+        },
+        {
+          "contract_month": "2026-06",
+          "termination_date": "2026-05-29"
+        },
+        {
+          "contract_month": "2026-07",
+          "termination_date": "2026-06-30"
+        },
+        {
+          "contract_month": "2026-08",
+          "termination_date": "2026-07-31"
+        },
+        {
+          "contract_month": "2026-09",
+          "termination_date": "2026-08-31"
+        }
+      ],
+      "termination_dates_iso": [
+        "2024-09-30",
+        "2024-10-31",
+        "2024-11-29",
+        "2024-12-31",
+        "2025-01-31",
+        "2025-02-28",
+        "2025-03-31",
+        "2025-04-30",
+        "2025-05-30",
+        "2025-06-30",
+        "2025-07-31",
+        "2025-08-29",
+        "2025-09-30",
+        "2025-10-31",
+        "2025-11-28",
+        "2025-12-31",
+        "2026-01-30",
+        "2026-02-27",
+        "2026-03-31",
+        "2026-04-30",
+        "2026-05-29",
+        "2026-06-30",
+        "2026-07-31",
+        "2026-08-31"
+      ],
+      "reason": null,
       "window": {
         "start": "2024-09-17",
         "end": "2026-09-17"
@@ -787,7 +1465,7 @@
         "start": "2024-09-17",
         "end": "2026-09-17"
       },
-      "rule_matches_transcription": null
+      "rule_matches_transcription": true
     },
     {
       "product": "QM",

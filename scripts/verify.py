@@ -2902,12 +2902,19 @@ def check_cme_specs(rep: Report, source_ids: dict) -> None:
             rep.fail("cme_specs.bytes", f"{product}: {rel} is {len(body)} bytes "
                                         f"!= raw_bytes {rec.get('raw_bytes')}")
 
-        fields, missing = module.extract_spec_fields(body.decode("utf-8", "replace"))
+        # HTML bodies (direct_https lane) parse through the HTML-table extractor; markdown
+        # bodies (arena-fetch-page adoption lane) through the pipe-table extractor. Both
+        # apply the same label matching, so the audit compares like with like.
+        if rec.get("body_format") == "markdown":
+            fields, missing = module.extract_spec_fields_markdown(body.decode("utf-8", "replace"))
+        else:
+            fields, missing = module.extract_spec_fields(body.decode("utf-8", "replace"))
         if fields != rec.get("fields"):
             diff = [k for k in set(fields) | set(rec.get("fields") or {})
                     if fields.get(k) != (rec.get("fields") or {}).get(k)]
             rep.fail("cme_specs.transcription",
-                     f"{product}: committed fields differ from the stored HTML for {sorted(diff)}; "
+                     f"{product}: committed fields differ from the stored body "
+                     f"({rec.get('body_format') or 'html'}) for {sorted(diff)}; "
                      "re-run scripts/fetch_cme_specs.py --offline")
         if sorted(missing) != sorted(rec.get("missing_fields") or []):
             rep.fail("cme_specs.missing_fields",

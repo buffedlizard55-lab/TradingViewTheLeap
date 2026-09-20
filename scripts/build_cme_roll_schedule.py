@@ -98,6 +98,16 @@ def main() -> int:
             result["reason"] = why
             result["roll_dates"] = []
             result["termination_dates_iso"] = []
+        elif product in cme_roll.RULE_CODECS and not result["roll_dates"]:
+            # A coded product whose captured daily bars span too little time to contain a
+            # single contract-month termination (e.g. a vendor history that starts the day
+            # the symbol was added to the pool) must say so rather than sit silently empty.
+            result["reason"] = (
+                f"the captured daily-bar window {start.isoformat()}..{end.isoformat()} contains "
+                f"no contract-month termination date for the codec "
+                f"{cme_roll.RULE_CODECS[product].name}; the schedule covers only the sessions "
+                "this repository holds"
+            )
         if result["roll_dates"]:
             coded += 1
             dated += 1
@@ -138,6 +148,14 @@ def main() -> int:
                 "closure set; where the two differ a derived date can be off by one session (IR-30).",
                 "The cryptocurrency codecs apply the rule's London-business-day leg as 'not a "
                 "weekend' because only the U.S. leg is checkable here.",
+                "NQ's published rule names the 3rd Friday of the contract month with no "
+                "business-day adjustment; when that Friday is an exchange closure (e.g. "
+                "2026-06-19, the Juneteenth holiday) the actual last trading session precedes "
+                "the derived date by one session.",
+                "MCL and QM publish a two-disjunct termination sentence ('1 business day before "
+                "the corresponding CL contract month OR 4/5 business days before the 25th...') "
+                "whose relative precedence is not stated; they carry no codec and no dates "
+                "rather than an interpretation.",
                 "Dates are the termination dates of successive contract months, which is the "
                 "boundary at which a 1! continuous series changes front contract; the repository "
                 "holds vendor continuous bars, not per-bar contract identity, so the mapping is "

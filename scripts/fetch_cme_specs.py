@@ -162,14 +162,41 @@ def _rows(document: str) -> list[tuple[str, str]]:
     return pairs
 
 
-def extract_spec_fields(document: str) -> tuple[dict, list[str]]:
-    """Extract the transcribed contract-spec fields from a spec page.
+def _rows_markdown(document: str) -> list[tuple[str, str]]:
+    """Yield (label, value) for every two-cell pipe-table row in a markdown document.
 
-    Returns ``(fields, missing)``. A field is taken from the first table row whose label
-    matches; a label that never appears yields ``None`` and lands in ``missing``. The
-    extraction is deterministic and reads only the given document.
+    This is the extraction path for bodies delivered through the agent page-fetch proxy
+    (transport ``arena-fetch-page``): the proxy renders the official contractSpecs HTML to
+    markdown, and the spec table arrives as ``| Label | Value |`` rows whose cell text is
+    the page's own text with ``<br>`` markers preserved. The same ``_clean_text``
+    normalisation as the HTML path is applied, so a transcription is identical whichever
+    transport delivered the page. Empty-header rows and ``| --- | --- |`` separators are
+    skipped; a row needs both a non-empty label and a value to count.
     """
-    pairs = _rows(document)
+    pairs: list[tuple[str, str]] = []
+    for line in document.splitlines():
+        line = line.strip()
+        if not line.startswith("|") or not line.endswith("|"):
+            continue
+        cells = line[1:-1].split("|")
+        if len(cells) != 2:
+            continue
+        label = _clean_text(cells[0]).strip().rstrip(":").lower()
+        value = _clean_text(cells[1]).strip()
+        if not label or set(label) <= {"-", " ", ":"}:
+            continue
+        if not value:
+            continue
+        pairs.append((label, value))
+    return pairs
+
+
+def _fields_from_pairs(pairs: list[tuple[str, str]]) -> tuple[dict, list[str]]:
+    """Map (label, value) pairs onto the transcribed field set.
+
+    Shared by the HTML and markdown extraction paths so both transports apply exactly the
+    same label matching, first-match-wins rule and missing-field bookkeeping.
+    """
     fields: dict[str, str | None] = {}
     missing: list[str] = []
     for key, labels in FIELD_LABELS.items():
@@ -193,6 +220,42 @@ def extract_spec_fields(document: str) -> tuple[dict, list[str]]:
                 break
     fields["additional_hours_rows"] = extra or None
     return fields, missing
+
+
+def extract_spec_fields(document: str) -> tuple[dict, list[str]]:
+    """Extract the transcribed contract-spec fields from a spec page's HTML.
+
+    Returns ``(fields, missing)``. A field is taken from the first table row whose label
+    matches; a label that never appears yields ``None`` and lands in ``missing``. The
+    extraction is deterministic and reads only the given document.
+    """
+    return _fields_from_pairs(_rows(document))
+
+
+def extract_spec_fields_markdown(document: str) -> tuple[dict, list[str]]:
+    """Extract the transcribed contract-spec fields from a markdown-rendered spec page.
+
+    Same contract as :func:`extract_spec_fields`, for bodies stored by the agent-fetch
+    adoption lane (``data/cme_specs/<PRODUCT>.agentfetch.md``). Deterministic, reads only
+    the given document.
+    """
+    return _fields_from_pairs(_rows_markdown(document))
+
+
+def extract_for_record(rec: dict) -> tuple[dict, list[str]]:
+    """Re-extract a captured record's fields from its stored body.
+
+    Dispatches on the record's ``body_format``: HTML bodies (the GitHub-hosted lane's
+    ``direct_https`` captures) parse through the HTML table path; markdown bodies (the
+    ``arena-fetch-page`` adoption lane) parse through the pipe-table path. Both apply the
+    identical label matching, so the offline audit compares like with like.
+    """
+    path = os.path.join(str(ROOT), rec["file"])
+    with open(path, "rb") as fh:
+        body = fh.read()
+    if rec.get("body_format") == "markdown":
+        return extract_spec_fields_markdown(body.decode("utf-8", "replace"))
+    return extract_spec_fields(body.decode("utf-8", "replace"))
 
 
 #: Header sets tried in order. CME's edge has been observed to hold a connection open
@@ -257,26 +320,55 @@ def build(args: argparse.Namespace) -> int:
             continue
 
         if args.offline:
-            # Re-extract from the stored HTML only (used by the offline verifier lane).
-            stored = SPECS_DIR / f"{product}.html"
-            if not stored.exists():
+            # Re-extract from the stored HTML only (used by the offline verifier lane). When
+            # the page was adopted from an agent page-fetch instead (data/cme_specs/
+            # <PRODUCT>.agentfetch.md), re-extract from that stored markdown body through
+            # the markdown table path - the bytes are what the proxy delivered, and the
+            # transcription must still reproduce from them exactly.
+            stored_html = SPECS_DIR / f"{product}.html"
+            stored_md = SPECS_DIR / f"{product}.agentfetch.md"
+            prior = previous.get(product, {})
+            if stored_html.exists():
+                body = stored_html.read_bytes()
+                record.update(
+                    {
+                        "accessed_utc": prior.get("accessed_utc"),
+                        "http_status": prior.get("http_status"),
+                        "transport": "stored_html",
+                        "raw_bytes": len(body),
+                        "raw_sha256": hashlib.sha256(body).hexdigest(),
+                        "file": f"data/cme_specs/{product}.html",
+                    }
+                )
+                fields, missing = extract_spec_fields(body.decode("utf-8", "replace"))
+            elif stored_md.exists():
+                body = stored_md.read_bytes()
+                record.update(
+                    {
+                        "accessed_utc": prior.get("accessed_utc"),
+                        "http_status": prior.get("http_status"),
+                        "transport": "stored_agent_fetch_markdown",
+                        "body_format": "markdown",
+                        "raw_bytes": len(body),
+                        "raw_sha256": hashlib.sha256(body).hexdigest(),
+                        "file": f"data/cme_specs/{product}.agentfetch.md",
+                    }
+                )
+                fields, missing = extract_spec_fields_markdown(body.decode("utf-8", "replace"))
+            else:
                 record["status"] = "failed"
-                record["reason"] = f"{stored.name} not stored yet; run without --offline"
+                record["reason"] = (
+                    f"neither {stored_html.name} nor {stored_md.name} is stored yet; "
+                    "run without --offline"
+                )
                 records.append(record)
                 continue
-            body = stored.read_bytes()
-            prior = previous.get(product, {})
-            record.update(
-                {
-                    "accessed_utc": prior.get("accessed_utc"),
-                    "http_status": prior.get("http_status"),
-                    "transport": "stored_html",
-                    "raw_bytes": len(body),
-                    "raw_sha256": hashlib.sha256(body).hexdigest(),
-                    "file": f"data/cme_specs/{product}.html",
-                }
-            )
-            fields, missing = extract_spec_fields(body.decode("utf-8", "replace"))
+            # Carry forward provenance keys that describe how the page was reached (the
+            # agent-fetch lane's chunk map and capture scope) so an offline replay does not
+            # silently drop them from the committed index.
+            for key in ("agent_fetch_chunks", "agent_fetch_total_chunks", "capture_scope"):
+                if prior.get(key) is not None:
+                    record[key] = prior[key]
             record["fields"] = fields
             record["missing_fields"] = missing
             record["status"] = "captured"

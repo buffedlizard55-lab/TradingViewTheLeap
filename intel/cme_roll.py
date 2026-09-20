@@ -121,7 +121,10 @@ def prior_month(year: int, month: int) -> tuple[int, int]:
 class RuleCodec:
     """A mechanically decidable termination rule.
 
-    ``terminates(year, month)`` returns the last trading date of that contract month.
+    ``terminates(year, month)`` returns the last trading date of that contract month, or
+    ``None`` when the product's own listing rule has no contract in that month (NQ's
+    quarterly cycle, SIC's Mar/May/Jul/Sep/Dec cycle) - a month without a listed contract
+    yields no date rather than an invented one.
     ``rule_verbatim`` must equal the ``termination`` text stored for the product in
     ``data/cme_product_hours.json``; ``scripts/verify.py`` enforces that.
     """
@@ -165,6 +168,45 @@ def _crypto_last_friday(year: int, month: int) -> date:
     return day
 
 
+def _nth_last_bd_prior(n: int) -> Callable[[int, int], Optional[date]]:
+    """`n`-th last business day of the month PRIOR to the contract month."""
+    def _f(year: int, month: int) -> Optional[date]:
+        py, pm = prior_month(year, month)
+        return nth_last_business_day(py, pm, n)
+    return _f
+
+
+def _nq_like() -> Callable[[int, int], Optional[date]]:
+    """Third Friday of the contract month (NQ rule); non-quarterly months yield None.
+
+    The published rule names the 3rd Friday with no business-day adjustment, so none is
+    applied. The quarterly listing restriction comes from the product's own Listed
+    Contracts row; a month without a listed contract produces no termination date.
+    """
+    def _f(year: int, month: int) -> Optional[date]:
+        if month not in (3, 6, 9, 12):
+            return None
+        first = date(year, month, 1)
+        offset = (4 - first.weekday()) % 7  # Friday == 4
+        return first + timedelta(days=offset + 14)
+    return _f
+
+
+def _listed_months(inner: Callable[[int, int], date],
+                   months: tuple[int, ...]) -> Callable[[int, int], Optional[date]]:
+    """Restrict a monthly termination rule to a product's fixed listed months.
+
+    Used where the official Listed Contracts row names a fixed month cycle (SIC: Mar, May,
+    Jul, Sep, Dec; SIL/PL additionally list rolling consecutive months - see each codec's
+    note). A month outside the fixed cycle yields None: no date is invented for it.
+    """
+    def _f(year: int, month: int) -> Optional[date]:
+        if month not in months:
+            return None
+        return inner(year, month)
+    return _f
+
+
 RULE_CODECS: dict[str, RuleCodec] = {
     "SI": RuleCodec(
         name="comex_si_third_last_business_day",
@@ -202,6 +244,113 @@ RULE_CODECS: dict[str, RuleCodec] = {
         terminates=_crypto_last_friday,
         note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is "
              "checkable from intel/calendar.py",
+    ),
+    "NQ": RuleCodec(
+        name="cme_nq_third_friday_quarterly",
+        rule_verbatim=(
+            'Trading terminates at 9:30 a.m. ET on the 3rd Friday of the contract month.\nTACO trading terminates at 9:30 a.m. ET on the Thursday before the 3rd Friday of the contract month.\nBTIC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of contract month.\nTMAC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of the contract month.'
+        ),
+        terminates=_nq_like(),
+        note="quarterly listing (Mar, Jun, Sep, Dec) per the product's own Listed Contracts row; non-quarterly months are not listed and yield no date. The published rule names the 3rd Friday with no business-day adjustment: when that Friday is an exchange closure (e.g. 2026-06-19, the Juneteenth holiday) the actual last trading session precedes the derived date by one session",
+    ),
+    "NG": RuleCodec(
+        name="nymex_ng_third_last_bd_prior_month",
+        rule_verbatim=(
+            'Trading terminates on the 3rd last business day of the month prior to the contract month.'
+        ),
+        terminates=_nth_last_bd_prior(3),
+    ),
+    "HO": RuleCodec(
+        name="nymex_ho_last_bd_prior_month",
+        rule_verbatim=(
+            'Trading terminates on the last business day of the month prior to the contract month.'
+        ),
+        terminates=_nth_last_bd_prior(1),
+    ),
+    "RB": RuleCodec(
+        name="nymex_rb_last_bd_prior_month",
+        rule_verbatim=(
+            'Trading terminates on the last business day of the month prior to the contract month.'
+        ),
+        terminates=_nth_last_bd_prior(1),
+    ),
+    "MNG": RuleCodec(
+        name="nymex_mng_fourth_last_bd_prior_month",
+        rule_verbatim=(
+            'Trading terminates on the 4th last business day of the month prior to the contract month.'
+        ),
+        terminates=_nth_last_bd_prior(4),
+    ),
+    "PL": RuleCodec(
+        name="nymex_pl_third_last_bd_contract_month",
+        rule_verbatim=(
+            'Trading terminates on the third last business day of the contract month.'
+        ),
+        terminates=_listed_months(_si_like(3), (1, 4, 7, 10)),
+        note='the product also lists 3 consecutive rolling months (see its Listed Contracts row); that rolling part is not knowable for a historical window, so only the fixed Jan/Apr/Jul/Oct cycle is dated - the schedule under-counts PL roll boundaries',
+    ),
+    "SIC": RuleCodec(
+        name="comex_sic_third_last_bd_prior_month",
+        rule_verbatim=(
+            'Trading terminates at 12:25 p.m. CT on the third last business day of the month prior to the contract month.'
+        ),
+        terminates=_listed_months(_nth_last_bd_prior(3), (3, 5, 7, 9, 12)),
+    ),
+    "SIL": RuleCodec(
+        name="comex_sil_third_last_bd_contract_month",
+        rule_verbatim=(
+            'Trading terminates on the third last business day of the contract month.'
+        ),
+        terminates=_listed_months(_si_like(3), (1, 3, 5, 7, 9, 12)),
+        note='the product also lists 3 consecutive rolling months (see its Listed Contracts row); that rolling part is not knowable for a historical window, so only the fixed Jan/Mar/May/Jul/Sep/Dec cycle is dated - the schedule under-counts SIL roll boundaries',
+    ),
+    "MBT": RuleCodec(
+        name="cme_mbt_last_friday",
+        rule_verbatim=(
+            'Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or the U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+    ),
+    "MET": RuleCodec(
+        name="cme_met_last_friday",
+        rule_verbatim=(
+            'Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month that is either a London or U.S. business day. If the last Friday of the contract month day is not a business day in both London and the U.S., trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+    ),
+    "SOL": RuleCodec(
+        name="cme_sol_last_friday",
+        rule_verbatim=(
+            'Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+    ),
+    "MSL": RuleCodec(
+        name="cme_msl_last_friday",
+        rule_verbatim=(
+            'Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+    ),
+    "XRP": RuleCodec(
+        name="cme_xrp_last_friday",
+        rule_verbatim=(
+            'Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
+    ),
+    "MXP": RuleCodec(
+        name="cme_mxp_last_friday",
+        rule_verbatim=(
+            'Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.'
+        ),
+        terminates=_crypto_last_friday,
+        note="the London-business-day leg is applied as 'not a weekend'; only the U.S. leg is checkable from intel/calendar.py",
     ),
 }
 
@@ -267,6 +416,10 @@ def roll_dates(product: str, start: date, end: date,
     out = []
     for year, month in months:
         day = codec.terminates(year, month)
+        if day is None:
+            # The product does not list this contract month (e.g. NQ's quarterly cycle);
+            # no termination date exists for it and none is invented.
+            continue
         if start <= day <= end:
             out.append({"contract_month": f"{year}-{month:02d}",
                         "termination_date": day.isoformat()})
