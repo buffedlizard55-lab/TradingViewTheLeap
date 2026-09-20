@@ -31,12 +31,15 @@ Why these shapes:
 - C22 (volume-drought ignition) is the volume-compression dual of C11's price
   compression: five consecutive sessions each printing at most 0.6x their own
   20-session average volume mark quiet accumulation / seller withdrawal; a session
-  that then trades at least 3x average volume and closes in the top 30% of its
+  that then trades at least 2.5x average volume and closes in the top 40% of its
   range, above its own open, is demand discovery, and the expansion phase is
   harvested long with pyramiding. The drought window is measured on the sessions
   strictly before the ignition bar, and the ignition bar's own volume is compared
   with the same 20-session baseline, so the pattern cannot look at the fill it
-  triggers.
+  triggers. The ignition thresholds were re-frozen once (3.0x / top-30% -> 2.5x /
+  top-40%) on 2026-09-20 BEFORE any full-pool run, because the drafted pair
+  produced zero ignition candidates across ~10 years of the six committed pool
+  names while the strongest real candidates missed only on the close filter.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -105,7 +108,7 @@ MODEL_CLAIMS = {
     "C19A": "A first liquidation bar (>=1.5 ATR close-to-close drop on >=2x volume) plus a second liquidation bar within the next three sessions (>=1.0 ATR down, low not more than 0.25 ATR below the first low, close in the top 40% of its range) is delayed absorption rather than a continuing cascade; long the next open and pyramid on +1 ATR closes (max 3 adds). Structurally distinct from frozen C19 (not a parameter retune).",
     "C20": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
     "C21": "A climax bar whose range is >=2.5 ATR followed by a bar whose range is at most half of that climax, closing in the opposite direction, is a wide-to-narrow reversal: long after a down climax, short after an up climax.",
-    "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 3x that average volume, above its own open, and closes in the top 30% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding.",
+    "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 2.5x that average volume, above its own open, and closes in the top 40% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding. (Thresholds re-frozen once on 2026-09-20, before any full-pool run: the drafted 3.0x / top-30% combination produced zero ignition candidates across ~10 years of the six committed pool names, missing the strongest real candidates only on the close-position filter; see the seventeenth-pass audit.)",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -250,8 +253,8 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "drought_bars": 5,
         "drought_volume_fraction": 0.6,
         "volume_length": 20,
-        "ignition_volume_mult": 3.0,
-        "close_tail_fraction": 0.3,
+        "ignition_volume_mult": 2.5,
+        "close_tail_fraction": 0.4,
         "add_atr_step": 1.0,
         "max_adds": 3,
         "hold_bars": 12,
@@ -325,7 +328,8 @@ VARIANTS: dict[str, dict[str, dict]] = {
     },
     "C22": {
         "deep": {"drought_bars": 8, "drought_volume_fraction": 0.5,
-                 "ignition_volume_mult": 4.0, "max_adds": 5, "hold_bars": 15},
+                 "ignition_volume_mult": 3.0, "close_tail_fraction": 0.35,
+                 "max_adds": 5, "hold_bars": 15},
     },
     "B1": {},
 }

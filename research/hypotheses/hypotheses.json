@@ -668,12 +668,13 @@
   },
   {
    "id": "H41",
-   "claim": "C22 (volume-drought ignition): five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal, and a session that then trades at least 3x that average volume, above its own open, closing in the top 30% of its range, is demand discovery whose expansion over the following ~12 sessions is strong enough that pyramided longs beat the B1 control on the same editions.",
+   "claim": "C22 (volume-drought ignition): five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal, and a session that then trades at least 2.5x that average volume, above its own open, closing in the top 40% of its range, is demand discovery whose expansion over the following ~12 sessions is strong enough that pyramided longs beat the B1 control on the same editions.",
    "prediction": "On the full 20-stock daily pool, the C22 usernames (DroughtDynamo, SlowFuseSal) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
    "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C22 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
    "status": "untested",
    "evidence": [
-    "Model frozen in intel/stock_strategies.py (DEFAULT_PARAMS/VARIANTS) and rostered (this pass); the full-pool verdict is withheld until the 60/60 matrix and the re-derived competition land."
+    "Model frozen in intel/stock_strategies.py (DEFAULT_PARAMS/VARIANTS) and rostered (this pass); the full-pool verdict is withheld until the 60/60 matrix and the re-derived competition land.",
+    "2026-09-20 pre-run re-freeze: the drafted ignition pair (3.0x volume, top-30% close) was diagnosed on the committed partial pool BEFORE any full-pool run: across ~10 years of the six rostered pool names it produced zero ignition candidates while the two strongest real sessions (MARA 2016-05-26 volume ratio 4.28 / close-position 0.66; RIOT 2018-11-06 3.36 / 0.54) missed only the close-position filter. DEFAULT_PARAMS were re-frozen once to 2.5x / top-40% (the deep variant keeps the strict 3.0x / top-35% with the deeper 8-bar drought). The full-pool run below is the first run of the frozen parameters."
    ],
    "source_ids": [
     "YAHOO-INTRADAY-CHART"
