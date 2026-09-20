@@ -4,13 +4,13 @@
     "description": "Provenance for the official CME Group contract-specification page of every future in this repository's pool. Each record stores the exact response body under data/cme_specs/ with its SHA-256 and byte length; the transcribed fields are re-extractable from that body offline. A missing field is null and listed in missing_fields - it is never inferred from another product.",
     "script": "scripts/fetch_cme_specs.py",
     "script_version": "1",
-    "generated_utc": "2026-09-20T00:46:08+00:00",
+    "generated_utc": "2026-09-20T16:37:31+00:00",
     "capture_environment": "github-actions",
-    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35479263008",
+    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35522847711",
     "product_count": 20,
-    "captured_count": 17,
+    "captured_count": 0,
     "failed_count": 3,
-    "kept_previous_count": 0,
+    "kept_previous_count": 17,
     "not_a_forecast": true,
     "engine_applies_hours": false,
     "provenance_note": "The per-record 'reason' values in this index do NOT record the real transport error. The lane's offline re-extraction step ran after a run that stored no HTML at all and rewrote every record's reason to '<PRODUCT>.html not stored yet; run without --offline' before the commit step ran, so the underlying failure text was lost (capture_environment 'local' and workflow_run_url null are the fingerprints of that offline pass). The fact that survives is captured_count 0 of 20. The workflow step is fixed: it now skips the offline pass entirely when nothing arrived over the network and restores the network index unconditionally. No reason text has been reconstructed or guessed here.",
@@ -47,17 +47,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 4509,
       "raw_sha256": "fc6ca930e97245f5de0ac8cde576d4f4035f4be540f63e7b7ad2434e34ec859d",
       "file": "data/cme_specs/CL.agentfetch.md",
@@ -73,8 +67,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "ETH",
@@ -106,17 +103,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 2747,
       "raw_sha256": "f7976a41702dcb14b575733584dd1888edce3f267bd372e50ca6c3d6d8c54022",
       "file": "data/cme_specs/HO.agentfetch.md",
@@ -132,8 +123,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MBT",
@@ -142,17 +136,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 4364,
       "raw_sha256": "5418982b961167cd7d2283ff89f24105b6994819f088097a577770908aa53904",
       "file": "data/cme_specs/MBT.agentfetch.md",
@@ -168,8 +156,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MCL",
@@ -178,17 +169,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 2630,
       "raw_sha256": "c59fbe0d7b7b353cf51acbfdd0f08a14c9cd167c68b20eddb66233322abf71c5",
       "file": "data/cme_specs/MCL.agentfetch.md",
@@ -204,8 +189,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MET",
@@ -214,18 +202,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0,
-        1
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 5012,
       "raw_sha256": "0c664311de696665b8277d1be1b5fd6da64d2f49dd163badae898f2526a0c0a1",
       "file": "data/cme_specs/MET.agentfetch.md",
@@ -241,8 +222,12 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MNG",
@@ -251,17 +236,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 1563,
       "raw_sha256": "32320da2c0c74ccd6755cb418f247f877d75bdc24523315811f314fd64e1006e",
       "file": "data/cme_specs/MNG.agentfetch.md",
@@ -277,8 +256,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MSL",
@@ -287,17 +269,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 4400,
       "raw_sha256": "4ad1121b8512ec98727b9632443a255f8296b22a9fa2d11ad96ec29f4af20916",
       "file": "data/cme_specs/MSL.agentfetch.md",
@@ -313,8 +289,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MXP",
@@ -323,17 +302,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 4426,
       "raw_sha256": "b3b2db625c8d655abf35848aeb559e69b4a57a2099ba507dde09b237912a6de7",
       "file": "data/cme_specs/MXP.agentfetch.md",
@@ -349,8 +322,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "NG",
@@ -359,17 +335,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 2631,
       "raw_sha256": "360b256fc23d298611e80c28b828e637f54f0c8a06c62c34d7fbec286c8210e6",
       "file": "data/cme_specs/NG.agentfetch.md",
@@ -385,8 +355,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "NQ",
@@ -395,17 +368,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 3211,
       "raw_sha256": "abbe5c6fbbe66afbbd66a82e4809b228b4aeebc9f78331d8e2d7ed0e5ab7b618",
       "file": "data/cme_specs/NQ.agentfetch.md",
@@ -421,8 +388,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "PL",
@@ -431,18 +401,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0,
-        1
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 2518,
       "raw_sha256": "365279c4fd0599582f60957bfecd2bafc881846e61eee56a1640536a80502094",
       "file": "data/cme_specs/PL.agentfetch.md",
@@ -458,8 +421,12 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "QM",
@@ -468,17 +435,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 1990,
       "raw_sha256": "2954ff7308e62a839b01a58e389091355e6058b790aab8c8092c5ff6738270f4",
       "file": "data/cme_specs/QM.agentfetch.md",
@@ -494,8 +455,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "RB",
@@ -504,17 +468,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        1
-      ],
-      "agent_fetch_total_chunks": 3,
       "raw_bytes": 2744,
       "raw_sha256": "d95c007568c951667943dceca52d8867d9f066a8fedba3c15cc53b7ac8c7a099",
       "file": "data/cme_specs/RB.agentfetch.md",
@@ -530,8 +488,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SI",
@@ -564,18 +525,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0,
-        1
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 1397,
       "raw_sha256": "6d9ba28c853ae82d5ddef6e7b2a0ed045eb67f9382ad698f4d69da5a45e1c7e0",
       "file": "data/cme_specs/SIC.agentfetch.md",
@@ -591,8 +545,12 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SIL",
@@ -601,18 +559,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0,
-        1
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 2476,
       "raw_sha256": "dc9dfcececdf794af55dd946f7cb3363c87b0d4d7f950869f5007457da515c34",
       "file": "data/cme_specs/SIL.agentfetch.md",
@@ -628,8 +579,12 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SOL",
@@ -638,17 +593,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 4396,
       "raw_sha256": "f933445d35b402a1419881ad73a4670348697b236816cd9d34c6c04c97e66e99",
       "file": "data/cme_specs/SOL.agentfetch.md",
@@ -664,8 +613,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "XRP",
@@ -674,17 +626,11 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
-      "status": "captured",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html (HTTP Error 403: Forbidden)",
       "accessed_utc": "2026-09-20T05:25:57Z",
-      "http_status": null,
       "transport": "arena-fetch-page",
       "body_format": "markdown",
-      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored",
-      "agent_fetch_chunks": [
-        0
-      ],
-      "agent_fetch_total_chunks": 2,
       "raw_bytes": 4422,
       "raw_sha256": "8eb3fcc446230b7ea4cb14b4ae64ee0f3e9e8b45f0696b85d576013ab3af9d08",
       "file": "data/cme_specs/XRP.agentfetch.md",
@@ -700,8 +646,11 @@
         "additional_hours_rows": null
       },
       "missing_fields": [],
-      "retained_row": null,
-      "retained_reason": null
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     }
   ]
 }
