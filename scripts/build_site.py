@@ -702,7 +702,7 @@ def build() -> str:
     full_pool_verdicts = load_optional("data/full_pool_verdicts.json")
     verdicts_assigned = bool(full_pool_verdicts and full_pool_verdicts.get("verdicts"))
     if stock_series_captured == stock_series_total and verdicts_assigned:
-        coverage_note = ("full 60/60 coverage is present; full-pool verdicts H34–H39, H41 and H42 "
+        coverage_note = ("full 60/60 coverage is present; full-pool verdicts H34–H39 and H41–H43 "
                          "are assigned (data/full_pool_verdicts.json)")
     elif stock_series_captured == stock_series_total:
         coverage_note = "full 60/60 coverage is present; H34–H39 may be re-run"
@@ -792,6 +792,7 @@ are labeled separately.</p>
 <li><a href="#stocks">Stock history</a></li>
 <li><a href="#hypotheses">Hypotheses</a></li>
 <li><a href="#masterlist">Selected futures</a></li>
+<li><a href="#cmehours">CME hours &amp; rolls</a></li>
 <li><a href="#universe">Universe</a></li>
 <li><a href="#irregularities">Irregularities</a></li>
 <li><a href="#sources">Sources</a></li>
@@ -1575,6 +1576,50 @@ classification, not a measured volatility rank. Caps and multipliers are source-
 <td class="num">{number_or_dash(row['max_underlying_exposure'])} {esc(row['max_underlying_exposure_unit'])}</td>
 <td><span class="pill {pill}">{esc(row['verification_status'])}</span></td><td>{esc(row['selection_rationale'])}</td></tr>""")
     add("</tbody></table></div></section>")
+
+    # CME product hours + committed roll schedule (research/evidence/CME-PRODUCT-HOURS.md).
+    hours = load(os.path.join(ROOT, "data", "cme_product_hours.json"))
+    schedule = load(os.path.join(ROOT, "data", "cme_roll_schedule.json"))
+    roll_by_product = {p["product"]: p for p in schedule["products"]}
+    hours_meta = hours["_meta"]
+    sched_meta = schedule["_meta"]
+    add(f"""<section id="cmehours"><h2>CME product hours &amp; roll schedule</h2>
+<p class="lead">Product-specific Globex hours and last-trade rules for all {hours_meta['product_count']} pooled
+futures, transcribed from each product's own CME contract-specification page (17 machine-extracted
+from stored page bodies, 3 hand-read and retained; 0 omitted). Termination dates are <strong>derived</strong>
+by codecs bound to each product's verbatim rule — never transcribed from another page — and committed in
+<code>data/cme_roll_schedule.json</code> ({sched_meta['roll_date_count']} dates across
+{sched_meta['products_with_dates']} products). The engine does not yet force-close on these dates; wiring
+it in is a tracked, separately-compared step.</p>
+<div class="table-wrap"><table id="cme-hours-table"><thead><tr><th>Product</th><th>TradingView</th><th>Globex hours (first line)</th><th>Termination rule (verbatim)</th><th class="num">Committed dates</th><th>Source</th></tr></thead><tbody>""")
+    for row in hours["products"]:
+        prod = row["product"]
+        roll = roll_by_product.get(prod) or {}
+        dates = len(roll.get("roll_dates") or [])
+        if dates:
+            dates_cell = f'{dates} <span class="pill ok">codec {esc(roll.get("rule_codec") or "?")}</span>'
+        elif roll.get("reason"):
+            why = roll["reason"]
+            short = "no codec (ambiguous rule)" if "no codec" in why else "window holds none yet"
+            dates_cell = f'0 <span class="pill warn">{esc(short)}</span>'
+        else:
+            dates_cell = "0"
+        hours_first = (row.get("globex_hours") or "").split("\n")[0]
+        term = row.get("termination") or ""
+        spec_link = link(row["spec_url"], "CME specs ↗")
+        add(f"""<tr><td class="sym">{esc(prod)}</td><td>{esc(row['tradingview_symbol'])}</td>
+<td>{esc(hours_first)}</td><td>{esc(term)}</td><td class="num">{dates_cell}</td><td>{spec_link}</td></tr>""")
+    lims = sched_meta.get("declared_limitations") or []
+    if lims:
+        add("<p>Declared limitations (not hidden):</p><ul>")
+        for lim in lims:
+            add(f"<li>{esc(lim)}</li>")
+        add("</ul>")
+    add(f"""<p>Business days come from the NYSE closure table (IR-30); MCL/QM publish a two-disjunct
+termination sentence with no stated precedence and deliberately carry no codec. Full verbatim hours,
+per-row raw SHA-256 hashes and the adoption transport for every product are in
+<code>data/cme_product_hours.json</code>, <code>data/cme_specs_index.json</code> and
+<a href="research/evidence/CME-PRODUCT-HOURS.md">the evidence file</a>.</p></section>""")
 
     # Full universe — data-ex exactly once per row for CI/client filtering.
     add(f"""<section id="universe"><h2>Full eligible universe</h2>

@@ -60,7 +60,7 @@ VOLATILE_PATH = os.path.join(ROOT, "data", "volatile_stocks.json")
 OUT_PATH = os.path.join(ROOT, "data", "full_pool_verdicts.json")
 
 INTERVALS = ("15m", "1h", "1d")
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43")
 CONTROL_USERNAME = "VolatilityVera"
 CONTROL_MODEL = "B1"
 
@@ -212,7 +212,7 @@ def main() -> int:
     hyps = {h["id"]: h for h in load(HYPOTHESES_PATH)["hypotheses"]}
     models = {"H34": "C14", "H35": "C15", "H36": "C16",
               "H37": "C17", "H38": "C18", "H39": "C19",
-              "H41": "C22", "H42": "C19A"}
+              "H41": "C22", "H42": "C19A", "H43": "C23"}
 
     verdicts = {}
     for hid in FULL_POOL_HYPOTHESES:
@@ -224,7 +224,7 @@ def main() -> int:
         "_meta": {
             "kind": "full_pool_hypothesis_verdicts",
             "description": (
-                "Mechanical verdicts for H34-H39 and H41, derived from data/stock_competition_results.json "
+                "Mechanical verdicts for H34-H39 and H41-H43, derived from data/stock_competition_results.json "
                 "by the pre-registered decision rule below. scripts/verify.py re-runs the same "
                 "rule and fails if this file or the hypothesis register disagrees."
             ),
@@ -294,7 +294,7 @@ def main() -> int:
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(register, fh, indent=2)
             fh.write("\n")
-        print("hypotheses.json updated for H34-H39, H41 and H42")
+        print("hypotheses.json updated for H34-H39 and H41-H43")
 
     return 0
 
