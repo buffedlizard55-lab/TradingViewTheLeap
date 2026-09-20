@@ -573,7 +573,7 @@
         "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs GapGlider, MomentumMarauder. Season trades: GapGlider 31, MomentumMarauder 97. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs GapGlider, MomentumMarauder. Season trades: GapGlider 31, MomentumMarauder 97. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -589,7 +589,7 @@
         "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DeadCatDana, SnapbackSue. Season trades: DeadCatDana 14, SnapbackSue 31. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DeadCatDana, SnapbackSue. Season trades: DeadCatDana 14, SnapbackSue 31. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -605,7 +605,7 @@
         "Model frozen in intel/stock_strategies.py and rostered (this pass); the only captured series is ENPH daily, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 sixteenth pass): 11 of 20 daily series are now captured (partial pool); the full-pool verdict is still withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs BreakoutBea, VolcanoVic. Season trades: BreakoutBea 225, VolcanoVic 141. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs BreakoutBea, VolcanoVic. Season trades: BreakoutBea 225, VolcanoVic 141. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -620,7 +620,7 @@
       "evidence": [
         "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DawnRaider, GapGobbler. Season trades: DawnRaider 16, GapGobbler 5. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DawnRaider, GapGobbler. Season trades: DawnRaider 16, GapGobbler 5. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -635,7 +635,7 @@
       "evidence": [
         "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs AvalancheAva, MartingaleMax. Season trades: AvalancheAva 44, MartingaleMax 123. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs AvalancheAva, MartingaleMax. Season trades: AvalancheAva 44, MartingaleMax 123. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -650,7 +650,7 @@
       "evidence": [
         "Model frozen in intel/stock_strategies.py and rostered (2026-09-19 sixteenth pass); only 11 of 20 daily series are captured, so a full-pool verdict is withheld until coverage lands.",
         "Coverage update (2026-09-19 R11 pass): 38/60 series captured (15m=16, 1h=11 including salvaged MARA 1h, 1d=11 of 20). Full-pool verdict still withheld; status remains untested.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DoubleTapDora, HammerHank. Season trades: DoubleTapDora 0, HammerHank 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DoubleTapDora, HammerHank. Season trades: DoubleTapDora 0, HammerHank 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -681,7 +681,7 @@
       "evidence": [
         "Model frozen in intel/stock_strategies.py (DEFAULT_PARAMS/VARIANTS) and rostered (this pass); the full-pool verdict is withheld until the 60/60 matrix and the re-derived competition land.",
         "2026-09-20 pre-run re-freeze: the drafted ignition pair (3.0x volume, top-30% close) was diagnosed on the committed partial pool BEFORE any full-pool run: across ~10 years of the six rostered pool names it produced zero ignition candidates while the two strongest real sessions (MARA 2016-05-26 volume ratio 4.28 / close-position 0.66; RIOT 2018-11-06 3.36 / 0.54) missed only the close-position filter. DEFAULT_PARAMS were re-frozen once to 2.5x / top-40% (the deep variant keeps the strict 3.0x / top-35% with the deeper 8-bar drought). The full-pool run below is the first run of the frozen parameters.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DroughtDynamo, SlowFuseSal. Season trades: DroughtDynamo 0, SlowFuseSal 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs DroughtDynamo, SlowFuseSal. Season trades: DroughtDynamo 0, SlowFuseSal 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -697,7 +697,7 @@
         "Structurally new variant of the C19 liquidation-cascade idea, frozen in intel/stock_strategies.py (DEFAULT_PARAMS['C19A']) BEFORE any full-pool run: stage1_crash_atr_mult 1.5 / stage1_volume_mult 2.0 / stage2_window 3 / stage2_crash_atr_mult 1.0 / stage2_low_atr_slack 0.25 / stage2_close_tail_fraction 0.40 / volume_length 20 / add_atr_step 1.0 / max_adds 3 / hold_bars 12.",
         "Gate fired 2026-09-20: the matrix reached 60/60 (20/20 daily) and the full-pool run confirmed frozen C19 zero-fire (H39 inconclusive), exactly the pre-registered trigger in research/strategy/C19-VARIANT-GATE.md.",
         "Registered 2026-09-20 under NEW usernames TwoStepTessa / LagLiquidationLeo on the FULL 20-stock daily pool (C19 itself stays frozen and rostered on its original six-symbol pool), same costs, profile stocks_official_leap and forward-held-out split as every other daily participant; the forward window was untouched.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs LagLiquidationLeo, TwoStepTessa. Season trades: LagLiquidationLeo 0, TwoStepTessa 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs LagLiquidationLeo, TwoStepTessa. Season trades: LagLiquidationLeo 0, TwoStepTessa 0. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-INTRADAY-CHART"
@@ -713,7 +713,7 @@
         "Model frozen in intel/stock_strategies.py (DEFAULT_PARAMS['C23'] = min_streak 8, add_atr_step 1.0 ATR, max_adds 3, hold_bars 8; deep variant min_streak 9 / hold_bars 10) BEFORE any full-pool run, together with roster entries RedStreakRiley / SerialSnapSam on the full 20-stock daily pool.",
         "Pre-freeze probe on the committed vendor daily bars (2026-09-20): streak>=8 n=75, median 5-session forward return +5.0%, 67% positive, median 10-session +4.5%; streak>=7 n=164 median +3.6%; streak>=5 n=698 median +3.1%. Adding a top-40% close-position filter to streak>=8 cut the median to +3.4% (n=21); adding volume>=1.2x cut it to +1.4% (n=4) - hence the filterless freeze.",
         "The signal is count-based, distinct from every existing model: C7/C12/C15/C17/C19/C19A trigger on single-bar or two-bar ATR magnitude and volume; C20 on a reclaimed N-bar low; C22 on volume drought. No existing model counts consecutive down closes.",
-        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T17:14:38+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs RedStreakRiley, SerialSnapSam. Season trades: RedStreakRiley 75, SerialSnapSam 37. Decision rule and every consumed number are in data/full_pool_verdicts.json."
+        "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py on 2026-09-20T18:59:20+00:00: coverage 60/60 series (daily 20/20), 81 season editions on 20 eligible symbols. Control VolatilityVera (B1) season P/L $-11,803.86 vs RedStreakRiley, SerialSnapSam. Season trades: RedStreakRiley 75, SerialSnapSam 37. Decision rule and every consumed number are in data/full_pool_verdicts.json."
       ],
       "source_ids": [
         "YAHOO-DAILY-ENPH",
