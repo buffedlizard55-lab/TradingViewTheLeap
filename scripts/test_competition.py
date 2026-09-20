@@ -355,7 +355,9 @@ class StockModelTests(unittest.TestCase):
         )
         for model in ("C19A", "C20", "C21"):
             self.assertIn(model, STOCK_MODEL_IDS)
-        self.assertIn("C19A", GATED_STOCK_MODEL_IDS)
+        # C19A's gate fired on 2026-09-20 (60/60 matrix, H39 inconclusive) and it was
+        # registered as H42; no stock model is gated at the moment.
+        self.assertNotIn("C19A", GATED_STOCK_MODEL_IDS)
         self.assertNotIn("C20", GATED_STOCK_MODEL_IDS)
         self.assertNotIn("C21", GATED_STOCK_MODEL_IDS)
 
@@ -428,15 +430,22 @@ class StockModelTests(unittest.TestCase):
         self.assertEqual([(d.index, d.action) for d in d21 if d.action in ("long", "short")],
                          [(21, "long")])
 
-    def test_gated_c19a_is_not_rostered(self):
+    def test_gated_models_are_not_rostered_and_c19a_registered(self):
         import json
         from intel.stock_strategies import GATED_STOCK_MODEL_IDS
         with open(os.path.join(ROOT, "data/competition/stock_roster.json"),
                   encoding="utf-8") as fh:
             roster = json.load(fh)
         rostered = {p["model"] for p in roster["participants"]}
-        self.assertTrue(GATED_STOCK_MODEL_IDS)
+        # Invariant for every future gated variant: never rostered while gated.
         self.assertTrue(rostered.isdisjoint(GATED_STOCK_MODEL_IDS))
+        # C19A's gate fired at 60/60 (H39 inconclusive) -> registered as H42 on the
+        # full 20-stock daily pool under two fresh usernames (C19-VARIANT-GATE.md).
+        c19a = [p for p in roster["participants"] if p["model"] == "C19A"]
+        self.assertEqual(sorted(p["username"] for p in c19a),
+                         ["LagLiquidationLeo", "TwoStepTessa"])
+        self.assertTrue(all(p["division"] == "daily" for p in c19a))
+        self.assertTrue(all(len(p["pool"]) == 20 for p in c19a))
 
 
 class ExecutionRealismTests(unittest.TestCase):

@@ -1742,7 +1742,7 @@ def _volatile_pool_symbols() -> set:
     return {r["symbol"] for r in vs["records"]}
 
 
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42")
 
 
 def check_h34_h39_coverage_gate(rep: Report) -> None:
@@ -3349,27 +3349,36 @@ def self_test(rep: Report) -> None:
         scenarios.append(("tv_benchmark.status", ("data/tv_benchmark.json", mutated),
                           lambda r: check_tv_benchmark(r, source_ids)))
 
-    fake_hyps = copy.deepcopy(load("research/hypotheses/hypotheses.json"))
-    for row in fake_hyps["hypotheses"]:
-        if row["id"] == "H34":
-            row["status"] = "supported"
+    # Coverage gate: the register now carries a genuine full-pool "supported" verdict
+    # (H36), so demoting any captured equity series in the index must make the gate
+    # refuse it. (Pre-60/60 the scenario set a fake supported verdict instead; with the
+    # matrix complete that corruption can no longer fire the check.)
+    fake_idx_gate = copy.deepcopy(load("data/intraday_index.json"))
+    for rec in fake_idx_gate["captures"]:
+        if (rec.get("kind") in (None, "equity") and rec.get("interval") == "1d"
+                and rec.get("status") == "captured"):
+            rec["status"] = "failed"
             break
     scenarios.append(("hypotheses.coverage_gate",
-                      ("research/hypotheses/hypotheses.json", fake_hyps),
+                      ("data/intraday_index.json", fake_idx_gate),
                       lambda r: check_h34_h39_coverage_gate(r)))
 
-    fake_roster = copy.deepcopy(load("data/competition/stock_roster.json"))
-    fake_roster["participants"].append({
-        "username": "GateBreaker",
-        "kind": "contrarian",
-        "model": "C19A",
-        "variant": None,
-        "division": "daily",
-        "pool": ["ENPH"],
-    })
+    # Roster gate: the gated set is empty since C19A's gate fired (2026-09-20), so prove
+    # the check can still fire by temporarily re-gating C19A - which IS rostered - and
+    # running the check against the real roster. The module attribute is restored in the
+    # finally clause; nothing is written to disk.
+    def run_gated_roster_check(r):
+        from intel import stock_strategies as ss_mod  # noqa: E402
+        saved = ss_mod.GATED_STOCK_MODEL_IDS
+        ss_mod.GATED_STOCK_MODEL_IDS = ("C19A",)
+        try:
+            check_stock_roster_gates(r)
+        finally:
+            ss_mod.GATED_STOCK_MODEL_IDS = saved
     scenarios.append(("stock_competition.gated_model_rostered",
-                      ("data/competition/stock_roster.json", fake_roster),
-                      lambda r: check_stock_roster_gates(r)))
+                      ("data/competition/stock_roster.json",
+                       copy.deepcopy(load("data/competition/stock_roster.json"))),
+                      run_gated_roster_check))
 
     roll_doc = load_opt("data/cme_roll_schedule.json")
     if roll_doc is not None and any(p.get("roll_dates") for p in roll_doc.get("products") or []):

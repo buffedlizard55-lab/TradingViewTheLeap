@@ -1,7 +1,13 @@
 # C19 follow-up gate: two-stage absorption variant
 
-**Status: proposal only — implemented and frozen as model `C19A`, not rostered, not
-backtested on the live pool, and not a recommendation.**
+**Status: GATE FIRED 2026-09-20 — C19A registered as hypothesis H42.** The matrix reached
+60/60 (20/20 daily) and the full-pool run assigned H39 = inconclusive (frozen C19 zero-fire:
+HammerHank and DoubleTapDora both 0 trades, exactly the pre-registered trigger below).
+C19A was then rostered the same day on the FULL 20-stock daily pool under the new usernames
+`TwoStepTessa` and `LagLiquidationLeo` (frozen parameters untouched; C19 stays frozen on its
+original six-symbol pool). First full-pool result: C19A also zero-fire -> H42 inconclusive
+(335 stage-1 liquidation events pool-wide 2016-2026, none completed the stage-2 absorption —
+the second low kept breaking more than 0.25 ATR below the first). Not a recommendation.
 
 ## Why this exists
 

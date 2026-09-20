@@ -699,9 +699,16 @@ def build() -> str:
     intraday_records = load("data/intraday_index.json")["captures"]
     stock_series_captured = sum(r.get("status") == "captured" and r.get("kind") == "equity" for r in intraday_records)
     stock_series_total = 60
-    coverage_note = ("full 60/60 coverage is present; H34–H39 may be re-run"
-                      if stock_series_captured == stock_series_total
-                      else f"coverage is {stock_series_captured}/{stock_series_total}; H34–H39 full-pool verdicts remain withheld")
+    full_pool_verdicts = load_optional("data/full_pool_verdicts.json")
+    verdicts_assigned = bool(full_pool_verdicts and full_pool_verdicts.get("verdicts"))
+    if stock_series_captured == stock_series_total and verdicts_assigned:
+        coverage_note = ("full 60/60 coverage is present; full-pool verdicts H34–H39, H41 and H42 "
+                         "are assigned (data/full_pool_verdicts.json)")
+    elif stock_series_captured == stock_series_total:
+        coverage_note = "full 60/60 coverage is present; H34–H39 may be re-run"
+    else:
+        coverage_note = (f"coverage is {stock_series_captured}/{stock_series_total}; "
+                         "H34–H39 full-pool verdicts remain withheld")
     # Header capsule: the upcoming-trade answer must be visible at the very top of the page,
     # above the fold, straight from the generated artifact (never hardcoded).
     if exec_summary and exec_summary.get("_meta", {}).get("pending_order_count"):

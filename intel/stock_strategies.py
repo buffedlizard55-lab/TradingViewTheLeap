@@ -23,9 +23,10 @@ Why these shapes:
   the deliberate paper-tournament tail bet that either ruins the edition or harvests
   the violent snapback at multiplied size.
 - C19A is a structurally new two-stage absorption model (not a C19 parameter retune).
-  It lives in STOCK_MODEL_IDS so the engine can generate decisions, but it is listed
-  in GATED_STOCK_MODEL_IDS and is NOT rostered until the matrix is 60/60 and frozen
-  C19 is still zero-fire (research/strategy/C19-VARIANT-GATE.md).
+  It was frozen behind GATED_STOCK_MODEL_IDS until the 60/60 matrix confirmed frozen
+  C19 zero-fire (H39 inconclusive, assigned 2026-09-20 at full coverage); it is now
+  rostered on the full 20-stock daily pool as hypothesis H42 under the usernames
+  TwoStepTessa / LagLiquidationLeo (research/strategy/C19-VARIANT-GATE.md).
 - C20 (failed-breakdown spring) and C21 (wide-to-narrow climax reversal) are
   additional unique shapes, rostered under new usernames.
 - C22 (volume-drought ignition) is the volume-compression dual of C11's price
@@ -60,9 +61,11 @@ from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
                    "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22")
-# C19A is implemented and frozen, but must not be rostered until the matrix is 60/60
-# including 20/20 daily and frozen C19 is still zero-fire. See C19-VARIANT-GATE.md.
-GATED_STOCK_MODEL_IDS = ("C19A",)
+# C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
+# zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
+# pool. The tuple stays (empty but present) so future gated variants have a home.
+# See C19-VARIANT-GATE.md.
+GATED_STOCK_MODEL_IDS = ()
 CONTROL_MODEL_IDS = ("B1",)
 
 MODEL_NAMES = {

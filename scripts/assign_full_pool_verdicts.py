@@ -60,7 +60,7 @@ VOLATILE_PATH = os.path.join(ROOT, "data", "volatile_stocks.json")
 OUT_PATH = os.path.join(ROOT, "data", "full_pool_verdicts.json")
 
 INTERVALS = ("15m", "1h", "1d")
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42")
 CONTROL_USERNAME = "VolatilityVera"
 CONTROL_MODEL = "B1"
 
@@ -212,7 +212,7 @@ def main() -> int:
     hyps = {h["id"]: h for h in load(HYPOTHESES_PATH)["hypotheses"]}
     models = {"H34": "C14", "H35": "C15", "H36": "C16",
               "H37": "C17", "H38": "C18", "H39": "C19",
-              "H41": "C22"}
+              "H41": "C22", "H42": "C19A"}
 
     verdicts = {}
     for hid in FULL_POOL_HYPOTHESES:
@@ -271,6 +271,15 @@ def main() -> int:
             row["status"] = v["status"]
             names = ", ".join(u["username"] for u in v["usernames"])
             trades = ", ".join(f"{u['username']} {u['total_trades']}" for u in v["usernames"])
+            # Supersede any earlier mechanical verdict lines (re-running the assignment
+            # after a roster/coverage change must not stack near-duplicate evidence;
+            # non-verdict history lines are untouched).
+            row["evidence"] = [
+                e for e in row["evidence"]
+                if not str(e).startswith(
+                    "Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py"
+                )
+            ]
             row["evidence"].append(
                 f"Full-pool verdict assigned mechanically by scripts/assign_full_pool_verdicts.py "
                 f"on {stamp}: coverage {cov['series_captured']}/{cov['series_required']} series "
@@ -285,7 +294,7 @@ def main() -> int:
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(register, fh, indent=2)
             fh.write("\n")
-        print("hypotheses.json updated for H34-H39 and H41")
+        print("hypotheses.json updated for H34-H39, H41 and H42")
 
     return 0
 
