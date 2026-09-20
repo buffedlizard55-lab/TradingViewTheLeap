@@ -4,13 +4,13 @@
     "description": "Provenance for the official CME Group contract-specification page of every future in this repository's pool. Each record stores the exact response body under data/cme_specs/ with its SHA-256 and byte length; the transcribed fields are re-extractable from that body offline. A missing field is null and listed in missing_fields - it is never inferred from another product.",
     "script": "scripts/fetch_cme_specs.py",
     "script_version": "1",
-    "generated_utc": "2026-09-20T00:46:08+00:00",
+    "generated_utc": "2026-09-20T19:09:01+00:00",
     "capture_environment": "github-actions",
-    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35479263008",
+    "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35530868786",
     "product_count": 20,
     "captured_count": 0,
-    "failed_count": 20,
-    "kept_previous_count": 0,
+    "failed_count": 3,
+    "kept_previous_count": 17,
     "not_a_forecast": true,
     "engine_applies_hours": false,
     "provenance_note": "The per-record 'reason' values in this index do NOT record the real transport error. The lane's offline re-extraction step ran after a run that stored no HTML at all and rewrote every record's reason to '<PRODUCT>.html not stored yet; run without --offline' before the commit step ran, so the underlying failure text was lost (capture_environment 'local' and workflow_run_url null are the fingerprints of that offline pass). The fact that survives is captured_count 0 of 20. The workflow step is fixed: it now skips the offline pass entirely when nothing arrived over the network and restores the network index unconditionally. No reason text has been reconstructed or guessed here.",
@@ -47,8 +47,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4509,
+      "raw_sha256": "fc6ca930e97245f5de0ac8cde576d4f4035f4be540f63e7b7ad2434e34ec859d",
+      "file": "data/cme_specs/CL.agentfetch.md",
+      "fields": {
+        "contract_unit": "1,000 barrels",
+        "price_quotation": "U.S. dollars and cents per barrel",
+        "trading_hours": "CME Globex:\nSunday - Friday 5:00 p.m. - 4:00 p.m. CT with a 60-minute break each day beginning at 4:00 p.m. CT\nTAS: Sunday - Friday 5:00 p.m. - 1:30 p.m. CT\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "0.01 per barrel = $10.00\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright",
+        "product_code": "CME Globex: CL\nCME ClearPort: CL\nClearing: CL\nTAS: CLT\nTAM: \"CLS\",\"CLC\",\"CLL\"",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 10 calendar years and 2 additional contract months. List monthly contracts for a new calendar year and 2 additional contract months following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates 3 business day before the 25th calendar day of the month prior to the contract month. If the 25th calendar day is not a business day, trading terminates 4 business days before the 25th calendar day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "ETH",
@@ -80,8 +103,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2747,
+      "raw_sha256": "f7976a41702dcb14b575733584dd1888edce3f267bd372e50ca6c3d6d8c54022",
+      "file": "data/cme_specs/HO.agentfetch.md",
+      "fields": {
+        "contract_unit": "42,000 gallons",
+        "price_quotation": "U.S. dollars and cents per gallon",
+        "trading_hours": "CME Globex:\nSunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)\nTAS: Sunday - Friday 6:00 p.m. - 2:30 p.m. (5:00 p.m. - 1:30 p.m. CT)\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "0.0001 per gallon = $4.20\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright",
+        "product_code": "CME Globex: HO\nCME ClearPort: HO\nClearing: HO\nTAS: HOT\nTAM: HOL",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 3 calendar years and 1 additional month. List monthly contracts for a new calendar year and 1 additional month following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates on the last business day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MBT",
@@ -90,8 +136,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4364,
+      "raw_sha256": "5418982b961167cd7d2283ff89f24105b6994819f088097a577770908aa53904",
+      "file": "data/cme_specs/MBT.agentfetch.md",
+      "fields": {
+        "contract_unit": "0.10 bitcoin, as defined by the CME CF Bitcoin Reference Rate (BRR)",
+        "price_quotation": "U.S. dollars and cents",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC APAC: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 a.m. to 3:05 a.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nCME ClearPort:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC APAC/London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.",
+        "minimum_price_fluctuation": "Outright:\n$5.00 per bitcoin = $0.50 per contract\nBTIC: $1.00 per bitcoin = $0.10 per contract\nTAS: Zero or +/- 20 ticks. $1.00 per bitcoin = $0.10 per contract\nCalendar Spread: $1.00 per bitcoin = $0.10 per contract",
+        "product_code": "CME Globex: MBT\nCME ClearPort: MBT\nClearing: MBT\nTAS: TBM\nBTIC: \"MYB\",\"MIB\",\"AMB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or the U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MCL",
@@ -100,8 +169,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2630,
+      "raw_sha256": "c59fbe0d7b7b353cf51acbfdd0f08a14c9cd167c68b20eddb66233322abf71c5",
+      "file": "data/cme_specs/MCL.agentfetch.md",
+      "fields": {
+        "contract_unit": "100 barrels",
+        "price_quotation": "U.S. dollars and cents per barrel",
+        "trading_hours": "CME Globex:\nSunday 5:00 p.m. - Friday - 4:00 p.m. CT with a 60-minute break each day beginning at 4:00 p.m. CT\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "0.01 per barrel = $1.00",
+        "product_code": "CME Globex: MCL\nCME ClearPort: MCL\nClearing: MCL\nTAS: MCT",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 3 calendar years. List monthly contracts for a new calendar year following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates 1 business day before the corresponding CL contract month or 4 business days before the 25th calendar of the month prior to the contract month. If the 25th calendar day is not a business day, trading terminates 5 business days before the 25th calendar day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MET",
@@ -110,8 +202,32 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 5012,
+      "raw_sha256": "0c664311de696665b8277d1be1b5fd6da64d2f49dd163badae898f2526a0c0a1",
+      "file": "data/cme_specs/MET.agentfetch.md",
+      "fields": {
+        "contract_unit": "0.1 ether",
+        "price_quotation": "U.S. dollars and cents per ether",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC APAC: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 a.m. to 3:05 a.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nCME ClearPort:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC APAC/London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.",
+        "minimum_price_fluctuation": "$0.50 per ether = $0.05 per contract\nBTIC: $0.10 per ether = $0.01 per contract\nTAS: Zero or +/- 20 ticks at $0.10 per ether = $0.01 per contract\nCALENDAR SPREAD\n$0.10 per ether = $0.01 per contract",
+        "product_code": "CME Globex: MET\nCME ClearPort: MET\nClearing: MET\nTAS: TEM\nBTIC: \"AHB\",\"EYB\",\"EMB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Outright: Trading terminates at 4:00 p.m. London time on the last Friday of the contract month that is either a London or U.S. business day. If the last Friday of the contract month day is not a business day in both London and the U.S., trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures\nBTIC APAC: Trading terminates at 4:00 p.m. Hong Kong/Singapore time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MNG",
@@ -120,8 +236,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 1563,
+      "raw_sha256": "32320da2c0c74ccd6755cb418f247f877d75bdc24523315811f314fd64e1006e",
+      "file": "data/cme_specs/MNG.agentfetch.md",
+      "fields": {
+        "contract_unit": "1,000 MMBtu",
+        "price_quotation": "U.S. dollars and cents per MMBtu",
+        "trading_hours": "CME Globex:\nSunday - Friday 5:00 p.m. - 4:00 p.m. with a 60-minute break each day beginning at 4:00 p.m.\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "CME Globex:\nIntercommodity spreads: 0.00025 per MMBtu = $0.25\nOutright:\n0.001 per MMBtu = $1.00",
+        "product_code": "CME Globex: MNG\nCME ClearPort: MNG\nClearing: MNG",
+        "listed_contracts": "Monthly contracts listed for 24 consecutive months",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates on the 4th last business day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MSL",
@@ -130,8 +269,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4400,
+      "raw_sha256": "4ad1121b8512ec98727b9632443a255f8296b22a9fa2d11ad96ec29f4af20916",
+      "file": "data/cme_specs/MSL.agentfetch.md",
+      "fields": {
+        "contract_unit": "25 SOL, as defined by the CME CF Solana-Dollar Reference Rate (SOLUSD\\_RR)",
+        "price_quotation": "U.S. dollars and cents per SOL",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nCME ClearPort:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT",
+        "minimum_price_fluctuation": "$0.05 per SOL = $1.25 per contract\nBTIC: $0.01 per SOL = $0.25 per contract\nTAS: Zero or +/- 20 ticks at $0.01 per SOL = $0.25\nCalendar Spread: $0.01 per SOL = $0.25 per contract",
+        "product_code": "CME Globex: MSL\nCME ClearPort: MSL\nClearing: MSL\nTAS: TMS\nBTIC: \"OLB\",\"ONB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "MXP",
@@ -140,8 +302,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4426,
+      "raw_sha256": "b3b2db625c8d655abf35848aeb559e69b4a57a2099ba507dde09b237912a6de7",
+      "file": "data/cme_specs/MXP.agentfetch.md",
+      "fields": {
+        "contract_unit": "2,500 XRP, as defined by the CME CF XRP-Dollar Reference Rate (XRPUSD\\_RR)",
+        "price_quotation": "U.S. dollars and cents per XRP",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nCME ClearPort:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.",
+        "minimum_price_fluctuation": "Outright:\n$0.0005 per XRP = $1.25 per contract\nBTIC: $0.0001 per XRP = $0.25 per contract\nTAS: Zero or +/- 20 ticks at $0.0001 per XRP = $0.25 per contract\nCalendar Spread: $0.0001 per XRP = $0.25 per contract",
+        "product_code": "CME Globex: MXP\nCME ClearPort: MXP\nClearing: MXP\nTAS: TMX\nBTIC: \"RNB\",\"RLB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "NG",
@@ -150,8 +335,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2631,
+      "raw_sha256": "360b256fc23d298611e80c28b828e637f54f0c8a06c62c34d7fbec286c8210e6",
+      "file": "data/cme_specs/NG.agentfetch.md",
+      "fields": {
+        "contract_unit": "10,000 MMBtu",
+        "price_quotation": "U.S. dollars and cents per MMBtu",
+        "trading_hours": "CME Globex:\nSunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. /CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)\nTAS: Sunday - Friday 6:00 p.m. - 2:30 p.m. (5:00 p.m. - 1:30 p.m. CT)\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "CME Globex:\nIntercommodity spreads: 0.00025 per MMBtu = $2.50\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright\nOutright:\n0.001 per MMBtu = $10.00",
+        "product_code": "CME Globex: NG\nCME ClearPort: NG\nClearing: NG\nTAS: NGT",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 12 calendar years. List monthly contracts for a new calendar year following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates on the 3rd last business day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "NQ",
@@ -160,8 +368,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 3211,
+      "raw_sha256": "abbe5c6fbbe66afbbd66a82e4809b228b4aeebc9f78331d8e2d7ed0e5ab7b618",
+      "file": "data/cme_specs/NQ.agentfetch.md",
+      "fields": {
+        "contract_unit": "$20 x Nasdaq-100 Index",
+        "price_quotation": "U.S. dollars and cents per index point",
+        "trading_hours": "CME Globex:\nSunday 6:00 p.m. - Friday - 5:00 p.m. ET (5:00 p.m. - 4:00 p.m. CT) with a daily maintenance period from 5:00 p.m. - 6:00 p.m. ET (4:00 p.m. - 5:00 p.m. CT)\nTACO: Sunday - Friday 6:00 p.m. - 9:30 a.m. ET. Monday - Friday 11:00 a.m. - 5:00 p.m. ET\nBTIC: Sunday - Friday 6:00 p.m. - 4:00 p.m. ET\nTMAC: Sunday - Friday 6:00 p.m. - 4:00 p.m. ET\nCME ClearPort:\nSunday 6:00 p.m. - Friday 6:45 p.m. ET (Sun 5:00 - Fri 5:45 p.m. CT) with no reporting Monday - Thursday 6:45 p.m. - 7:00 p.m. ET (5:45 p.m. - 6:00 p.m. CT)\nTACO: Sunday - Friday 6:00 p.m. - 9:30 a.m. ET and Monday - Friday 11:00 a.m. - 5:00 p.m. ET\nBTIC: Sunday - Friday 6:00 p.m. - 4:00 p.m. ET. BTICs for the following trading day can be submitted after 7:00 p.m. ET (6:00 p.m. CT)\nTMAC: Sunday - Friday 6:00 p.m. - 4:00 p.m. ET. TMACs for the following trading day can be submitted after 7:00 p.m. ET (6:00 p.m. CT)",
+        "minimum_price_fluctuation": "Outright:\n0.25 index points = $5.00\nTACO: 0.05 index points = $1.00\nBTIC: 0.05 index points = $1.00\nTMAC: 0.05 index points = $1.00\nZero or +/- 20 ticks (4 futures ticks) around the Market at Close price of the outright\nCALENDAR SPREAD\n0.05 index points = $1.00",
+        "product_code": "CME Globex: NQ\nCME ClearPort: NQ\nClearing: NQ\nBTIC: NQT\nTACO: NQQ\nTMAC: NQX",
+        "listed_contracts": "Futures, TACO, BTIC, TMAC: Quarterly contracts (Mar, Jun, Sep, Dec) listed for 6 consecutive quarters, 2 additional June contracts and 4 additional December contract months.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 9:30 a.m. ET on the 3rd Friday of the contract month.\nTACO trading terminates at 9:30 a.m. ET on the Thursday before the 3rd Friday of the contract month.\nBTIC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of contract month.\nTMAC trading terminates at 4:00 p.m. ET on the Thursday before the 3rd Friday of the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "PL",
@@ -170,8 +401,32 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2518,
+      "raw_sha256": "365279c4fd0599582f60957bfecd2bafc881846e61eee56a1640536a80502094",
+      "file": "data/cme_specs/PL.agentfetch.md",
+      "fields": {
+        "contract_unit": "50 troy ounces",
+        "price_quotation": "U.S. dollars and cents per troy ounce",
+        "trading_hours": "CME Globex:\nSunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)\nTAS: Sunday - Friday 6:00 p.m. - 1:05 p.m. (5:00 p.m. - 12:05 p.m. CT)\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "0.10 per troy ounce = $5.00\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright",
+        "product_code": "CME Globex: PL\nCME ClearPort: PL\nClearing: PL\nTAS: PLT",
+        "listed_contracts": "Monthly contracts listed for 3 consecutive months and any Jan, Apr, Jul, and Oct in the nearest 36 months",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates on the third last business day of the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "QM",
@@ -180,8 +435,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 1990,
+      "raw_sha256": "2954ff7308e62a839b01a58e389091355e6058b790aab8c8092c5ff6738270f4",
+      "file": "data/cme_specs/QM.agentfetch.md",
+      "fields": {
+        "contract_unit": "500 barrels",
+        "price_quotation": "U.S. dollars and cents per barrel",
+        "trading_hours": "Sunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)",
+        "minimum_price_fluctuation": "0.025 per barrel = $12.50",
+        "product_code": "CME Globex: QM\nCME ClearPort: QM\nClearing: QM",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 5 calendar years. List monthly contracts for a new calendar year following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates 1 business day before the corresponding CL contract month or 4 business days before the 25th calendar of the month prior to the contract month. If the 25th calendar day is not a business day, trading terminates 5 business days before the 25th calendar day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "RB",
@@ -190,8 +468,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2744,
+      "raw_sha256": "d95c007568c951667943dceca52d8867d9f066a8fedba3c15cc53b7ac8c7a099",
+      "file": "data/cme_specs/RB.agentfetch.md",
+      "fields": {
+        "contract_unit": "42,000 gallons",
+        "price_quotation": "U.S. dollars and cents per gallon",
+        "trading_hours": "CME Globex:\nSunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) with a 60-minute break each day beginning at 5:00 p.m. (4:00 p.m. CT)\nTAS: Sunday - Friday 6:00 p.m. - 2:30 p.m. (5:00 p.m. - 1:30 p.m. CT)\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "0.0001 per gallon = $4.20\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright",
+        "product_code": "CME Globex: RB\nCME ClearPort: RB\nClearing: RB\nTAS: RBT\nTAM: RBL",
+        "listed_contracts": "Monthly contracts listed for the current year and the next 3 calendar years and 1 additional month. List monthly contracts for a new calendar year and 1 additional month following the termination of trading in the December contract of the current year.",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates on the last business day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        1
+      ],
+      "agent_fetch_total_chunks": 3,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SI",
@@ -224,8 +525,32 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 1397,
+      "raw_sha256": "6d9ba28c853ae82d5ddef6e7b2a0ed045eb67f9382ad698f4d69da5a45e1c7e0",
+      "file": "data/cme_specs/SIC.agentfetch.md",
+      "fields": {
+        "contract_unit": "100 troy ounces",
+        "price_quotation": "U.S. dollars and cents per troy ounce",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows:\nSaturday 2:00 a.m. to 4:00 a.m. CT.\nMonday-Friday 4:00p.m. to 4:02 p.m. CT",
+        "minimum_price_fluctuation": "0.01 per troy ounce = $1.00",
+        "product_code": "CME Globex: SIC\nClearing: SIC",
+        "listed_contracts": "Monthly contracts listed for any Mar, May, Jul, Sep and Dec in the nearest 24 months",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 12:25 p.m. CT on the third last business day of the month prior to the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SIL",
@@ -234,8 +559,32 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 2476,
+      "raw_sha256": "dc9dfcececdf794af55dd946f7cb3363c87b0d4d7f950869f5007457da515c34",
+      "file": "data/cme_specs/SIL.agentfetch.md",
+      "fields": {
+        "contract_unit": "1,000 troy ounces",
+        "price_quotation": "U.S. dollars and cents per troy ounce",
+        "trading_hours": "CME Globex:\nSunday 5:00 p.m. - Friday - 4:00 p.m. CT with a 60-minute break each day beginning at 4:00 p.m. CT\nTAS: Sunday - Friday 5:00 p.m. - 12:25 p.m. CT\nCME ClearPort:\nSunday 5:00 p.m. - Friday 4:00 p.m. CT with no reporting Monday - Thursday from 4:00 p.m. - 5:00 p.m. CT",
+        "minimum_price_fluctuation": "Outright:\n0.005 per troy ounce = $5.00\nSettlement: 0.001 per troy ounce = $1.00\nTAS: Zero or +/- 10 ticks in the minimum tick increment of the outright\nCALENDAR SPREAD\n0.001 per troy ounce = $1.00",
+        "product_code": "CME Globex: SIL\nCME ClearPort: SIL\nClearing: SIL\nTAS: MST",
+        "listed_contracts": "Monthly contracts listed for 3 consecutive months and any Jan, Mar, May, July, Sep and Dec within the nearest 12 months.",
+        "settlement_method": "Deliverable",
+        "termination_of_trading": "Trading terminates on the third last business day of the contract month.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0,
+        1
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "SOL",
@@ -244,8 +593,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4396,
+      "raw_sha256": "f933445d35b402a1419881ad73a4670348697b236816cd9d34c6c04c97e66e99",
+      "file": "data/cme_specs/SOL.agentfetch.md",
+      "fields": {
+        "contract_unit": "500 SOL, as defined by the CME CF Solana-Dollar Reference Rate (SOLUSD\\_RR)",
+        "price_quotation": "U.S. dollars and cents per SOL",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nCME ClearPort:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.",
+        "minimum_price_fluctuation": "$0.05 per SOL = $25.00 per contract\nBTIC: $0.01 per SOL = $5.00 per contract\nTAS: Zero or +/- 20 ticks at $0.01 per SOL = $5.00\nCalendar Spread: $0.01 per SOL = $5.00 per contract",
+        "product_code": "CME Globex: SOL\nCME ClearPort: SOL\nClearing: SOL\nTAS: TSL\nBTIC: \"SLB\",\"SNB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     },
     {
       "product": "XRP",
@@ -254,8 +626,31 @@
       "publisher": "CME Group Inc.",
       "tier": "official_primary",
       "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
-      "status": "failed",
-      "reason": "RuntimeError: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html (HTTP Error 403: Forbidden)"
+      "status": "kept_previous",
+      "reason": "fetch failed (RuntimeError); previous stored extraction kept: GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html (HTTP Error 403: Forbidden)",
+      "accessed_utc": "2026-09-20T05:25:57Z",
+      "transport": "arena-fetch-page",
+      "body_format": "markdown",
+      "raw_bytes": 4422,
+      "raw_sha256": "8eb3fcc446230b7ea4cb14b4ae64ee0f3e9e8b45f0696b85d576013ab3af9d08",
+      "file": "data/cme_specs/XRP.agentfetch.md",
+      "fields": {
+        "contract_unit": "50,000 XRP, as defined by the CME CF XRP-Dollar Reference Rate (XRPUSD\\_RR)",
+        "price_quotation": "U.S. dollars and cents per XRP",
+        "trading_hours": "CME Globex:\n24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday 4:00 p.m. to 4:02 p.m. CT\nBTIC London: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 10:00 a.m. to 10:05 a.m. CT\nBTIC NY: 24/7 with the exception of the following maintenance windows: Saturday: 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nTAS: 24/7 with the exception of the following maintenance windows: Saturday 2:00 a.m. to 4:00 a.m. CT & Monday-Friday from 3:00 p.m. to 3:05 p.m. CT\nCME ClearPort:\n24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.\nBTIC London/NY: 24/7 with the exception of the following maintenance window on Saturday: 2:00 a.m. to 4:00 a.m. CT. Trades for the following day\u2019s Reference Rate can be submitted after 4:00 p.m. CT. Submissions after 4:00 p.m. CT Friday will price to Monday's Reference Rate.\nTAS: 24/7 with the exception of the maintenance window on Saturday from 2:00 a.m. - 4:00 a.m. CT.",
+        "minimum_price_fluctuation": "Outright:\n$0.0005 per XRP = $25.00 per contract\nBTIC: $0.0001 per XRP = $5.00 per contract\nTAS: Zero or +/- 20 ticks at $0.0001 per XRP = $5.00 per contract\nCalendar Spread: $0.0001 per XRP = $5.00 per contract",
+        "product_code": "CME Globex: XRP\nCME ClearPort: XRP\nClearing: XRP\nTAS: TXP\nBTIC: \"XNB\",\"XLB\"",
+        "listed_contracts": "Monthly contracts listed for 6 consecutive months, quarterly contracts (Mar, Jun, Sep, Dec) listed for 4 additional quarters and a second Dec contract if only one is listed.",
+        "settlement_method": "Financially Settled",
+        "termination_of_trading": "Trading terminates at 4:00 p.m. London time on the last Friday of the contract month. If this is not both a London and U.S. business day, trading terminates on the prior London or U.S. business day.\nBTIC London: Trading terminates at 4:00 p.m. London time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nBTIC NY: Trading terminates at 4:00 p.m. New York time on the business day immediately preceding the day of Final Settlement Price determination for such futures contract. For clarity, BTIC transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.\nTAS: Trading terminates at 3:00 p.m. CT on the U.S. business day immediately preceding the last trade date for such futures contract. TAS transactions in expiring futures contracts may not be initiated on the Last Trade Date in such expiring futures.",
+        "additional_hours_rows": null
+      },
+      "missing_fields": [],
+      "agent_fetch_chunks": [
+        0
+      ],
+      "agent_fetch_total_chunks": 2,
+      "capture_scope": "contract-spec table section as delivered by the agent page-fetch proxy (markdown: section heading + pipe-table rows); the full page was not stored"
     }
   ]
 }

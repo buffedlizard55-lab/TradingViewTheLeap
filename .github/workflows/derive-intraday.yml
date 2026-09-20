@@ -1,11 +1,15 @@
 name: Derive intraday research artifacts
 
-# Runs whenever the capture workflow commits new intraday bars (data/intraday_index.json or a
+# Runs whenever the capture workflows commit new intraday bars (data/intraday_index.json or a
 # file under data/intraday/), re-derives everything that depends on them, and commits the result
 # back to the same branch:
 #
 #   data/intraday_study.json            gap-fill + execution-latency measurement
 #   data/stock_competition_results.json volatile-stock division (our own multi-season paper comp)
+#   data/full_pool_verdicts.json        mechanical H34-H42 verdicts (written once the matrix is
+#                                       60/60; assign_full_pool_verdicts.py exits 2 and is
+#                                       tolerated while coverage is incomplete)
+#   research/hypotheses/hypotheses.json verdict statuses synced by the same script
 #   data/exec_summary.json              mechanical "what gets placed next" table
 #   data/tv_benchmark.json              Pine broker-emulator vs Python fill benchmark
 #   data/intelligence_report.json        status/provenance layer (absorbs the new artifacts)
@@ -15,6 +19,13 @@ name: Derive intraday research artifacts
 # with per-chunk digests, this job turns them into audited research artifacts, and the verifier
 # re-derives every number from the stored bars afterwards. A commit made with the workflow token
 # does not re-trigger workflows, so this cannot loop.
+#
+# Why the workflow_run triggers exist (observed on main at 6d8f0ef, 2026-09-20): a push made
+# with GITHUB_TOKEN - exactly how the capture lanes commit their merges - fires no `push` event,
+# so the capture commit landed with no derive successor and the committed study/competition went
+# stale against the new index (three determinism failures in scripts/verify.py). Listening for
+# the capture runs' completion closes that gap: the derive job then checks out the branch the
+# capture ran on (workflow_run.head_branch), which already contains the capture commit.
 
 on:
   workflow_dispatch:
@@ -23,12 +34,23 @@ on:
     paths:
       - "data/intraday_index.json"
       - "data/intraday/**"
+  workflow_run:
+    workflows:
+      - "Capture intraday market data (per-symbol matrix)"
+      - "Capture intraday market data"
+      - "Capture intraday market data (bounded second lane)"
+    types: [completed]
 
 permissions:
   contents: write
 
+# The push/dispatch path derives the branch it runs on; the workflow_run path derives the
+# branch the capture ran on (github.ref would be main for every workflow_run event).
+env:
+  TARGET_REF: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+
 concurrency:
-  group: derive-intraday-${{ github.ref }}
+  group: derive-intraday-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -39,20 +61,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          # For a workflow_run event this is the branch the capture ran on (its tip already
+          # contains the capture commit); otherwise it is the pushed/dispatched branch itself.
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Compile check
-        run: python3 -m py_compile scripts/run_intraday_study.py scripts/run_stock_competition.py scripts/build_exec_summary.py scripts/tv_benchmark.py scripts/build_intelligence.py scripts/build_site.py
+        run: python3 -m py_compile scripts/run_intraday_study.py scripts/run_stock_competition.py scripts/assign_full_pool_verdicts.py scripts/build_exec_summary.py scripts/tv_benchmark.py scripts/build_intelligence.py scripts/build_site.py
 
       - name: Intraday gap-fill / latency study
         run: python3 scripts/run_intraday_study.py
 
       - name: Volatile-stock division (multi-season paper competition)
         run: python3 scripts/run_stock_competition.py
+
+      - name: Full-pool hypothesis verdicts (H34-H42)
+        run: |
+          set +e
+          python3 scripts/assign_full_pool_verdicts.py --write-hypotheses
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ] || [ "$code" -eq 2 ]; then
+            [ "$code" -eq 2 ] && echo "::notice::full-pool verdicts withheld - the matrix is not 60/60 yet (assign_full_pool_verdicts.py exit 2)"
+            exit 0
+          fi
+          exit "$code"
 
       - name: Executive-summary orders
         run: python3 scripts/build_exec_summary.py
@@ -73,23 +110,25 @@ jobs:
           git config user.name "github-actions[derive]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/intraday_study.json data/stock_competition_results.json \
+                  data/full_pool_verdicts.json research/hypotheses/hypotheses.json \
                   data/exec_summary.json data/tv_benchmark.json \
-                  data/intelligence_report.json index.html
+                  data/intelligence_report.json index.html docs/index.html \
+                  assets docs/assets
           if git diff --cached --quiet; then
             echo "::notice::no derived artifact changed"
             exit 0
           fi
-          git commit -m "derive: intraday study, stock division, exec summary, site (automated)"
-          if git push origin "HEAD:${GITHUB_REF_NAME}"; then
-            echo "::notice::derived artifacts committed to ${GITHUB_REF_NAME}"
+          git commit -m "derive: intraday study, stock division, verdicts, exec summary, site (automated)"
+          if git push origin "HEAD:${TARGET_REF}"; then
+            echo "::notice::derived artifacts committed to ${TARGET_REF}"
           else
             # A capture run may have committed while this job was deriving. -X theirs during a
             # rebase keeps the artifacts this job just re-derived (they are strictly newer), and
             # the same conflict policy is used by .github/scripts/commit_capture.sh, so the two
             # lanes cannot deadlock against each other.
-            echo "::notice::push rejected - rebasing onto origin/${GITHUB_REF_NAME} and retrying"
-            git pull --rebase --autostash -X theirs origin "${GITHUB_REF_NAME}"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            echo "::notice::push rejected - rebasing onto origin/${TARGET_REF} and retrying"
+            git pull --rebase --autostash -X theirs origin "${TARGET_REF}"
+            git push origin "HEAD:${TARGET_REF}"
           fi
 
       - name: Upload derived artifacts (secondary channel)
@@ -99,6 +138,7 @@ jobs:
           path: |
             data/intraday_study.json
             data/stock_competition_results.json
+            data/full_pool_verdicts.json
             data/exec_summary.json
             data/tv_benchmark.json
           retention-days: 30

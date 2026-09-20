@@ -125,12 +125,14 @@ def intraday_steps() -> None:
     run_script("run_intraday_study.py")
     print("=== step 5: volatile-stock division (multi-season) ===")
     run_script("run_stock_competition.py")
-    print("=== step 6: executive-summary orders ===")
+    print("=== step 6: full-pool hypothesis verdicts (H34-H39, H41-H43) ===")
+    run_script("assign_full_pool_verdicts.py", "--write-hypotheses")
+    print("=== step 7: executive-summary orders ===")
     run_script("build_exec_summary.py")
 
 
 def tv_benchmark_step() -> None:
-    print("=== step 7: TradingView export benchmark (blocked when no real export is present) ===")
+    print("=== step 8: TradingView export benchmark (blocked when no real export is present) ===")
     run_script("tv_benchmark.py")
 
 
@@ -171,9 +173,9 @@ def main() -> int:
     run_script("run_competition.py")
     intraday_steps()
     tv_benchmark_step()
-    print("=== step 8: rebuild intelligence report ===")
+    print("=== step 9: rebuild intelligence report ===")
     build_intelligence()
-    print("=== step 9: rebuild index.html ===")
+    print("=== step 10: rebuild index.html ===")
     build_site()
     print("done. Run 'python3 scripts/verify.py' to confirm the repository is green.")
     return 0

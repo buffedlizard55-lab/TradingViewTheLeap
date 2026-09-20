@@ -1,9 +1,13 @@
 > **2026-09-20 audit:** The volatile-stock matrix is complete — **60/60 series captured**
 > (20×15m + 20×1h + 20×1d, CI capture lane with byte-level SHA-256 provenance; see
 > `data/intraday_index.json`). Full-pool verdicts were assigned at 60/60:
-> H34/H37 partially supported, H36 supported, H35/H38 refuted, H39 (C19) and H41 (C22)
-> inconclusive zero-fire; the pre-registered gate then fired and the new variant C19-A was
-> registered as H42 (also zero-fire → inconclusive on its first full-pool run). Captures are
+> H34/H37 partially supported, H36 supported, H35/H38 refuted, H39 (C19) / H41 (C22) /
+> H42 (C19-A) inconclusive zero-fire. The nineteenth contrarian model **C23 (serial
+> capitulation snapback)** was pre-registered as H43 after a documented pre-freeze probe
+> (75 eight-streaks pool-wide; filters hurt) and **refuted** on its first full-pool run —
+> both usernames beat the control over 81 season editions, but the forward held-out split
+> missed by $20.56. CME product hours for **all 20 pooled futures** are now committed with
+> a 196-date roll schedule (18 codecs, 2 refusals). Captures are
 > Yahoo vendor-tier, not exchange-verified: the Alpaca IEX route (`make official-bars`)
 > remains blocked on environment credentials, and no authenticated TradingView Strategy
 > Report export is available. Do not treat historical candidates as current orders. See

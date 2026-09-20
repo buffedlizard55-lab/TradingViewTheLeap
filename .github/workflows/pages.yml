@@ -136,6 +136,19 @@ jobs:
                   probs.append(f"TV benchmark status {tvb['_meta']['status']!r} missing from page")
               if "fixture" in json.dumps(tvb["fixtures"]) and "SYNTHETIC" not in html:
                   probs.append("synthetic-fixture notice missing from page")
+          cme_hours = opt("data/cme_product_hours.json")
+          if cme_hours:
+              if 'id="cmehours"' not in html:
+                  probs.append("CME hours section anchor missing from page")
+              for row in cme_hours["products"]:
+                  if row["tradingview_symbol"] not in html:
+                      probs.append(f"CME hours row {row['tradingview_symbol']} missing from page")
+              if f"{cme_hours['_meta']['product_count']} pooled" not in html:
+                  probs.append("CME hours lead sentence missing from page")
+          cme_roll = opt("data/cme_roll_schedule.json")
+          if cme_roll:
+              if f"{cme_roll['_meta']['roll_date_count']} dates" not in html:
+                  probs.append("CME roll schedule date count missing from page")
           for banned in ("Upcoming Trade Signal Matrix",):
               if banned in html:
                   probs.append(f"hardcoded block {banned!r} is back in the page")

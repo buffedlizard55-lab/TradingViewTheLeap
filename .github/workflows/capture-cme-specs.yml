@@ -143,16 +143,32 @@ jobs:
             "capture: official CME contract specs for the pooled futures (automated)" \
             data/cme_specs data/cme_specs_index.json data/cme_product_hours.json
 
-      - name: Fail unless every pooled future transcribed
+      - name: Fail unless every pooled future has audited hours
         if: always()
         run: |
           [ -f data/cme_specs_index.json ] || { echo "::error::nothing transcribed"; exit 1; }
           python3 - <<'PY'
           import json, sys
-          meta = json.load(open("data/cme_specs_index.json"))["_meta"]
-          if meta["captured_count"] != meta["product_count"]:
-              print(f"::error::only {meta['captured_count']}/{meta['product_count']} pooled futures "
-                    "transcribed; see data/cme_specs_index.json for each reason")
+          # The runner cannot reach cmegroup.com (HTTP 403, IR-33): the committed
+          # transcription arrives through the agent page-fetch adoption lane, and a
+          # zero-capture runner pass legitimately keeps every previously audited row
+          # (status kept_previous / retained). What must never pass is a repository
+          # whose audited artifacts leave a pooled future without hours or a
+          # termination rule - so the gate measures the committed evidence, not this
+          # run's network luck. (Before the adoption lane landed this gate compared
+          # _meta.captured_count, which was permanently red from the runners.)
+          idx = json.load(open("data/cme_specs_index.json"))
+          hours = json.load(open("data/cme_product_hours.json"))
+          meta = idx["_meta"]
+          covered = {r["product"] for r in hours["products"]
+                     if r.get("globex_hours") and r.get("termination")}
+          missing = [r["product"] for r in idx["records"] if r["product"] not in covered]
+          if missing or len(covered) != meta["product_count"]:
+              print(f"::error::audited hours cover {len(covered)}/{meta['product_count']} "
+                    f"pooled futures; missing: {missing or 'count mismatch'}")
               sys.exit(1)
-          print(f"::notice::all {meta['product_count']} pooled futures transcribed")
+          print(f"::notice::all {meta['product_count']} pooled futures carry audited "
+                f"hours and termination rules "
+                f"(this run: captured={meta['captured_count']}, "
+                f"kept_previous={meta['kept_previous_count']}, failed={meta['failed_count']})")
           PY

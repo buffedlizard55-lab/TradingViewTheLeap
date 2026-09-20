@@ -1,807 +1,865 @@
 {
- "_meta": {
-  "kind": "stock_competition_roster",
-  "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C22 in intel/stock_strategies.py; C19A (delayed two-stage absorption) was registered 2026-09-20 on the full 20-stock daily pool as hypothesis H42 after the 60/60 matrix confirmed H39/C19 inconclusive \u2014 see research/strategy/C19-VARIANT-GATE.md), the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
-  "created_utc": "2026-09-18",
-  "engine": "intel-competition-3",
-  "rules_source_ids": [
-   "TV-RULES-MAG7-MAR2026",
-   "TV-RULES-AMP-SEP2026"
-  ],
-  "price_source_ids": [
-   "YAHOO-INTRADAY-CHART"
-  ],
-  "primary_profile": "stocks_official_leap",
-  "counterfactual_profile": "stocks_20x_counterfactual",
-  "participant_count": 46,
-  "daily_participants": 42,
-  "hourly_participants": 4,
-  "deployment_fraction": 1.0,
-  "deployment_note": "Every participant deploys 100% of available buying power on each new entry or add tranche, up to the rule cap of the profile. This is deliberate: the brief for the paper division is maximum simulated return, not risk management. Ruin (equity <= 0) is terminal because the official rules forbid account resets.",
-  "not_a_forecast": true,
-  "hypothesis_under_test": "H31: a stocks-edition League return is arithmetically bounded by the official 1:1 leverage plus 50-unit-per-instrument cap; the observed Magnificent Seven champion (+17.58%) sits under that bound while the 5x-100x targets do not."
- },
- "participants": [
-  {
-   "username": "BlowoffBella",
-   "kind": "contrarian",
-   "model": "C6",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "MSTR",
-    "COIN",
-    "SMCI"
-   ]
+  "_meta": {
+    "kind": "stock_competition_roster",
+    "description": "Roster of the volatile-equity division of the repository's own shadow competition. Every participant is a username bound to one frozen stock model (C6-C23 in intel/stock_strategies.py; C19A (delayed two-stage absorption) was registered 2026-09-20 on the full 20-stock daily pool as hypothesis H42 after the 60/60 matrix confirmed H39/C19 inconclusive \u2014 see research/strategy/C19-VARIANT-GATE.md), the B1 control, or a trend baseline S1-S3 reused from intel/strategy.py) and a symbol pool drawn from the 20-stock volatile pool in data/volatile_stocks.json.",
+    "created_utc": "2026-09-18",
+    "engine": "intel-competition-3",
+    "rules_source_ids": [
+      "TV-RULES-MAG7-MAR2026",
+      "TV-RULES-AMP-SEP2026"
+    ],
+    "price_source_ids": [
+      "YAHOO-INTRADAY-CHART"
+    ],
+    "primary_profile": "stocks_official_leap",
+    "counterfactual_profile": "stocks_20x_counterfactual",
+    "participant_count": 48,
+    "daily_participants": 42,
+    "hourly_participants": 4,
+    "deployment_fraction": 1.0,
+    "deployment_note": "Every participant deploys 100% of available buying power on each new entry or add tranche, up to the rule cap of the profile. This is deliberate: the brief for the paper division is maximum simulated return, not risk management. Ruin (equity <= 0) is terminal because the official rules forbid account resets.",
+    "not_a_forecast": true,
+    "hypothesis_under_test": "H31: a stocks-edition League return is arithmetically bounded by the official 1:1 leverage plus 50-unit-per-instrument cap; the observed Magnificent Seven champion (+17.58%) sits under that bound while the 5x-100x targets do not."
   },
-  {
-   "username": "SpikeSaber",
-   "kind": "contrarian",
-   "model": "C6",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "PLTR",
-    "HOOD",
-    "NVAX"
-   ]
-  },
-  {
-   "username": "FadeFiend",
-   "kind": "contrarian",
-   "model": "C6",
-   "variant": "patient",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "APP",
-    "SHOP"
-   ]
-  },
-  {
-   "username": "DipDynamo",
-   "kind": "contrarian",
-   "model": "C7",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "COIN",
-    "MSTR",
-    "NIO"
-   ]
-  },
-  {
-   "username": "PanicPremier",
-   "kind": "contrarian",
-   "model": "C7",
-   "variant": "rapid",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "CVNA",
-    "PTON",
-    "PLUG"
-   ]
-  },
-  {
-   "username": "CrashColossus",
-   "kind": "contrarian",
-   "model": "C7",
-   "variant": "patient",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "SMCI",
-    "SHOP"
-   ]
-  },
-  {
-   "username": "ParabolaPasha",
-   "kind": "contrarian",
-   "model": "C9",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "COIN",
-    "MSTR",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "ExhaustionEcho",
-   "kind": "contrarian",
-   "model": "C9",
-   "variant": "extreme",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "CVNA",
-    "PLUG",
-    "NVAX"
-   ]
-  },
-  {
-   "username": "ParabolaPiranha",
-   "kind": "contrarian",
-   "model": "C9",
-   "variant": "loose",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "PLTR",
-    "APP"
-   ]
-  },
-  {
-   "username": "ClimaxCleo",
-   "kind": "contrarian",
-   "model": "C10",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "PLUG",
-    "NIO",
-    "PTON",
-    "NVAX"
-   ]
-  },
-  {
-   "username": "VolumeVortex",
-   "kind": "contrarian",
-   "model": "C10",
-   "variant": "volume_heavy",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "AMC",
-    "GME",
-    "CVNA",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "RangeRanger",
-   "kind": "contrarian",
-   "model": "C10",
-   "variant": "range_heavy",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "COIN",
-    "HOOD",
-    "SHOP",
-    "MSTR"
-   ]
-  },
-  {
-   "username": "SqueezeStorm",
-   "kind": "contrarian",
-   "model": "C11",
-   "variant": "rapid",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "MSTR",
-    "COIN"
-   ]
-  },
-  {
-   "username": "VolSpikeVince",
-   "kind": "contrarian",
-   "model": "C11",
-   "variant": "patient",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "CrashCrusader",
-   "kind": "contrarian",
-   "model": "C12",
-   "variant": "deep",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "CVNA",
-    "PLUG"
-   ]
-  },
-  {
-   "username": "DipDestroyer",
-   "kind": "contrarian",
-   "model": "C12",
-   "variant": "quick",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "RocketRider",
-   "kind": "contrarian",
-   "model": "C13",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "PLTR",
-    "MSTR",
-    "COIN",
-    "MARA"
-   ]
-  },
-  {
-   "username": "TurboTad",
-   "kind": "contrarian",
-   "model": "C13",
-   "variant": "runner",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "NVDA",
-    "TSLA",
-    "SMCI",
-    "AMD"
-   ]
-  },
-  {
-   "username": "VolatilityVera",
-   "kind": "control",
-   "model": "B1",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "DonchianDana",
-   "kind": "baseline",
-   "model": "S1",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "EmaEddie",
-   "kind": "baseline",
-   "model": "S2",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "SqueezeSasha",
-   "kind": "baseline",
-   "model": "S3",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "GapGlider",
-   "kind": "contrarian",
-   "model": "C14",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "COIN",
-    "MSTR",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "MomentumMarauder",
-   "kind": "contrarian",
-   "model": "C14",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "TSLA",
-    "NVDA",
-    "PLTR"
-   ]
-  },
-  {
-   "username": "DeadCatDana",
-   "kind": "contrarian",
-   "model": "C15",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "CVNA",
-    "PTON",
-    "PLUG",
-    "NIO",
-    "NVAX"
-   ]
-  },
-  {
-   "username": "SnapbackSue",
-   "kind": "contrarian",
-   "model": "C15",
-   "variant": "quick",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "MARA",
-    "SMCI",
-    "COIN"
-   ]
-  },
-  {
-   "username": "VolcanoVic",
-   "kind": "contrarian",
-   "model": "C16",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "APP",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "BreakoutBea",
-   "kind": "contrarian",
-   "model": "C16",
-   "variant": "runner",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MSTR",
-    "COIN",
-    "HOOD",
-    "SHOP",
-    "PLTR"
-   ]
-  },
-  {
-   "username": "GapGremlin",
-   "kind": "contrarian",
-   "model": "C8",
-   "variant": null,
-   "division": "hourly",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "TrapTamer",
-   "kind": "contrarian",
-   "model": "C8",
-   "variant": "tight",
-   "division": "hourly",
-   "pool": [
-    "MARA",
-    "RIOT",
-    "GME",
-    "AMC",
-    "PLUG",
-    "NIO"
-   ]
-  },
-  {
-   "username": "SqueezeSage",
-   "kind": "contrarian",
-   "model": "C8",
-   "variant": "wide",
-   "division": "hourly",
-   "pool": [
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "COIN",
-    "MSTR",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "IntradayIris",
-   "kind": "contrarian",
-   "model": "C7",
-   "variant": "rapid",
-   "division": "hourly",
-   "pool": [
-    "MARA",
-    "RIOT",
-    "GME",
-    "CVNA",
-    "COIN",
-    "PLUG"
-   ]
-  },
-  {
-   "username": "GapGobbler",
-   "kind": "contrarian",
-   "model": "C17",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "COIN",
-    "MSTR",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "DawnRaider",
-   "kind": "contrarian",
-   "model": "C17",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "CVNA",
-    "PLUG",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "AvalancheAva",
-   "kind": "contrarian",
-   "model": "C18",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MSTR",
-    "COIN",
-    "NVDA",
-    "TSLA",
-    "AMD"
-   ]
-  },
-  {
-   "username": "MartingaleMax",
-   "kind": "contrarian",
-   "model": "C18",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "GME",
-    "AMC",
-    "MARA",
-    "RIOT",
-    "SMCI"
-   ]
-  },
-  {
-   "username": "HammerHank",
-   "kind": "contrarian",
-   "model": "C19",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "PLTR",
-    "APP",
-    "SHOP",
-    "NIO",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "DoubleTapDora",
-   "kind": "contrarian",
-   "model": "C19",
-   "variant": "patient",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "COIN",
-    "MSTR"
-   ]
-  },
-  {
-   "username": "TwoStepTessa",
-   "kind": "contrarian",
-   "model": "C19A",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "LagLiquidationLeo",
-   "kind": "contrarian",
-   "model": "C19A",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "AMD",
-    "MARA",
-    "CVNA",
-    "GME",
-    "RIOT",
-    "SHOP",
-    "NVAX",
-    "APP",
-    "PLUG",
-    "MSTR",
-    "NIO",
-    "PLTR",
-    "AMC",
-    "SMCI",
-    "HOOD",
-    "TSLA",
-    "NVDA",
-    "COIN",
-    "PTON"
-   ]
-  },
-  {
-   "username": "SpringSally",
-   "kind": "contrarian",
-   "model": "C20",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "MARA",
-    "RIOT",
-    "GME",
-    "AMC",
-    "PLUG"
-   ]
-  },
-  {
-   "username": "WyckoffWade",
-   "kind": "contrarian",
-   "model": "C20",
-   "variant": "aggressive",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "TSLA",
-    "NVDA",
-    "AMD",
-    "COIN",
-    "MSTR"
-   ]
-  },
-  {
-   "username": "InsideOutIvy",
-   "kind": "contrarian",
-   "model": "C21",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "CVNA",
-    "PTON",
-    "NVAX",
-    "NIO",
-    "SHOP"
-   ]
-  },
-  {
-   "username": "ClimaxKai",
-   "kind": "contrarian",
-   "model": "C21",
-   "variant": "tight",
-   "division": "daily",
-   "pool": [
-    "ENPH",
-    "HOOD",
-    "APP",
-    "PLTR",
-    "SMCI",
-    "AMD"
-   ]
-  },
-  {
-   "username": "DroughtDynamo",
-   "kind": "contrarian",
-   "model": "C22",
-   "variant": null,
-   "division": "daily",
-   "pool": [
-    "MSTR",
-    "MARA",
-    "RIOT",
-    "SMCI",
-    "CVNA",
-    "HOOD"
-   ]
-  },
-  {
-   "username": "SlowFuseSal",
-   "kind": "contrarian",
-   "model": "C22",
-   "variant": "deep",
-   "division": "daily",
-   "pool": [
-    "MSTR",
-    "MARA",
-    "RIOT",
-    "SMCI",
-    "CVNA",
-    "HOOD"
-   ]
-  }
- ]
+  "participants": [
+    {
+      "username": "BlowoffBella",
+      "kind": "contrarian",
+      "model": "C6",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "MSTR",
+        "COIN",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "SpikeSaber",
+      "kind": "contrarian",
+      "model": "C6",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "PLTR",
+        "HOOD",
+        "NVAX"
+      ]
+    },
+    {
+      "username": "FadeFiend",
+      "kind": "contrarian",
+      "model": "C6",
+      "variant": "patient",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "APP",
+        "SHOP"
+      ]
+    },
+    {
+      "username": "DipDynamo",
+      "kind": "contrarian",
+      "model": "C7",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "COIN",
+        "MSTR",
+        "NIO"
+      ]
+    },
+    {
+      "username": "PanicPremier",
+      "kind": "contrarian",
+      "model": "C7",
+      "variant": "rapid",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "CVNA",
+        "PTON",
+        "PLUG"
+      ]
+    },
+    {
+      "username": "CrashColossus",
+      "kind": "contrarian",
+      "model": "C7",
+      "variant": "patient",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "SMCI",
+        "SHOP"
+      ]
+    },
+    {
+      "username": "ParabolaPasha",
+      "kind": "contrarian",
+      "model": "C9",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "COIN",
+        "MSTR",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "ExhaustionEcho",
+      "kind": "contrarian",
+      "model": "C9",
+      "variant": "extreme",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "CVNA",
+        "PLUG",
+        "NVAX"
+      ]
+    },
+    {
+      "username": "ParabolaPiranha",
+      "kind": "contrarian",
+      "model": "C9",
+      "variant": "loose",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "PLTR",
+        "APP"
+      ]
+    },
+    {
+      "username": "ClimaxCleo",
+      "kind": "contrarian",
+      "model": "C10",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "PLUG",
+        "NIO",
+        "PTON",
+        "NVAX"
+      ]
+    },
+    {
+      "username": "VolumeVortex",
+      "kind": "contrarian",
+      "model": "C10",
+      "variant": "volume_heavy",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "AMC",
+        "GME",
+        "CVNA",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "RangeRanger",
+      "kind": "contrarian",
+      "model": "C10",
+      "variant": "range_heavy",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "COIN",
+        "HOOD",
+        "SHOP",
+        "MSTR"
+      ]
+    },
+    {
+      "username": "SqueezeStorm",
+      "kind": "contrarian",
+      "model": "C11",
+      "variant": "rapid",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "MSTR",
+        "COIN"
+      ]
+    },
+    {
+      "username": "VolSpikeVince",
+      "kind": "contrarian",
+      "model": "C11",
+      "variant": "patient",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "CrashCrusader",
+      "kind": "contrarian",
+      "model": "C12",
+      "variant": "deep",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "CVNA",
+        "PLUG"
+      ]
+    },
+    {
+      "username": "DipDestroyer",
+      "kind": "contrarian",
+      "model": "C12",
+      "variant": "quick",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "RocketRider",
+      "kind": "contrarian",
+      "model": "C13",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "PLTR",
+        "MSTR",
+        "COIN",
+        "MARA"
+      ]
+    },
+    {
+      "username": "TurboTad",
+      "kind": "contrarian",
+      "model": "C13",
+      "variant": "runner",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "NVDA",
+        "TSLA",
+        "SMCI",
+        "AMD"
+      ]
+    },
+    {
+      "username": "VolatilityVera",
+      "kind": "control",
+      "model": "B1",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "DonchianDana",
+      "kind": "baseline",
+      "model": "S1",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "EmaEddie",
+      "kind": "baseline",
+      "model": "S2",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "SqueezeSasha",
+      "kind": "baseline",
+      "model": "S3",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "GapGlider",
+      "kind": "contrarian",
+      "model": "C14",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "COIN",
+        "MSTR",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "MomentumMarauder",
+      "kind": "contrarian",
+      "model": "C14",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "TSLA",
+        "NVDA",
+        "PLTR"
+      ]
+    },
+    {
+      "username": "DeadCatDana",
+      "kind": "contrarian",
+      "model": "C15",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "CVNA",
+        "PTON",
+        "PLUG",
+        "NIO",
+        "NVAX"
+      ]
+    },
+    {
+      "username": "SnapbackSue",
+      "kind": "contrarian",
+      "model": "C15",
+      "variant": "quick",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "MARA",
+        "SMCI",
+        "COIN"
+      ]
+    },
+    {
+      "username": "VolcanoVic",
+      "kind": "contrarian",
+      "model": "C16",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "APP",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "BreakoutBea",
+      "kind": "contrarian",
+      "model": "C16",
+      "variant": "runner",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MSTR",
+        "COIN",
+        "HOOD",
+        "SHOP",
+        "PLTR"
+      ]
+    },
+    {
+      "username": "GapGremlin",
+      "kind": "contrarian",
+      "model": "C8",
+      "variant": null,
+      "division": "hourly",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "TrapTamer",
+      "kind": "contrarian",
+      "model": "C8",
+      "variant": "tight",
+      "division": "hourly",
+      "pool": [
+        "MARA",
+        "RIOT",
+        "GME",
+        "AMC",
+        "PLUG",
+        "NIO"
+      ]
+    },
+    {
+      "username": "SqueezeSage",
+      "kind": "contrarian",
+      "model": "C8",
+      "variant": "wide",
+      "division": "hourly",
+      "pool": [
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "COIN",
+        "MSTR",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "IntradayIris",
+      "kind": "contrarian",
+      "model": "C7",
+      "variant": "rapid",
+      "division": "hourly",
+      "pool": [
+        "MARA",
+        "RIOT",
+        "GME",
+        "CVNA",
+        "COIN",
+        "PLUG"
+      ]
+    },
+    {
+      "username": "GapGobbler",
+      "kind": "contrarian",
+      "model": "C17",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "COIN",
+        "MSTR",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "DawnRaider",
+      "kind": "contrarian",
+      "model": "C17",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "CVNA",
+        "PLUG",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "AvalancheAva",
+      "kind": "contrarian",
+      "model": "C18",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MSTR",
+        "COIN",
+        "NVDA",
+        "TSLA",
+        "AMD"
+      ]
+    },
+    {
+      "username": "MartingaleMax",
+      "kind": "contrarian",
+      "model": "C18",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "GME",
+        "AMC",
+        "MARA",
+        "RIOT",
+        "SMCI"
+      ]
+    },
+    {
+      "username": "HammerHank",
+      "kind": "contrarian",
+      "model": "C19",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "PLTR",
+        "APP",
+        "SHOP",
+        "NIO",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "DoubleTapDora",
+      "kind": "contrarian",
+      "model": "C19",
+      "variant": "patient",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "COIN",
+        "MSTR"
+      ]
+    },
+    {
+      "username": "TwoStepTessa",
+      "kind": "contrarian",
+      "model": "C19A",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "LagLiquidationLeo",
+      "kind": "contrarian",
+      "model": "C19A",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "SpringSally",
+      "kind": "contrarian",
+      "model": "C20",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "MARA",
+        "RIOT",
+        "GME",
+        "AMC",
+        "PLUG"
+      ]
+    },
+    {
+      "username": "WyckoffWade",
+      "kind": "contrarian",
+      "model": "C20",
+      "variant": "aggressive",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "TSLA",
+        "NVDA",
+        "AMD",
+        "COIN",
+        "MSTR"
+      ]
+    },
+    {
+      "username": "InsideOutIvy",
+      "kind": "contrarian",
+      "model": "C21",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "CVNA",
+        "PTON",
+        "NVAX",
+        "NIO",
+        "SHOP"
+      ]
+    },
+    {
+      "username": "ClimaxKai",
+      "kind": "contrarian",
+      "model": "C21",
+      "variant": "tight",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "HOOD",
+        "APP",
+        "PLTR",
+        "SMCI",
+        "AMD"
+      ]
+    },
+    {
+      "username": "DroughtDynamo",
+      "kind": "contrarian",
+      "model": "C22",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "MSTR",
+        "MARA",
+        "RIOT",
+        "SMCI",
+        "CVNA",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "SlowFuseSal",
+      "kind": "contrarian",
+      "model": "C22",
+      "variant": "deep",
+      "division": "daily",
+      "pool": [
+        "MSTR",
+        "MARA",
+        "RIOT",
+        "SMCI",
+        "CVNA",
+        "HOOD"
+      ]
+    },
+    {
+      "username": "RedStreakRiley",
+      "kind": "contrarian",
+      "model": "C23",
+      "variant": null,
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    },
+    {
+      "username": "SerialSnapSam",
+      "kind": "contrarian",
+      "model": "C23",
+      "variant": "deep",
+      "division": "daily",
+      "pool": [
+        "ENPH",
+        "AMD",
+        "MARA",
+        "CVNA",
+        "GME",
+        "RIOT",
+        "SHOP",
+        "NVAX",
+        "APP",
+        "PLUG",
+        "MSTR",
+        "NIO",
+        "PLTR",
+        "AMC",
+        "SMCI",
+        "HOOD",
+        "TSLA",
+        "NVDA",
+        "COIN",
+        "PTON"
+      ]
+    }
+  ]
 }

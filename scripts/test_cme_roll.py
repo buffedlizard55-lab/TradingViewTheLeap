@@ -10,7 +10,7 @@ it implements.
 import os
 import sys
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -118,9 +118,97 @@ class TestCodecs(unittest.TestCase):
         self.assertEqual(a, b)
 
 
+    def test_nq_codec_is_the_third_friday_and_only_quarterly(self):
+        codec = cme_roll.RULE_CODECS["NQ"]
+        self.assertEqual(codec.terminates(2024, 3), date(2024, 3, 15))
+        self.assertEqual(codec.terminates(2024, 6), date(2024, 6, 21))
+        self.assertEqual(codec.terminates(2024, 12), date(2024, 12, 20))
+        for year in (2024, 2025, 2026):
+            for month in range(1, 13):
+                got = codec.terminates(year, month)
+                if month in (3, 6, 9, 12):
+                    self.assertIsNotNone(got, f"{year}-{month:02d} is a listed quarter")
+                    # third Friday: first Friday + 14 days
+                    first = date(year, month, 1)
+                    offset = (4 - first.weekday()) % 7
+                    self.assertEqual(got, first + timedelta(days=offset + 14))
+                else:
+                    self.assertIsNone(got, f"{year}-{month:02d} is not a listed quarter")
+
+    def test_ng_codec_is_the_third_last_business_day_of_the_prior_month(self):
+        codec = cme_roll.RULE_CODECS["NG"]
+        for year in (2025, 2026):
+            for month in range(1, 13):
+                py, pm = cme_roll.prior_month(year, month)
+                self.assertEqual(codec.terminates(year, month),
+                                 cme_roll.nth_last_business_day(py, pm, 3))
+
+    def test_mng_codec_is_the_fourth_last_business_day_of_the_prior_month(self):
+        codec = cme_roll.RULE_CODECS["MNG"]
+        for year in (2025, 2026):
+            for month in (1, 4, 7, 11):
+                py, pm = cme_roll.prior_month(year, month)
+                self.assertEqual(codec.terminates(year, month),
+                                 cme_roll.nth_last_business_day(py, pm, 4))
+
+    def test_ho_and_rb_codecs_are_the_last_business_day_of_the_prior_month(self):
+        for product in ("HO", "RB"):
+            codec = cme_roll.RULE_CODECS[product]
+            for year in (2025, 2026):
+                for month in (2, 6, 11):
+                    py, pm = cme_roll.prior_month(year, month)
+                    self.assertEqual(codec.terminates(year, month),
+                                     cme_roll.nth_last_business_day(py, pm, 1))
+
+    def test_sic_codec_uses_the_prior_month_and_its_fixed_cycle(self):
+        codec = cme_roll.RULE_CODECS["SIC"]
+        for year in (2025, 2026):
+            for month in range(1, 13):
+                py, pm = cme_roll.prior_month(year, month)
+                got = codec.terminates(year, month)
+                if month in (3, 5, 7, 9, 12):
+                    self.assertEqual(got, cme_roll.nth_last_business_day(py, pm, 3))
+                else:
+                    self.assertIsNone(got, f"{year}-{month:02d} is not in the SIC cycle")
+
+    def test_pl_and_sil_codecs_use_the_contract_month_and_fixed_cycles(self):
+        for product, cycle in (("PL", (1, 4, 7, 10)), ("SIL", (1, 3, 5, 7, 9, 12))):
+            codec = cme_roll.RULE_CODECS[product]
+            for year in (2025, 2026):
+                for month in range(1, 13):
+                    got = codec.terminates(year, month)
+                    if month in cycle:
+                        self.assertEqual(got, cme_roll.nth_last_business_day(year, month, 3))
+                    else:
+                        self.assertIsNone(got, f"{product} {year}-{month:02d} is not listed")
+
+    def test_crypto_family_codecs_are_the_last_friday(self):
+        for product in ("MBT", "MET", "SOL", "MSL", "XRP", "MXP"):
+            codec = cme_roll.RULE_CODECS[product]
+            for year in (2025, 2026):
+                for month in (1, 6, 12):
+                    got = codec.terminates(year, month)
+                    friday = cme_roll.last_friday(year, month)
+                    self.assertLessEqual(got, friday)
+                    self.assertTrue(cme_roll.is_business_day(got))
+
+    def test_crypto_codecs_quote_their_own_products_text(self):
+        # SOL, MSL, XRP and MXP share identical termination text; each still carries its
+        # own codec entry so a future rewording of one product's page cannot silently
+        # change another product's dates.
+        verbatims = {p: cme_roll.RULE_CODECS[p].rule_verbatim for p in ("SOL", "MSL", "XRP", "MXP")}
+        self.assertEqual(len(set(verbatims.values())), 1)
+        self.assertNotEqual(cme_roll.RULE_CODECS["MBT"].rule_verbatim,
+                            cme_roll.RULE_CODECS["MET"].rule_verbatim)
+
+
 class TestRollDates(unittest.TestCase):
     def test_uncoded_product_returns_no_dates_and_says_why(self):
-        result = cme_roll.roll_dates("NQ", date(2025, 1, 1), date(2026, 9, 30))
+        # MCL/QM publish a two-disjunct termination sentence whose relative precedence is
+        # not stated; they deliberately have no codec (see the roll schedule's limitations).
+        self.assertNotIn("MCL", cme_roll.RULE_CODECS)
+        self.assertNotIn("QM", cme_roll.RULE_CODECS)
+        result = cme_roll.roll_dates("MCL", date(2025, 1, 1), date(2026, 9, 30))
         self.assertEqual(result["roll_dates"], [])
         self.assertIsNone(result["rule_codec"])
         self.assertIn("no codec", result["reason"])
@@ -131,15 +219,30 @@ class TestRollDates(unittest.TestCase):
         for product in cme_roll.RULE_CODECS:
             result = cme_roll.roll_dates(product, start, end)
             self.assertIsNone(result["reason"], f"{product}: {result['reason']}")
-            self.assertGreater(len(result["roll_dates"]), 10,
-                               f"{product}: a 21-month window should hold many expiries")
+            # Monthly products expire every month; fixed-cycle products (NQ quarterly,
+            # SIC Mar/May/Jul/Sep/Dec, PL Jan/Apr/Jul/Oct, SIL six fixed months) only in
+            # their listed months - never fewer than four inside a 21-month window.
+            monthly = product in ("BTC", "ETH", "CL", "HO", "RB", "MNG", "NG",
+                                  "MBT", "MET", "SOL", "MSL", "XRP", "MXP")
+            floor = 10 if monthly else 4
+            self.assertGreater(len(result["roll_dates"]), floor - 1,
+                               f"{product}: a 21-month window should hold at least {floor} "
+                               f"expiries")
             iso = [r["termination_date"] for r in result["roll_dates"]]
             self.assertEqual(iso, sorted(iso), f"{product}: roll dates are not ascending")
             self.assertEqual(len(set(iso)), len(iso), f"{product}: duplicate roll dates")
             for r in result["roll_dates"]:
                 day = date.fromisoformat(r["termination_date"])
                 self.assertTrue(start <= day <= end)
-                self.assertTrue(cme_roll.is_business_day(day))
+                if not cme_roll.is_business_day(day):
+                    # The only tolerated case: a rule that names an unadjusted calendar day
+                    # (NQ's 3rd Friday) landing on an exchange closure. The date must be a
+                    # recorded NYSE full closure and the codec must declare the limitation.
+                    self.assertEqual(product, "NQ", f"{product}: non-business-day roll date")
+                    self.assertTrue(us_calendar.is_full_closure(day),
+                                    f"NQ {day}: not a recorded closure either")
+                    self.assertIn("no business-day adjustment",
+                                  cme_roll.RULE_CODECS["NQ"].note)
             self.assertEqual(result["termination_dates_iso"], iso)
 
     def test_contract_months_scan_brackets_the_window(self):
@@ -195,7 +298,7 @@ class TestTranscriptionBinding(unittest.TestCase):
         self.assertIn("no transcribed", why)
 
     def test_an_uncoded_product_is_detected(self):
-        ok, why = cme_roll.codec_matches_transcription("NQ", "some rule")
+        ok, why = cme_roll.codec_matches_transcription("MCL", "some rule")
         self.assertFalse(ok)
         self.assertIn("no codec", why)
 

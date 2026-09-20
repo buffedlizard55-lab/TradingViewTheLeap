@@ -1,10 +1,10 @@
 {
   "_meta": {
     "kind": "full_pool_hypothesis_verdicts",
-    "description": "Mechanical verdicts for H34-H39 and H41, derived from data/stock_competition_results.json by the pre-registered decision rule below. scripts/verify.py re-runs the same rule and fails if this file or the hypothesis register disagrees.",
+    "description": "Mechanical verdicts for H34-H39 and H41-H43, derived from data/stock_competition_results.json by the pre-registered decision rule below. scripts/verify.py re-runs the same rule and fails if this file or the hypothesis register disagrees.",
     "engine": "full-pool-verdicts-1",
-    "generated_utc": "2026-09-20T03:11:29+00:00",
-    "competition_generated_utc": "2026-09-20T02:16:53+00:00",
+    "generated_utc": "2026-09-20T19:01:05+00:00",
+    "competition_generated_utc": "2026-09-20T17:56:53+00:00",
     "competition_engine": "intel-competition-3",
     "primary_profile": "stocks_official_leap",
     "division": "daily",
@@ -382,6 +382,48 @@
           "forward_realized_pnl_usd": 0.0,
           "total_trades": 0,
           "total_add_tranches": 0,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H43": {
+      "model": "C23",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "RedStreakRiley",
+          "variant": null,
+          "season_realized_pnl_usd": 3679.37,
+          "season_multiple": 1.036586,
+          "forward_realized_pnl_usd": 555.65,
+          "total_trades": 75,
+          "total_add_tranches": 25,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "SerialSnapSam",
+          "variant": "deep",
+          "season_realized_pnl_usd": -1695.19,
+          "season_multiple": 0.982933,
+          "forward_realized_pnl_usd": 0.0,
+          "total_trades": 37,
+          "total_add_tranches": 13,
           "ruined_editions": 0,
           "beats_control_season": true,
           "beats_control_forward": false,

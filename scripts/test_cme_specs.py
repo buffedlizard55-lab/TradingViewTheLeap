@@ -108,6 +108,197 @@ class TestExtractSpecFields(unittest.TestCase):
                          fcs.extract_spec_fields(SPEC_PAGE))
 
 
+class TestZeroCaptureResilience(unittest.TestCase):
+    """A 403'd runner pass must preserve the audited evidence AND stay verifiable.
+
+    cmegroup.com answers HTTP 403 to GitHub-hosted runners (IR-33), so the committed
+    capture lane periodically rewrites data/cme_specs_index.json with zero captures.
+    The committed hours artifact is deliberately left untouched on such a run - which
+    means the verifier's regeneration from the new index must still reproduce the
+    committed artifact byte-for-byte, or main goes red on the next runner pass.
+    """
+
+    def test_a_total_403_pass_keeps_machine_rows_and_stays_regenerable(self):
+        import argparse
+        import json
+        import shutil
+        import tempfile
+        from pathlib import Path
+
+        tmp = Path(tempfile.mkdtemp(prefix="cme403-"))
+        try:
+            shutil.copytree(Path(fcs.SPECS_DIR), tmp / "specs")
+            shutil.copy(Path(fcs.INDEX_PATH), tmp / "index.json")
+            shutil.copy(Path(fcs.HOURS_PATH), tmp / "hours.json")
+            committed_hours = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+
+            saved = (fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH)
+            try:
+                fcs.SPECS_DIR = tmp / "specs"
+                fcs.INDEX_PATH = tmp / "index.json"
+                fcs.HOURS_PATH = tmp / "hours.json"
+
+                def boom(url, timeout=25):
+                    raise RuntimeError(f"GET failed with every header set: {url} (timed out)")
+
+                fcs.fetch = boom
+                rc = fcs.build(argparse.Namespace(offline=False, timeout=5,
+                                                  allow_failures=True))
+                self.assertEqual(rc, 0)
+
+                doc = json.loads((tmp / "index.json").read_text(encoding="utf-8"))
+                by_product = {r["product"]: r for r in doc["records"]}
+                machine = [r for r in doc["records"]
+                           if r["status"] in ("captured", "kept_previous")
+                           and (r.get("fields") or {}).get("trading_hours")]
+                self.assertEqual(len(machine), 17,
+                                 "the 17 adopted machine transcriptions must survive")
+                for r in machine:
+                    self.assertEqual(r["status"], "kept_previous")
+                    self.assertEqual(r.get("body_format"), "markdown",
+                                     "body_format must be carried or the verifier cannot "
+                                     "dispatch the markdown extractor")
+                    self.assertNotIn("retained_row", r,
+                                     "a machine row must not be re-labelled hand-read")
+                for product in ("BTC", "ETH", "SI"):
+                    rec = by_product[product]
+                    self.assertEqual(rec["status"], "failed")
+                    self.assertIn("retained_row", rec)
+                    # The retained explanation is preserved verbatim, not recomputed from
+                    # this run's transport error, so consecutive failures are byte-stable.
+                    committed_reason = next(
+                        p["retained_reason"] for p in committed_hours["products"]
+                        if p["product"] == product)
+                    self.assertEqual(rec["retained_row"].get("retained_reason"),
+                                     committed_reason)
+
+                # The invariant the verifier checks: the artifact regenerated from the
+                # post-403 index matches the committed artifact (which the run leaves
+                # untouched) on every compared field.
+                fcs.write_hours_artifact(doc)
+                regenerated = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+                self.assertEqual(fcs.hours_artifact_divergences(regenerated,
+                                                                committed_hours), [])
+
+                # A SECOND consecutive 403 pass (its 'previous' index is now itself a
+                # post-403 one, statuses kept_previous) must keep the machine rows too -
+                # this exact case regressed when the carry-forward only recognised a
+                # previous status of 'captured'.
+                rc2 = fcs.build(argparse.Namespace(offline=False, timeout=5,
+                                                   allow_failures=True))
+                self.assertEqual(rc2, 0)
+                doc2 = json.loads((tmp / "index.json").read_text(encoding="utf-8"))
+                machine2 = [r for r in doc2["records"]
+                            if r["status"] in ("captured", "kept_previous")
+                            and (r.get("fields") or {}).get("trading_hours")]
+                self.assertEqual(len(machine2), 17,
+                                 "a second consecutive 403 pass must also keep the "
+                                 "17 machine transcriptions")
+                for r in machine2:
+                    self.assertEqual(r["status"], "kept_previous")
+                    self.assertEqual(r.get("body_format"), "markdown")
+                    self.assertNotIn("retained_row", r)
+                fcs.write_hours_artifact(doc2)
+                regenerated2 = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+                self.assertEqual(fcs.hours_artifact_divergences(regenerated2,
+                                                                committed_hours), [])
+            finally:
+                fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH = saved
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
+class TestMarkdownExtraction(unittest.TestCase):
+    """The arena-fetch-page adoption lane parses the proxy's markdown pipe tables.
+
+    The page-fetch proxy renders the official contractSpecs HTML to markdown; the spec
+    table arrives as `| Label | Value |` rows with `<br>` markers preserved. These tests
+    pin the extraction behaviour: labels resolve through the same FIELD_LABELS map as the
+    HTML path, `<br>` becomes a newline, separator/empty-header rows and empty values are
+    skipped, missing labels are reported, and an HTML page and its markdown rendering of
+    the same table transcribe identically.
+    """
+
+    MD_PAGE = """
+# Synthetic Silver
+
+##### Futures
+
+## Synthetic Silver Futures - Contract Specs
+
+|     |     |
+| --- | --- |
+| Contract Unit | 5,000 troy ounces |
+| Price Quotation | U.S. dollars and cents per troy ounce |
+| Trading Hours | CME Globex:<br>Sunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT)<br>TAS: Sunday - Friday 6:00 p.m. - 1:25 p.m. (5:00 p.m. - 12:25 p.m. CT) |
+| Minimum Price Fluctuation | 0.005 per troy ounces = $25.00 |
+| Product Code | CME Globex: SYN<br>Clearing: SYN |
+| Listed Contracts | Monthly contracts listed for the current year |
+| Settlement Method | Deliverable |
+| Termination of Trading | 12:25 p.m. CT on the third last business day of the contract month |
+| TAM or TAS Rules | Synthetic TAS rules prose |
+| Floating Price |  |
+| Days Or Hours |  |
+"""
+
+    def test_every_label_resolves_and_br_becomes_newline(self):
+        fields, missing = fcs.extract_spec_fields_markdown(self.MD_PAGE)
+        self.assertEqual(fields["contract_unit"], "5,000 troy ounces")
+        self.assertEqual(
+            fields["trading_hours"],
+            "CME Globex:\nSunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT)\n"
+            "TAS: Sunday - Friday 6:00 p.m. - 1:25 p.m. (5:00 p.m. - 12:25 p.m. CT)")
+        self.assertEqual(fields["termination_of_trading"],
+                         "12:25 p.m. CT on the third last business day of the contract month")
+        self.assertEqual(fields["listed_contracts"],
+                         "Monthly contracts listed for the current year")
+        self.assertEqual(fields["settlement_method"], "Deliverable")
+        self.assertEqual(fields["product_code"], "CME Globex: SYN\nClearing: SYN")
+        self.assertEqual(missing, [])
+        self.assertIsNone(fields["additional_hours_rows"])
+
+    def test_separator_and_empty_header_rows_and_empty_values_are_skipped(self):
+        # The empty header, the | --- | --- | separator, the empty "Floating Price" and
+        # "Days Or Hours" cells must not be transcribed as anything.
+        fields, _ = fcs.extract_spec_fields_markdown(self.MD_PAGE)
+        self.assertNotIn("", fields.values())
+
+    def test_missing_label_is_null_and_reported(self):
+        doc = self.MD_PAGE.replace(
+            "| Termination of Trading | 12:25 p.m. CT on the third last business day of the contract month |\n", "")
+        fields, missing = fcs.extract_spec_fields_markdown(doc)
+        self.assertIsNone(fields["termination_of_trading"])
+        self.assertIn("termination_of_trading", missing)
+
+    def test_a_page_without_a_trading_hours_row_is_refused_by_the_extractor(self):
+        doc = self.MD_PAGE.replace("| Trading Hours |", "| Not Hours |")
+        fields, missing = fcs.extract_spec_fields_markdown(doc)
+        self.assertIsNone(fields["trading_hours"])
+        self.assertIn("trading_hours", missing)
+
+    def test_markdown_and_html_of_the_same_table_transcribe_identically(self):
+        html_doc = """
+        <table>
+          <tr><th>Contract Unit</th><td>5,000 troy ounces</td></tr>
+          <tr><th>Trading Hours</th><td>CME Globex:<br>Sunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT)</td></tr>
+          <tr><th>Termination of Trading</th><td>12:25 p.m. CT on the third last business day of the contract month</td></tr>
+        </table>"""
+        md_doc = """
+| Contract Unit | 5,000 troy ounces |
+| Trading Hours | CME Globex:<br>Sunday - Friday 6:00 p.m. - 5:00 p.m. (5:00 p.m. - 4:00 p.m. CT) |
+| Termination of Trading | 12:25 p.m. CT on the third last business day of the contract month |
+"""
+        html_fields, _ = fcs.extract_spec_fields(html_doc)
+        md_fields, _ = fcs.extract_spec_fields_markdown(md_doc)
+        for key in ("contract_unit", "trading_hours", "termination_of_trading"):
+            self.assertEqual(html_fields[key], md_fields[key], key)
+
+    def test_extraction_is_deterministic(self):
+        a = fcs.extract_spec_fields_markdown(self.MD_PAGE)
+        b = fcs.extract_spec_fields_markdown(self.MD_PAGE)
+        self.assertEqual(a, b)
+
+
 class TestBuildFailClosed(unittest.TestCase):
     """The lane must record a transport failure, never crash on one."""
 

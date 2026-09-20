@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C22).
+"""Contrarian strategy library for the volatile-equity division (C6-C23).
 
-The seventeen contrarian models here are pre-registered for the 20-stock volatile pool
+The nineteen contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -29,6 +29,14 @@ Why these shapes:
   TwoStepTessa / LagLiquidationLeo (research/strategy/C19-VARIANT-GATE.md).
 - C20 (failed-breakdown spring) and C21 (wide-to-narrow climax reversal) are
   additional unique shapes, rostered under new usernames.
+- C23 (serial capitulation snapback) is the count-based trigger absent from every
+  other model: eight or more consecutive down closes with no magnitude, volume or
+  close-position filter. The pre-freeze probe (2026-09-20, committed vendor bars,
+  20 symbols x ~10 years) found 75 such streaks with a +5.0% median five-session
+  forward return and 67% positive rate, and - decisively - that adding the
+  close-position/volume filters this library uses elsewhere REDUCED both frequency
+  and median forward return, so none was carried into the freeze. Long the next
+  open, pyramid on +1 ATR closes (max 3 adds), exit after 8 sessions.
 - C22 (volume-drought ignition) is the volume-compression dual of C11's price
   compression: five consecutive sessions each printing at most 0.6x their own
   20-session average volume mark quiet accumulation / seller withdrawal; a session
@@ -60,7 +68,7 @@ from .contrarian import Decision, warmup as contrarian_warmup
 from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
-                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22")
+                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22", "C23")
 # C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
 # zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
 # pool. The tuple stays (empty but present) so future gated variants have a home.
@@ -87,6 +95,7 @@ MODEL_NAMES = {
     "C20": "Failed-breakdown spring",
     "C21": "Wide-to-narrow climax reversal",
     "C22": "Volume-drought ignition",
+    "C23": "Serial capitulation snapback (streak count)",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -111,6 +120,7 @@ MODEL_CLAIMS = {
     "C19A": "A first liquidation bar (>=1.5 ATR close-to-close drop on >=2x volume) plus a second liquidation bar within the next three sessions (>=1.0 ATR down, low not more than 0.25 ATR below the first low, close in the top 40% of its range) is delayed absorption rather than a continuing cascade; long the next open and pyramid on +1 ATR closes (max 3 adds). Structurally distinct from frozen C19 (not a parameter retune).",
     "C20": "A new N-bar low that the next bar immediately reclaims (close back above that low on >=2x volume, close in the top half of its range) is a failed breakdown / spring; the snapback is harvested long with pyramiding.",
     "C21": "A climax bar whose range is >=2.5 ATR followed by a bar whose range is at most half of that climax, closing in the opposite direction, is a wide-to-narrow reversal: long after a down climax, short after an up climax.",
+    "C23": "Eight or more consecutive down closes mark serial capitulation: by the eighth red session the marginal seller has already sold, and the pool's own 2016-2026 history shows a positive median five-session forward return after such streaks (+5.0% median, 67% positive, 75 streaks across the 20 committed names in the pre-freeze probe of 2026-09-20). The streak COUNT is the whole trigger - no ATR, volume or close-position filter is applied, because the same probe showed those filters reduced both frequency and median forward return. Long the next open, pyramid on +1 ATR favorable closes (max 3 adds), exit after 8 sessions.",
     "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 2.5x that average volume, above its own open, and closes in the top 40% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding. (Thresholds re-frozen once on 2026-09-20, before any full-pool run: the drafted 3.0x / top-30% combination produced zero ignition candidates across ~10 years of the six committed pool names, missing the strongest real candidates only on the close-position filter; see the seventeenth-pass audit.)",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
@@ -252,6 +262,12 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "inside_range_fraction": 0.5,
         "hold_bars": 6,
     },
+    "C23": {
+        "min_streak": 8,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 8,
+    },
     "C22": {
         "drought_bars": 5,
         "drought_volume_fraction": 0.6,
@@ -323,6 +339,10 @@ VARIANTS: dict[str, dict[str, dict]] = {
         "patient": {"crash_atr_mult": 2.0, "max_adds": 4},
     },
     "C19A": {},
+    "C23": {
+        "shallow": {"min_streak": 7, "hold_bars": 6},
+        "deep": {"min_streak": 9, "hold_bars": 10},
+    },
     "C20": {
         "aggressive": {"lookback": 10, "volume_mult": 1.5, "max_adds": 6, "hold_bars": 8},
     },
@@ -385,6 +405,8 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model == "C21":
         # ATR(14) on the climax bar and the following inside bar.
         return 16
+    if model == "C23":
+        return 2
     if model == "C22":
         # the volume baseline, ATR(14), and the full drought window behind the ignition bar.
         return max(p.get("volume_length", 20), 14) + p.get("drought_bars", 5) + 2
@@ -1113,6 +1135,39 @@ def generate_stock_decisions(
                 )
                 if ignition:
                     emit(i, "long", "volume-drought ignition long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+    elif model == "C23":
+        # Serial capitulation snapback: the trigger is the COUNT of consecutive down
+        # closes - no ATR magnitude, volume or close-position filter (the pre-freeze
+        # probe of 2026-09-20 showed those filters reduced both frequency and median
+        # forward return on the committed pool history). The signal fires on the bar
+        # that COMPLETES the streak (its own close is the min_streak-th consecutive
+        # lower close), is evaluated at that bar's close and filled at the next open,
+        # so the streak can never include the fill bar.
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        down_run = [0] * len(bars)  # consecutive lower closes ending AT each bar
+        for k in range(1, len(bars)):
+            if closes[k] < closes[k - 1]:
+                down_run[k] = down_run[k - 1] + 1
+        for i in range(start, len(bars)):
+            a = atr14[i]
+            if position is None:
+                if a is None or a <= 0:
+                    continue
+                if down_run[i] >= p["min_streak"]:
+                    emit(i, "long",
+                         f"serial capitulation snapback long (streak {down_run[i]})")
                     position = "long"
                     held = 0
                     adds = 0

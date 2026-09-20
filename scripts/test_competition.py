@@ -430,6 +430,68 @@ class StockModelTests(unittest.TestCase):
         self.assertEqual([(d.index, d.action) for d in d21 if d.action in ("long", "short")],
                          [(21, "long")])
 
+    def test_c23_resolve_warmup_and_fire(self):
+        from intel.stock_strategies import (
+            STOCK_MODEL_IDS,
+            generate_stock_decisions,
+            resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        self.assertIn("C23", STOCK_MODEL_IDS)
+        p23 = stock_resolve("C23", None)
+        self.assertEqual(p23["min_streak"], 8)
+        self.assertEqual(p23["max_adds"], 3)
+        self.assertEqual(p23["hold_bars"], 8)
+        self.assertEqual(stock_warmup("C23", None), 2)
+        p23s = stock_resolve("C23", "shallow")
+        self.assertEqual(p23s["min_streak"], 7)
+        p23d = stock_resolve("C23", "deep")
+        self.assertEqual(p23d["min_streak"], 9)
+        self.assertEqual(p23d["hold_bars"], 10)
+        with self.assertRaises(ValueError):
+            stock_resolve("C23", "nope")
+
+        t0 = int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp())
+        # C23 fires exactly on the bar that completes the 8th consecutive lower close,
+        # regardless of magnitude, volume or close position - the count is the trigger.
+        flat = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000)
+                for i in range(25)]
+        streak = [Bar(flat[-1].ts + (k + 1) * 86400, 100.0 - k, 100.5 - k, 100.5 - k - 1.5,
+                      100.0 - k - 0.5, 1000) for k in range(1, 9)]
+        snap = [Bar(streak[-1].ts + (i + 1) * 86400, 92.0 + i, 94.0 + i, 91.5 + i,
+                    93.0 + i, 1000) for i in range(12)]
+        series = flat + streak + snap
+        d23 = generate_stock_decisions(series, "C23")
+        self.assertEqual([(d.index, d.action) for d in d23 if d.action == "long"],
+                         [(32, "long")])  # 25 flat bars + the 8th red close at index 32
+        self.assertEqual(d23[0].index, 32)
+        self.assertIn("add", {d.action for d in d23})
+        self.assertIn("exit", {d.action for d in d23})
+
+        # Seven red closes are NOT enough at the frozen threshold...
+        series7 = flat + streak[:7] + snap
+        d7 = generate_stock_decisions(series7, "C23")
+        self.assertFalse(any(d.action == "long" for d in d7))
+        # ...but the shallow variant (min_streak 7) fires on them, and the deep variant
+        # (min_streak 9) does not fire until the ninth red close.
+        d7s = generate_stock_decisions(series7, "C23", "shallow")
+        self.assertTrue(any(d.action == "long" for d in d7s))
+        series9 = flat + streak + [Bar(streak[-1].ts + 86400, 91.5, 92.0, 90.5, 91.0, 1000)] + snap
+        d9d = generate_stock_decisions(series9, "C23", "deep")
+        self.assertTrue(any(d.action == "long" for d in d9d))
+        d9 = generate_stock_decisions(series9, "C23")
+        self.assertTrue(any(d.action == "long" for d in d9))
+
+        # A streak that begins long before the decision loop's start index still
+        # counts: the run counter is computed over the whole series prefix, so a
+        # 14-session descent fires at index 13 (the first bar where both the run
+        # >= 8 and ATR(14) are defined), not restarted at the loop's start bar.
+        descent = [Bar(t0 + j * 86400, 100.2 - 0.5 * j, 100.4 - 0.5 * j,
+                       99.2 - 0.5 * j, 99.6 - 0.5 * j, 1000) for j in range(16)]
+        d_early = generate_stock_decisions(descent + snap, "C23")
+        self.assertEqual([(d.index, d.action) for d in d_early if d.action == "long"],
+                         [(13, "long")])
+
     def test_gated_models_are_not_rostered_and_c19a_registered(self):
         import json
         from intel.stock_strategies import GATED_STOCK_MODEL_IDS
