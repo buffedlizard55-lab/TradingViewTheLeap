@@ -1,446 +1,473 @@
 {
-  "_meta": {
-    "description": "Everything found during line-by-line verification that a human must review. An irregularity is raised whenever observed data contradicts the project brief, contradicts another official source, or cannot be traced to a primary source at all.",
-    "generated_utc": "2026-09-16",
-    "severity_scale": [
-      "critical",
-      "high",
-      "medium",
-      "low"
-    ],
-    "count": 31,
-    "reverified_utc": "2026-09-19",
-    "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
-    "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
+ "_meta": {
+  "description": "Everything found during line-by-line verification that a human must review. An irregularity is raised whenever observed data contradicts the project brief, contradicts another official source, or cannot be traced to a primary source at all.",
+  "generated_utc": "2026-09-16",
+  "severity_scale": [
+   "critical",
+   "high",
+   "medium",
+   "low"
+  ],
+  "count": 33,
+  "reverified_utc": "2026-09-19",
+  "reverification_note": "2026-09-17 fifth pass (~20:58Z): IR-24 added. 2026-09-17 sixth pass (~21:27Z): IR-09 refreshed with 96,268 vs 96,263; H24 added (all-frontier stasis).",
+  "renumbering_note": "2026-09-17: two parallel research sessions added irregularities; this session's items were renumbered IR-15..IR-19 -> IR-17..IR-21 so the merged register keeps one sequence. IR-15/IR-16 come from the return-target-lab session (PR #8); IR-17..IR-21 come from the intelligence-layer session (PR #9). 2026-09-17 fourth pass (~19:04Z): IR-23 added (displayed rank-50 frontier decreased between captures 3 and 4; board membership is corrected, not append-only). 2026-09-17 fifth pass (~20:58Z): IR-24 added (two-decimal percentage/dollar rounding mismatch inside the verifier's +/- $12.50 bound); IR-09 and IR-23 observed fields refreshed with the capture-5 counter pair and the post-correction stability window."
+ },
+ "irregularities": [
+  {
+   "id": "IR-01",
+   "severity": "critical",
+   "title": "The live contest contains no stocks, but the brief asks to invest in highly volatile stocks",
+   "detail": "The permitted instrument list for The Leap by AMP Futures (September 2026) contains 94 instruments, every one of them a futures contract. There are zero NASDAQ, NYSE or AMEX single-stock contracts. A stocks-only strategy cannot be executed in the currently live edition.",
+   "observed": "94 futures / 0 equities. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2.",
+   "expected_by_brief": "A tradeable universe of highly volatile stocks.",
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Either target a future stocks edition (the 'Magnificent Seven' stocks edition of March 2026 completed with a winning return of only +17.58% — see TV-CONTEST-MAG7-MAR2026), or translate the volatility research into the futures universe. This session built data/volatile_stocks.json as the evidence base for what extreme stock volatility actually delivers, and the futures master list for what the live contest actually allows.",
+   "linked_hypothesis": "H3"
   },
-  "irregularities": [
-    {
-      "id": "IR-01",
-      "severity": "critical",
-      "title": "The live contest contains no stocks, but the brief asks to invest in highly volatile stocks",
-      "detail": "The permitted instrument list for The Leap by AMP Futures (September 2026) contains 94 instruments, every one of them a futures contract. There are zero NASDAQ, NYSE or AMEX single-stock contracts. A stocks-only strategy cannot be executed in the currently live edition.",
-      "observed": "94 futures / 0 equities. Exchange breakdown: CBOT 17, CBOT_MINI 15, CME 24, CME_MINI 18, COMEX 5, COMEX_MINI 6, NYMEX 7, NYMEX_MINI 2.",
-      "expected_by_brief": "A tradeable universe of highly volatile stocks.",
-      "source_ids": [
-        "TV-CONTEST-MAG7-MAR2026",
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "Either target a future stocks edition (the 'Magnificent Seven' stocks edition of March 2026 completed with a winning return of only +17.58% \u2014 see TV-CONTEST-MAG7-MAR2026), or translate the volatility research into the futures universe. This session built data/volatile_stocks.json as the evidence base for what extreme stock volatility actually delivers, and the futures master list for what the live contest actually allows.",
-      "linked_hypothesis": "H3"
-    },
-    {
-      "id": "IR-02",
-      "severity": "high",
-      "title": "Captured stock-edition champions are lower than captured futures champions; cause is untested",
-      "detail": "In the captured completed-champion sample, the two stocks editions returned +29.90% (1.299x) and +17.58% (1.1758x), while the maximum futures champion is 53.2072x. This is an observed association only. Edition balance, leverage, caps, symbol set, duration, and participant behavior differ, so the sample does not prove that asset class caused the gap.",
-      "observed": "completed stocks: best 1.299x (n=2); completed futures: best 53.2072x (n=5); small champion-only sample.",
-      "expected_by_brief": "Stocks deliver 5x-100x.",
-      "source_ids": [
-        "TV-CONTEST-MAG7-MAR2026",
-        "TV-THELEAP-LANDING"
-      ],
-      "resolution": "Keep the stocks module as historical reference, use only live-eligible futures for this edition, and do not infer a causal strategy from champion summaries.",
-      "linked_hypothesis": "H2"
-    },
-    {
-      "id": "IR-03",
-      "severity": "high",
-      "title": "No 100x contest-account outcome is attested by the captured official sample",
-      "detail": "The brief sets a 100x target. Across the 16 sourced contest records, including one in-progress row, the maximum captured return multiple is 53.2072x (+5,220.72%). Zero captured records are at or above 100x. This is a statement about the captured TradingView sample, not a universal upper bound.",
-      "observed": ">=5x: 2 cases. >=10x: 2 cases. >=20x: 1 case. >=50x: 1 case. >=100x: 0 cases.",
-      "expected_by_brief": "Verified 100x returns available.",
-      "source_ids": [
-        "TV-THELEAP-LANDING",
-        "TV-CONTEST-AMP-SEP2026"
-      ],
-      "resolution": "Treat 100x as an unverified contest target. Never describe 53.2072x as a ceiling; it is only the maximum in the captured sample.",
-      "linked_hypothesis": "H6"
-    },
-    {
-      "id": "IR-04",
-      "severity": "high",
-      "title": "The maximum-return objective is still constrained by account survival and margin",
-      "detail": "This is a virtual-money competition, so real-money risk management is not the objective. However, at 20:1 leverage on a $250,000 balance, $5,000,000 is the maximum initial notional. A loss equal to 5% of that fully deployed notional is $250,000. The account cannot be reset, and TradingView documents margin-call behavior in its simulator. Survival and margin feasibility are therefore optimization constraints, not investor-protection advice.",
-      "observed": "balance 250,000; leverage 20:1; maximum initial notional 5,000,000; account reset prohibited.",
-      "expected_by_brief": "Maximize simulated returns; real-money risk management is not the objective.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-PINE-LEVERAGE"
-      ],
-      "resolution": "Evaluate drawdown and margin calls only as feasibility diagnostics. Do not turn the project into a real-money risk-management plan.",
-      "linked_hypothesis": "H9"
-    },
-    {
-      "id": "IR-05",
-      "severity": "medium",
-      "title": "Position limits change drastically between editions",
-      "detail": "NYMEX:CL1! was capped at 1.0 contract in the TradeStation July 2026 edition and 100.0 contracts in the AMP Futures September 2026 edition - a 100x change in capacity for the same instrument. CME:MBT1! moved 5.0 -> 25.0. Balance moved 100,000 -> 250,000 and leverage 10:1 -> 20:1.",
-      "observed": "CL1! cap 1.0 -> 100.0; MBT1! cap 5.0 -> 25.0; balance 100k -> 250k; leverage 10:1 -> 20:1.",
-      "expected_by_brief": "Stable parameters.",
-      "source_ids": [
-        "TV-RULES-TS-JUL2026",
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "Re-read the live rules page before every edition. scripts/verify.py should be re-run against a freshly captured universe each time.",
-      "linked_hypothesis": "H7"
-    },
-    {
-      "id": "IR-06",
-      "severity": "medium",
-      "title": "Prize cut-off (300) is not visible on the public leaderboard (250 rows)",
-      "detail": "The rules award prizes to the first 300 participants, but the contest page exposes only the top 250. A participant in ranks 251\u2013300 cannot verify the prize frontier from the public table, so a public rank-300 threshold must not be invented.",
-      "observed": "Latest captured page: top 250 out of 93,527 displayed participants; rules award no more than 300 prizes.",
-      "expected_by_brief": "Observable prize boundary.",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "Treat rank 250 as the last observable public row. Do not call it the actual rank-300 prize boundary and do not claim that crossing a live row guarantees a prize.",
-      "linked_hypothesis": null,
-      "status": "confirmed"
-    },
-    {
-      "id": "IR-07",
-      "severity": "medium",
-      "title": "Rules reference prize categories that the prize ladder does not define",
-      "detail": "The Prize Limitation clause reads 'In the event an Entrant qualifies for more than one (1) prize (i.e. the Top Trader Prize, MPT Prize or Flawless Run Prize)...', but the PRIZE DISTRIBUTIONS section for this edition defines only Top Trader Prizes. 'MPT Prize' and 'Flawless Run Prize' are undefined in this edition's rules, which suggests boilerplate carried over from another edition.",
-      "observed": "Two prize names referenced but not defined in this edition.",
-      "expected_by_brief": "Internally consistent rules.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "Do not plan around MPT or Flawless Run prizes for this edition. Query TradingView support if these matter.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-08",
-      "severity": "medium",
-      "title": "The live edition's rules do not state a commission schedule",
-      "detail": "The TradeStation July 2026 rules state a $0.85 per-contract commission. The AMP Futures September 2026 rules were read in full and do not state a commission schedule. Absence of a rulebook line does not prove that every simulator or fill has zero cost.",
-      "observed": "No commission clause found in the September rules; $0.85/contract is edition-specific to the captured July rules.",
-      "expected_by_brief": "Known transaction cost.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-RULES-TS-JUL2026"
-      ],
-      "resolution": "Keep commission as not stated for the live rules. In Strategy Report sensitivity tests, declare zero and nonzero scenarios rather than silently assuming cost-free execution.",
-      "linked_hypothesis": null,
-      "status": "confirmed"
-    },
-    {
-      "id": "IR-09",
-      "severity": "low",
-      "title": "Live participant counters differ across pages and capture times",
-      "detail": "TradingView landing and contest pages displayed slightly different participant counts when fetched at different moments. The live registration counter increased during the day. This is consistent with asynchronous snapshots rather than a fixed-data contradiction.",
-      "observed": "Latest captured pair (same session, 2026-09-19 ~18:30Z): contest page 99,663 versus landing page 99,658 (delta +5, same signature as the 96,268-vs-96,263 pair). Previous pairs: 96,268 vs 96,263 (~21:27Z Sep 17); 96,236 vs 96,230 (~20:58Z); 96,095 vs 96,089; contest counts rose 93,527 -> 99,663 (+6,136 across nine captures).",
-      "expected_by_brief": "n/a",
-      "source_ids": [
-        "TV-THELEAP-LANDING-R10",
-        "TV-CONTEST-AMP-SEP2026-R10"
-      ],
-      "resolution": "Every live count must carry a snapshot time or be described as displayed at capture; never combine counts from different fetches.",
-      "linked_hypothesis": null,
-      "status": "confirmed_harmless"
-    },
-    {
-      "id": "IR-10",
-      "severity": "low",
-      "title": "The launch press release said 'pending regulatory review'; current CME and contest pages show XRP futures live",
-      "detail": "The 24 Apr 2025 press release announced a planned 19 May launch pending regulatory review. Current CME specification pages show the standard and micro XRP contracts, and the live TradingView rules list both as eligible. The old qualifier is historical and no longer an open master-list flag.",
-      "observed": "Current CME spec page shows a live front month and confirms the 50,000-XRP unit; both XRP contracts are in the September 2026 permitted universe.",
-      "expected_by_brief": "Fully verified instruments.",
-      "source_ids": [
-        "CME-XRP-PR",
-        "CME-SPEC-XRP1!"
-      ],
-      "resolution": "Resolved: both master-list rows are fully verified and the stale pending-launch flags have been removed.",
-      "linked_hypothesis": null,
-      "status": "resolved"
-    },
-    {
-      "id": "IR-11",
-      "severity": "medium",
-      "status": "resolved_by_correction",
-      "title": "Partial locator scan initially misidentified SMCI's 2022 trough as the all-time low",
-      "detail": "A 2018-onward monthly locator scan suggested SMCI's October 2022 close (adjclose ~5.03 monthly low / 5.242 daily close on 2022-10-12) was the all-time trough. A full-history monthly scan (2007 IPO onward) disproved it: monthly lows ran \u2248 0.44\u20130.51 (adjusted) in the 2008\u20132009 financial crisis. No all-time multiple was ever published from the partial scan; the verified SMCI record (22.66x) is explicitly window-bounded to the fetched 2022 trough window and 2024 peak window.",
-      "observed": "full-history monthly lows \u2248 0.44\u20130.51 (2008\u20132009) < 5.242 (2022-10-12).",
-      "expected_by_brief": "All-time extremes must come from all-time data.",
-      "source_ids": [
-        "YAHOO-MONTHLY-SMCI",
-        "YAHOO-DAILY-SMCI"
-      ],
-      "resolution": "Corrected in research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md; data/volatile_stocks.json keeps only window-bounded claims and scripts/verify.py recomputes each multiple from archived endpoint values.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-12",
-      "severity": "medium",
-      "title": "Pine research cannot directly automate the competition Paper Trading account",
-      "detail": "Official TradingView documentation says Pine strategies simulate orders in the broker emulator and cannot place orders through the built-in Paper Trading account. Separately, the contest rules prohibit 60 or more order/position transactions per minute and warn that excessive activity, including various scripts, can trigger a ban. The user's no-manual-input instruction is satisfied for repository research; it must not be misrepresented as unattended competition execution.",
-      "observed": "Pine Strategy Report is hypothetical; direct built-in Paper Trading order placement is unsupported; contest transaction prohibition begins at 60 per minute.",
-      "expected_by_brief": "Complete the research autonomously without asking the user for data entry.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026",
-        "TV-PINE-AUTOTRADE",
-        "TV-PINE-STRATEGIES"
-      ],
-      "resolution": "Generate and audit the research autonomously. Label the Pine code as a backtest/forward-test artifact only and make no claim of competition-account automation.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-13",
-      "severity": "low",
-      "title": "Yahoo Finance re-adjusted NVDA historical adjusted closes between capture passes (vendor data drift)",
-      "detail": "Between the original capture and the 2026-09-16 second pass, the Yahoo v8 chart API re-adjusted NVDA's historical adjclose: trough 2022-10-14 moved from 11.186728477478027 to 11.186724662780762 and peak 2024-06-18 from 135.20559692382812 to 135.20562744140625. Both generations recompute the same rounded multiple (12.09x). The archive in data/volatile_stocks.json was updated to the currently-served values. Vendor-tier data can drift between fetches; all other 7 symbols were bit-identical on re-fetch.",
-      "observed": "6th-decimal adjclose change on 2 of 16 NVDA endpoint values; 0 changes on the other 14 endpoints.",
-      "expected_by_brief": "Stable archived values.",
-      "source_ids": [
-        "YAHOO-DAILY-NVDA"
-      ],
-      "resolution": "Rounded claims unaffected; archive now matches the live endpoint. No action beyond this record.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-14",
-      "severity": "medium",
-      "title": "TradingView Paper Trading help omits point value from its displayed short-futures formula",
-      "detail": "The official help page displays the long-futures formula with Quantity \u00d7 Point Value. Its displayed short-futures formula omits Point Value, but the immediately following worked example multiplies by 10 contracts and a point value of 50 to obtain \u2212$125. The formula and example are internally inconsistent.",
-      "observed": "Displayed short formula: (Average Fill Price \u2212 Ask price) \u00d7 Quantity; worked example: (4520.25 \u2212 4520.50) \u00d7 10 \u00d7 50 = \u2212125 USD.",
-      "expected_by_brief": "Unambiguous official P/L formula.",
-      "source_ids": [
-        "TV-PAPER-PNL"
-      ],
-      "resolution": "Flag for manual review. The capacity model uses the contract multiplier symmetrically for directional point moves and does not quote the malformed short formula as complete.",
-      "linked_hypothesis": null,
-      "status": "confirmed"
-    },
-    {
-      "id": "IR-15",
-      "severity": "medium",
-      "status": "confirmed",
-      "title": "Cash-prize target differs from the last publicly visible rank",
-      "detail": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
-      "observed": "Rules \u00a709 pay cash through rank 50; ranks 51\u2013300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
-      "expected_by_brief": "Autonomous research toward a competition prize.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-16",
-      "severity": "medium",
-      "status": "confirmed",
-      "title": "No-manual-input research does not imply unattended prize collection",
-      "detail": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
-      "observed": "Rules \u00a7\u00a705 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
-      "expected_by_brief": "Autonomous research toward a competition prize.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-17",
-      "severity": "medium",
-      "title": "Market-data vendors block automated capture from datacenter IP ranges",
-      "detail": "Yahoo Finance returns HTTP 429 to every chart-API request made from the GitHub Actions runner range (both query1 and query2 hosts, confirmed by probe on 2026-09-17 with a browser User-Agent). Stooq returns a 795-byte JavaScript anti-bot challenge instead of CSV data. The capture pipeline therefore retries the identical vendor URLs through the public allorigins relay, a byte transport. Every relayed payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures; the transport used is recorded per symbol in data/market_history_index.json.",
-      "observed": "20/20 symbols HTTP 429 direct from runner; stooq cl.f..eth.f all returned the identical 795-byte JS challenge; allorigins relay returned the full 27,505-byte CL=F 1-year JSON with valid chart structure.",
-      "expected_by_brief": "Automated, reproducible ingestion of daily futures history from a free vendor.",
-      "source_ids": [
-        "YAHOO-FUTURES-CHART"
-      ],
-      "resolution": "Open. The relay works but is a third-party dependency; a licensed feed (e.g. CME settlement-based continuous series) or a residential-IP capture remains the clean fix. Workflow probe annotations document the failure mode."
-    },
-    {
-      "id": "IR-18",
-      "severity": "low",
-      "title": "Several selected micro/crypto futures have only one day of vendor history",
-      "detail": "SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to ['1d','5d']), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.",
-      "observed": "Vendor listing gaps: CME:SOL1!, CME:MSL1!, COMEX:SIC1!, CME:MBT1!, CME:MET1!, NYMEX:MNG1!, NYMEX:MCL1! and CME:XRP1! returned exactly 1 daily bar for the 2-year window (newly listed on the vendor), so they cannot be backtested; 8 of 20 selected symbols are excluded from the simulation for insufficient history.",
-      "expected_by_brief": "Testable history for every selected instrument.",
-      "source_ids": [
-        "YAHOO-FUTURES-CHART"
-      ],
-      "resolution": "Open. These tickers will accumulate history over time; re-run the capture pipeline in later sessions. Their capacity arithmetic (rules cap x multiplier x price) is already verified from official sources and does not depend on vendor history."
-    },
-    {
-      "id": "IR-19",
-      "severity": "low",
-      "title": "Yahoo front-month close differs from the TradingView continuous quote by 3.32% for crude oil",
-      "detail": "For 2026-09-16, the captured Yahoo CL=F series closed at 105.83 while the TradingView CL1! overview page displayed 102.43. The Yahoo front contract is 'Crude Oil Oct 26' while the TradingView continuous series and the intraday capture time (16:49-17:23 GMT-4) differ. All other cross-checked symbols landed within 2%. The verifier warns above 2% and hard-fails above 15% to catch genuine ticker mix-ups.",
-      "observed": "|105.83 - 102.43| / 102.43 = 3.32%.",
-      "expected_by_brief": "Vendor and platform prices for the same underlying should be close enough to confirm the ticker mapping.",
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-QUOTE-CL1"
-      ],
-      "resolution": "Open, informational. Documented caveat for cross-source price comparisons; not treated as a mapping error."
-    },
-    {
-      "id": "IR-20",
-      "severity": "low",
-      "title": "Leaderboard frontier partially static across two captures while the mid-board moved",
-      "detail": "Between captures 1 and 2 (~3 hours, US after-hours) rank 1 and rank 250 were byte-identical while the mid-board moved (rank 50 +$28,139.75, rank 100 +$11,027.50). Capture 3 (2026-09-17T16:56:00Z, ~19.5 hours after capture 1, spanning one US trading day) moved ALL FOUR frontiers up: rank 1 +$31,400.00 (same holder), rank 50 +$75,661.00 vs capture 2, rank 100 +$28,661.85, rank 250 +$31,380.50, with new holders at 50/100/250. The quiet 3-hour window does not generalize; the frontier is a rising moving target (H18).",
-      "observed": "data/frontier_history.json captures 1-3; the value captured at rank 50 on 2026-09-17T00:30:00Z (RIA-JANGHU +$1,172,236.00) had slid to rank 69 by 16:56 and the value at rank 100 (msm223034 +$971,231.00) had slid to rank 114.",
-      "expected_by_brief": "Understanding how the prize frontier moves over time.",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026",
-        "TV-CONTEST-AMP-SEP2026-R2",
-        "TV-CONTEST-AMP-SEP2026-R3"
-      ],
-      "resolution": "Refined, still open. Continue capturing the frontier through the end of the contest (2026-09-30T12:00:00Z); the practical planning fact is that the P/L required to hold any public rank is rising, and the last visible rank (250) underestimates the cash prize frontier (H19)."
-    },
-    {
-      "id": "IR-21",
-      "title": "Relay transport failures for BTC=F/MXP=F (BTC=F resolved on the fourth pass)",
-      "detail": "The allorigins relay returned HTTP 522/500 for BTC=F and MXP=F on the first three automated capture passes of 2026-09-17 while succeeding for the other 18 symbols; XRP=F also failed the first three passes before succeeding on the fourth. On the fourth pass (index fetched_at 2026-09-17T03:15:40Z, workflow run 35177491162) BTC=F succeeded with 504 sessions (2024-09-17 -> 2026-09-17) and XRP=F/MXP=F succeeded with a single session each: the vendor only lists recent history for those tickers (no firstTradeDate in the meta), so their single session is a data-availability limit, not a relay failure. CME:BTC1! now has full history and is included in the backtests (11 symbols tested, 231 windows).",
-      "observed": "data/market_history_index.json (2026-09-17T03:15:40Z): 20/20 captured, 0 failed; CME:BTC1! 504 sessions; CME:MXP1!, CME:XRP1!, CME:SOL1! and six other newly listed micro/crypto tickers 1 session each (excluded from backtests by the 150-bar minimum, IR-18).",
-      "severity": "low",
-      "source_ids": [
-        "YAHOO-FUTURES-CHART"
-      ],
-      "resolution": "BTC=F resolved 2026-09-17T03:15:40Z (4th pass). MXP=F's single session reclassified to the newly-listed-vendor-history category (IR-18): it will accumulate history as the listing matures. The relay itself remains a third-party dependency (IR-17).",
-      "linked_hypothesis": "H14"
-    },
-    {
-      "id": "IR-22",
-      "title": "Newly listed COMEX:SIC1! vendor close differs from the TradingView snapshot quote by 2.09%",
-      "detail": "The 2026-09-17 vendor capture for SIC=F (single session, first valid close) differs from the TradingView continuous-quote snapshot value by 2.09%, above the 2% warning threshold. SIC1! is newly listed on the vendor, the snapshot quote is from 2026-09-16 17:21 GMT-4, and the front-contract month and capture time differ between the two sources. This is the same cross-source price-comparison caveat as IR-19 (crude oil, 3.32%) and is a documented limitation of comparing a single-session vendor close against a continuous-futures quote, not evidence of a bad mapping. scripts/verify.py warns at >2% and fails at >15% (mapping-error bound).",
-      "observed": "verify warning 'market_history.quote_delta: COMEX:SIC1!' (2.09%); data/market_history_index.json record for COMEX:SIC1! (1 session) vs data/live_contest_snapshot.json quote row.",
-      "expected_by_brief": "Line-by-line verified inputs; anything unexplained is flagged.",
-      "source_ids": [
-        "YAHOO-FUTURES-CHART",
-        "TV-QUOTE-SIC1"
-      ],
-      "severity": "low",
-      "resolution": "Open, informational. Will tighten automatically once SIC=F accumulates multi-session history and the quote snapshot is refreshed in a later session.",
-      "linked_hypothesis": null
-    },
-    {
-      "id": "IR-23",
-      "severity": "medium",
-      "title": "Displayed rank-50 frontier decreased between two same-day captures; the board is corrected, not append-only",
-      "detail": "Between 2026-09-17T16:56:00Z and 2026-09-17T19:04:00Z the displayed rank-50 realized P/L fell from +$1,247,897.00 to +$1,244,313.50 (-$3,583.50), and the exact row value previously at rank 50 (trader rajgaurav009, same percentage and dollars) appeared at rank 49. Realized P/L on closed positions cannot shrink for a still-registered account, so the net effect is exactly one fewer row ahead of it; the most parsimonious explanation is one removal from the public board among rows ranked 1-48 at capture 3 (disqualification or correction). Official rules sections 05, 09 and 16 reserve at-any-time disqualification rights; the official pages publish no board-change log, so removals are only observable indirectly, as here. Capture 5 (20:58Z) then showed the same rank-49/rank-50 rows byte-identical again and the rank-100 boundary pushed down by one new row, i.e. after the single correction the high board was stable for at least 1.9 hours; the frequency of such corrections cannot be measured from the public page.",
-      "observed": "Capture 3 -> capture 4: rank 1 unchanged at +$2,335,125.00; rank 50 -$3,583.50 with the previous row intact one place higher at rank 49; rank 100 +$12,309.65; rank 250 +$2,235.50; participants 95,709 -> 96,095. Capture 4 -> capture 5: rank 1 and rank 50 unchanged to the cent; rank 100 +$2,747.50 with the previous rank-100 row at rank 101; rank 250 +$3,454.50; participants 96,095 -> 96,236.",
-      "expected_by_brief": "A leaderboard frontier is a ratchet: it can only rise as the contest progresses.",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R3",
-        "TV-CONTEST-AMP-SEP2026-R4",
-        "TV-RULES-AMP-SEP2026-R4",
-        "TV-CONTEST-AMP-SEP2026-R5"
-      ],
-      "resolution": "Treat every captured frontier as a point-in-time display, never as a guaranteed floor or final threshold. The verifier enforces profit ordering only within a capture, never across captures. Hypothesis H20 records the observation and its test.",
-      "linked_hypothesis": "H20"
-    },
-    {
-      "id": "IR-24",
-      "severity": "low",
-      "title": "Leaderboard percentage and dollar columns do not always reconcile to the cent within a row",
-      "detail": "The public board displays realized P/L as a two-decimal percentage and as dollars. Re-deriving dollars as 250,000 x percentage / 100 does not always reproduce the displayed dollars: at capture 5, rank 50 displays 497.73% and $1,244,313.50 (re-derived $1,244,325.00, a $11.50 difference) and rank 250 displays 264.30% and $660,759.50 (re-derived $660,750.00, a $9.50 difference), while rank 1 and rank 100 reconcile exactly. The differences are inside the +/- $12.50 bound implied by rounding a longer internal P/L to two percentage decimals, so this is a display-rounding artifact, not a contradiction between sources. It is recorded because the verifier allows the bound rather than exact equality, and a reader comparing the two columns will notice the mismatch.",
-      "observed": "Capture 5 (2026-09-17T20:58:00Z): rank 50 -$11.50 and rank 250 -$9.50 versus the percentage-implied dollars; ranks 1 and 100 exact. Every capture from 1 to 5 stays inside the +/- $12.50 bound.",
-      "expected_by_brief": "The dollar and percentage columns of one row should reconcile exactly.",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R5",
-        "TV-RULES-AMP-SEP2026-R5"
-      ],
-      "resolution": "scripts/verify.py enforces the +/- $12.50 rounding bound on every capture row and never tolerates a larger gap; all displayed values are quoted verbatim in the evidence files and no value is smoothed.",
-      "linked_hypothesis": "H11"
-    },
-    {
-      "id": "IR-25",
-      "severity": "low",
-      "title": "Intermittent Leaderboard Threshold Acceleration (Surge vs Stasis Dynamics)",
-      "detail": "Leaderboard progression is non-linear and punctuated: after complete frontier stasis across captures 5->6 (20:58Z to 21:27Z), capture 7 (23:08Z) revealed sharp upward threshold acceleration across ranks 50 to 250 in 1.68 hours (Rank 50 rose +$111,303.63, Rank 100 rose +$76,695.00, Rank 250 rose +$38,065.50), while Rank 1 remained unchanged at $2,335,125.00 (+934.05%). Participants rose 96,268 -> 96,344 (+76), demonstrating that leaderboard progression happens in punctuated bursts as participants close batches of winning trades near session closes.",
-      "observed": "Capture 6 to 7 (2026-09-17T21:27:00Z to 2026-09-17T23:08:00Z): Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp), while Rank 1 was unchanged. Registered participant count grew +76.",
-      "expected_by_brief": "Leaderboard frontiers would advance smoothly or continuously throughout the day.",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R7",
-        "TV-RULES-AMP-SEP2026-R7"
-      ],
-      "resolution": "Record the punctuated surge behavior in data/frontier_history.json and hypotheses (H25), recomputing required daily compound rates from the latest capture.",
-      "linked_hypothesis": "H25"
-    },
-    {
-      "id": "IR-26",
-      "severity": "medium",
-      "title": "Shell-expansion corruption event in research text fields ($0/$2 and other $-token losses)",
-      "detail": "Several research files written on 2026-09-17 contained dollar amounts and shell artifacts consistent with double-quoted shell expansion: '$0.00' became '/bin/bash.00' ($0 expanded to the shell name), and '$'-prefixed amounts lost their '$' and leading digits where a positional parameter was empty ('$2.5M'->'.5M', '$25M'->'5M', '$250k'->'50k', '$1,244,313.50'->',244,313.50', '$111,303.63'->'+11,303.63', '$2,335,125.00'->',335,125.00'). The numeric suffixes were preserved, so every value was uniquely reconstructable from capture-7 evidence (research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md) and from data/frontier_history.json; all were restored and a verifier check (leaked_shell_text) now scans published text for the '/bin/bash' and '(.5M' signatures.",
-      "observed": "Affected fields found and fixed in this pass: hypotheses.json H27 ('/bin/bash.00' twice, '(.5M', '(5M', 'from 50k'), H25 ('+11,303.63', '(,244,313.50)', '(,355,617.13)', '(,605,617.13', '+6,695.00 (,014,950.00 to ,091,645.00)', '+8,065.50 (60,759.50 to 98,825.00)'), H26 ('(<.5M)'), irregularities.json IR-25 (four amounts), sources.json TV-CONTEST-AMP-SEP2026-R7 note (three amounts). Rendered index.html regenerated from the fixed registers.",
-      "resolution": "Fixed in this pass (2026-09-17 eighth pass). Every restored value cross-checked against capture-7 frontier rows: rank 50 $1,244,313.50->$1,355,617.13 (+$111,303.63), rank 100 $1,014,950.00->$1,091,645.00 (+$76,695.00), rank 250 $660,759.50->$698,825.00 (+$38,065.50), rank 50 equity multiple 6.4225x = $1,605,617.13. scripts/verify.py now fails on leaked shell signatures.",
-      "linked_hypothesis": "H27",
-      "source_ids": [
-        "TV-CONTEST-AMP-SEP2026-R7"
-      ]
-    },
-    {
-      "id": "IR-27",
-      "severity": "high",
-      "title": "Capture CI reported green steps while committing nothing; run logs and artifacts are not readable from the research sandbox",
-      "detail": "Two consecutive intraday capture runs showed every capture step as successful and still left data/intraday/ empty on the branch. Two independent causes: (a) each capture step ran the fetch script and the commit helper in one shell, and GitHub runs that shell with -e, so a non-zero exit from the fetch aborted the step before the commit helper ran - the step then reported success because it was marked continue-on-error; (b) fetch_intraday.py caught only RuntimeError/ValueError/KeyError per series, so a relay answering with an HTML error page (JSONDecodeError) killed the run before the provenance index was written, which meant there was nothing to commit even when the helper did run. Diagnosis was delayed because GitHub serves both run logs and uploaded artifacts from a blob host the sandbox cannot reach, and the checks API exposed no annotations for those runs.",
-      "observed": "Run 35378480898 occupied the single capture concurrency slot for its full 120-minute job timeout inside its 15-minute step and committed nothing; runs 35380931654, 35388315207 and 35388579399 were cancelled while queued behind it; a bounded lane (run 35380480860) completed and uploaded an artifact that also could not be downloaded from the sandbox.",
-      "expected_by_brief": "The brief requires intraday hourly/15-minute ingestion, and the repository treats a committed data/intraday_index.json as the signal that captured bars exist, so a lane that cannot be seen to fail cannot be trusted.",
-      "resolution": "The lane was restructured: fetch and commit are separate steps (the fetch keeps continue-on-error, a failed commit now fails the job); every fetch step tees its output and .github/scripts/capture_diagnostics.py always posts the run's evidence - index presence, per-interval counts, rate-limit state, non-captured series with errors, log tail - as a commit comment readable through the REST API, and writes data/intraday_capture_report.json; the per-series catch in fetch_intraday.py is now broad so one bad payload cannot cost the other series or the index; the intervals run cheapest-and-most-valuable first (daily, hourly, then 15-minute) with explicit --time-budget-seconds caps; concurrency is cancel-in-progress so a superseded run cannot hold the only slot; and commit_capture.sh refuses to commit an index that records zero captured series, because committing one turns a vendor outage into red verifier and derive runs (measured locally: 380 passed / 2 failed instead of 379/0).",
-      "status": "mitigated",
-      "linked_hypothesis": "H31",
-      "source_ids": [
-        "YAHOO-INTRADAY-CHART"
-      ]
-    },
-    {
-      "id": "IR-28",
-      "severity": "medium",
-      "title": "NYSE full-closure table re-verified line by line against official NYSE publications (one date corrected)",
-      "detail": "intel/calendar.py encodes the standing NYSE holiday schedule (nine holidays, weekend observance, Juneteenth from 2022, Gregorian Good Friday) plus two individually recorded special closures (2018-12-05 Bush mourning, 2025-01-09 Carter mourning). It was written in a sandbox with no network access, so no date in it has been checked against the live official calendar yet. Until a networked reviewer completes the protocol in research/evidence/NYSE-CALENDAR-2016-2026.md, the study's calendar_diagnostics must be read as transcription-annotated, not authoritatively calendared; the UTC-date baseline numbers are unaffected either way.",
-      "observed": "2026-09-19: calendar module added; evidence doc generated from the module (106 closure lines, 2016-2026). 2026-09-19 (later session): all 11 years compared against the official NYSE tables (live nyse.com for 2026-2028; Internet Archive captures of nyse.com/markets/hours-calendars for 2016-2017, 2018-2021, 2021-2023, 2024-2026; ICE press releases for 2018-12-05 and 2025-01-09; Nasdaq Trader 2026 cross-check). One mismatch: 2021-12-31 was wrongly listed as an observed New Year closure - NYSE Rule 7.2 means a Saturday January 1 is not observed (official footnote), and the ENPH daily capture has a 2021-12-31 bar. Fixed in intel/calendar.py nyse-holidays-2; the official transcription now lives in the module and scripts/verify.py fails on any divergence.",
-      "source_ids": [
-        "NYSE-HOURS-CALENDAR"
-      ],
-      "linked_hypothesis": "H33",
-      "status": "resolved_by_correction",
-      "resolution": "Corrected and closed. See research/evidence/NYSE-CALENDAR-2016-2026.md for per-year official URLs and verbatim quotes."
-    },
-    {
-      "id": "IR-29",
-      "title": "Official rules page section-09 payment-rails text now reads a 600 USD split vs 1,000 USD at R3-R6",
-      "detail": "The 2026-09-19 R10 re-read of the official rules page quotes section 09 as 'Prizes equal to, or more than Six hundred (600) USD will be awarded only via Wire Transfer' and 'Prizes less than Six hundred (600) USD will be awarded via PayPal. No alternative payment methods will be accepted or offered.' The R3-R6 evidence (2026-09-16/17) quotes the same clause as 'Prizes equal to, or more than One thousand (1,000) USD will be awarded only via Wire Transfer or PayPal. Prizes less than One thousand (1,000) USD will be awarded via PayPal only.' Both the threshold (1,000 -> 600) and the large-prize rails ('Wire Transfer or PayPal' -> 'only via Wire Transfer') differ. This may be a genuine mid-competition rules update or a page-render/fetch artifact; the prize ladder, ARV, claim window and all trading constants are unchanged.",
-      "observed": "2026-09-19 ~18:15-18:45 UTC: R10 chunks 2-3 vs research/evidence/TV-RULES-AMP-SEP2026-R3.md line 62 (and R4-R6).",
-      "expected_by_brief": "Stable payment-rails transcription (1,000 USD split) in data/contest_config.json.",
-      "source_ids": [
-        "TV-RULES-AMP-SEP2026-R10",
-        "TV-RULES-AMP-SEP2026"
-      ],
-      "severity": "low",
-      "status": "flagged_for_manual_review",
-      "resolution": "UNRESOLVED: data/contest_config.json keeps the 1,000 USD transcription pending a human re-read of the live rules page. Affects prize logistics only; no trading, ranking, backtest or competition artifact depends on the payment-rails value."
-    },
-    {
-      "id": "IR-30",
-      "severity": "medium",
-      "title": "CME roll-schedule business days come from the NYSE closure table, not a transcribed CME Globex closure set",
-      "detail": "intel/cme_roll.py derives front-contract termination dates from each product's official termination rule, and those rules are expressed in business days (SI: 'the third last business day of the contract month'; CL: '3 business day before the 25th calendar day of the month prior to the contract month'). The only closure table this repository has verified line by line against official publications is the NYSE full-closure table in intel/calendar.py (version nyse-holidays-2, evidence research/evidence/NYSE-CALENDAR-2016-2026.md). CME Globex's own holiday schedule is published per product at https://www.cmegroup.com/trading-hours.html and is not transcribed here, so where a CME closure differs from an NYSE one a derived termination date can be off by one session. The cryptocurrency codecs additionally apply their rule's London-business-day leg as 'not a weekend' because only the U.S. leg is checkable from this repository's calendar.",
-      "observed": "2026-09-19: data/cme_roll_schedule.json produced 72 dates for 3 of 20 products; every row carries business_day_basis naming the NYSE table, and intel/cme_roll.BUSINESS_DAY_BASIS records the same sentence. scripts/verify.py re-derives every date with the same codecs.",
-      "expected_by_brief": "A roll schedule derived from official CME sources end to end, with the exchange's own closure calendar.",
-      "source_ids": [
-        "NYSE-HOURS-CALENDAR"
-      ],
-      "status": "flagged_for_manual_review",
-      "resolution": "UNRESOLVED but declared: the dependency is recorded on every derived date and in data/cme_roll_schedule.json._meta.declared_limitations, the schedule is not wired into scripts/run_competition.py (so no published result depends on it), and the fix is to transcribe the official CME Globex holiday calendar into intel/calendar.py and re-derive. Until then these dates are research annotations, not execution instructions."
-    },
-    {
-      "id": "IR-31",
-      "severity": "low",
-      "title": "The derive lane's commit does not re-trigger the verify lane, so main can sit on a stale red build",
-      "detail": "GitHub Actions does not re-trigger workflows from a commit made with the workflow token. When the 'Derive intraday research artifacts' lane commits freshly derived artifacts, the 'Verify research data' run that was already racing the same push keeps its failure (it checked the pre-derive tree, whose artifacts were legitimately stale) and no green successor run is created for the derive commit. main therefore displayed a red verify check on a tree that was in fact in sync.",
-      "observed": "2026-09-19: run 35465537069 (Verify research data, main, merge commit cca9b0d) failed at 'Re-derive the intraday-dependent artifacts' while run 35465536978 (Derive intraday research artifacts) was concurrently producing commit 11851d0. Re-running the same four builders locally at 11851d0 produced no diff at all, confirming the tree was in sync and only the racing check was stale.",
-      "expected_by_brief": "A CI gate whose colour reflects the committed tree.",
-      "source_ids": [
-        "YAHOO-INTRADAY-CHART"
-      ],
-      "status": "mitigated",
-      "resolution": "MITIGATED: .github/workflows/pages.yml now also triggers on workflow_run completion of the derive lane and checks out github.event.workflow_run.head_sha (fetch-depth 0), so the derived commit gets its own verify run. A red run that was merely racing a derive commit should be re-run rather than read as a defect."
-    }
-  ]
+  {
+   "id": "IR-02",
+   "severity": "high",
+   "title": "Captured stock-edition champions are lower than captured futures champions; cause is untested",
+   "detail": "In the captured completed-champion sample, the two stocks editions returned +29.90% (1.299x) and +17.58% (1.1758x), while the maximum futures champion is 53.2072x. This is an observed association only. Edition balance, leverage, caps, symbol set, duration, and participant behavior differ, so the sample does not prove that asset class caused the gap.",
+   "observed": "completed stocks: best 1.299x (n=2); completed futures: best 53.2072x (n=5); small champion-only sample.",
+   "expected_by_brief": "Stocks deliver 5x-100x.",
+   "source_ids": [
+    "TV-CONTEST-MAG7-MAR2026",
+    "TV-THELEAP-LANDING"
+   ],
+   "resolution": "Keep the stocks module as historical reference, use only live-eligible futures for this edition, and do not infer a causal strategy from champion summaries.",
+   "linked_hypothesis": "H2"
+  },
+  {
+   "id": "IR-03",
+   "severity": "high",
+   "title": "No 100x contest-account outcome is attested by the captured official sample",
+   "detail": "The brief sets a 100x target. Across the 16 sourced contest records, including one in-progress row, the maximum captured return multiple is 53.2072x (+5,220.72%). Zero captured records are at or above 100x. This is a statement about the captured TradingView sample, not a universal upper bound.",
+   "observed": ">=5x: 2 cases. >=10x: 2 cases. >=20x: 1 case. >=50x: 1 case. >=100x: 0 cases.",
+   "expected_by_brief": "Verified 100x returns available.",
+   "source_ids": [
+    "TV-THELEAP-LANDING",
+    "TV-CONTEST-AMP-SEP2026"
+   ],
+   "resolution": "Treat 100x as an unverified contest target. Never describe 53.2072x as a ceiling; it is only the maximum in the captured sample.",
+   "linked_hypothesis": "H6"
+  },
+  {
+   "id": "IR-04",
+   "severity": "high",
+   "title": "The maximum-return objective is still constrained by account survival and margin",
+   "detail": "This is a virtual-money competition, so real-money risk management is not the objective. However, at 20:1 leverage on a $250,000 balance, $5,000,000 is the maximum initial notional. A loss equal to 5% of that fully deployed notional is $250,000. The account cannot be reset, and TradingView documents margin-call behavior in its simulator. Survival and margin feasibility are therefore optimization constraints, not investor-protection advice.",
+   "observed": "balance 250,000; leverage 20:1; maximum initial notional 5,000,000; account reset prohibited.",
+   "expected_by_brief": "Maximize simulated returns; real-money risk management is not the objective.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-PINE-LEVERAGE"
+   ],
+   "resolution": "Evaluate drawdown and margin calls only as feasibility diagnostics. Do not turn the project into a real-money risk-management plan.",
+   "linked_hypothesis": "H9"
+  },
+  {
+   "id": "IR-05",
+   "severity": "medium",
+   "title": "Position limits change drastically between editions",
+   "detail": "NYMEX:CL1! was capped at 1.0 contract in the TradeStation July 2026 edition and 100.0 contracts in the AMP Futures September 2026 edition - a 100x change in capacity for the same instrument. CME:MBT1! moved 5.0 -> 25.0. Balance moved 100,000 -> 250,000 and leverage 10:1 -> 20:1.",
+   "observed": "CL1! cap 1.0 -> 100.0; MBT1! cap 5.0 -> 25.0; balance 100k -> 250k; leverage 10:1 -> 20:1.",
+   "expected_by_brief": "Stable parameters.",
+   "source_ids": [
+    "TV-RULES-TS-JUL2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Re-read the live rules page before every edition. scripts/verify.py should be re-run against a freshly captured universe each time.",
+   "linked_hypothesis": "H7"
+  },
+  {
+   "id": "IR-06",
+   "severity": "medium",
+   "title": "Prize cut-off (300) is not visible on the public leaderboard (250 rows)",
+   "detail": "The rules award prizes to the first 300 participants, but the contest page exposes only the top 250. A participant in ranks 251–300 cannot verify the prize frontier from the public table, so a public rank-300 threshold must not be invented.",
+   "observed": "Latest captured page: top 250 out of 93,527 displayed participants; rules award no more than 300 prizes.",
+   "expected_by_brief": "Observable prize boundary.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Treat rank 250 as the last observable public row. Do not call it the actual rank-300 prize boundary and do not claim that crossing a live row guarantees a prize.",
+   "linked_hypothesis": null,
+   "status": "confirmed"
+  },
+  {
+   "id": "IR-07",
+   "severity": "medium",
+   "title": "Rules reference prize categories that the prize ladder does not define",
+   "detail": "The Prize Limitation clause reads 'In the event an Entrant qualifies for more than one (1) prize (i.e. the Top Trader Prize, MPT Prize or Flawless Run Prize)...', but the PRIZE DISTRIBUTIONS section for this edition defines only Top Trader Prizes. 'MPT Prize' and 'Flawless Run Prize' are undefined in this edition's rules, which suggests boilerplate carried over from another edition.",
+   "observed": "Two prize names referenced but not defined in this edition.",
+   "expected_by_brief": "Internally consistent rules.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "Do not plan around MPT or Flawless Run prizes for this edition. Query TradingView support if these matter.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-08",
+   "severity": "medium",
+   "title": "The live edition's rules do not state a commission schedule",
+   "detail": "The TradeStation July 2026 rules state a $0.85 per-contract commission. The AMP Futures September 2026 rules were read in full and do not state a commission schedule. Absence of a rulebook line does not prove that every simulator or fill has zero cost.",
+   "observed": "No commission clause found in the September rules; $0.85/contract is edition-specific to the captured July rules.",
+   "expected_by_brief": "Known transaction cost.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-RULES-TS-JUL2026"
+   ],
+   "resolution": "Keep commission as not stated for the live rules. In Strategy Report sensitivity tests, declare zero and nonzero scenarios rather than silently assuming cost-free execution.",
+   "linked_hypothesis": null,
+   "status": "confirmed"
+  },
+  {
+   "id": "IR-09",
+   "severity": "low",
+   "title": "Live participant counters differ across pages and capture times",
+   "detail": "TradingView landing and contest pages displayed slightly different participant counts when fetched at different moments. The live registration counter increased during the day. This is consistent with asynchronous snapshots rather than a fixed-data contradiction.",
+   "observed": "Latest captured pair (same session, 2026-09-19 ~18:30Z): contest page 99,663 versus landing page 99,658 (delta +5, same signature as the 96,268-vs-96,263 pair). Previous pairs: 96,268 vs 96,263 (~21:27Z Sep 17); 96,236 vs 96,230 (~20:58Z); 96,095 vs 96,089; contest counts rose 93,527 -> 99,663 (+6,136 across nine captures).",
+   "expected_by_brief": "n/a",
+   "source_ids": [
+    "TV-THELEAP-LANDING-R10",
+    "TV-CONTEST-AMP-SEP2026-R10"
+   ],
+   "resolution": "Every live count must carry a snapshot time or be described as displayed at capture; never combine counts from different fetches.",
+   "linked_hypothesis": null,
+   "status": "confirmed_harmless"
+  },
+  {
+   "id": "IR-10",
+   "severity": "low",
+   "title": "The launch press release said 'pending regulatory review'; current CME and contest pages show XRP futures live",
+   "detail": "The 24 Apr 2025 press release announced a planned 19 May launch pending regulatory review. Current CME specification pages show the standard and micro XRP contracts, and the live TradingView rules list both as eligible. The old qualifier is historical and no longer an open master-list flag.",
+   "observed": "Current CME spec page shows a live front month and confirms the 50,000-XRP unit; both XRP contracts are in the September 2026 permitted universe.",
+   "expected_by_brief": "Fully verified instruments.",
+   "source_ids": [
+    "CME-XRP-PR",
+    "CME-SPEC-XRP1!"
+   ],
+   "resolution": "Resolved: both master-list rows are fully verified and the stale pending-launch flags have been removed.",
+   "linked_hypothesis": null,
+   "status": "resolved"
+  },
+  {
+   "id": "IR-11",
+   "severity": "medium",
+   "status": "resolved_by_correction",
+   "title": "Partial locator scan initially misidentified SMCI's 2022 trough as the all-time low",
+   "detail": "A 2018-onward monthly locator scan suggested SMCI's October 2022 close (adjclose ~5.03 monthly low / 5.242 daily close on 2022-10-12) was the all-time trough. A full-history monthly scan (2007 IPO onward) disproved it: monthly lows ran ≈ 0.44–0.51 (adjusted) in the 2008–2009 financial crisis. No all-time multiple was ever published from the partial scan; the verified SMCI record (22.66x) is explicitly window-bounded to the fetched 2022 trough window and 2024 peak window.",
+   "observed": "full-history monthly lows ≈ 0.44–0.51 (2008–2009) < 5.242 (2022-10-12).",
+   "expected_by_brief": "All-time extremes must come from all-time data.",
+   "source_ids": [
+    "YAHOO-MONTHLY-SMCI",
+    "YAHOO-DAILY-SMCI"
+   ],
+   "resolution": "Corrected in research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md; data/volatile_stocks.json keeps only window-bounded claims and scripts/verify.py recomputes each multiple from archived endpoint values.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-12",
+   "severity": "medium",
+   "title": "Pine research cannot directly automate the competition Paper Trading account",
+   "detail": "Official TradingView documentation says Pine strategies simulate orders in the broker emulator and cannot place orders through the built-in Paper Trading account. Separately, the contest rules prohibit 60 or more order/position transactions per minute and warn that excessive activity, including various scripts, can trigger a ban. The user's no-manual-input instruction is satisfied for repository research; it must not be misrepresented as unattended competition execution.",
+   "observed": "Pine Strategy Report is hypothetical; direct built-in Paper Trading order placement is unsupported; contest transaction prohibition begins at 60 per minute.",
+   "expected_by_brief": "Complete the research autonomously without asking the user for data entry.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026",
+    "TV-PINE-AUTOTRADE",
+    "TV-PINE-STRATEGIES"
+   ],
+   "resolution": "Generate and audit the research autonomously. Label the Pine code as a backtest/forward-test artifact only and make no claim of competition-account automation.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-13",
+   "severity": "low",
+   "title": "Yahoo Finance re-adjusted NVDA historical adjusted closes between capture passes (vendor data drift)",
+   "detail": "Between the original capture and the 2026-09-16 second pass, the Yahoo v8 chart API re-adjusted NVDA's historical adjclose: trough 2022-10-14 moved from 11.186728477478027 to 11.186724662780762 and peak 2024-06-18 from 135.20559692382812 to 135.20562744140625. Both generations recompute the same rounded multiple (12.09x). The archive in data/volatile_stocks.json was updated to the currently-served values. Vendor-tier data can drift between fetches; all other 7 symbols were bit-identical on re-fetch.",
+   "observed": "6th-decimal adjclose change on 2 of 16 NVDA endpoint values; 0 changes on the other 14 endpoints.",
+   "expected_by_brief": "Stable archived values.",
+   "source_ids": [
+    "YAHOO-DAILY-NVDA"
+   ],
+   "resolution": "Rounded claims unaffected; archive now matches the live endpoint. No action beyond this record.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-14",
+   "severity": "medium",
+   "title": "TradingView Paper Trading help omits point value from its displayed short-futures formula",
+   "detail": "The official help page displays the long-futures formula with Quantity × Point Value. Its displayed short-futures formula omits Point Value, but the immediately following worked example multiplies by 10 contracts and a point value of 50 to obtain −$125. The formula and example are internally inconsistent.",
+   "observed": "Displayed short formula: (Average Fill Price − Ask price) × Quantity; worked example: (4520.25 − 4520.50) × 10 × 50 = −125 USD.",
+   "expected_by_brief": "Unambiguous official P/L formula.",
+   "source_ids": [
+    "TV-PAPER-PNL"
+   ],
+   "resolution": "Flag for manual review. The capacity model uses the contract multiplier symmetrically for directional point moves and does not quote the malformed short formula as complete.",
+   "linked_hypothesis": null,
+   "status": "confirmed"
+  },
+  {
+   "id": "IR-15",
+   "severity": "medium",
+   "status": "confirmed",
+   "title": "Cash-prize target differs from the last publicly visible rank",
+   "detail": "Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "observed": "Rules §09 pay cash through rank 50; ranks 51–300 receive subscriptions. The existing rank-250 capacity screen is not a cash-prize screen. The new target lab separates target multiples from prize thresholds.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-16",
+   "severity": "medium",
+   "status": "confirmed",
+   "title": "No-manual-input research does not imply unattended prize collection",
+   "detail": "Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "observed": "Rules §§05 and 09 require eligibility and allow identity checks before payment. Potential winners may need to respond within five days of first contact and claim within fourteen days of contest close; subscription awards are described as automatic. Repository automation cannot establish personal eligibility or complete participant paperwork.",
+   "expected_by_brief": "Autonomous research toward a competition prize.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "resolution": "See research/evidence/AUDIT-2026-09-17.md; do not promise prize eligibility or unattended collection.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-17",
+   "severity": "medium",
+   "title": "Market-data vendors block automated capture from datacenter IP ranges",
+   "detail": "Yahoo Finance returns HTTP 429 to every chart-API request made from the GitHub Actions runner range (both query1 and query2 hosts, confirmed by probe on 2026-09-17 with a browser User-Agent). Stooq returns a 795-byte JavaScript anti-bot challenge instead of CSV data. The capture pipeline therefore retries the identical vendor URLs through the public allorigins relay, a byte transport. Every relayed payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures; the transport used is recorded per symbol in data/market_history_index.json.",
+   "observed": "20/20 symbols HTTP 429 direct from runner; stooq cl.f..eth.f all returned the identical 795-byte JS challenge; allorigins relay returned the full 27,505-byte CL=F 1-year JSON with valid chart structure.",
+   "expected_by_brief": "Automated, reproducible ingestion of daily futures history from a free vendor.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ],
+   "resolution": "Open. The relay works but is a third-party dependency; a licensed feed (e.g. CME settlement-based continuous series) or a residential-IP capture remains the clean fix. Workflow probe annotations document the failure mode."
+  },
+  {
+   "id": "IR-18",
+   "severity": "low",
+   "title": "Several selected micro/crypto futures have only one day of vendor history",
+   "detail": "SOL=F, MSL=F, XRP=F and MXP=F each expose at most one daily bar (validRanges limited to ['1d','5d']), so the selected CME:SOL1!, CME:MSL1!, CME:XRP1! and CME:MXP1! cannot be backtested or volatility-ranked from vendor data yet, despite being eligible competition instruments with rules caps.",
+   "observed": "Vendor listing gaps: CME:SOL1!, CME:MSL1!, COMEX:SIC1!, CME:MBT1!, CME:MET1!, NYMEX:MNG1!, NYMEX:MCL1! and CME:XRP1! returned exactly 1 daily bar for the 2-year window (newly listed on the vendor), so they cannot be backtested; 8 of 20 selected symbols are excluded from the simulation for insufficient history.",
+   "expected_by_brief": "Testable history for every selected instrument.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ],
+   "resolution": "Open. These tickers will accumulate history over time; re-run the capture pipeline in later sessions. Their capacity arithmetic (rules cap x multiplier x price) is already verified from official sources and does not depend on vendor history."
+  },
+  {
+   "id": "IR-19",
+   "severity": "low",
+   "title": "Yahoo front-month close differs from the TradingView continuous quote by 3.32% for crude oil",
+   "detail": "For 2026-09-16, the captured Yahoo CL=F series closed at 105.83 while the TradingView CL1! overview page displayed 102.43. The Yahoo front contract is 'Crude Oil Oct 26' while the TradingView continuous series and the intraday capture time (16:49-17:23 GMT-4) differ. All other cross-checked symbols landed within 2%. The verifier warns above 2% and hard-fails above 15% to catch genuine ticker mix-ups.",
+   "observed": "|105.83 - 102.43| / 102.43 = 3.32%.",
+   "expected_by_brief": "Vendor and platform prices for the same underlying should be close enough to confirm the ticker mapping.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-QUOTE-CL1"
+   ],
+   "resolution": "Open, informational. Documented caveat for cross-source price comparisons; not treated as a mapping error."
+  },
+  {
+   "id": "IR-20",
+   "severity": "low",
+   "title": "Leaderboard frontier partially static across two captures while the mid-board moved",
+   "detail": "Between captures 1 and 2 (~3 hours, US after-hours) rank 1 and rank 250 were byte-identical while the mid-board moved (rank 50 +$28,139.75, rank 100 +$11,027.50). Capture 3 (2026-09-17T16:56:00Z, ~19.5 hours after capture 1, spanning one US trading day) moved ALL FOUR frontiers up: rank 1 +$31,400.00 (same holder), rank 50 +$75,661.00 vs capture 2, rank 100 +$28,661.85, rank 250 +$31,380.50, with new holders at 50/100/250. The quiet 3-hour window does not generalize; the frontier is a rising moving target (H18).",
+   "observed": "data/frontier_history.json captures 1-3; the value captured at rank 50 on 2026-09-17T00:30:00Z (RIA-JANGHU +$1,172,236.00) had slid to rank 69 by 16:56 and the value at rank 100 (msm223034 +$971,231.00) had slid to rank 114.",
+   "expected_by_brief": "Understanding how the prize frontier moves over time.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026",
+    "TV-CONTEST-AMP-SEP2026-R2",
+    "TV-CONTEST-AMP-SEP2026-R3"
+   ],
+   "resolution": "Refined, still open. Continue capturing the frontier through the end of the contest (2026-09-30T12:00:00Z); the practical planning fact is that the P/L required to hold any public rank is rising, and the last visible rank (250) underestimates the cash prize frontier (H19)."
+  },
+  {
+   "id": "IR-21",
+   "title": "Relay transport failures for BTC=F/MXP=F (BTC=F resolved on the fourth pass)",
+   "detail": "The allorigins relay returned HTTP 522/500 for BTC=F and MXP=F on the first three automated capture passes of 2026-09-17 while succeeding for the other 18 symbols; XRP=F also failed the first three passes before succeeding on the fourth. On the fourth pass (index fetched_at 2026-09-17T03:15:40Z, workflow run 35177491162) BTC=F succeeded with 504 sessions (2024-09-17 -> 2026-09-17) and XRP=F/MXP=F succeeded with a single session each: the vendor only lists recent history for those tickers (no firstTradeDate in the meta), so their single session is a data-availability limit, not a relay failure. CME:BTC1! now has full history and is included in the backtests (11 symbols tested, 231 windows).",
+   "observed": "data/market_history_index.json (2026-09-17T03:15:40Z): 20/20 captured, 0 failed; CME:BTC1! 504 sessions; CME:MXP1!, CME:XRP1!, CME:SOL1! and six other newly listed micro/crypto tickers 1 session each (excluded from backtests by the 150-bar minimum, IR-18).",
+   "severity": "low",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART"
+   ],
+   "resolution": "BTC=F resolved 2026-09-17T03:15:40Z (4th pass). MXP=F's single session reclassified to the newly-listed-vendor-history category (IR-18): it will accumulate history as the listing matures. The relay itself remains a third-party dependency (IR-17).",
+   "linked_hypothesis": "H14"
+  },
+  {
+   "id": "IR-22",
+   "title": "Newly listed COMEX:SIC1! vendor close differs from the TradingView snapshot quote by 2.09%",
+   "detail": "The 2026-09-17 vendor capture for SIC=F (single session, first valid close) differs from the TradingView continuous-quote snapshot value by 2.09%, above the 2% warning threshold. SIC1! is newly listed on the vendor, the snapshot quote is from 2026-09-16 17:21 GMT-4, and the front-contract month and capture time differ between the two sources. This is the same cross-source price-comparison caveat as IR-19 (crude oil, 3.32%) and is a documented limitation of comparing a single-session vendor close against a continuous-futures quote, not evidence of a bad mapping. scripts/verify.py warns at >2% and fails at >15% (mapping-error bound).",
+   "observed": "verify warning 'market_history.quote_delta: COMEX:SIC1!' (2.09%); data/market_history_index.json record for COMEX:SIC1! (1 session) vs data/live_contest_snapshot.json quote row.",
+   "expected_by_brief": "Line-by-line verified inputs; anything unexplained is flagged.",
+   "source_ids": [
+    "YAHOO-FUTURES-CHART",
+    "TV-QUOTE-SIC1"
+   ],
+   "severity": "low",
+   "resolution": "Open, informational. Will tighten automatically once SIC=F accumulates multi-session history and the quote snapshot is refreshed in a later session.",
+   "linked_hypothesis": null
+  },
+  {
+   "id": "IR-23",
+   "severity": "medium",
+   "title": "Displayed rank-50 frontier decreased between two same-day captures; the board is corrected, not append-only",
+   "detail": "Between 2026-09-17T16:56:00Z and 2026-09-17T19:04:00Z the displayed rank-50 realized P/L fell from +$1,247,897.00 to +$1,244,313.50 (-$3,583.50), and the exact row value previously at rank 50 (trader rajgaurav009, same percentage and dollars) appeared at rank 49. Realized P/L on closed positions cannot shrink for a still-registered account, so the net effect is exactly one fewer row ahead of it; the most parsimonious explanation is one removal from the public board among rows ranked 1-48 at capture 3 (disqualification or correction). Official rules sections 05, 09 and 16 reserve at-any-time disqualification rights; the official pages publish no board-change log, so removals are only observable indirectly, as here. Capture 5 (20:58Z) then showed the same rank-49/rank-50 rows byte-identical again and the rank-100 boundary pushed down by one new row, i.e. after the single correction the high board was stable for at least 1.9 hours; the frequency of such corrections cannot be measured from the public page.",
+   "observed": "Capture 3 -> capture 4: rank 1 unchanged at +$2,335,125.00; rank 50 -$3,583.50 with the previous row intact one place higher at rank 49; rank 100 +$12,309.65; rank 250 +$2,235.50; participants 95,709 -> 96,095. Capture 4 -> capture 5: rank 1 and rank 50 unchanged to the cent; rank 100 +$2,747.50 with the previous rank-100 row at rank 101; rank 250 +$3,454.50; participants 96,095 -> 96,236.",
+   "expected_by_brief": "A leaderboard frontier is a ratchet: it can only rise as the contest progresses.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R3",
+    "TV-CONTEST-AMP-SEP2026-R4",
+    "TV-RULES-AMP-SEP2026-R4",
+    "TV-CONTEST-AMP-SEP2026-R5"
+   ],
+   "resolution": "Treat every captured frontier as a point-in-time display, never as a guaranteed floor or final threshold. The verifier enforces profit ordering only within a capture, never across captures. Hypothesis H20 records the observation and its test.",
+   "linked_hypothesis": "H20"
+  },
+  {
+   "id": "IR-24",
+   "severity": "low",
+   "title": "Leaderboard percentage and dollar columns do not always reconcile to the cent within a row",
+   "detail": "The public board displays realized P/L as a two-decimal percentage and as dollars. Re-deriving dollars as 250,000 x percentage / 100 does not always reproduce the displayed dollars: at capture 5, rank 50 displays 497.73% and $1,244,313.50 (re-derived $1,244,325.00, a $11.50 difference) and rank 250 displays 264.30% and $660,759.50 (re-derived $660,750.00, a $9.50 difference), while rank 1 and rank 100 reconcile exactly. The differences are inside the +/- $12.50 bound implied by rounding a longer internal P/L to two percentage decimals, so this is a display-rounding artifact, not a contradiction between sources. It is recorded because the verifier allows the bound rather than exact equality, and a reader comparing the two columns will notice the mismatch.",
+   "observed": "Capture 5 (2026-09-17T20:58:00Z): rank 50 -$11.50 and rank 250 -$9.50 versus the percentage-implied dollars; ranks 1 and 100 exact. Every capture from 1 to 5 stays inside the +/- $12.50 bound.",
+   "expected_by_brief": "The dollar and percentage columns of one row should reconcile exactly.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R5",
+    "TV-RULES-AMP-SEP2026-R5"
+   ],
+   "resolution": "scripts/verify.py enforces the +/- $12.50 rounding bound on every capture row and never tolerates a larger gap; all displayed values are quoted verbatim in the evidence files and no value is smoothed.",
+   "linked_hypothesis": "H11"
+  },
+  {
+   "id": "IR-25",
+   "severity": "low",
+   "title": "Intermittent Leaderboard Threshold Acceleration (Surge vs Stasis Dynamics)",
+   "detail": "Leaderboard progression is non-linear and punctuated: after complete frontier stasis across captures 5->6 (20:58Z to 21:27Z), capture 7 (23:08Z) revealed sharp upward threshold acceleration across ranks 50 to 250 in 1.68 hours (Rank 50 rose +$111,303.63, Rank 100 rose +$76,695.00, Rank 250 rose +$38,065.50), while Rank 1 remained unchanged at $2,335,125.00 (+934.05%). Participants rose 96,268 -> 96,344 (+76), demonstrating that leaderboard progression happens in punctuated bursts as participants close batches of winning trades near session closes.",
+   "observed": "Capture 6 to 7 (2026-09-17T21:27:00Z to 2026-09-17T23:08:00Z): Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp), while Rank 1 was unchanged. Registered participant count grew +76.",
+   "expected_by_brief": "Leaderboard frontiers would advance smoothly or continuously throughout the day.",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R7",
+    "TV-RULES-AMP-SEP2026-R7"
+   ],
+   "resolution": "Record the punctuated surge behavior in data/frontier_history.json and hypotheses (H25), recomputing required daily compound rates from the latest capture.",
+   "linked_hypothesis": "H25"
+  },
+  {
+   "id": "IR-26",
+   "severity": "medium",
+   "title": "Shell-expansion corruption event in research text fields ($0/$2 and other $-token losses)",
+   "detail": "Several research files written on 2026-09-17 contained dollar amounts and shell artifacts consistent with double-quoted shell expansion: '$0.00' became '/bin/bash.00' ($0 expanded to the shell name), and '$'-prefixed amounts lost their '$' and leading digits where a positional parameter was empty ('$2.5M'->'.5M', '$25M'->'5M', '$250k'->'50k', '$1,244,313.50'->',244,313.50', '$111,303.63'->'+11,303.63', '$2,335,125.00'->',335,125.00'). The numeric suffixes were preserved, so every value was uniquely reconstructable from capture-7 evidence (research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md) and from data/frontier_history.json; all were restored and a verifier check (leaked_shell_text) now scans published text for the '/bin/bash' and '(.5M' signatures.",
+   "observed": "Affected fields found and fixed in this pass: hypotheses.json H27 ('/bin/bash.00' twice, '(.5M', '(5M', 'from 50k'), H25 ('+11,303.63', '(,244,313.50)', '(,355,617.13)', '(,605,617.13', '+6,695.00 (,014,950.00 to ,091,645.00)', '+8,065.50 (60,759.50 to 98,825.00)'), H26 ('(<.5M)'), irregularities.json IR-25 (four amounts), sources.json TV-CONTEST-AMP-SEP2026-R7 note (three amounts). Rendered index.html regenerated from the fixed registers.",
+   "resolution": "Fixed in this pass (2026-09-17 eighth pass). Every restored value cross-checked against capture-7 frontier rows: rank 50 $1,244,313.50->$1,355,617.13 (+$111,303.63), rank 100 $1,014,950.00->$1,091,645.00 (+$76,695.00), rank 250 $660,759.50->$698,825.00 (+$38,065.50), rank 50 equity multiple 6.4225x = $1,605,617.13. scripts/verify.py now fails on leaked shell signatures.",
+   "linked_hypothesis": "H27",
+   "source_ids": [
+    "TV-CONTEST-AMP-SEP2026-R7"
+   ]
+  },
+  {
+   "id": "IR-27",
+   "severity": "high",
+   "title": "Capture CI reported green steps while committing nothing; run logs and artifacts are not readable from the research sandbox",
+   "detail": "Two consecutive intraday capture runs showed every capture step as successful and still left data/intraday/ empty on the branch. Two independent causes: (a) each capture step ran the fetch script and the commit helper in one shell, and GitHub runs that shell with -e, so a non-zero exit from the fetch aborted the step before the commit helper ran - the step then reported success because it was marked continue-on-error; (b) fetch_intraday.py caught only RuntimeError/ValueError/KeyError per series, so a relay answering with an HTML error page (JSONDecodeError) killed the run before the provenance index was written, which meant there was nothing to commit even when the helper did run. Diagnosis was delayed because GitHub serves both run logs and uploaded artifacts from a blob host the sandbox cannot reach, and the checks API exposed no annotations for those runs.",
+   "observed": "Run 35378480898 occupied the single capture concurrency slot for its full 120-minute job timeout inside its 15-minute step and committed nothing; runs 35380931654, 35388315207 and 35388579399 were cancelled while queued behind it; a bounded lane (run 35380480860) completed and uploaded an artifact that also could not be downloaded from the sandbox.",
+   "expected_by_brief": "The brief requires intraday hourly/15-minute ingestion, and the repository treats a committed data/intraday_index.json as the signal that captured bars exist, so a lane that cannot be seen to fail cannot be trusted.",
+   "resolution": "The lane was restructured: fetch and commit are separate steps (the fetch keeps continue-on-error, a failed commit now fails the job); every fetch step tees its output and .github/scripts/capture_diagnostics.py always posts the run's evidence - index presence, per-interval counts, rate-limit state, non-captured series with errors, log tail - as a commit comment readable through the REST API, and writes data/intraday_capture_report.json; the per-series catch in fetch_intraday.py is now broad so one bad payload cannot cost the other series or the index; the intervals run cheapest-and-most-valuable first (daily, hourly, then 15-minute) with explicit --time-budget-seconds caps; concurrency is cancel-in-progress so a superseded run cannot hold the only slot; and commit_capture.sh refuses to commit an index that records zero captured series, because committing one turns a vendor outage into red verifier and derive runs (measured locally: 380 passed / 2 failed instead of 379/0).",
+   "status": "mitigated",
+   "linked_hypothesis": "H31",
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ]
+  },
+  {
+   "id": "IR-28",
+   "severity": "medium",
+   "title": "NYSE full-closure table re-verified line by line against official NYSE publications (one date corrected)",
+   "detail": "intel/calendar.py encodes the standing NYSE holiday schedule (nine holidays, weekend observance, Juneteenth from 2022, Gregorian Good Friday) plus two individually recorded special closures (2018-12-05 Bush mourning, 2025-01-09 Carter mourning). It was written in a sandbox with no network access, so no date in it has been checked against the live official calendar yet. Until a networked reviewer completes the protocol in research/evidence/NYSE-CALENDAR-2016-2026.md, the study's calendar_diagnostics must be read as transcription-annotated, not authoritatively calendared; the UTC-date baseline numbers are unaffected either way.",
+   "observed": "2026-09-19: calendar module added; evidence doc generated from the module (106 closure lines, 2016-2026). 2026-09-19 (later session): all 11 years compared against the official NYSE tables (live nyse.com for 2026-2028; Internet Archive captures of nyse.com/markets/hours-calendars for 2016-2017, 2018-2021, 2021-2023, 2024-2026; ICE press releases for 2018-12-05 and 2025-01-09; Nasdaq Trader 2026 cross-check). One mismatch: 2021-12-31 was wrongly listed as an observed New Year closure - NYSE Rule 7.2 means a Saturday January 1 is not observed (official footnote), and the ENPH daily capture has a 2021-12-31 bar. Fixed in intel/calendar.py nyse-holidays-2; the official transcription now lives in the module and scripts/verify.py fails on any divergence.",
+   "source_ids": [
+    "NYSE-HOURS-CALENDAR"
+   ],
+   "linked_hypothesis": "H33",
+   "status": "resolved_by_correction",
+   "resolution": "Corrected and closed. See research/evidence/NYSE-CALENDAR-2016-2026.md for per-year official URLs and verbatim quotes."
+  },
+  {
+   "id": "IR-29",
+   "title": "Official rules page section-09 payment-rails text now reads a 600 USD split vs 1,000 USD at R3-R6",
+   "detail": "The 2026-09-19 R10 re-read of the official rules page quotes section 09 as 'Prizes equal to, or more than Six hundred (600) USD will be awarded only via Wire Transfer' and 'Prizes less than Six hundred (600) USD will be awarded via PayPal. No alternative payment methods will be accepted or offered.' The R3-R6 evidence (2026-09-16/17) quotes the same clause as 'Prizes equal to, or more than One thousand (1,000) USD will be awarded only via Wire Transfer or PayPal. Prizes less than One thousand (1,000) USD will be awarded via PayPal only.' Both the threshold (1,000 -> 600) and the large-prize rails ('Wire Transfer or PayPal' -> 'only via Wire Transfer') differ. This may be a genuine mid-competition rules update or a page-render/fetch artifact; the prize ladder, ARV, claim window and all trading constants are unchanged.",
+   "observed": "2026-09-19 ~18:15-18:45 UTC: R10 chunks 2-3 vs research/evidence/TV-RULES-AMP-SEP2026-R3.md line 62 (and R4-R6).",
+   "expected_by_brief": "Stable payment-rails transcription (1,000 USD split) in data/contest_config.json.",
+   "source_ids": [
+    "TV-RULES-AMP-SEP2026-R10",
+    "TV-RULES-AMP-SEP2026"
+   ],
+   "severity": "low",
+   "status": "flagged_for_manual_review",
+   "resolution": "UNRESOLVED: data/contest_config.json keeps the 1,000 USD transcription pending a human re-read of the live rules page. Affects prize logistics only; no trading, ranking, backtest or competition artifact depends on the payment-rails value."
+  },
+  {
+   "id": "IR-30",
+   "severity": "medium",
+   "title": "CME roll-schedule business days come from the NYSE closure table, not a transcribed CME Globex closure set",
+   "detail": "intel/cme_roll.py derives front-contract termination dates from each product's official termination rule, and those rules are expressed in business days (SI: 'the third last business day of the contract month'; CL: '3 business day before the 25th calendar day of the month prior to the contract month'). The only closure table this repository has verified line by line against official publications is the NYSE full-closure table in intel/calendar.py (version nyse-holidays-2, evidence research/evidence/NYSE-CALENDAR-2016-2026.md). CME Globex's own holiday schedule is published per product at https://www.cmegroup.com/trading-hours.html and is not transcribed here, so where a CME closure differs from an NYSE one a derived termination date can be off by one session. The cryptocurrency codecs additionally apply their rule's London-business-day leg as 'not a weekend' because only the U.S. leg is checkable from this repository's calendar.",
+   "observed": "2026-09-19: data/cme_roll_schedule.json produced 72 dates for 3 of 20 products; every row carries business_day_basis naming the NYSE table, and intel/cme_roll.BUSINESS_DAY_BASIS records the same sentence. scripts/verify.py re-derives every date with the same codecs.",
+   "expected_by_brief": "A roll schedule derived from official CME sources end to end, with the exchange's own closure calendar.",
+   "source_ids": [
+    "NYSE-HOURS-CALENDAR"
+   ],
+   "status": "flagged_for_manual_review",
+   "resolution": "UNRESOLVED but declared: the dependency is recorded on every derived date and in data/cme_roll_schedule.json._meta.declared_limitations, the schedule is not wired into scripts/run_competition.py (so no published result depends on it), and the fix is to transcribe the official CME Globex holiday calendar into intel/calendar.py and re-derive. Until then these dates are research annotations, not execution instructions."
+  },
+  {
+   "id": "IR-31",
+   "severity": "low",
+   "title": "The derive lane's commit does not re-trigger the verify lane, so main can sit on a stale red build",
+   "detail": "GitHub Actions does not re-trigger workflows from a commit made with the workflow token. When the 'Derive intraday research artifacts' lane commits freshly derived artifacts, the 'Verify research data' run that was already racing the same push keeps its failure (it checked the pre-derive tree, whose artifacts were legitimately stale) and no green successor run is created for the derive commit. main therefore displayed a red verify check on a tree that was in fact in sync.",
+   "observed": "2026-09-19: run 35465537069 (Verify research data, main, merge commit cca9b0d) failed at 'Re-derive the intraday-dependent artifacts' while run 35465536978 (Derive intraday research artifacts) was concurrently producing commit 11851d0. Re-running the same four builders locally at 11851d0 produced no diff at all, confirming the tree was in sync and only the racing check was stale.",
+   "expected_by_brief": "A CI gate whose colour reflects the committed tree.",
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
+   ],
+   "status": "mitigated",
+   "resolution": "MITIGATED: .github/workflows/pages.yml now also triggers on workflow_run completion of the derive lane and checks out github.event.workflow_run.head_sha (fetch-depth 0), so the derived commit gets its own verify run. A red run that was merely racing a derive commit should be re-run rather than read as a defect."
+  },
+  {
+   "id": "IR-32",
+   "severity": "medium",
+   "title": "Official Alpaca IEX bars remain blocked: no repository secrets exist and the automation agent cannot provision them",
+   "detail": "The official-provider lane (.github/workflows/official-bars.yml -> scripts/fetch_official_bars.py) is implemented and fails closed: data/official_bars/availability.json records status 'blocked' (2026-09-18T22:31:46Z, 'Alpaca Basic API credentials unavailable; no network request or fabricated bars'). The lane needs repository secrets APCA_API_KEY_ID / APCA_API_SECRET_KEY. In this session the research agent's token was refused secret management outright (gh secret list -> HTTP 403 'Resource not accessible by integration'), so the agent can neither read nor set the credentials, and the brief's no-fabrication rule forbids inventing them. Every stock figure in the repository therefore stays vendor-tier (Yahoo Finance) until a human account owner adds the two secrets (GitHub -> Settings -> Secrets and variables -> Actions) from a free Alpaca account; the lane's daily cron (41 3 * * *) captures automatically afterwards.",
+   "observed": "2026-09-20: gh secret list on buffedlizard55-lab/TradingViewTheLeap returned HTTP 403 for the agent token; data/official_bars/availability.json unchanged at status blocked.",
+   "expected_by_brief": "Official Alpaca IEX bars obtained through secure secrets.",
+   "source_ids": [
+    "ALPACA-STOCKBARS-DOCS"
+   ],
+   "status": "flagged_for_manual_review",
+   "resolution": "Requires human action: create a free Alpaca account, generate an API key pair, add the two secrets listed in research/evidence/ALPACA-OFFICIAL-BARS-ROUTE.md. No agent action can substitute for it."
+  },
+  {
+   "id": "IR-33",
+   "severity": "medium",
+   "title": "CME contract-spec lane answers HTTP 403 from cmegroup.com on GitHub-hosted runners; product-specific hours stay at 3/20",
+   "detail": "capture-cme-specs.yml transcribes the official contractSpecs page of every pooled future, but cmegroup.com's bot protection returns HTTP 403 Forbidden to GitHub-hosted runner IPs for all 20 products (run 35479263008, 2026-09-20T00:46Z, recorded per record in data/cme_specs_index.json, e.g. 'GET failed with every header set: https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs (HTTP Error 403: Forbidden)'). The artifact therefore keeps only the three previously audited transcriptions (BTC, ETH, SI) as retained rows and lists the other 17 products in data/cme_product_hours.json _meta.omitted with the exact error text; the roll schedule keeps dates only for products with a transcribed termination rule (BTC/ETH/SI). The lane retries weekly (cron 40 3 * * 1) and on push. Note: a platform page-fetch proxy CAN read these pages (verified 2026-09-20 on the NQ spec page), but it returns a text extraction rather than the raw HTML bytes the verifier re-extracts from, so it cannot feed the byte-verified lane; a manual browser save of the 20 pages (or a residential-IP fetch) would complete it.",
+   "observed": "2026-09-20: data/cme_specs_index.json records 0/20 captured, 20/20 failed with HTTP 403 (workflow run 35479263008); fetch_page of https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html returned the live page the same day.",
+   "expected_by_brief": "Product-specific CME hours and a committed roll schedule for all 20 pooled futures.",
+   "source_ids": [
+    "CME-SPEC-NQ1!",
+    "CME-SPEC-BTC1!"
+   ],
+   "status": "flagged_for_manual_review",
+   "resolution": "Open: needs either a CME-allowed egress IP (weekly cron retries automatically) or a human-saved raw HTML copy of the 20 spec pages committed under data/cme_specs/."
+  }
+ ]
 }

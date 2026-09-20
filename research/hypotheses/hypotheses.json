@@ -2,7 +2,7 @@
  "_meta": {
   "description": "Hypothesis register. Each hypothesis states a falsifiable prediction, the exact test executed, and the verbatim evidence returned. 'supported'/'refuted' describe the evidence gathered in this session only.",
   "generated_utc": "2026-09-16",
-  "hypothesis_count": 41,
+  "hypothesis_count": 42,
   "reverified_utc": "2026-09-19",
   "reverification_note": "2026-09-19 R11 pass: H34-H39 remain untested (38/60 series, 11/20 daily; full-pool gate in scripts/verify.py). H44 added and supported from R10->R11 frontier stasis with +64 participants. H40 unchanged (R10 rank-1 turnover)."
  },
@@ -664,6 +664,19 @@
    "source_ids": [
     "TV-CONTEST-AMP-SEP2026-R10",
     "TV-CONTEST-AMP-SEP2026-R8"
+   ]
+  },
+  {
+   "id": "H41",
+   "claim": "C22 (volume-drought ignition): five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal, and a session that then trades at least 3x that average volume, above its own open, closing in the top 30% of its range, is demand discovery whose expansion over the following ~12 sessions is strong enough that pyramided longs beat the B1 control on the same editions.",
+   "prediction": "On the full 20-stock daily pool, the C22 usernames (DroughtDynamo, SlowFuseSal) finish ahead of VolatilityVera (B1) by season realized P/L in the primary profile, in-sample and forward-held-out alike.",
+   "test": "Run scripts/run_stock_competition.py after the full pool capture lands; compare C22 vs B1 rows in the daily leaderboard, in_sample_leaderboard and forward_leaderboard.",
+   "status": "untested",
+   "evidence": [
+    "Model frozen in intel/stock_strategies.py (DEFAULT_PARAMS/VARIANTS) and rostered (this pass); the full-pool verdict is withheld until the 60/60 matrix and the re-derived competition land."
+   ],
+   "source_ids": [
+    "YAHOO-INTRADAY-CHART"
    ]
   },
   {

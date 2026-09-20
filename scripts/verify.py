@@ -63,6 +63,10 @@ OFFICIAL_DOMAINS = (
     # full-closure table (intel/calendar.py), Nasdaq Trader as the cross-check source.
     "nyse.com",
     "nasdaqtrader.com",
+    # Alpaca is the official-provider API route for IEX equity bars
+    # (.github/workflows/official-bars.yml, scripts/fetch_official_bars.py): its own
+    # documentation domain is authoritative for that API's endpoints and limits.
+    "alpaca.markets",
 )
 
 # Market-data vendors are NOT official sources. They are allowed only under the
@@ -1738,11 +1742,11 @@ def _volatile_pool_symbols() -> set:
     return {r["symbol"] for r in vs["records"]}
 
 
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41")
 
 
 def check_h34_h39_coverage_gate(rep: Report) -> None:
-    """H34-H39 full-pool verdicts are forbidden until 20 symbols × 3 intervals are captured."""
+    """H34-H39/H41 full-pool verdicts are forbidden until 20 symbols × 3 intervals are captured."""
     hyps = {h["id"]: h for h in load("research/hypotheses/hypotheses.json")["hypotheses"]}
     pool = _volatile_pool_symbols()
     idx = load_opt("data/intraday_index.json")
@@ -2653,7 +2657,7 @@ def check_docs_mirror(rep: Report, source_ids: dict) -> None:
 
 
 def check_full_pool_verdicts(rep: Report, source_ids: dict) -> None:
-    """Re-derive every H34-H39 verdict from the committed competition run.
+    """Re-derive every H34-H39/H41 verdict from the committed competition run.
 
     The verdicts are produced by ``scripts/assign_full_pool_verdicts.py`` under a
     pre-registered decision rule. This check imports that same rule (it does not restate it)
