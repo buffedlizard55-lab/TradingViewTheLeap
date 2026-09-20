@@ -179,6 +179,29 @@ class TestZeroCaptureResilience(unittest.TestCase):
                 regenerated = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
                 self.assertEqual(fcs.hours_artifact_divergences(regenerated,
                                                                 committed_hours), [])
+
+                # A SECOND consecutive 403 pass (its 'previous' index is now itself a
+                # post-403 one, statuses kept_previous) must keep the machine rows too -
+                # this exact case regressed when the carry-forward only recognised a
+                # previous status of 'captured'.
+                rc2 = fcs.build(argparse.Namespace(offline=False, timeout=5,
+                                                   allow_failures=True))
+                self.assertEqual(rc2, 0)
+                doc2 = json.loads((tmp / "index.json").read_text(encoding="utf-8"))
+                machine2 = [r for r in doc2["records"]
+                            if r["status"] in ("captured", "kept_previous")
+                            and (r.get("fields") or {}).get("trading_hours")]
+                self.assertEqual(len(machine2), 17,
+                                 "a second consecutive 403 pass must also keep the "
+                                 "17 machine transcriptions")
+                for r in machine2:
+                    self.assertEqual(r["status"], "kept_previous")
+                    self.assertEqual(r.get("body_format"), "markdown")
+                    self.assertNotIn("retained_row", r)
+                fcs.write_hours_artifact(doc2)
+                regenerated2 = json.loads((tmp / "hours.json").read_text(encoding="utf-8"))
+                self.assertEqual(fcs.hours_artifact_divergences(regenerated2,
+                                                                committed_hours), [])
             finally:
                 fcs.fetch, fcs.SPECS_DIR, fcs.INDEX_PATH, fcs.HOURS_PATH = saved
         finally:

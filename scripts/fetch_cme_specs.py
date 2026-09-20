@@ -390,8 +390,17 @@ def build(args: argparse.Namespace) -> int:
             # provenance keys MUST be carried too: verify.py dispatches its re-extraction
             # by body_format, so losing it on a kept_previous transition would make the
             # next 403'd runner pass commit an index whose markdown bodies are audited
-            # through the HTML extractor (and fail).
-            if previous.get(product, {}).get("status") == "captured":
+            # through the HTML extractor (and fail). A previous KEPT_PREVIOUS record
+            # counts as well as a captured one: cmegroup.com answers 403 to every
+            # runner pass, so the second consecutive failure must keep the machine
+            # extraction exactly like the first did (found by the zero-capture
+            # regression test once the committed index itself became a post-403 one).
+            prev = previous.get(product, {})
+            prev_is_machine = (
+                prev.get("status") in ("captured", "kept_previous")
+                and (prev.get("fields") or {}).get("trading_hours")
+            )
+            if prev_is_machine:
                 record["status"] = "kept_previous"
                 record["reason"] = (
                     f"fetch failed ({type(exc).__name__}); previous stored extraction kept: {exc}"
@@ -399,8 +408,8 @@ def build(args: argparse.Namespace) -> int:
                 carry = ("accessed_utc", "http_status", "transport", "body_format",
                          "raw_bytes", "raw_sha256", "file", "fields", "missing_fields",
                          "agent_fetch_chunks", "agent_fetch_total_chunks", "capture_scope")
-                record.update({k: previous[product].get(k) for k in carry
-                               if previous[product].get(k) is not None})
+                record.update({k: prev.get(k) for k in carry
+                               if prev.get(k) is not None})
             records.append(record)
             continue
 
