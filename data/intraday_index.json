@@ -24,16 +24,16 @@
   "vendor_retention_note": "Yahoo Finance chart API retention, as published by the vendor: 1m ~7 days, 2m/5m/15m/30m/90m ~60 days, 1h ~730 days. The frozen windows above sit inside those limits at the capture date 2026-09-19; a later re-capture of the 15m window would fall outside vendor retention and must be re-frozen deliberately (the window was re-frozen once, on 2026-09-19, from a 2026-07-21 start to a 2026-07-28 start).",
   "rounding_decimals": 5,
   "vendor_source_id": "YAHOO-INTRADAY-CHART",
-  "fetched_at_utc": "2026-09-21T08:29:41+00:00",
+  "fetched_at_utc": "2026-09-21T20:00:08+00:00",
   "capture_environment": "github-actions",
-  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35575605153",
-  "direct_rate_limited": true,
-  "direct_429_count": 2,
+  "workflow_run_url": "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35645370217",
+  "direct_rate_limited": false,
+  "direct_429_count": 1,
   "symbol_count": 80,
   "captured_count": 61,
-  "failed_count": 11,
-  "not_attempted_count": 8,
-  "elapsed_seconds": 1516.3,
+  "failed_count": 19,
+  "not_attempted_count": 0,
+  "elapsed_seconds": 1606.6,
   "captured_by_interval": {
    "15m": 20,
    "1d": 20,
@@ -74,10 +74,11 @@
    "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35486271035",
    "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35497767141",
    "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35526044623",
-   "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35575605153"
+   "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35575605153",
+   "https://github.com/buffedlizard55-lab/TradingViewTheLeap/actions/runs/35645370217"
   ],
   "merge_note": "Merged from per-symbol partial indexes written by parallel capture jobs (scripts/merge_intraday_indexes.py). Tallies are recomputed from the merged records; when partials are present, direct_429_count and elapsed_seconds are summed across the jobs. Orphan capture files already on disk are salvaged into captured records (re-hashed, never invented).",
-  "merged_at_utc": "2026-09-21T08:55:07+00:00",
+  "merged_at_utc": "2026-09-21T20:27:09+00:00",
   "merged_partial_count": 21
  },
  "captures": [
@@ -4977,8 +4978,8 @@
    "yahoo_ticker": "BTC=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: CME:BTC1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "CME:ETH1!",
@@ -4986,7 +4987,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: CME:ETH1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/ETH%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: CME:ETH1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "CME:MBT1!",
@@ -5001,8 +5002,8 @@
    "yahoo_ticker": "MET=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: CME:MET1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "CME:MSL1!",
@@ -5017,8 +5018,8 @@
    "yahoo_ticker": "MXP=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: CME:MXP1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "CME:SOL1!",
@@ -5033,16 +5034,16 @@
    "yahoo_ticker": "XRP=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: CME:XRP1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "CME_MINI:NQ1!",
    "yahoo_ticker": "NQ=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: CME_MINI:NQ1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "COMEX:SI1!",
@@ -5155,8 +5156,8 @@
    "yahoo_ticker": "SIL=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: COMEX_MINI:SIL1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "NYMEX:CL1!",
@@ -5164,7 +5165,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: NYMEX:CL1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/CL%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: NYMEX:CL1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "NYMEX:HO1!",
@@ -5179,16 +5180,16 @@
    "yahoo_ticker": "MCL=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: NYMEX:MCL1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/MCL%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
   },
   {
    "symbol": "NYMEX:MNG1!",
    "yahoo_ticker": "MNG=F",
    "kind": "future",
    "interval": "1h",
-   "status": "not_attempted",
-   "error": "deferred by --time-budget-seconds/--max-series; rerun with --only-failed"
+   "status": "failed",
+   "error": "RuntimeError: NYMEX:MNG1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "NYMEX:NG1!",
@@ -5196,7 +5197,7 @@
    "kind": "future",
    "interval": "1h",
    "status": "failed",
-   "error": "RuntimeError: NYMEX:NG1![1h] chunk 1726876800: GET failed on every transport: https://query2.finance.yahoo.com/v8/finance/chart/NG%3DF?period1=1726876800&period2=1742428800&interval=1h (HTTP Error 522: <none>)"
+   "error": "RuntimeError: NYMEX:NG1!: vendor reported an error: {'code': 'Unprocessable Entity', 'description': '1h data not available for startTime=1726876800 and endTime=1742428800. The requested range must be within the last 730 days.'}"
   },
   {
    "symbol": "NYMEX:PL1!",
