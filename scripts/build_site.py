@@ -1195,7 +1195,7 @@ only that those participants had not realized new P/L between captures.</p>
 <ul class="notes">""")
     for note in frontier_history['_meta']['observed_notes']:
         add(f"<li>{esc(note)}</li>")
-    add("""</ul>
+    add(f"""</ul>
 <div class="callout critical"><h3>No guaranteed live cutoff</h3>
 <p>The public table ends at rank {cfg['public_leaderboard_last_visible_rank']}, while prizes extend
 through rank {cfg['maximum_prize_recipients']}. The unseen last-prize row cannot be recovered from
