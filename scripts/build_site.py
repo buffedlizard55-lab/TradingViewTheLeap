@@ -261,11 +261,12 @@ execution latency inside the simulation, not an assumed number.</p>
     bound_block = ""
     if bound:
         bound_block = f"""<h3>Single-hold scenario — not a competition return ceiling</h3>
-<p>Applying the historical stock-edition sizing constants to the captured subset yields a
+<p>Applying the historical stock-edition sizing constants to the {"complete 20-name pool" if bound.get("coverage_complete") else "captured subset"} yields a
 largest single-hold scenario of <strong>{number_or_dash(bound.get("max_edition_multiple_observed_bound"))}x</strong>
 across {number_or_dash(bound.get("editions_evaluated", 0))} editions.
 This does not bound repeated trading, short selling or compounding and does not establish
-whether 5x–100x competition returns are achievable. Coverage is incomplete.</p>
+whether 5x–100x competition returns are achievable.
+{"Pool coverage is complete (20/20 names)." if bound.get("coverage_complete") else "Coverage is incomplete: missing " + esc(", ".join(bound.get("missing_symbols") or []))}</p>
 <p class="note">{esc(bound.get("method", ""))}</p>"""
 
     cf = stock_comp.get("counterfactual_20x") or {}
@@ -321,12 +322,55 @@ models have no fitted parameters, so both windows are out-of-sample. Top 5 of ea
         fwd_block = ("<h3>Forward-held-out test (trailing editions the models never saw in design)</h3>"
                      f'<div class="grid">{"".join(fwd_parts)}</div>')
 
+    # Explosive-return finding, derived field by field from the artifact (never hardcoded):
+    # does the official rule profile permit the 5x-100x the brief targets, and does 20:1 help?
+    skew_block = ""
+    daily_div = (stock_comp.get("divisions") or {}).get("daily") or {}
+    daily_ts = daily_div.get("target_summary") or {}
+    cf_daily = ((stock_comp.get("counterfactual_20x") or {}).get("daily") or {}).get("target_summary") or {}
+    daily_lb = daily_div.get("leaderboard") or []
+    if daily_ts and daily_lb:
+        ctrl_rows = [r for r in daily_lb if r.get("model") == "B1"]
+        fwd_all = ((daily_div.get("forward_held_out") or {}).get("forward_leaderboard")) or []
+        fwd_by = {r["username"]: r for r in fwd_all}
+        beat_both = 0
+        if ctrl_rows:
+            ctrl = ctrl_rows[0]
+            cf_ctrl = fwd_by.get(ctrl["username"])
+            for r in daily_lb:
+                if r["username"] == ctrl["username"]:
+                    continue
+                f = fwd_by.get(r["username"])
+                if (r["season_realized_pnl_usd"] > ctrl["season_realized_pnl_usd"]
+                        and f and cf_ctrl
+                        and f["season_realized_pnl_usd"] > cf_ctrl["season_realized_pnl_usd"]):
+                    beat_both += 1
+        best_mult = max((r.get("best_edition_multiple") or 0) for r in daily_lb)
+        skew_block = f"""<div class="callout high"><h3>Finding: the 5×–100× target is not limited by strategy selection — it is limited by the rule set</h3>
+<p>Re-derived from <code>data/stock_competition_results.json</code> at this build, not asserted:
+<strong>{beat_both}</strong> of {len(daily_lb) - 1} usernames beat the B1 control in <em>both</em> the
+full-season and the forward held-out split, so models that outperform the control clearly exist. But across
+<strong>{number_or_dash(daily_ts.get("participant_editions"))}</strong> participant-editions, the number
+reaching ≥2× is <strong>{number_or_dash(daily_ts.get("ge_2x"))}</strong>, ≥5× is
+<strong>{number_or_dash(daily_ts.get("ge_5x"))}</strong> and ≥10× is
+<strong>{number_or_dash(daily_ts.get("ge_10x"))}</strong>. The best single edition any username achieved is
+<strong>{number_or_dash(round(best_mult, 6))}×</strong>.</p>
+<p>The declared 20:1 counterfactual is the control experiment for "is this just buying power?" — it grants
+twenty times the official buying power and still produces
+<strong>{number_or_dash(cf_daily.get("ge_2x"))}</strong> editions at ≥2× and
+<strong>{number_or_dash(cf_daily.get("ge_5x"))}</strong> at ≥5×. Twenty-fold leverage does not move the
+result. Together with the single-hold bound below, this repository's own evidence indicates that the
+18–22 session edition length and the 50-unit-per-instrument cap — not the quality of the signals — are what
+bound the achievable multiple. <strong>No 5×, 10×, 20×, 50× or 100× result is established anywhere in this
+division.</strong></p></div>"""
+
     return f"""<section id="stocksdivision"><h2>Volatile-stock division (our own multi-season competition)</h2>
-<p class="lead">The captured subset of the intended 20-stock volatile pool competes in our paper competition under
+<p class="lead">The 20-stock volatile pool competes in our paper competition under
 two rule profiles: the official stocks-edition constants (primary) and a declared 20:1
 counterfactual. Usernames, frozen model parameters and every edition's ranking are in
 <code>data/stock_competition_results.json</code>; the engine is the same one the futures division
 uses, verified to reproduce the original futures engine byte-for-byte at zero latency.</p>
+{skew_block}
 <div class="grid cols-2">{''.join(cards)}</div>
 {fwd_block}
 {latency_block}
@@ -701,9 +745,17 @@ def build() -> str:
     stock_series_total = 60
     full_pool_verdicts = load_optional("data/full_pool_verdicts.json")
     verdicts_assigned = bool(full_pool_verdicts and full_pool_verdicts.get("verdicts"))
+    stock_daily_captured = sum(
+        r.get("status") == "captured" and r.get("kind") == "equity" and r.get("interval") == "1d"
+        for r in intraday_records)
+    stock_pool_size = len(stocks["records"])
     if stock_series_captured == stock_series_total and verdicts_assigned:
-        coverage_note = ("full 60/60 coverage is present; full-pool verdicts H34–H39 and H41–H43 "
-                         "are assigned (data/full_pool_verdicts.json)")
+        # The hypothesis list is read from the artifact, never hardcoded, so the page
+        # cannot claim a verdict set that the generator did not actually assign.
+        vids = sorted(full_pool_verdicts["verdicts"], key=lambda h: int(h[1:]))
+        coverage_note = ("full 60/60 coverage is present; full-pool verdicts "
+                         + ", ".join(vids)
+                         + " are assigned (data/full_pool_verdicts.json)")
     elif stock_series_captured == stock_series_total:
         coverage_note = "full 60/60 coverage is present; H34–H39 may be re-run"
     else:
@@ -806,9 +858,9 @@ are labeled separately.</p>
 <div class="callout high"><h3>PLACE NO NEW TRADES FROM THIS PAGE — RESEARCH ONLY</h3>
 <p>Official-source pricing and authenticated TradingView fill validation are not complete.
 The historical rankings below are exploratory, not a verified current order queue.
-Only {sum(r.get("status") == "captured" and r.get("interval") == "1d" for r in load("data/intraday_index.json")["captures"])}
-stock daily series are currently captured in the legacy index; the intended pool has 20 names. The matrix is at
-{stock_series_captured} of {stock_series_total} stock series; {coverage_note}.
+The stock capture matrix is at {stock_series_captured} of {stock_series_total} series
+({stock_daily_captured} of {stock_pool_size} names on daily bars); {coverage_note}.
+Prices are Yahoo vendor-tier captures, not exchange-verified prints.
 Missing prices are never synthesized. The stock pool is our own experiment, not the eligible
 universe of the current futures-only Leap contest.</p>
 <p><a href="research/implementation_review.md">Three-pass audit and remaining blockers</a> ·
@@ -1143,7 +1195,7 @@ only that those participants had not realized new P/L between captures.</p>
 <ul class="notes">""")
     for note in frontier_history['_meta']['observed_notes']:
         add(f"<li>{esc(note)}</li>")
-    add("""</ul>
+    add(f"""</ul>
 <div class="callout critical"><h3>No guaranteed live cutoff</h3>
 <p>The public table ends at rank {cfg['public_leaderboard_last_visible_rank']}, while prizes extend
 through rank {cfg['maximum_prize_recipients']}. The unseen last-prize row cannot be recovered from

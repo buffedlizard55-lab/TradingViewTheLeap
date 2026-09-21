@@ -1,18 +1,21 @@
-> **2026-09-20 audit:** The volatile-stock matrix is complete — **60/60 series captured**
-> (20×15m + 20×1h + 20×1d, CI capture lane with byte-level SHA-256 provenance; see
-> `data/intraday_index.json`). Full-pool verdicts were assigned at 60/60:
-> H34/H37 partially supported, H36 supported, H35/H38 refuted, H39 (C19) / H41 (C22) /
-> H42 (C19-A) inconclusive zero-fire. The nineteenth contrarian model **C23 (serial
-> capitulation snapback)** was pre-registered as H43 after a documented pre-freeze probe
-> (75 eight-streaks pool-wide; filters hurt) and **refuted** on its first full-pool run —
-> both usernames beat the control over 81 season editions, but the forward held-out split
-> missed by $20.56. CME product hours for **all 20 pooled futures** are now committed with
-> a 196-date roll schedule (18 codecs, 2 refusals). Captures are
-> Yahoo vendor-tier, not exchange-verified: the Alpaca IEX route (`make official-bars`)
-> remains blocked on environment credentials, and no authenticated TradingView Strategy
-> Report export is available. Do not treat historical candidates as current orders. See
-> [the three-pass review](research/implementation_review.md) for fixes, verified official
-> links, test results and next-session priorities.
+> **2026-09-21 audit (nineteenth pass):** The volatile-stock matrix is **60/60 stock series**
+> (20 symbols x 15m/1h/1d, byte-level SHA-256 provenance in `data/intraday_index.json`) and the
+> competition was re-run on it. Full-pool verdicts are assigned mechanically for **H34-H39, H41-H43,
+> H45 and H46**: H36 supported; H34/H37 partially supported; H35/H38/H43/H45/H46 refuted;
+> H39 (C19), H41 (C22) and H42 (C19-A) inconclusive zero-fire. Two structurally new models were
+> designed, probed on the committed bars, frozen and tested this pass, and **both were refuted** and
+> are reported as such: **C24** (deep-drawdown volume ignition - the only model conditioning on a
+> 252-session bear state) and **C25** (the same trigger with an edition-compatible 15-session hold,
+> built in response to the measured finding that editions run 18-22 sessions so C24's 60-bar exit
+> could never fire). Full pre-freeze grids for both are recorded *before* the freeze in
+> `research/strategy/C24-PREFREEZE-PROBE.md`; neither model was retuned after seeing its result.
+> CME product hours are committed for **all 20 pooled futures** with a 196-date roll schedule
+> (IR-33, which still described this as 3/20, was corrected this pass). Captures remain
+> **Yahoo vendor-tier, not exchange-verified**: the Alpaca IEX route (`make official-bars`) is still
+> blocked on credentials (IR-32 - this environment has no network egress and no repository secrets),
+> and no authenticated TradingView Strategy Report export exists. Do not treat historical candidates
+> as current orders. Verification at this commit: **416 checks passed, 0 failed, 1 audited warning**;
+> **172 unit tests green**. See [the three-pass review](research/implementation_review.md).
 
 # TradingView The Leap — evidence-first research lab
 

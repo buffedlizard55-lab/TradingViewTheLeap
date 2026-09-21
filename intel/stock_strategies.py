@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C23).
+"""Contrarian strategy library for the volatile-equity division (C6-C25).
 
-The nineteen contrarian models here are pre-registered for the 20-stock volatile pool
+The twenty-one contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -49,6 +49,20 @@ Why these shapes:
   top-40%) on 2026-09-20 BEFORE any full-pool run, because the drafted pair
   produced zero ignition candidates across ~10 years of the six committed pool
   names while the strongest real candidates missed only on the close filter.
+- C24 (deep-drawdown volume ignition) is the only model in the library that
+  conditions on a LONG-HORIZON state rather than a recent one: the name must be
+  sitting at least 50% below its own 252-session high - a year-long bear state -
+  before a single expansion up-day (>=2 ATR close-to-close on >=3x its 20-session
+  average volume) is accepted as the ignition print, held 60 sessions with +1 ATR
+  pyramiding (max 3 adds). Every other model reads a 1-5 session window. It is
+  explicitly a POSITIVE-SKEW bet, not a high-win-rate one: the pre-freeze probe of
+  2026-09-21 (research/strategy/C24-PREFREEZE-PROBE.md, full 36-cell grid recorded)
+  found the win rate below 50% almost everywhere, but the mean above the median in
+  34 of 36 cells, with skew rising monotonically with the hold - at hold 60 the
+  90th percentile forward return ran 73-143% and individual fires reached +343%
+  (AMC 2021-01-19) and +358% (CVNA 2023-05-08). The frozen cell is the CENTRE of
+  the grid on both the drawdown and ATR axes, not the best one; the best-mean and
+  best-p90 cells were deliberately declined.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -68,7 +82,8 @@ from .contrarian import Decision, warmup as contrarian_warmup
 from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
-                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22", "C23")
+                   "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22", "C23",
+                   "C24", "C25")
 # C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
 # zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
 # pool. The tuple stays (empty but present) so future gated variants have a home.
@@ -96,6 +111,8 @@ MODEL_NAMES = {
     "C21": "Wide-to-narrow climax reversal",
     "C22": "Volume-drought ignition",
     "C23": "Serial capitulation snapback (streak count)",
+    "C24": "Deep-drawdown volume ignition",
+    "C25": "Deep-drawdown ignition (edition-compatible hold)",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -122,6 +139,8 @@ MODEL_CLAIMS = {
     "C21": "A climax bar whose range is >=2.5 ATR followed by a bar whose range is at most half of that climax, closing in the opposite direction, is a wide-to-narrow reversal: long after a down climax, short after an up climax.",
     "C23": "Eight or more consecutive down closes mark serial capitulation: by the eighth red session the marginal seller has already sold, and the pool's own 2016-2026 history shows a positive median five-session forward return after such streaks (+5.0% median, 67% positive, 75 streaks across the 20 committed names in the pre-freeze probe of 2026-09-20). The streak COUNT is the whole trigger - no ATR, volume or close-position filter is applied, because the same probe showed those filters reduced both frequency and median forward return. Long the next open, pyramid on +1 ATR favorable closes (max 3 adds), exit after 8 sessions.",
     "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 2.5x that average volume, above its own open, and closes in the top 40% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding. (Thresholds re-frozen once on 2026-09-20, before any full-pool run: the drafted 3.0x / top-30% combination produced zero ignition candidates across ~10 years of the six committed pool names, missing the strongest real candidates only on the close-position filter; see the seventeenth-pass audit.)",
+    "C24": "A name trading at or below 50% of its own 252-session high is in a year-long bear state in which the marginal holder has already capitulated; the first session that advances at least 2 ATR close-to-close on at least 3x its 20-session average volume is re-accumulation, and the 60-session expansion that sometimes follows is harvested long with +1 ATR pyramiding (max 3 adds). This is a POSITIVE-SKEW bet, deliberately not a high-win-rate one: the pre-freeze probe of 2026-09-21 across the full 36-cell grid (20 committed names, 2016-2026) found the win rate below 50% in nearly every cell while the mean exceeded the median in 34 of 36, with the skew rising monotonically with the hold (at hold 60, 90th-percentile forward returns of 73-143% and single fires of +343% / +358%). The frozen cell is the centre of the grid, not its best cell. See research/strategy/C24-PREFREEZE-PROBE.md.",
+    "C25": "Same deep-drawdown ignition trigger as C24 (close at or below 50% of the 252-session high, then a >=2 ATR close-to-close advance on >=3x the 20-session average volume), but with an EDITION-COMPATIBLE hold of 15 sessions instead of 60. C24 was refuted (H45) for a structural reason recorded in IR-34: the committed daily editions run 18-22 sessions (median 21, measured), so a 60-session hold could never fire its own exit and every position was closed by the edition boundary. The short-horizon pre-freeze grid of 2026-09-21 (45 cells, recorded in research/strategy/C24-PREFREEZE-PROBE.md) shows the positive skew survives the shortening - the mean exceeds the median in 43 of 45 cells and the largest single fire (+333%) occurs at a hold of 8. The frozen cell is again the centre of the grid, and 15 < 18 so the exit rule is actually reachable. C24 remains frozen and refuted; this is a separate model, not a retune.",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -268,6 +287,27 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "max_adds": 3,
         "hold_bars": 8,
     },
+    "C24": {
+        "high_lookback": 252,
+        "drawdown_fraction": 0.50,
+        "ignition_atr_mult": 2.0,
+        "volume_length": 20,
+        "volume_mult": 3.0,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 60,
+    },
+    "C25": {
+        "high_lookback": 252,
+        "drawdown_fraction": 0.50,
+        "ignition_atr_mult": 2.0,
+        "volume_length": 20,
+        "volume_mult": 3.0,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        # 15 < the shortest measured edition (18 sessions), so this exit can fire.
+        "hold_bars": 15,
+    },
     "C22": {
         "drought_bars": 5,
         "drought_volume_fraction": 0.6,
@@ -349,6 +389,16 @@ VARIANTS: dict[str, dict[str, dict]] = {
     "C21": {
         "tight": {"climax_atr_mult": 2.0, "inside_range_fraction": 0.4, "hold_bars": 4},
     },
+    "C24": {
+        # Both variants pin pre-existing corners of the recorded pre-freeze grid;
+        # neither introduces a threshold that the probe did not already evaluate.
+        "shallow": {"drawdown_fraction": 0.40, "hold_bars": 40},
+        "deep": {"drawdown_fraction": 0.60, "hold_bars": 60},
+    },
+    "C25": {
+        "quick": {"hold_bars": 8},
+        "wide": {"drawdown_fraction": 0.60, "hold_bars": 15},
+    },
     "C22": {
         "deep": {"drought_bars": 8, "drought_volume_fraction": 0.5,
                  "ignition_volume_mult": 3.0, "close_tail_fraction": 0.35,
@@ -407,6 +457,10 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
         return 16
     if model == "C23":
         return 2
+    if model in ("C24", "C25"):
+        # the 252-session high window, the volume baseline and ATR(14) must all be
+        # defined, plus one prior close for the close-to-close advance.
+        return max(p.get("high_lookback", 252), p.get("volume_length", 20), 14) + 2
     if model == "C22":
         # the volume baseline, ATR(14), and the full drought window behind the ignition bar.
         return max(p.get("volume_length", 20), 14) + p.get("drought_bars", 5) + 2
@@ -1168,6 +1222,49 @@ def generate_stock_decisions(
                 if down_run[i] >= p["min_streak"]:
                     emit(i, "long",
                          f"serial capitulation snapback long (streak {down_run[i]})")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model in ("C24", "C25"):
+        # Deep-drawdown volume ignition (C25 = same trigger, edition-compatible hold). The drawdown state is measured against the
+        # highest HIGH of the trailing `high_lookback` sessions INCLUDING the candidate
+        # bar itself, so the window can only ever contain information already printed
+        # at the decision close - it can never see the next-open fill it triggers.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        lookback = p["high_lookback"]
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                window_high = max(highs[i - lookback:i + 1])
+                if window_high <= 0:
+                    continue
+                ignition = (
+                    closes[i] <= window_high * (1.0 - p["drawdown_fraction"])
+                    and (closes[i] - closes[i - 1]) >= p["ignition_atr_mult"] * a
+                    and float(bars[i].volume or 0) >= p["volume_mult"] * va
+                )
+                if ignition:
+                    emit(i, "long", "deep-drawdown volume ignition long")
                     position = "long"
                     held = 0
                     adds = 0
