@@ -1,6 +1,6 @@
 # Three-pass implementation and evidence review
 
-Review date: 2026-09-18 (updated 2026-09-20 — eighteenth pass). This is an engineering audit, not a certification of every historical price or a promise of contest returns.
+Review date: 2026-09-18 (updated 2026-09-21 — nineteenth pass). This is an engineering audit, not a certification of every historical price or a promise of contest returns.
 
 ## Executive decision
 
@@ -16,6 +16,75 @@ Review date: 2026-09-18 (updated 2026-09-20 — eighteenth pass). This is an eng
 | [TradingView CSV export](https://www.tradingview.com/support/solutions/43000613680-how-to-export-strategy-data/) | Download from Strategy Report; each tab exported separately. | An anonymous export API, CSV cryptographic authenticity, or access to a signed-in account here. |
 
 Existing Yahoo captures are retained as **legacy vendor evidence**, not upgraded to exchange-verified pricing. SHA-256 proves local consistency against a recorded hash, not provider authenticity. Existing relay-based collectors are not used by the new official-provider route.
+
+## Nineteenth pass (2026-09-21) — matrix re-audited at 60/60, two new models frozen and both refuted, stale site text removed
+
+This pass began by **re-auditing the six task items rather than assuming they were outstanding**, because
+the repository had advanced since the brief was written. Line-by-line findings, each re-derived from the
+committed artifacts rather than from prose:
+
+| Brief item | Verified state at the start of this pass | Action taken |
+|---|---|---|
+| Complete the matrix to 60/60 stock series | **Already complete.** Counting `data/intraday_index.json` directly: 20 symbols × {15m, 1h, 1d} = 60/60 `captured`, 0 failed. (19 records still read `failed` — all of them *futures* 1h series the vendor does not serve, not stock series.) | Re-ran the competition on the full matrix. |
+| Rerun the competition | Re-run this pass on 60/60 with the pinned stamp. | 81 daily / 24 hourly / 1 fifteen-minute season editions, 20 symbols each. |
+| Full-pool verdicts for H34–H39 after coverage | **Already assigned** and re-derived mechanically this pass. | Extended the same rule to the two new hypotheses. |
+| C19 zero-fire → register and test C19-A | **Already done** (H42, `TwoStepTessa` / `LagLiquidationLeo`); C19-A is itself zero-fire → `inconclusive`. | Confirmed; not re-litigated. |
+| Alpaca credentials via secure secrets | **Genuinely blocked.** `scripts/fetch_official_bars.py` exits `blocked`; the sandbox has no egress at all (verified: `curl` to alpaca.markets, yahoo and tradingview all return 000; only api.github.com resolves) and `gh secret list` returns HTTP 403 for this app installation. | Left fail-closed. No synthetic bars written. IR-32 stands. |
+| Authorized TradingView Strategy Report exports | **Genuinely blocked.** `data/tv_benchmark.json` reports `blocked`, 0 real exports. | Left fail-closed. No fabricated platform output. |
+| Product-specific CME hours + committed roll schedule | **Already complete at 20/20** with a 196-date roll schedule — but **IR-33 still described it as 3/20**. | Corrected IR-33 (stale text was itself the irregularity) and marked it `resolved_by_alternate_route`. |
+
+### New strategy work (the part of the brief that was genuinely open)
+
+Two structurally new models were designed, probed, frozen and tested — and **both were refuted**. That
+outcome is reported exactly as it came out.
+
+- **C24 — deep-drawdown volume ignition (H45).** The only model in the library conditioning on a
+  *long-horizon* state: the name must close at or below 50% of its own 252-session high (a year-long bear
+  state) before a single ≥2 ATR advance on ≥3× average volume is accepted as the ignition print. Every
+  other model (C7/C12/C15/C17/C19/C19A/C20/C23) reads a 1–8 session window. A **full 36-cell pre-freeze
+  grid was recorded before freezing** (`research/strategy/C24-PREFREEZE-PROBE.md`): win rate below 50%
+  nearly everywhere, but the mean above the median in **34 of 36 cells**, skew rising monotonically with
+  the hold, 90th-percentile forward returns of 73–143% at hold 60, and single fires of **+343% (AMC
+  2021-01-19)** and **+358% (CVNA 2023-05-08)**. The frozen cell is the **centre** of the grid on both
+  axes; the best-mean and best-p90 cells were deliberately declined. Result: `RuinRiserRoxy` −$14,100.70
+  (48 trades), `LazarusLoretta` −$3,332.55 (25 trades) vs the B1 control's −$11,803.86 → **refuted**.
+- **Post-mortem, measured rather than assumed (IR-34).** The cause was structural: `hold_bars = 60` while
+  the committed daily editions run **18–22 sessions (median 21)** — counted directly from the 81 edition
+  windows against a committed capture. C24's exit rule could therefore *never* fire; every position was
+  closed by the edition boundary instead.
+- **C25 — the same trigger with an edition-compatible hold (H46).** Frozen at `hold_bars = 15` (< the
+  shortest measured edition of 18) after its **own recorded 45-cell short-horizon grid**, which showed the
+  skew survives the shortening (mean > median in **43 of 45 cells**; the largest single fire, **+333%**,
+  occurs at a hold of 8). Again the centre of the grid. Result: `SecondWindSybil` −$12,655.28 (58 trades),
+  `PhoenixPhoebe` −$2,518.00 (34 trades) → **refuted**. `PhoenixPhoebe` beat the control over the full
+  season but returned $0.00 in the forward held-out split, failing the "both splits" clause.
+- **Neither model was retuned after seeing its result.** C24 and C25 remain frozen with their refuted
+  verdicts intact. The honest conclusion recorded in IR-34: two independent freezes of this trigger family
+  have now failed, and the probe's skew appears to be dominated by a handful of events that the monthly
+  edition length and the 50-unit position cap cannot monetise — the binding constraint looks like the
+  **rule set**, not the signal. The committed `official_rule_bound` of **4.74×** on a single hold across
+  81 editions points the same way.
+
+### Site accuracy fixes (stale assertions found by reading the rendered page)
+
+The page carried several hardcoded claims that had been true under partial coverage and were now false:
+
+- "Only N stock daily series are currently captured in the **legacy index**; the intended pool has 20 names"
+  → replaced with derived counts (`60 of 60 series, 20 of 20 names on daily bars`).
+- "Applying the historical stock-edition sizing constants to the **captured subset**… **Coverage is
+  incomplete.**" → now branches on the artifact's own `coverage_complete` flag and names the missing
+  symbols when there are any.
+- "The **captured subset** of the intended 20-stock volatile pool competes…" → "The 20-stock volatile pool…".
+- The exec-summary banner hardcoded the verdict list `H34–H39 and H41–H43`; it now reads the ids straight
+  out of `data/full_pool_verdicts.json`, so the page cannot claim a verdict set the generator did not assign.
+
+### Verification at the end of this pass
+
+`scripts/verify.py`: **416 passed, 0 failed, 1 warning** (the audited COMEX:SIC1! quote delta, IR-22).
+`scripts/verify.py --self-test`: passes. Unit suite: **172 tests green** (up from 168 — five new C24/C25
+tests covering parameter freezing, warmup covering the 252-bar lookback, positive and *negative* trigger
+cases for volume, drawdown state and ATR magnitude, and an assertion that C25's exit fires on its own rule
+at exactly 15 bars while C24's does not fire at all in the same window).
 
 ## Eighteenth pass (2026-09-20) — IR-33 closed via agent-fetch adoption, all-20 CME hours + committed roll schedule, C23/H43 pre-registered and refuted
 
@@ -112,13 +181,56 @@ Multi-season competitions can now partition seasons into in-sample development a
 
 ## Remaining blockers / next-session priorities
 
-1. **Official-provider access:** no Alpaca credentials exist in this environment. An authorized Basic account key pair must become available through secure environment/secrets provisioning; never paste keys in chat or commit them. Account registration cannot honestly be completed unattended without the required account-holder authorization. The adapter has mocked transport tests, not a successful live authenticated integration test.
-2. **Full pool:** capture and validate all 20 names at each interval. Verify corporate actions, listing dates, feed omissions and symbol mapping; obtain a second authorized source for spot checks. Split-adjusted historical prices are research-normalized values, not literal historical execution prints.
-3. **Official futures intraday data:** the new adapter covers equities only. Existing futures simulation uses continuous daily vendor history; obtain a legitimately free, authorized futures intraday source before claiming intraday futures results.
-4. **TradingView benchmark:** no signed-in session or real Strategy Report exports are present. Authentic acquisition cannot be manufactured. When authorized exports become available, record symbol, interval, chart timezone, Pine revision, strategy settings, costs and export provenance. Importer is autonomous and diagnostic; full timezone/interval manifest enforcement and one-to-one strategy trade reconciliation remain work.
-5. **Session/execution realism:** the NYSE table, per-fill timestamps, proportional arbitration and declared roll boundaries are implemented and tested; still missing are product-specific CME holiday hours, a committed roll schedule, short-borrow availability, tranche-level mark-to-market reconciliation and sub-bar execution observations. Current simulator keeps simplified margin/accounting.
-6. **Warnings (1, audited):** COMEX:SIC1! capture differs 2.09% from the TradingView snapshot (IR-22). The intraday-coverage warnings cleared when the matrix captures landed (`401 passed, 0 failed`; self-test 459/0; unit suite 94 green). Intraday results are on a partial pool and must be re-read once 60/60 lands.
-7. **Publication:** GitHub Pages publishes from repository root `index.html` and documentation at `docs/index.html`. Both pages feature the Executive Summary with upcoming paper trade setups. Preserve provider licensing review before publishing newly acquired raw datasets.
+Ordered by how much each one blocks a *successful* project, with the verified reason each is stuck.
+
+1. **Alpaca IEX credentials (hard blocker, user action required).** `data/official_bars/availability.json`
+   reports `blocked`; `scripts/fetch_official_bars.py` exits without writing a single bar, by design. Two
+   independent reasons verified this pass: (a) the sandbox has **no network egress** — `curl` to
+   `data.alpaca.markets`, `query1.finance.yahoo.com` and `tradingview.com` all return `000`, only
+   `api.github.com` resolves; (b) `gh secret list` returns **HTTP 403** for this app installation, so the
+   agent cannot read or set repository secrets even if they existed. **What a human must do:** create a free
+   Alpaca Basic account, add `APCA_API_KEY_ID` / `APCA_API_SECRET_KEY` as GitHub Actions **repository
+   secrets** (never in chat, never committed), then dispatch `official-bars.yml`. Until then every price on
+   the site is correctly labelled vendor-tier.
+2. **Authorized TradingView Strategy Report export (hard blocker, user action required).**
+   `data/tv_benchmark.json` reports `blocked`, `real_exports_found: 0`. Requires a signed-in account with
+   export entitlement; the import/benchmark path is already proven end-to-end on a labelled synthetic
+   fixture, so a single committed CSV under `data/tv_reports/` flips it to `measured`.
+3. **The explosive-return target is the project's central unresolved problem — and the evidence now
+   points at the rule set, not at strategy quality.** This is the most important research finding of this
+   pass, and it is re-derived from the committed artifact rather than asserted:
+   - Strategy selection is *not* the bottleneck. **45 of 52** daily usernames beat the B1 control on full-season
+     realised P/L, and **10 beat it in both the full-season and the forward held-out split**
+     (`BreakoutBea`, `EmaEddie`, `TurboTad`, `VolcanoVic`, `VolSpikeVince`, `RocketRider`, `DawnRaider`,
+     `IntradayIris`, `DonchianDana`, `MomentumMarauder`). Models that beat the control clearly exist.
+   - The *magnitude* is the bottleneck. Across **4,212 participant-editions**, editions at ≥2× = **0**,
+     ≥5× = **0**, ≥10× = **0**. The single best edition multiple achieved by any username is **1.28×**, and
+     the mean edition multiple is **0.9999×**. The brief's 5×/10×/20×/50×/100× targets are not merely
+     unmet — nothing is within an order of magnitude.
+   - **The decisive control experiment is already committed:** the declared 20:1 counterfactual profile
+     (which grants 20× the official buying power and is not an official rule set) *also* produces
+     **0 editions at ≥2×**. Twenty-fold leverage does not move the result. Combined with the
+     `official_rule_bound` of **4.74×** — the best outcome even if every pool name were held at the cap
+     through its single largest favourable excursion in the edition — the constraint is arithmetic:
+     the 18–22 session edition length and the 50-unit-per-instrument cap, not the signals.
+   - **Recommended next step:** stop adding contrarian daily models to the equity division; the marginal
+     return on model #22 is demonstrably near zero. Either (a) accept the equity division as a
+     *methodology* demonstration and move effort to the futures division that the live contest actually
+     scores, or (b) state explicitly and prominently that 5×–100× is **not reachable** under the official
+     stocks-edition constants, which is what this repository's own evidence now says.
+4. **The current contest is futures-only.** The live edition (AMP Futures) lists 94 eligible futures and
+   **0 equities**. The entire 20-stock division is the repository's own experiment and is labelled as such
+   everywhere — it cannot place on the live leaderboard. If the goal is literally to place in *this*
+   edition, effort should move to the futures division.
+5. **Simulation realism still simplified.** Engine roll-closing is wired but deliberately unused (it would
+   change the published season and needs its own before/after comparison); still absent are short-borrow
+   availability, tranche-level mark-to-market reconciliation and sub-bar execution observations. CME
+   business days come from the NYSE closure table, not a transcribed CME Globex calendar (IR-30).
+6. **Open irregularities:** IR-22 (COMEX:SIC1! 2.09% vendor-vs-quote delta, the single verifier warning),
+   IR-29, IR-30, IR-32, and IR-34 (the C24/C25 design lesson). IR-33 was corrected and closed this pass.
+7. **Selection bias is unfixed and unfixable by more computation.** The 20-name pool was chosen
+   retrospectively for volatility, so every division result carries selection and survivorship bias. This
+   is stated on the page and in every artifact; it is a limitation of the experiment's design, not a bug.
 
 ## Reproduce
 

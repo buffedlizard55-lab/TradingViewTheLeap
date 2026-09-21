@@ -1742,11 +1742,11 @@ def _volatile_pool_symbols() -> set:
     return {r["symbol"] for r in vs["records"]}
 
 
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46")
 
 
 def check_h34_h39_coverage_gate(rep: Report) -> None:
-    """H34-H39/H41-H43 full-pool verdicts are forbidden until 20 symbols × 3 intervals are captured."""
+    """H34-H39/H41-H43/H45-H46 full-pool verdicts are forbidden until 20 symbols × 3 intervals are captured."""
     hyps = {h["id"]: h for h in load("research/hypotheses/hypotheses.json")["hypotheses"]}
     pool = _volatile_pool_symbols()
     idx = load_opt("data/intraday_index.json")

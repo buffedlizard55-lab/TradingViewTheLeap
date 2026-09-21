@@ -492,6 +492,155 @@ class StockModelTests(unittest.TestCase):
         self.assertEqual([(d.index, d.action) for d in d_early if d.action == "long"],
                          [(13, "long")])
 
+    def test_c24_resolve_warmup_and_fire(self):
+        from intel.stock_strategies import (
+            MODEL_CLAIMS,
+            MODEL_NAMES,
+            STOCK_MODEL_IDS,
+            generate_stock_decisions,
+            resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        self.assertIn("C24", STOCK_MODEL_IDS)
+        self.assertIn("C24", MODEL_NAMES)
+        self.assertIn("C24", MODEL_CLAIMS)
+        p = stock_resolve("C24", None)
+        self.assertEqual(p["high_lookback"], 252)
+        self.assertEqual(p["drawdown_fraction"], 0.50)
+        self.assertEqual(p["ignition_atr_mult"], 2.0)
+        self.assertEqual(p["volume_mult"], 3.0)
+        self.assertEqual(p["max_adds"], 3)
+        self.assertEqual(p["hold_bars"], 60)
+        # Warmup must cover the 252-session high window, so the first decision index
+        # can never read a truncated lookback.
+        self.assertEqual(stock_warmup("C24", None), 254)
+        self.assertEqual(stock_resolve("C24", "shallow")["drawdown_fraction"], 0.40)
+        self.assertEqual(stock_resolve("C24", "shallow")["hold_bars"], 40)
+        self.assertEqual(stock_resolve("C24", "deep")["drawdown_fraction"], 0.60)
+        with self.assertRaises(ValueError):
+            stock_resolve("C24", "nope")
+
+        t0 = int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp())
+        # A year at 100 establishes the 252-session high, then a slide to ~40
+        # (60% below the high), then one 2+ ATR up-day on 5x volume.
+        top = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000) for i in range(260)]
+        slide = [Bar(top[-1].ts + (k + 1) * 86400, 100.0 - k * 0.6, 100.5 - k * 0.6,
+                     99.0 - k * 0.6, 99.5 - k * 0.6, 1000) for k in range(100)]
+        base = top + slide
+        last = base[-1]
+        ignite = Bar(last.ts + 86400, last.close, last.close + 9.0,
+                     last.close - 0.5, last.close + 8.0, 5000)
+        after = [Bar(ignite.ts + (i + 1) * 86400, ignite.close + i, ignite.close + i + 2.0,
+                     ignite.close + i - 1.0, ignite.close + i + 1.5, 1200)
+                 for i in range(80)]
+        series = base + [ignite] + after
+        d24 = generate_stock_decisions(series, "C24")
+        longs = [(d.index, d.action) for d in d24 if d.action == "long"]
+        self.assertEqual(longs, [(len(base), "long")])
+        self.assertIn("exit", {d.action for d in d24})
+
+        # Same ignition bar without the volume expansion does not fire.
+        quiet = Bar(ignite.ts, ignite.open, ignite.high, ignite.low, ignite.close, 1000)
+        self.assertFalse(any(d.action == "long"
+                             for d in generate_stock_decisions(base + [quiet] + after, "C24")))
+        # Same ignition bar while the name is NOT in a deep drawdown does not fire:
+        # a flat 360-bar history at 100 has no 50% drawdown state at all.
+        flat = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000) for i in range(360)]
+        fl = flat[-1]
+        fl_ignite = Bar(fl.ts + 86400, 100.0, 109.0, 99.5, 108.0, 5000)
+        self.assertFalse(any(d.action == "long"
+                             for d in generate_stock_decisions(flat + [fl_ignite] + after, "C24")))
+        # A small up-day (below 2 ATR) in the same drawdown state does not fire.
+        small = Bar(ignite.ts, last.close, last.close + 0.6, last.close - 0.2,
+                    last.close + 0.4, 5000)
+        self.assertFalse(any(d.action == "long"
+                             for d in generate_stock_decisions(base + [small] + after, "C24")))
+
+    def test_c25_shares_the_c24_trigger_with_an_edition_compatible_hold(self):
+        from intel.stock_strategies import (
+            MODEL_CLAIMS,
+            MODEL_NAMES,
+            STOCK_MODEL_IDS,
+            generate_stock_decisions,
+            resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        self.assertIn("C25", STOCK_MODEL_IDS)
+        self.assertIn("C25", MODEL_NAMES)
+        self.assertIn("C25", MODEL_CLAIMS)
+        p25 = stock_resolve("C25", None)
+        p24 = stock_resolve("C24", None)
+        # Same trigger, different hold - and the hold must be shorter than the
+        # shortest measured edition (18 sessions) or the exit can never fire.
+        for key in ("high_lookback", "drawdown_fraction", "ignition_atr_mult",
+                    "volume_length", "volume_mult", "add_atr_step", "max_adds"):
+            self.assertEqual(p25[key], p24[key], key)
+        self.assertEqual(p25["hold_bars"], 15)
+        self.assertLess(p25["hold_bars"], 18)
+        self.assertEqual(p24["hold_bars"], 60)  # C24 must stay frozen, not retuned
+        self.assertEqual(stock_resolve("C25", "quick")["hold_bars"], 8)
+        self.assertEqual(stock_resolve("C25", "wide")["drawdown_fraction"], 0.60)
+        self.assertEqual(stock_warmup("C25", None), 254)
+        with self.assertRaises(ValueError):
+            stock_resolve("C25", "nope")
+
+        t0 = int(datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp())
+        top = [Bar(t0 + i * 86400, 100.0, 101.0, 99.0, 100.0, 1000) for i in range(260)]
+        slide = [Bar(top[-1].ts + (k + 1) * 86400, 100.0 - k * 0.6, 100.5 - k * 0.6,
+                     99.0 - k * 0.6, 99.5 - k * 0.6, 1000) for k in range(100)]
+        base = top + slide
+        last = base[-1]
+        ignite = Bar(last.ts + 86400, last.close, last.close + 9.0,
+                     last.close - 0.5, last.close + 8.0, 5000)
+        # A flat aftermath so no pyramid add displaces the hold-elapsed exit.
+        after = [Bar(ignite.ts + (i + 1) * 86400, ignite.close, ignite.close + 0.2,
+                     ignite.close - 0.2, ignite.close, 1200) for i in range(40)]
+        series = base + [ignite] + after
+        d25 = generate_stock_decisions(series, "C25")
+        self.assertEqual([(d.index, d.action) for d in d25 if d.action == "long"],
+                         [(len(base), "long")])
+        exits = [d.index for d in d25 if d.action == "exit"]
+        self.assertTrue(exits)
+        # The exit fires on its own rule, exactly hold_bars after the entry bar.
+        self.assertEqual(exits[0] - len(base), 15)
+        # The identical series under C24 does not reach its 60-bar exit in 40 bars.
+        d24 = generate_stock_decisions(series, "C24")
+        self.assertTrue(any(d.action == "long" for d in d24))
+        self.assertFalse([d for d in d24 if d.action == "exit"])
+
+    def test_c24_is_rostered_with_two_usernames_on_the_full_pool(self):
+        import json
+        with open(os.path.join(ROOT, "data/competition/stock_roster.json"),
+                  encoding="utf-8") as fh:
+            roster = json.load(fh)
+        with open(os.path.join(ROOT, "data/volatile_stocks.json"), encoding="utf-8") as fh:
+            pool = {r["symbol"] for r in json.load(fh)["records"]}
+        c24 = [p for p in roster["participants"] if p["model"] == "C24"]
+        self.assertEqual(sorted(p["username"] for p in c24),
+                         ["LazarusLoretta", "RuinRiserRoxy"])
+        c25 = [p for p in roster["participants"] if p["model"] == "C25"]
+        self.assertEqual(sorted(p["username"] for p in c25),
+                         ["PhoenixPhoebe", "SecondWindSybil"])
+        for p in c24 + c25:
+            self.assertEqual(p["division"], "daily")
+            self.assertEqual(set(p["pool"]), pool)
+        self.assertEqual(roster["_meta"]["participant_count"],
+                         len(roster["participants"]))
+
+    def test_h45_is_registered_and_gated_like_its_siblings(self):
+        import json
+        sys.path.insert(0, os.path.join(ROOT, "scripts"))
+        from assign_full_pool_verdicts import FULL_POOL_HYPOTHESES
+        self.assertIn("H45", FULL_POOL_HYPOTHESES)
+        self.assertIn("H46", FULL_POOL_HYPOTHESES)
+        with open(os.path.join(ROOT, "research/hypotheses/hypotheses.json"),
+                  encoding="utf-8") as fh:
+            reg = json.load(fh)
+        ids = [h["id"] for h in reg["hypotheses"]]
+        self.assertIn("H45", ids)
+        self.assertIn("H46", ids)
+        self.assertEqual(reg["_meta"]["hypothesis_count"], len(ids))
+
     def test_gated_models_are_not_rostered_and_c19a_registered(self):
         import json
         from intel.stock_strategies import GATED_STOCK_MODEL_IDS
