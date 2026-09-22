@@ -2,7 +2,7 @@
  "_meta": {
   "kind": "forward_test_pnl_ledger",
   "engine": "forward-ledger-1",
-  "generated_utc": "2026-09-22T08:13:12+00:00",
+  "generated_utc": "2026-09-22T18:37:48+00:00",
   "description": "Forward-test paper PnL ledger: every stock-roster username replayed on the latest window of each division (the same latest_window that produced latest_edition in data/stock_competition_results.json) with the same engine, rule profile and cost scenario as the committed season run. Every closed tranche is the engine's own fill log (date, fill price, size, side, net P/L) with a running cumulative realized P/L in exit order. Nothing is synthesized.",
   "window_definition": "latest_window per division in data/stock_competition_results.json (editions are chronological; models are frozen before any window runs, so this window is forward with respect to every parameter choice)",
   "rule_profile": "stocks_official_leap",
