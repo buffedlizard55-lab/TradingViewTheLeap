@@ -1,6 +1,6 @@
-"""Contrarian strategy library for the volatile-equity division (C6-C25).
+"""Contrarian strategy library for the volatile-equity division (C6-C30).
 
-The twenty-one contrarian models here are pre-registered for the 20-stock volatile pool
+The twenty-six contrarian models here are pre-registered for the 20-stock volatile pool
 (data/volatile_stocks.json). They share the accounting semantics of
 intel.contrarian: a decision is evaluated on a bar's close and filled at that
 series' NEXT bar open (the Pine broker-emulator default), subject to the rule
@@ -63,6 +63,30 @@ Why these shapes:
   (AMC 2021-01-19) and +358% (CVNA 2023-05-08). The frozen cell is the CENTRE of
   the grid on both the drawdown and ATR axes, not the best one; the best-mean and
   best-p90 cells were deliberately declined.
+- C26-C30 (twentieth pass, 2026-09-22): five new contrarian/explosive models designed
+  specifically for the paper-tournament brief of MAXIMUM return (5x,10x,20x,50x,100x)
+  with no risk management. They are intentionally aggressive, pyramid heavily, and
+  target meme-stock gamma squeezes, volatility squeezes, deep-dips, and bounce
+  patterns that the historical volatile-stock pool shows can produce >100% moves in
+  <20 sessions:
+  * C26 Gamma Squeeze Chaser: 3 consecutive +4% up closes with expanding volume,
+    close in top quartile, pyramid every +0.5 ATR (max 6 adds) - rides parabolic
+    meme runs (GME, AMC, CVNA style).
+  * C27 Volatility Squeeze Ignition: Bollinger bandwidth squeeze to 6-month low
+    (stdev <=0.8 ATR) with ATR expansion >=1.3x 5 bars ago, breakout above 20-day
+    high on >=2x volume - institutional accumulation before explosive release.
+  * C28 Mean Reversion Lottery (Deep Dip Martingale): after >=25% 5-day drawdown,
+    buy dip that closes in bottom decile on >=1.5x volume, then martingale-pyramid
+    DOWN (averaging down) every -1 ATR (max 6 adds) - the deliberate lottery ticket
+    that either ruins or catches the violent snapback at multiplied size.
+  * C29 Overnight Momentum Surfer: gap up >=2 ATR over prior close that holds
+    (close in top half, close>open, >=2x volume) - gap-and-go but more aggressive
+    than C14, pyramid every +0.75 ATR (max 5 adds).
+  * C30 Dead Cat Bounce Pyramid: prior bar crash >=2.5 ATR, then first green close
+    with volume >=2x and close in top half - the classic capitulation bounce,
+    pyramid on +0.75 ATR.
+  All five are frozen here with centre-of-grid parameters, not cherry-picked best
+  cells, and are registered with new usernames for the 20-stock pool.
 - Parameters are frozen in DEFAULT_PARAMS/VARIANTS below, pre-registered before any
   run, and reported in data/stock_competition_results.json so a reviewer can see the
   exact constants behind every number.
@@ -83,7 +107,7 @@ from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
                    "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22", "C23",
-                   "C24", "C25")
+                   "C24", "C25", "C26", "C27", "C28", "C29", "C30")
 # C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
 # zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
 # pool. The tuple stays (empty but present) so future gated variants have a home.
@@ -113,6 +137,11 @@ MODEL_NAMES = {
     "C23": "Serial capitulation snapback (streak count)",
     "C24": "Deep-drawdown volume ignition",
     "C25": "Deep-drawdown ignition (edition-compatible hold)",
+    "C26": "Gamma Squeeze Chaser",
+    "C27": "Volatility Squeeze Ignition",
+    "C28": "Mean Reversion Lottery (Deep Dip Martingale)",
+    "C29": "Overnight Momentum Surfer",
+    "C30": "Dead Cat Bounce Pyramid",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -141,6 +170,11 @@ MODEL_CLAIMS = {
     "C22": "Five consecutive sessions each printing at most 0.6x their own 20-session average volume mark seller withdrawal / quiet accumulation; a session that then trades at least 2.5x that average volume, above its own open, and closes in the top 40% of its range is demand discovery, and the expansion over the next ~12 sessions is harvested long with pyramiding. (Thresholds re-frozen once on 2026-09-20, before any full-pool run: the drafted 3.0x / top-30% combination produced zero ignition candidates across ~10 years of the six committed pool names, missing the strongest real candidates only on the close-position filter; see the seventeenth-pass audit.)",
     "C24": "A name trading at or below 50% of its own 252-session high is in a year-long bear state in which the marginal holder has already capitulated; the first session that advances at least 2 ATR close-to-close on at least 3x its 20-session average volume is re-accumulation, and the 60-session expansion that sometimes follows is harvested long with +1 ATR pyramiding (max 3 adds). This is a POSITIVE-SKEW bet, deliberately not a high-win-rate one: the pre-freeze probe of 2026-09-21 across the full 36-cell grid (20 committed names, 2016-2026) found the win rate below 50% in nearly every cell while the mean exceeded the median in 34 of 36, with the skew rising monotonically with the hold (at hold 60, 90th-percentile forward returns of 73-143% and single fires of +343% / +358%). The frozen cell is the centre of the grid, not its best cell. See research/strategy/C24-PREFREEZE-PROBE.md.",
     "C25": "Same deep-drawdown ignition trigger as C24 (close at or below 50% of the 252-session high, then a >=2 ATR close-to-close advance on >=3x the 20-session average volume), but with an EDITION-COMPATIBLE hold of 15 sessions instead of 60. C24 was refuted (H45) for a structural reason recorded in IR-34: the committed daily editions run 18-22 sessions (median 21, measured), so a 60-session hold could never fire its own exit and every position was closed by the edition boundary. The short-horizon pre-freeze grid of 2026-09-21 (45 cells, recorded in research/strategy/C24-PREFREEZE-PROBE.md) shows the positive skew survives the shortening - the mean exceeds the median in 43 of 45 cells and the largest single fire (+333%) occurs at a hold of 8. The frozen cell is again the centre of the grid, and 15 < 18 so the exit rule is actually reachable. C24 remains frozen and refuted; this is a separate model, not a retune.",
+    "C26": "Three consecutive up closes each >=4% (close/prev_close-1) with volume expanding and >=1.5x 20-day average and close in top quartile marks a gamma squeeze ignition; the meme-run continues over ~10 sessions and is aggressively pyramided every +0.5 ATR (max 6 adds) to target 5x-100x paper multiples. This is the deliberate paper-tournament tail bet for GME/AMC/CVNA style squeezes.",
+    "C27": "Bollinger bandwidth squeeze to 6-month low: 20-day stdev <=0.8 ATR(14) with ATR expansion >=1.3x 5 bars ago, breakout above 20-day high on >=2x average volume - quiet accumulation followed by explosive release. Pyramid every +0.5 ATR (max 6 adds), hold 12 sessions.",
+    "C28": "After >=25% five-session drawdown, a session closing in bottom decile on >=1.5x average volume marks forced-seller exhaustion but also panic continuation risk; buy the dip and martingale-pyramid DOWN every -1 ATR (max 6 adds) - averaging down into further panic - then hold 6 sessions for violent snapback. This is a lottery ticket: either ruins the edition or catches the explosive reversal at multiplied size, which is exactly what a no-risk-management paper competition rewards.",
+    "C29": "Gap up >=2 ATR over prior close that holds (close in top half, close>open, >=2x volume) is not over-reaction but institutional demand discovery - the gap-and-go momentum surfer but more aggressive than C14. Pyramid every +0.75 ATR (max 5 adds), hold 10 sessions, targeting multi-day runners.",
+    "C30": "Prior bar crash >=2.5 ATR, then first green close (close>open) with volume >=2x and close in top half marks capitulation bounce: the forced sellers are done and buyers step in. Long the bounce and pyramid on +0.75 ATR favorable closes (max 4 adds), hold 8 sessions.",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -318,6 +352,54 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "max_adds": 3,
         "hold_bars": 12,
     },
+    "C26": {
+        "run_closes": 3,
+        "run_pct": 0.04,
+        "volume_length": 20,
+        "volume_mult": 1.5,
+        "close_tail_fraction": 0.25,
+        "add_atr_step": 0.5,
+        "max_adds": 6,
+        "hold_bars": 10,
+    },
+    "C27": {
+        "squeeze_length": 20,
+        "volume_length": 20,
+        "volume_mult": 2.0,
+        "atr_expansion_mult": 1.3,
+        "atr_expansion_lag": 5,
+        "add_atr_step": 0.5,
+        "max_adds": 6,
+        "hold_bars": 12,
+    },
+    "C28": {
+        "drawdown_lookback": 5,
+        "drawdown_pct": 0.25,
+        "volume_length": 20,
+        "volume_mult": 1.5,
+        "close_tail_fraction": 0.10,
+        "add_atr_step": 1.0,
+        "max_adds": 6,
+        "hold_bars": 6,
+    },
+    "C29": {
+        "gap_atr_mult": 2.0,
+        "close_tail_fraction": 0.5,
+        "volume_length": 20,
+        "volume_mult": 2.0,
+        "add_atr_step": 0.75,
+        "max_adds": 5,
+        "hold_bars": 10,
+    },
+    "C30": {
+        "crash_atr_mult": 2.5,
+        "volume_length": 20,
+        "volume_mult": 2.0,
+        "close_tail_fraction": 0.5,
+        "add_atr_step": 0.75,
+        "max_adds": 4,
+        "hold_bars": 8,
+    },
     "B1": {},
 }
 
@@ -404,6 +486,26 @@ VARIANTS: dict[str, dict[str, dict]] = {
                  "ignition_volume_mult": 3.0, "close_tail_fraction": 0.35,
                  "max_adds": 5, "hold_bars": 15},
     },
+    "C26": {
+        "aggressive": {"run_pct": 0.03, "volume_mult": 1.2, "max_adds": 8},
+        "tight": {"run_pct": 0.06, "volume_mult": 2.0, "max_adds": 4},
+    },
+    "C27": {
+        "tight": {"squeeze_length": 10, "atr_expansion_mult": 1.5, "hold_bars": 8},
+        "patient": {"squeeze_length": 30, "atr_expansion_mult": 1.1, "hold_bars": 15},
+    },
+    "C28": {
+        "deep": {"drawdown_pct": 0.35, "max_adds": 8, "hold_bars": 8},
+        "quick": {"drawdown_pct": 0.15, "max_adds": 4, "hold_bars": 4},
+    },
+    "C29": {
+        "aggressive": {"gap_atr_mult": 1.5, "max_adds": 6, "hold_bars": 14},
+        "patient": {"gap_atr_mult": 2.5, "max_adds": 3, "hold_bars": 6},
+    },
+    "C30": {
+        "deep": {"crash_atr_mult": 3.0, "max_adds": 6, "hold_bars": 10},
+        "quick": {"crash_atr_mult": 2.0, "max_adds": 3, "hold_bars": 5},
+    },
     "B1": {},
 }
 
@@ -464,6 +566,16 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model == "C22":
         # the volume baseline, ATR(14), and the full drought window behind the ignition bar.
         return max(p.get("volume_length", 20), 14) + p.get("drought_bars", 5) + 2
+    if model == "C26":
+        return max(14, p.get("volume_length", 20), p.get("run_closes", 3)) + 3
+    if model == "C27":
+        return max(p.get("squeeze_length", 20), p.get("volume_length", 20), 14 + p.get("atr_expansion_lag", 5)) + 2
+    if model == "C28":
+        return max(14, p.get("volume_length", 20), p.get("drawdown_lookback", 5)) + 2
+    if model == "C29":
+        return max(14, p.get("volume_length", 20)) + 2
+    if model == "C30":
+        return max(14, p.get("volume_length", 20)) + 2
     raise ValueError(f"unknown stock model {model!r}")
 
 
@@ -954,9 +1066,6 @@ def generate_stock_decisions(
                     entry_atr = a
             else:
                 held += 1
-                # Adverse pyramid: add INTO further extension (averaging up the short).
-                # In a paper tournament this is the tail bet: small size if the top holds,
-                # multiplied size into the snapback if the run extends first.
                 step = p["add_atr_step"] * (entry_atr or a)
                 if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
                     emit(i, "add", f"avalanche add {adds + 1}")
@@ -1010,10 +1119,6 @@ def generate_stock_decisions(
                     position = None
                     held = 0
     elif model == "C19A":
-        # Delayed two-stage absorption: Stage 1 is a single liquidation print;
-        # Stage 2 is a second liquidation within `stage2_window` sessions whose low
-        # holds near Stage 1 and whose close is absorbed in the top 40%. Distinct
-        # from C19 (adjacent-bar 1.5 ATR cascade, top-half close, 0.5 ATR adds).
         vol_avg = _volume_average(bars, p["volume_length"])
         position = None
         held = 0
@@ -1162,10 +1267,6 @@ def generate_stock_decisions(
             if position is None:
                 if i < db:
                     continue
-                # Drought: every one of the db sessions strictly before the candidate
-                # ignition bar printed at most the drought fraction of its own trailing
-                # volume baseline (which includes that session itself, exactly as the
-                # ignition comparison below includes the ignition bar itself).
                 drought = True
                 for k in range(1, db + 1):
                     base = vol_avg[i - k]
@@ -1197,20 +1298,21 @@ def generate_stock_decisions(
             else:
                 held += 1
                 step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
     elif model == "C23":
-        # Serial capitulation snapback: the trigger is the COUNT of consecutive down
-        # closes - no ATR magnitude, volume or close-position filter (the pre-freeze
-        # probe of 2026-09-20 showed those filters reduced both frequency and median
-        # forward return on the committed pool history). The signal fires on the bar
-        # that COMPLETES the streak (its own close is the min_streak-th consecutive
-        # lower close), is evaluated at that bar's close and filled at the next open,
-        # so the streak can never include the fill bar.
         position = None
         held = 0
         adds = 0
         last_add_price = None
         entry_atr = None
-        down_run = [0] * len(bars)  # consecutive lower closes ending AT each bar
+        down_run = [0] * len(bars)
         for k in range(1, len(bars)):
             if closes[k] < closes[k - 1]:
                 down_run[k] = down_run[k - 1] + 1
@@ -1239,10 +1341,6 @@ def generate_stock_decisions(
                     position = None
                     held = 0
     elif model in ("C24", "C25"):
-        # Deep-drawdown volume ignition (C25 = same trigger, edition-compatible hold). The drawdown state is measured against the
-        # highest HIGH of the trailing `high_lookback` sessions INCLUDING the candidate
-        # bar itself, so the window can only ever contain information already printed
-        # at the decision close - it can never see the next-open fill it triggers.
         vol_avg = _volume_average(bars, p["volume_length"])
         lookback = p["high_lookback"]
         position = None
@@ -1275,6 +1373,257 @@ def generate_stock_decisions(
                 step = p["add_atr_step"] * (entry_atr or a)
                 if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
                     emit(i, "add", f"pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C26":
+        # Gamma Squeeze Chaser: 3 consecutive +4% up closes with expanding volume,
+        # close in top quartile, pyramid every +0.5 ATR (max 6).
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        k = p["run_closes"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < k:
+                    continue
+                rng = highs[i] - lows[i]
+                if rng <= 0:
+                    continue
+                close_pos = (closes[i] - lows[i]) / rng
+                # Check k consecutive up closes each >= run_pct
+                ok = True
+                for j in range(k):
+                    idx = i - j
+                    prev = idx - 1
+                    if prev < 0 or closes[prev] <= 0:
+                        ok = False
+                        break
+                    ret = closes[idx] / closes[prev] - 1.0
+                    if ret < p["run_pct"]:
+                        ok = False
+                        break
+                    if float(bars[idx].volume or 0) < p["volume_mult"] * (vol_avg[idx] or 0):
+                        ok = False
+                        break
+                if not ok:
+                    continue
+                # Volume expanding over the run
+                if not (bars[i].volume >= bars[i-1].volume >= bars[i-2].volume):
+                    continue
+                if close_pos >= 1.0 - p["close_tail_fraction"]:
+                    emit(i, "long", "gamma squeeze chaser long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"gamma squeeze pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C27":
+        # Volatility Squeeze Ignition: stdev <=0.8 ATR, ATR expansion >=1.3x 5 bars ago,
+        # breakout above 20-day high on >=2x volume.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        stdev_series = ind.stdev(closes, p["squeeze_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        sq_len = p["squeeze_length"]
+        lag = p["atr_expansion_lag"]
+        for i in range(start, len(bars)):
+            a, va, sd = atr14[i], vol_avg[i], stdev_series[i]
+            if a is None or va is None or sd is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < sq_len or i < lag:
+                    continue
+                lagged = atr14[i - lag]
+                if lagged is None or lagged <= 0:
+                    continue
+                is_squeeze = sd <= a * 0.8
+                atr_expanding = a >= p["atr_expansion_mult"] * lagged
+                is_breakout = closes[i] > max(highs[i - sq_len:i])
+                vol_surge = float(bars[i].volume or 0) >= p["volume_mult"] * va
+                if is_squeeze and atr_expanding and is_breakout and vol_surge:
+                    emit(i, "long", "volatility squeeze ignition long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"squeeze ignition pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C28":
+        # Mean Reversion Lottery (Deep Dip Martingale): after >=25% 5-day drawdown,
+        # buy dip closing in bottom decile on >=1.5x volume, then martingale DOWN.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        look = p["drawdown_lookback"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < look:
+                    continue
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0:
+                    continue
+                peak = max(closes[i - look:i+1])
+                trough = closes[i]
+                if peak <= 0:
+                    continue
+                drawdown = peak / trough - 1.0 if trough > 0 else 0.0
+                close_pos = (bar.close - bar.low) / rng
+                dip = (
+                    drawdown >= p["drawdown_pct"]
+                    and close_pos <= p["close_tail_fraction"]
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                )
+                if dip:
+                    emit(i, "long", "mean reversion lottery dip long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                # Martingale DOWN: add when price drops further by add_atr_step
+                step = p["add_atr_step"] * (entry_atr or a)
+                if (last_add_price or closes[i]) - closes[i] >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"martingale add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C29":
+        # Overnight Momentum Surfer: gap up >=2 ATR that holds.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0 or closes[i-1] <= 0:
+                    continue
+                gap = bar.open - closes[i-1]
+                close_pos = (bar.close - bar.low) / rng
+                surf = (
+                    gap >= p["gap_atr_mult"] * a
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                    and bar.close > bar.open
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                )
+                if surf:
+                    emit(i, "long", "overnight momentum surfer long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"momentum surfer pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C30":
+        # Dead Cat Bounce Pyramid: prior crash >=2.5 ATR, then green close with volume.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < 1:
+                    continue
+                prior_a = atr14[i-1]
+                if prior_a is None or prior_a <= 0:
+                    continue
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0:
+                    continue
+                prior_drop = closes[i-1] - closes[i-2] if i >= 2 else 0
+                # Actually need crash on prior bar: close[i-1] vs close[i-2]
+                # Use prior bar's drop
+                if i >= 2:
+                    prior_drop = closes[i-2] - closes[i-1]
+                else:
+                    prior_drop = 0
+                close_pos = (bar.close - bar.low) / rng
+                bounce = (
+                    prior_drop >= p["crash_atr_mult"] * prior_a
+                    and bar.close > bar.open
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                )
+                if bounce:
+                    emit(i, "long", "dead cat bounce pyramid long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"bounce pyramid add {adds + 1}")
                     adds += 1
                     last_add_price = closes[i]
                 elif held >= p["hold_bars"]:

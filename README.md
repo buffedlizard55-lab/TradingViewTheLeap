@@ -1,21 +1,18 @@
-> **2026-09-21 audit (nineteenth pass):** The volatile-stock matrix is **60/60 stock series**
+> **2026-09-22 audit (twentieth pass):** The volatile-stock matrix is **60/60 stock series**
 > (20 symbols x 15m/1h/1d, byte-level SHA-256 provenance in `data/intraday_index.json`) and the
-> competition was re-run on it. Full-pool verdicts are assigned mechanically for **H34-H39, H41-H43,
-> H45 and H46**: H36 supported; H34/H37 partially supported; H35/H38/H43/H45/H46 refuted;
-> H39 (C19), H41 (C22) and H42 (C19-A) inconclusive zero-fire. Two structurally new models were
-> designed, probed on the committed bars, frozen and tested this pass, and **both were refuted** and
-> are reported as such: **C24** (deep-drawdown volume ignition - the only model conditioning on a
-> 252-session bear state) and **C25** (the same trigger with an edition-compatible 15-session hold,
-> built in response to the measured finding that editions run 18-22 sessions so C24's 60-bar exit
-> could never fire). Full pre-freeze grids for both are recorded *before* the freeze in
-> `research/strategy/C24-PREFREEZE-PROBE.md`; neither model was retuned after seeing its result.
-> CME product hours are committed for **all 20 pooled futures** with a 196-date roll schedule
-> (IR-33, which still described this as 3/20, was corrected this pass). Captures remain
-> **Yahoo vendor-tier, not exchange-verified**: the Alpaca IEX route (`make official-bars`) is still
-> blocked on credentials (IR-32 - this environment has no network egress and no repository secrets),
-> and no authenticated TradingView Strategy Report export exists. Do not treat historical candidates
-> as current orders. Verification at this commit: **416 checks passed, 0 failed, 1 audited warning**;
-> **172 unit tests green**. See [the three-pass review](research/implementation_review.md).
+> competition was re-run on it. Roster now **62 participants (58 daily, 4 hourly)** with 10 new usernames
+> for **C26-C30**: GammaGina/SqueezeChaserSam (C26 Gamma Squeeze Chaser), VolatilityVulcan/SqueezeSniper (C27 Volatility Squeeze Ignition),
+> LotteryLarry/MartingaleMolly (C28 Mean Reversion Lottery / Martingale), GapAndGoGary/MomentumMona (C29 Overnight Momentum Surfer),
+> BounceBobby/DeadCatDave (C30 Dead Cat Bounce). Full-pool verdicts mechanically assigned for **H34-H51 (16 hypotheses)**:
+> H36 supported; H34/H37 partially supported; H35/H38/H43/H45/H46/H48-H51 refuted; H39/H41/H42 inconclusive; **H47 supported** (C26 beats B1 control in both in-sample and forward),
+> H48-H51 refuted. Daily champion **BreakoutBea C16 $26,149.57 (best 1.279x)**, rank2 **MomentumMona C29 $24,916.89 (1.218x best)**,
+> rank4 **SqueezeChaserSam C26 $12,015.78**. Official stocks-edition bound max **4.738222x** observed across 81 editions, 0 editions >=5x,
+> counterfactual 20:1 also 0 >=5x across 744 participant-editions — leverage not binding, 50-unit cap + short edition length is.
+> New research doc **[EXPLOSIVE-PLAYBOOK-2026-09-22.md](research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-22.md)** documents explosive-return design,
+> why 5x-100x unattainable under official stocks rules, and explicit upcoming trades (6 mechanical orders at next bar open).
+> Captures remain **Yahoo vendor-tier, not exchange-verified**: Alpaca IEX route blocked (IR-32, no egress/no secrets),
+> no authenticated TradingView export. Verification: **416 checks passed, 0 failed, 1 audited warning**; **172 unit tests green**.
+> See [the three-pass review](research/implementation_review.md) and [explosive playbook](research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-22.md).
 
 # TradingView The Leap — evidence-first research lab
 
