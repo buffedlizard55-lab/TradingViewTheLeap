@@ -107,7 +107,7 @@ from .data import Bar
 
 STOCK_MODEL_IDS = ("C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13",
                    "C14", "C15", "C16", "C17", "C18", "C19", "C19A", "C20", "C21", "C22", "C23",
-                   "C24", "C25", "C26", "C27", "C28", "C29", "C30")
+                   "C24", "C25", "C26", "C27", "C28", "C29", "C30", "C31", "C32", "C33", "C34")
 # C19A's gate fired on 2026-09-20: the 60/60 matrix (20/20 daily) confirmed frozen C19
 # zero-fire (H39 inconclusive), so C19A was registered as H42 on the full 20-stock daily
 # pool. The tuple stays (empty but present) so future gated variants have a home.
@@ -142,6 +142,10 @@ MODEL_NAMES = {
     "C28": "Mean Reversion Lottery (Deep Dip Martingale)",
     "C29": "Overnight Momentum Surfer",
     "C30": "Dead Cat Bounce Pyramid",
+    "C31": "Failed-breakout upthrust short",
+    "C32": "Hammer-rejection sniper",
+    "C33": "Thin melt-up fade short",
+    "C34": "Gap-exhaustion engulfing fade",
     "B1": "Volatility leader, always long (control)",
 }
 
@@ -175,6 +179,10 @@ MODEL_CLAIMS = {
     "C28": "After >=25% five-session drawdown, a session closing in bottom decile on >=1.5x average volume marks forced-seller exhaustion but also panic continuation risk; buy the dip and martingale-pyramid DOWN every -1 ATR (max 6 adds) - averaging down into further panic - then hold 6 sessions for violent snapback. This is a lottery ticket: either ruins the edition or catches the explosive reversal at multiplied size, which is exactly what a no-risk-management paper competition rewards.",
     "C29": "Gap up >=2 ATR over prior close that holds (close in top half, close>open, >=2x volume) is not over-reaction but institutional demand discovery - the gap-and-go momentum surfer but more aggressive than C14. Pyramid every +0.75 ATR (max 5 adds), hold 10 sessions, targeting multi-day runners.",
     "C30": "Prior bar crash >=2.5 ATR, then first green close (close>open) with volume >=2x and close in top half marks capitulation bounce: the forced sellers are done and buyers step in. Long the bounce and pyramid on +0.75 ATR favorable closes (max 4 adds), hold 8 sessions.",
+    "C31": "A bar whose high pierces the 20-session high but whose close falls back at least 0.25 ATR under that level, in the bottom half of its own range, on >=1.5x average volume is a Wyckoff upthrust (bull trap) rather than a breakout: late buyers are trapped above the prior range and their liquidation drives the snapback. Short the failure close and pyramid every 1 ATR of favourable drift (max 3 adds), hold 8 sessions. This is the structural mirror of the frozen C20 failed-breakdown spring - the upside twin at the highs, not a parameter retune of it.",
+    "C32": "A >=1.5 ATR down close (the flush) followed immediately by a hammer bar - lower wick at least 2x the bar body and a close in the upper half of its range - is a rejection print: the flush low was probed and rejected inside one session regardless of volume. The bar-shape microstructure is the entire trigger (no volume filter, structurally distinct from the volume-conditioned snapbacks C15/C30). Long the hammer close, pyramid every 1 ATR of favourable drift (max 2 adds), hold 6 sessions.",
+    "C33": "Three consecutive up closes each >=3% where EVERY session printed at most 0.8x its own 20-session average volume, with the final close in the top quartile of its range, is a thin melt-up: a low-participation advance that rises on shrinking liquidity and is vulnerable to any real supply. The contrarian claim is that thin air is not demand discovery - short the third thin green close and pyramid every 1 ATR of favourable drift (max 2 adds), hold 10 sessions. Structurally distinct from C6 (which requires >=2x climax volume on the advance) - C33 fires exactly when volume is ABSENT.",
+    "C34": "A gap up of >=1.5 ATR over the prior close that then closes below that prior close - the entire gap is faded and engulfed inside one session on >=1.2x average volume - is an exhaustion gap, not continuation: everyone who wanted to buy already bought at the open. Short the engulfing close and pyramid every 1 ATR of favourable drift (max 3 adds), hold 8 sessions. This is the failure twin of the frozen C14/C29 gap-hold longs - the same gap family, opposite outcome class.",
     "B1": "Control: hold the pool's highest trailing-volatility name at maximum size for the whole edition. If no contrarian model beats this on the same data, the contrarian roster has no edge to report.",
 }
 
@@ -400,6 +408,43 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "max_adds": 4,
         "hold_bars": 8,
     },
+    "C31": {
+        "lookback": 20,
+        "volume_length": 20,
+        "volume_mult": 1.5,
+        "close_tail_fraction": 0.5,
+        "reclaim_buffer_atr": 0.25,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 8,
+    },
+    "C32": {
+        "flush_atr_mult": 1.5,
+        "wick_body_mult": 2.0,
+        "close_tail_fraction": 0.5,
+        "volume_length": 20,
+        "add_atr_step": 1.0,
+        "max_adds": 2,
+        "hold_bars": 6,
+    },
+    "C33": {
+        "run_closes": 3,
+        "run_pct": 0.03,
+        "volume_length": 20,
+        "volume_fraction": 0.8,
+        "close_tail_fraction": 0.25,
+        "add_atr_step": 1.0,
+        "max_adds": 2,
+        "hold_bars": 10,
+    },
+    "C34": {
+        "gap_atr_mult": 1.5,
+        "volume_length": 20,
+        "volume_mult": 1.2,
+        "add_atr_step": 1.0,
+        "max_adds": 3,
+        "hold_bars": 8,
+    },
     "B1": {},
 }
 
@@ -506,6 +551,22 @@ VARIANTS: dict[str, dict[str, dict]] = {
         "deep": {"crash_atr_mult": 3.0, "max_adds": 6, "hold_bars": 10},
         "quick": {"crash_atr_mult": 2.0, "max_adds": 3, "hold_bars": 5},
     },
+    "C31": {
+        "aggressive": {"lookback": 10, "reclaim_buffer_atr": 0.10, "max_adds": 5, "hold_bars": 10},
+        "patient": {"lookback": 30, "volume_mult": 2.5, "hold_bars": 6},
+    },
+    "C32": {
+        "quick": {"flush_atr_mult": 1.0, "hold_bars": 3},
+        "deep": {"flush_atr_mult": 2.5, "wick_body_mult": 3.0, "hold_bars": 8},
+    },
+    "C33": {
+        "aggressive": {"run_pct": 0.02, "volume_fraction": 1.0, "max_adds": 4},
+        "tight": {"run_pct": 0.05, "volume_fraction": 0.6, "hold_bars": 6},
+    },
+    "C34": {
+        "tight": {"gap_atr_mult": 1.0, "hold_bars": 5},
+        "wide": {"gap_atr_mult": 2.5, "volume_mult": 2.0, "hold_bars": 12},
+    },
     "B1": {},
 }
 
@@ -575,6 +636,18 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
     if model == "C29":
         return max(14, p.get("volume_length", 20)) + 2
     if model == "C30":
+        return max(14, p.get("volume_length", 20)) + 2
+    if model == "C31":
+        # the N-bar high window, the volume baseline and ATR(14) on the upthrust bar.
+        return max(p.get("lookback", 20), p.get("volume_length", 20), 14) + 2
+    if model == "C32":
+        # ATR(14) on the flush bar plus the flush bar and hammer bar themselves.
+        return max(14, p.get("volume_length", 20)) + 3
+    if model == "C33":
+        # ATR(14), the volume baseline and the full melt-up run behind the entry bar.
+        return max(14, p.get("volume_length", 20), p.get("run_closes", 3)) + 3
+    if model == "C34":
+        # ATR(14) plus one prior close for the gap reference.
         return max(14, p.get("volume_length", 20)) + 2
     raise ValueError(f"unknown stock model {model!r}")
 
@@ -1624,6 +1697,203 @@ def generate_stock_decisions(
                 step = p["add_atr_step"] * (entry_atr or a)
                 if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
                     emit(i, "add", f"bounce pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+
+    elif model == "C31":
+        # Failed-breakout upthrust short: a new N-bar high that fails back inside
+        # the prior range the same session (Wyckoff bull trap) is faded from the short
+        # side; favourable drift (price falling) earns pyramid adds.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        look = p["lookback"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < look:
+                    continue
+                prior_high = max(highs[i - look:i])
+                bar = bars[i]
+                rng = bar.high - bar.low
+                if rng <= 0:
+                    continue
+                close_pos = (bar.close - bar.low) / rng
+                upthrust = (
+                    bar.high > prior_high
+                    and bar.close < prior_high - p["reclaim_buffer_atr"] * a
+                    and close_pos <= p["close_tail_fraction"]
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                )
+                if upthrust:
+                    emit(i, "short", "failed-breakout upthrust short")
+                    position = "short"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if (last_add_price or closes[i]) - closes[i] >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"upthrust pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C32":
+        # Hammer-rejection sniper: a >=flush_atr_mult ATR down close followed by a
+        # hammer bar (lower wick >= wick_body_mult x body, wick present, close in the
+        # top half of the range). The bar-shape microstructure is the entire trigger -
+        # no volume filter, structurally distinct from the volume-conditioned C15/C30.
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        for i in range(start, len(bars)):
+            a = atr14[i]
+            if a is None or a <= 0:
+                continue
+            if position is None:
+                if i < 2:
+                    continue
+                prior_a = atr14[i - 1]
+                if prior_a is None or prior_a <= 0:
+                    continue
+                flush = closes[i - 2] - closes[i - 1]
+                bar = bars[i]
+                rng = bar.high - bar.low
+                body = abs(bar.close - bar.open)
+                lower_wick = min(bar.open, bar.close) - bar.low
+                close_pos = (bar.close - bar.low) / rng if rng > 0 else 0.0
+                hammer = (
+                    flush >= p["flush_atr_mult"] * prior_a
+                    and lower_wick > 0
+                    and lower_wick >= p["wick_body_mult"] * max(body, 1e-9)
+                    and close_pos >= 1.0 - p["close_tail_fraction"]
+                )
+                if hammer:
+                    emit(i, "long", "hammer-rejection sniper long")
+                    position = "long"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if closes[i] - (last_add_price or closes[i]) >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"hammer sniper pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C33":
+        # Thin melt-up fade short: k consecutive up closes each >= run_pct where EVERY
+        # session in the run printed <= volume_fraction x its own volume average (the
+        # advance is thin), and the final close sits in the top quartile of its range.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        k = p["run_closes"]
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                if i < k:
+                    continue
+                ok = True
+                for j in range(k):
+                    idx = i - j
+                    prev = idx - 1
+                    if prev < 0 or closes[prev] <= 0:
+                        ok = False
+                        break
+                    ret = closes[idx] / closes[prev] - 1.0
+                    if ret < p["run_pct"]:
+                        ok = False
+                        break
+                    v = float(bars[idx].volume or 0)
+                    va_j = vol_avg[idx]
+                    if va_j is None or v > p["volume_fraction"] * va_j:
+                        ok = False
+                        break
+                if not ok:
+                    continue
+                rng = highs[i] - lows[i]
+                if rng <= 0:
+                    continue
+                close_pos = (closes[i] - lows[i]) / rng
+                if close_pos >= 1.0 - p["close_tail_fraction"]:
+                    emit(i, "short", "thin melt-up fade short")
+                    position = "short"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if (last_add_price or closes[i]) - closes[i] >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"melt-up fade pyramid add {adds + 1}")
+                    adds += 1
+                    last_add_price = closes[i]
+                elif held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    position = None
+                    held = 0
+    elif model == "C34":
+        # Gap-exhaustion engulfing fade short: gap up >= gap_atr_mult ATR over the prior
+        # close that closes below that prior close (the gap is fully faded and engulfed)
+        # on >= volume_mult x average volume marks an exhaustion gap.
+        vol_avg = _volume_average(bars, p["volume_length"])
+        position = None
+        held = 0
+        adds = 0
+        last_add_price = None
+        entry_atr = None
+        for i in range(start, len(bars)):
+            a, va = atr14[i], vol_avg[i]
+            if i < 1 or a is None or va is None or a <= 0 or va <= 0:
+                continue
+            if position is None:
+                bar = bars[i]
+                gap = bar.open - closes[i - 1]
+                engulf = (
+                    gap >= p["gap_atr_mult"] * a
+                    and bar.close < closes[i - 1]
+                    and float(bar.volume or 0) >= p["volume_mult"] * va
+                )
+                if engulf:
+                    emit(i, "short", "gap-exhaustion engulfing fade short")
+                    position = "short"
+                    held = 0
+                    adds = 0
+                    last_add_price = closes[i]
+                    entry_atr = a
+            else:
+                held += 1
+                step = p["add_atr_step"] * (entry_atr or a)
+                if (last_add_price or closes[i]) - closes[i] >= step and adds < p["max_adds"]:
+                    emit(i, "add", f"gap-exhaustion pyramid add {adds + 1}")
                     adds += 1
                     last_add_price = closes[i]
                 elif held >= p["hold_bars"]:

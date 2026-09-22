@@ -229,7 +229,9 @@ def build_entries(rows: list[dict], series_map: dict, roster_by_user: dict,
             "username": username,
             "division": division,
             "model": model,
-            "model_name": names.get(model, model),
+            # S1-S3 baselines and B1's sibling names live with the futures model map, so
+            # fall back there instead of publishing "S2 · S2" on the page.
+            "model_name": names.get(model) or FUTURES_NAMES.get(model, model),
             "variant": variant,
             "params_label": model_params_label(model, variant),
             "rule_profile": profile_key,

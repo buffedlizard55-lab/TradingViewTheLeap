@@ -54,12 +54,14 @@ jobs:
           fi
           python3 scripts/run_intraday_study.py
           python3 scripts/run_stock_competition.py
+          python3 scripts/run_forward_test.py
           python3 scripts/build_exec_summary.py
           python3 scripts/tv_benchmark.py
           if ! git diff --quiet -- data/intraday_study.json data/stock_competition_results.json \
-               data/exec_summary.json data/tv_benchmark.json; then
-            echo "::error::an intraday-derived artifact is stale with respect to data/intraday/. Re-run scripts/run_intraday_study.py, scripts/run_stock_competition.py, scripts/build_exec_summary.py, scripts/tv_benchmark.py and commit the result."
-            git diff --stat -- data/intraday_study.json data/stock_competition_results.json data/exec_summary.json data/tv_benchmark.json
+               data/forward_test_ledger.json data/exec_summary.json data/tv_benchmark.json; then
+            echo "::error::an intraday-derived artifact is stale with respect to data/intraday/. Re-run scripts/run_intraday_study.py, scripts/run_stock_competition.py, scripts/run_forward_test.py, scripts/build_exec_summary.py, scripts/tv_benchmark.py and commit the result."
+            git diff --stat -- data/intraday_study.json data/stock_competition_results.json \
+              data/forward_test_ledger.json data/exec_summary.json data/tv_benchmark.json
             exit 1
           fi
           echo "intraday-derived artifacts are in sync with the captures."
@@ -130,6 +132,23 @@ jobs:
               want_srow = sum(len(d.get("leaderboard") or []) for d in stock_comp["divisions"].values())
               if n_srow != want_srow:
                   probs.append(f"stock-division rows {n_srow} != {want_srow} leaderboard rows")
+          fwd = opt("data/forward_test_ledger.json")
+          if fwd:
+              n_fl = len(re.findall(r'data-flrow="', html))
+              want_fl = sum(len(d.get("leaderboard") or [])
+                            for d in fwd["divisions"].values() if d.get("status") == "replayed")
+              if n_fl != want_fl:
+                  probs.append(f"forward-ledger rows {n_fl} != {want_fl} leaderboard rows")
+              for name, d in fwd["divisions"].items():
+                  for u in d.get("usernames") or []:
+                      if u["tranche_ledger"] and u["username"] not in html:
+                          probs.append(f"forward-ledger username {u['username']} missing from page")
+          clock = opt("data/live_contest_clock.json")
+          if clock:
+              if clock.get("registration_close_display", "") not in html:
+                  probs.append("live-contest registration deadline missing from page")
+              if clock["_meta"]["source_id"] not in html:
+                  probs.append("live-contest clock source id missing from page")
           tvb = opt("data/tv_benchmark.json")
           if tvb:
               if tvb["_meta"]["status"] not in html:

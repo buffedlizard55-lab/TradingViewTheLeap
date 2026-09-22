@@ -436,7 +436,7 @@
      "username": "EmaEddie",
      "division": "stocks_daily",
      "model": "S2",
-     "model_name": "S2",
+     "model_name": "EMA impulse (baseline)",
      "variant": null,
      "params_label": "default",
      "rule_profile": "stocks_official_leap",

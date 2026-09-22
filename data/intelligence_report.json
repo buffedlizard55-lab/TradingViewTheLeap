@@ -24,6 +24,7 @@
         "TV-CONTEST-AMP-SEP2026",
         "TV-CONTEST-AMP-SEP2026-R10",
         "TV-CONTEST-AMP-SEP2026-R11",
+        "TV-CONTEST-AMP-SEP2026-R12",
         "TV-CONTEST-AMP-SEP2026-R2",
         "TV-CONTEST-AMP-SEP2026-R3",
         "TV-CONTEST-AMP-SEP2026-R4",
@@ -57,6 +58,7 @@
         "TV-QUOTE-SOL1",
         "TV-QUOTE-XRP1",
         "TV-RESULTS-BENBERNANKE1",
+        "TV-RESULTS-MAG7-APR2026",
         "TV-RULES-AMP-SEP2026",
         "TV-RULES-AMP-SEP2026-R10",
         "TV-RULES-AMP-SEP2026-R3",
@@ -64,10 +66,12 @@
         "TV-RULES-AMP-SEP2026-R5",
         "TV-RULES-AMP-SEP2026-R6",
         "TV-RULES-AMP-SEP2026-R7",
+        "TV-RULES-MAG7-MAR2026",
         "TV-RULES-TS-JUL2026",
         "TV-THELEAP-LANDING",
         "TV-THELEAP-LANDING-R10",
         "TV-THELEAP-LANDING-R11",
+        "TV-THELEAP-LANDING-R12",
         "TV-THELEAP-LANDING-R3",
         "TV-THELEAP-LANDING-R4",
         "TV-THELEAP-LANDING-R5",
@@ -244,7 +248,7 @@
       ],
       "next_step": "Add an out-of-sample season on bars captured after this run; the current division is fitted to one finite vendor window.",
       "detail": {
-        "roster_usernames": 62,
+        "roster_usernames": 70,
         "artifact": "data/stock_competition_results.json",
         "primary_profile": true,
         "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
@@ -582,7 +586,7 @@
       "boundary": "Vendor intraday prints, not exchange data and not contest fills. The study measures price distances on these bars (did a session gap fill, what a delayed fill cost); it makes no claim that a participant could transact at these prices."
     },
     "stock_division": {
-      "roster_usernames": 62,
+      "roster_usernames": 70,
       "artifact": "data/stock_competition_results.json",
       "primary_profile": true,
       "boundary": "Repository-generated usernames and outcomes on vendor equity bars under the official stocks-edition constants (with a clearly-declared 20:1 counterfactual). Not TradingView participants, not observed contest results."
