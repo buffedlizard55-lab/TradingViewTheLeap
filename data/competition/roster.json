@@ -1,7 +1,7 @@
 {
  "_meta": {
   "kind": "shadow_competition_roster",
-  "description": "Roster of the repository's own shadow competition: every participant is a username bound to one frozen strategy model and instrument pool. Contrarian models C1-C5 are defined in intel/contrarian.py; baselines S1-S3 reuse intel/strategy.py. Parameters are frozen in code (DEFAULT_PARAMS / VARIANTS); this file only binds username -> model, variant, pool.",
+  "description": "Roster of the repository's own shadow competition: every participant is a username bound to one frozen strategy model and instrument pool. Contrarian models C1-C5 and F1-F2 are defined in intel/contrarian.py; baselines S1-S3 reuse intel/strategy.py. Parameters are frozen in code (DEFAULT_PARAMS / VARIANTS); this file only binds username -> model, variant, pool.",
   "created_utc": "2026-09-17",
   "engine": "intel-competition-1",
   "rules_source_ids": [
@@ -10,43 +10,253 @@
   "price_source_ids": [
    "YAHOO-FUTURES-CHART"
   ],
-  "participant_count": 15,
-  "contrarian_participants": 12,
+  "participant_count": 19,
+  "contrarian_participants": 16,
   "baseline_participants": 3,
   "deployment_fraction": 1.0,
   "deployment_note": "Every participant deploys 100% of available 20:1 buying power on each new entry or add tranche. This is deliberate: the brief is maximum simulated paper return, not risk management. Ruin (equity <= 0) is terminal because the official rules forbid account resets.",
   "not_a_forecast": true
  },
  "participants": [
-  {"username": "FadeThePanic", "kind": "contrarian", "model": "C1", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!", "NYMEX_MINI:QM1!"]},
-  {"username": "CapitulationKate", "kind": "contrarian", "model": "C1", "variant": "fast3",
-   "pool": ["COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!"]},
-  {"username": "EuphoriaEarl", "kind": "contrarian", "model": "C1", "variant": "deep",
-   "pool": ["CME:BTC1!", "CME:ETH1!", "CME_MINI:NQ1!"]},
-  {"username": "GapGhost", "kind": "contrarian", "model": "C2", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!"]},
-  {"username": "GapGoblin", "kind": "contrarian", "model": "C2", "variant": "tight",
-   "pool": ["COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!"]},
-  {"username": "BandFadeBella", "kind": "contrarian", "model": "C3", "variant": null,
-   "pool": ["COMEX:SI1!", "COMEX_MINI:SIL1!"]},
-  {"username": "ReversalRaja", "kind": "contrarian", "model": "C3", "variant": "wideband",
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!"]},
-  {"username": "ExhaustionEd", "kind": "contrarian", "model": "C4", "variant": null,
-   "pool": ["NYMEX:NG1!"]},
-  {"username": "ClimaxCarla", "kind": "contrarian", "model": "C4", "variant": "loose",
-   "pool": ["NYMEX:CL1!", "NYMEX:RB1!"]},
-  {"username": "PanicPyramider", "kind": "contrarian", "model": "C5", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!"]},
-  {"username": "SqueezeSpark", "kind": "contrarian", "model": "C5", "variant": "rapid",
-   "pool": ["COMEX:SI1!", "COMEX_MINI:SIL1!"]},
-  {"username": "ContrarianQueen", "kind": "contrarian", "model": "C5", "variant": "patient",
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!", "NYMEX_MINI:QM1!", "COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!", "CME_MINI:NQ1!", "CME:BTC1!", "CME:ETH1!"]},
-  {"username": "TrendTina", "kind": "baseline", "model": "S1", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!", "NYMEX_MINI:QM1!", "COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!", "CME_MINI:NQ1!", "CME:BTC1!", "CME:ETH1!"]},
-  {"username": "MomentumMoe", "kind": "baseline", "model": "S2", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!", "NYMEX_MINI:QM1!", "COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!", "CME_MINI:NQ1!", "CME:BTC1!", "CME:ETH1!"]},
-  {"username": "SqueezeSam", "kind": "baseline", "model": "S3", "variant": null,
-   "pool": ["NYMEX:NG1!", "NYMEX:CL1!", "NYMEX:RB1!", "NYMEX:HO1!", "NYMEX_MINI:QM1!", "COMEX:SI1!", "COMEX_MINI:SIL1!", "NYMEX:PL1!", "CME_MINI:NQ1!", "CME:BTC1!", "CME:ETH1!"]}
+  {
+   "username": "FadeThePanic",
+   "kind": "contrarian",
+   "model": "C1",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!"
+   ]
+  },
+  {
+   "username": "CapitulationKate",
+   "kind": "contrarian",
+   "model": "C1",
+   "variant": "fast3",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!"
+   ]
+  },
+  {
+   "username": "EuphoriaEarl",
+   "kind": "contrarian",
+   "model": "C1",
+   "variant": "deep",
+   "pool": [
+    "CME:BTC1!",
+    "CME:ETH1!",
+    "CME_MINI:NQ1!"
+   ]
+  },
+  {
+   "username": "GapGhost",
+   "kind": "contrarian",
+   "model": "C2",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!"
+   ]
+  },
+  {
+   "username": "GapGoblin",
+   "kind": "contrarian",
+   "model": "C2",
+   "variant": "tight",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!"
+   ]
+  },
+  {
+   "username": "BandFadeBella",
+   "kind": "contrarian",
+   "model": "C3",
+   "variant": null,
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!"
+   ]
+  },
+  {
+   "username": "ReversalRaja",
+   "kind": "contrarian",
+   "model": "C3",
+   "variant": "wideband",
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!"
+   ]
+  },
+  {
+   "username": "ExhaustionEd",
+   "kind": "contrarian",
+   "model": "C4",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!"
+   ]
+  },
+  {
+   "username": "ClimaxCarla",
+   "kind": "contrarian",
+   "model": "C4",
+   "variant": "loose",
+   "pool": [
+    "NYMEX:CL1!",
+    "NYMEX:RB1!"
+   ]
+  },
+  {
+   "username": "PanicPyramider",
+   "kind": "contrarian",
+   "model": "C5",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!"
+   ]
+  },
+  {
+   "username": "SqueezeSpark",
+   "kind": "contrarian",
+   "model": "C5",
+   "variant": "rapid",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!"
+   ]
+  },
+  {
+   "username": "ContrarianQueen",
+   "kind": "contrarian",
+   "model": "C5",
+   "variant": "patient",
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!",
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!",
+    "CME_MINI:NQ1!",
+    "CME:BTC1!",
+    "CME:ETH1!"
+   ]
+  },
+  {
+   "username": "TrendTina",
+   "kind": "baseline",
+   "model": "S1",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!",
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!",
+    "CME_MINI:NQ1!",
+    "CME:BTC1!",
+    "CME:ETH1!"
+   ]
+  },
+  {
+   "username": "MomentumMoe",
+   "kind": "baseline",
+   "model": "S2",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!",
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!",
+    "CME_MINI:NQ1!",
+    "CME:BTC1!",
+    "CME:ETH1!"
+   ]
+  },
+  {
+   "username": "SqueezeSam",
+   "kind": "baseline",
+   "model": "S3",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!",
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!",
+    "CME_MINI:NQ1!",
+    "CME:BTC1!",
+    "CME:ETH1!"
+   ]
+  },
+  {
+   "username": "StreakStan",
+   "kind": "contrarian",
+   "model": "F1",
+   "variant": null,
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!"
+   ]
+  },
+  {
+   "username": "CompressCleo",
+   "kind": "contrarian",
+   "model": "F1",
+   "variant": "slow5",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!"
+   ]
+  },
+  {
+   "username": "SpringSasha",
+   "kind": "contrarian",
+   "model": "F2",
+   "variant": null,
+   "pool": [
+    "CME:BTC1!",
+    "CME:ETH1!",
+    "CME_MINI:NQ1!"
+   ]
+  },
+  {
+   "username": "CreekCasey",
+   "kind": "contrarian",
+   "model": "F2",
+   "variant": "shallow",
+   "pool": [
+    "NYMEX:CL1!",
+    "NYMEX:HO1!",
+    "NYMEX:RB1!",
+    "COMEX:SI1!"
+   ]
+  }
  ]
 }

@@ -307,7 +307,7 @@ def main() -> int:
             "kind": MODEL_KIND[p.model],
             "claim": MODEL_CLAIMS[p.model],
             "params": "frozen in intel/contrarian.py (DEFAULT_PARAMS/VARIANTS)"
-            if p.model.startswith("C") else "frozen in intel/strategy.py (DEFAULT_PARAMS)",
+            if p.model.startswith(("C", "F")) else "frozen in intel/strategy.py (DEFAULT_PARAMS)",
         })
 
     doc = {

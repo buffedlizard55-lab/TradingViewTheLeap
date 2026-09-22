@@ -200,14 +200,14 @@
    "edition_label": "AMP Futures - September 2026",
    "asset_class_label": "futures",
    "winner": "HappyLittleTrades",
-   "participants": 99727,
-   "net_profit_pct_as_published": 994.3,
-   "return_multiple": 10.943,
-   "realized_profit_usd_as_published": 2485745.5,
+   "participants": 102886,
+   "net_profit_pct_as_published": 1193.11,
+   "return_multiple": 12.9311,
+   "realized_profit_usd_as_published": 2982777.45,
    "profitable_trades_pct_as_published": null,
    "results_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-   "source_id": "TV-CONTEST-AMP-SEP2026-R11",
-   "captured_at_utc": "2026-09-19T19:35:00Z"
+   "source_id": "TV-CONTEST-AMP-SEP2026-R13",
+   "captured_at_utc": "2026-09-22T23:00:00Z"
   }
  ],
  "threshold_analysis": {

@@ -367,9 +367,10 @@ def prepare_decisions(
 def model_params_label(model: str, variant: str | None) -> str:
     """Human label of the frozen parameter delta a variant applies.
 
-    Futures models (C1-C5, the baselines) resolve through intel.contrarian; the volatile-equity
-    models (C6-C21) resolve through intel.stock_strategies, which owns its own frozen parameter
-    table. The import is local so the two strategy modules stay independent of each other.
+    Futures models (C1-C5, F1-F2, the baselines) resolve through intel.contrarian; the
+    volatile-equity models (C6-C34) resolve through intel.stock_strategies, which owns its
+    own frozen parameter table. The import is local so the two strategy modules stay
+    independent of each other.
     """
     if not variant:
         return "default"

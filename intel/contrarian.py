@@ -1,8 +1,10 @@
 """Pre-registered contrarian strategy library for the shadow competition.
 
-Five unique contrarian decision models (C1-C5) plus re-use of the three trend
-baselines (S1-S3) from intel.strategy so a competition roster can compare
-contrarian and trend participants on identical data and rules.
+Seven unique contrarian decision models (C1-C5, F1-F2) plus re-use of the three
+trend baselines (S1-S3) from intel.strategy so a competition roster can compare
+contrarian and trend participants on identical data and rules. C1-C5 are the
+original futures families; F1-F2 (registered 2026-09-22 as hypotheses H56/H57)
+are two structurally new volume-free families added for the twenty-second pass.
 
 Design principles, frozen before any competition run:
 
@@ -11,6 +13,11 @@ Design principles, frozen before any competition run:
   the contrarian entry but then pyramids with full reinvestment, which the
   project's placement arithmetic (data/leaderboard_lab.json) shows is the only
   way a daily-bar process can even theoretically reach 5x-100x.
+- F1 fades a COMPRESSED same-direction streak (momentum death) — the structural
+  opposite of C1's ATR-expanding extension; F2 fades a failed break of a
+  20-bar swing (Wyckoff spring / upthrust) — volume-free, both directions.
+  Neither uses volume: the futures captures do not carry reliable volume, which
+  is why C1-C5 and F1-F2 are all volume-free by construction.
 - Daily-bar decisions only. Signals are evaluated on a bar's close and fill at
   the NEXT bar's open of the same series (Pine broker-emulator default), the
   same order semantics used by intel.backtest.
@@ -36,7 +43,7 @@ from .data import Bar
 from .strategy import generate_signals as trend_signals
 from .strategy import warmup_bars as trend_warmup
 
-CONTRARIAN_MODEL_IDS = ("C1", "C2", "C3", "C4", "C5")
+CONTRARIAN_MODEL_IDS = ("C1", "C2", "C3", "C4", "C5", "F1", "F2")
 BASELINE_MODEL_IDS = ("S1", "S2", "S3")
 ALL_MODEL_IDS = CONTRARIAN_MODEL_IDS + BASELINE_MODEL_IDS
 
@@ -46,6 +53,8 @@ MODEL_NAMES = {
     "C3": "Band-pierce reversion",
     "C4": "Exhaustion-bar reversal",
     "C5": "Capitulation pyramider",
+    "F1": "Compressed-streak fade",
+    "F2": "Swing-failure reclaim",
     "S1": "Donchian breakout (baseline)",
     "S2": "EMA impulse (baseline)",
     "S3": "Squeeze release (baseline)",
@@ -57,6 +66,8 @@ MODEL_KIND = {
     "C3": "contrarian",
     "C4": "contrarian",
     "C5": "contrarian",
+    "F1": "contrarian",
+    "F2": "contrarian",
     "S1": "baseline",
     "S2": "baseline",
     "S3": "baseline",
@@ -68,6 +79,8 @@ MODEL_CLAIMS = {
     "C3": "A close outside the 2-sigma band that re-enters the 1-sigma zone the next session marks the impulse as exhausted; price reverts toward the basis.",
     "C4": "A range-expansion exhaustion bar (true range >= 2x ATR with the close pinned in the extreme quartile of the bar) marks liquidation climax; the next sessions revert.",
     "C5": "Contrarian capitulation entries followed by full-reinvestment pyramiding every 1 ATR of favourable drift concentrate capital into the rare explosive reversals the placement arithmetic requires.",
+    "F1": "Exactly k consecutive same-direction closes whose true ranges both sit below the prior k bars (streak range-sum <= 0.85x) and fail to widen across the streak (last streak bar's range <= first's) mark a momentum death, not a trend: the k-th close is faded for hold_bars sessions. Structurally the opposite regime of C1 (which requires ATR expansion) and volume-free like the rest of the futures library.",
+    "F2": "A sweep of the prior 20-bar low by >=0.25 ATR that closes back ABOVE that level is a spring; the symmetric high-sweep closing back inside is an upthrust. The failed break is faded for hold_bars sessions, both directions, volume-free - the futures-native relative of the stock-side failed-breakout family (C31), not a copy of it.",
     "S1": "Baseline trend-following Donchian breakout (for contrast against the contrarian roster).",
     "S2": "Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).",
     "S3": "Baseline Bollinger squeeze release (for contrast against the contrarian roster).",
@@ -106,6 +119,16 @@ DEFAULT_PARAMS: dict[str, dict] = {
         "add_atr_step": 1.0,
         "max_adds": 4,
     },
+    "F1": {
+        "streak_bars": 4,          # exactly k consecutive same-direction closes
+        "compression_ratio": 0.85,  # streak TR-sum <= ratio x prior k-bar TR-sum
+        "hold_bars": 8,
+    },
+    "F2": {
+        "lookback": 20,            # prior N-bar swing the sweep must violate
+        "sweep_atr_mult": 0.25,    # minimum sweep depth in ATRs beyond the level
+        "hold_bars": 8,
+    },
     "S1": {},
     "S2": {},
     "S3": {},
@@ -132,6 +155,12 @@ VARIANTS: dict[str, dict[str, dict]] = {
     "C5": {
         "rapid": {"add_atr_step": 0.75, "max_adds": 6},
         "patient": {"add_atr_step": 1.5, "max_adds": 3},
+    },
+    "F1": {
+        "slow5": {"streak_bars": 5, "hold_bars": 12},
+    },
+    "F2": {
+        "shallow": {"sweep_atr_mult": 0.1, "hold_bars": 5},
     },
     "S1": {},
     "S2": {},
@@ -195,6 +224,12 @@ def warmup(model: str, variant: Optional[str] = None) -> int:
         return p["band_length"]  # SMA+stdev window, plus the pierce bar
     if model == "C4":
         return 14 + 1  # ATR(14) shifted one bar
+    if model == "F1":
+        # ATR for the decision record, plus the 2k-bar compression window.
+        return max(14 + 1, 2 * p["streak_bars"] + 2)
+    if model == "F2":
+        # ATR plus the prior-lookback swing window.
+        return max(14 + 1, p["lookback"] + 2)
     raise ValueError(f"unknown model {model!r}")
 
 
@@ -390,6 +425,92 @@ def _decide_contrarian(
                 st.bars_held = 0
             elif exhaustion_up:
                 emit(i, "short", "exhaustion up bar")
+                st.position = "short"
+                st.bars_held = 0
+
+    elif model == "F1":
+        # Compressed-streak fade: exactly k same-direction closes whose true
+        # ranges shrink versus the k bars before the streak (momentum death).
+        k = p["streak_bars"]
+        ratio = p["compression_ratio"]
+        trs: list[Optional[float]] = [None] * len(bars)
+        for j in range(1, len(bars)):
+            prev_close = closes[j - 1]
+            trs[j] = max(
+                highs[j] - lows[j],
+                abs(highs[j] - prev_close),
+                abs(lows[j] - prev_close),
+            )
+        for i in range(warmup(model, variant), len(bars)):
+            a = atr14[i]
+            if a is None:
+                continue
+            if st.position is not None:
+                st.bars_held += 1
+                if st.bars_held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    st.position = None
+                    st.bars_held = 0
+                continue
+            if i < 2 * k:
+                continue
+            up_streak = all(closes[j] > closes[j - 1] for j in range(i - k + 1, i + 1))
+            dn_streak = all(closes[j] < closes[j - 1] for j in range(i - k + 1, i + 1))
+            if not (up_streak or dn_streak):
+                continue
+            # Exact streak length k: the move immediately before the streak must
+            # not already extend it (the streak's first inequality —
+            # closes[i-k+1] vs closes[i-k] — is already covered by up_streak).
+            if up_streak and i - k - 1 >= 0 and closes[i - k] > closes[i - k - 1]:
+                continue
+            if dn_streak and i - k - 1 >= 0 and closes[i - k] < closes[i - k - 1]:
+                continue
+            streak_tr = [trs[j] for j in range(i - k + 1, i + 1)]
+            prior_tr = [trs[j] for j in range(i - 2 * k + 1, i - k + 1)]
+            if any(v is None for v in streak_tr + prior_tr):
+                continue
+            prior_sum = sum(prior_tr)
+            if prior_sum <= 0:
+                continue
+            if sum(streak_tr) > ratio * prior_sum:
+                continue  # not quieter than the prior window (C1's regime, not F1's)
+            if streak_tr[-1] > streak_tr[0]:
+                continue  # ranges widening across the streak: momentum building, not dying
+            if up_streak:
+                emit(i, "short", "compressed up-streak fade")
+                st.position = "short"
+                st.bars_held = 0
+            else:
+                emit(i, "long", "compressed down-streak fade")
+                st.position = "long"
+                st.bars_held = 0
+
+    elif model == "F2":
+        # Swing-failure reclaim: sweep of the prior lookback-bar extreme by at
+        # least sweep_atr_mult ATRs, closed back inside the range (spring long /
+        # upthrust short). Both directions, volume-free.
+        lookback = p["lookback"]
+        for i in range(warmup(model, variant), len(bars)):
+            a = atr14[i]
+            if a is None or a <= 0 or i < lookback:
+                continue
+            if st.position is not None:
+                st.bars_held += 1
+                if st.bars_held >= p["hold_bars"]:
+                    emit(i, "exit", "hold elapsed")
+                    st.position = None
+                    st.bars_held = 0
+                continue
+            prior_low = min(lows[i - lookback:i])
+            prior_high = max(highs[i - lookback:i])
+            swept_low = lows[i] < prior_low and (prior_low - lows[i]) >= p["sweep_atr_mult"] * a
+            swept_high = highs[i] > prior_high and (highs[i] - prior_high) >= p["sweep_atr_mult"] * a
+            if swept_low and closes[i] > prior_low:
+                emit(i, "long", "spring: low swept, reclaimed")
+                st.position = "long"
+                st.bars_held = 0
+            elif swept_high and closes[i] < prior_high:
+                emit(i, "short", "upthrust: high swept, rejected")
                 st.position = "short"
                 st.bars_held = 0
 

@@ -116,16 +116,21 @@ def render_forward_ledger(ledger) -> str:
 <p>No forward-test ledger artifact is present. Until it is generated, no forward PnL figure is
 shown rather than a placeholder.</p></div></section>"""
     meta = ledger.get("_meta", {})
+    _profiles = meta.get("rule_profiles") or {}
+    _profile_text = ", ".join(f"{k}: {v.get('profile_id', '')}" for k, v in _profiles.items()) \
+        or str(meta.get("rule_profile", ""))
     parts = [f"""<section id="forwardtest"><h2>Forward test PnL — trade-by-trade tracking</h2>
-<p class="lead">Every username on the stock roster, replayed on the <strong>latest window</strong>
-of each division (the same windows behind <code>latest_edition</code> in the season artifact),
+<p class="lead">Every username on the <strong>futures roster</strong> (division <code>futures</code>)
+and the <strong>stock roster</strong> (divisions <code>daily</code>/<code>hourly</code>/<code>15minute</code>),
+replayed on each division's <strong>latest window</strong> (the windows behind <code>latest_edition</code>
+in the matching season artifact),
 with every closed tranche recorded: entry/exit dates, fill prices, size, side, net P/L and a
-running cumulative P/L per username. Engine, rule profile ({esc(meta.get("rule_profile", ""))})
-and cost scenario ({esc(meta.get("cost_scenario", ""))}) are exactly the season run's;
+running cumulative P/L per username. Engine, rule profiles ({esc(_profile_text)})
+and cost scenario ({esc(meta.get("cost_scenario", ""))}) are exactly the season runs';
 totals sum exactly to the recorded rows. <strong>{number_or_dash(meta.get("participant_count"))}
 usernames</strong>, <strong>{number_or_dash(meta.get("closed_tranche_count"))} closed tranches</strong>,
 <strong>{number_or_dash(meta.get("latest_edition_cross_checks"))} cross-checks</strong> against
-the season artifact (each within one cent per tranche of rounding).</p>
+the season artifacts (each within one cent per tranche of rounding).</p>
 <div class="disclaimer"><strong>Forward paper test, not live trading.</strong> {esc(meta.get("honesty_note", ""))}</div>"""]
     for name, div in (ledger.get("divisions") or {}).items():
         if div.get("status") != "replayed":
@@ -1645,7 +1650,7 @@ survivorship-bound, not strategy-bound alone.</p></div>
 <td class="num">{number_or_dash(row['active_days'])}</td><td class="num">{'yes' if row['meets_min_active_days'] else 'no'}</td>
 <td class="num">{number_or_dash(row['margin_breach_bars'])}</td></tr>""")
     add("</tbody></table></div>")
-    add(f"""<h3>Contrarian strategy models (C1–C5) and baselines</h3>
+    add(f"""<h3>Contrarian strategy models (C1–C5, F1–F2) and trend baselines (S1–S3)</h3>
 <div class="grid cols-3">""")
     for m in comp_models:
         pill = "ok" if m["kind"] == "contrarian" else "mut"
