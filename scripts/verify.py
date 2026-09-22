@@ -1454,7 +1454,7 @@ def check_competition(rep: Report, cfg: dict, master: dict, source_ids: dict) ->
         rep.fail("competition.roster", "duplicate usernames in roster")
     if roster["_meta"].get("participant_count") != len(roster_rows):
         rep.fail("competition.roster_count", "roster _meta participant_count mismatch")
-    known_models = {"C1", "C2", "C3", "C4", "C5", "S1", "S2", "S3"}
+    known_models = {"C1", "C2", "C3", "C4", "C5", "F1", "F2", "S1", "S2", "S3"}
     sys.path.insert(0, ROOT)
     from intel.contrarian import resolve_params  # noqa: E402
     for row in roster_rows:
@@ -1601,7 +1601,8 @@ def check_competition(rep: Report, cfg: dict, master: dict, source_ids: dict) ->
     # Kind contrast re-derivation.
     for kind_key in ("contrarian", "baseline"):
         block = doc["kind_contrast"][kind_key]
-        kinds = {"contrarian": {"C1", "C2", "C3", "C4", "C5"}, "baseline": {"S1", "S2", "S3"}}[kind_key]
+        kinds = {"contrarian": {"C1", "C2", "C3", "C4", "C5", "F1", "F2"},
+                 "baseline": {"S1", "S2", "S3"}}[kind_key]
         subset = [a for a in doc["participants"]
                   if model_by_user.get(a["username"]) in kinds]
         if block["participants"] != len(subset):
@@ -2429,9 +2430,11 @@ def check_forward_ledger(rep: Report, source_ids: dict) -> None:
     Every rule below re-derives from the committed artifacts: the ledger is re-run at its
     stored stamp and must match field-for-field; every username's recorded totals must be
     the exact sum of its recorded 2dp tranche rows; the running cumulative P/L chain must
-    hold tranche by tranche; the window must be the season artifact's own latest_window;
-    and each username's ledger sum must sit within one cent per tranche of the season
-    artifact's latest_edition aggregate (the rounding bound of summing 2dp rows).
+    hold tranche by tranche; each division's window must be its season artifact's own
+    latest window (latest_edition window in data/competition_results.json for 'futures',
+    latest_window in data/stock_competition_results.json for the stock divisions); and each
+    username's ledger sum must sit within one cent per tranche of that artifact's
+    latest_edition aggregate (the rounding bound of summing 2dp rows).
     """
     doc = _reproduce(rep, "forward_test_ledger", "run_forward_test.py",
                      "data/forward_test_ledger.json")
@@ -2440,7 +2443,7 @@ def check_forward_ledger(rep: Report, source_ids: dict) -> None:
     meta = doc.get("_meta", {})
     if meta.get("kind") != "forward_test_pnl_ledger":
         rep.fail("forward_ledger.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
-    if meta.get("engine") != "forward-ledger-1":
+    if meta.get("engine") != "forward-ledger-2":
         rep.fail("forward_ledger.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
     if meta.get("not_a_forecast") is not True:
         rep.fail("forward_ledger.honesty", "artifact must declare not_a_forecast: true")
@@ -2452,9 +2455,12 @@ def check_forward_ledger(rep: Report, source_ids: dict) -> None:
 
     roster = _load_or_fail(rep, "data/competition/stock_roster.json", "forward_ledger.roster")
     comp = _load_or_fail(rep, "data/stock_competition_results.json", "forward_ledger.competition")
-    if roster is None or comp is None:
+    fut_roster = _load_or_fail(rep, "data/competition/roster.json", "forward_ledger.futures_roster")
+    fut_comp = _load_or_fail(rep, "data/competition_results.json", "forward_ledger.futures_competition")
+    if roster is None or comp is None or fut_roster is None or fut_comp is None:
         return
-    roster_users = {p["username"] for p in roster["participants"]}
+    stock_roster_users = {p["username"] for p in roster["participants"]}
+    futures_roster_users = {p["username"] for p in fut_roster["participants"]}
 
     total_users = 0
     total_tranches = 0
@@ -2465,21 +2471,31 @@ def check_forward_ledger(rep: Report, source_ids: dict) -> None:
             if not div.get("reason"):
                 rep.fail("forward_ledger.status", f"{name}: not_run without a reason")
             continue
-        season_div = (comp.get("divisions") or {}).get(name) or {}
-        want_window = season_div.get("latest_window") or {}
+        if name == "futures":
+            roster_users = futures_roster_users
+            want_window = {
+                "start_date": (fut_comp.get("latest_edition") or {}).get("start_date"),
+                "end_date": (fut_comp.get("latest_edition") or {}).get("end_date"),
+            }
+            season_rows = {r["username"]: r for r in
+                           ((fut_comp.get("latest_edition") or {}).get("rows") or [])}
+        else:
+            roster_users = stock_roster_users
+            season_div = (comp.get("divisions") or {}).get(name) or {}
+            want_window = season_div.get("latest_window") or {}
+            season_rows = {r["username"]: r for r in
+                           ((season_div.get("latest_edition") or {}).get("rows") or [])}
         got_window = div.get("window") or {}
         for key in ("start_date", "end_date"):
             if got_window.get(key) != want_window.get(key):
                 rep.fail("forward_ledger.window",
                          f"{name}: window {key} {got_window.get(key)!r} != season "
-                         f"latest_window {want_window.get(key)!r}")
-        season_rows = {r["username"]: r for r in
-                       ((season_div.get("latest_edition") or {}).get("rows") or [])}
+                         f"latest window {want_window.get(key)!r}")
         for u in div.get("usernames") or []:
             total_users += 1
             uname = u["username"]
             if uname not in roster_users:
-                rep.fail("forward_ledger.roster", f"{name}/{uname}: not on the stock roster")
+                rep.fail("forward_ledger.roster", f"{name}/{uname}: not on that division's roster")
             rows = u.get("tranche_ledger") or []
             total_tranches += len(rows)
             if u["closed_tranches"] != len(rows):

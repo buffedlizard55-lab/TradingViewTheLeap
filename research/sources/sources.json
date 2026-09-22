@@ -1,1858 +1,1919 @@
 {
-  "_meta": {
-    "description": "Registry of every source used anywhere in this project. A claim in data/ or research/ may only cite a source_id that exists here.",
-    "tier_definitions": {
-      "official_primary": "Published by the contest organiser, the listing exchange, or a government/regulatory body. Authoritative for what it states.",
-      "official_secondary": "Published by an official body but describing another body's product, or an official press release restating a rulebook.",
-      "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
-      "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
-    },
-    "source_count": 106,
-    "reverified_utc": "2026-09-22",
-    "reverification_note": "2026-09-19 eleventh pass (~19:35Z): contest page and landing page both displayed 99,727 participants. Ranks 1/50/100/250 were byte-identical to R10 (HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50). H44 records frontier stasis with a +64 participant rise. No IR-30. CME hours transcribed for SI/ETH/BTC only. 2026-09-22 twenty-first pass: R12 re-captures of the contest page (registration closes 'Sep 23, 2026 · 04:00 GMT-4'; board top-3 HappyLittleTrades +1,193.11% / someshsingh5845 +1,104.84% / AlphaTradersHub +1,097.33%; 102,747 displayed) and the landing page (102,729 displayed - IR-35 counter mismatch), plus the Magnificent Seven results blog registered as TV-RESULTS-MAG7-APR2026 (top-10 list and '40K+ ... over 530K trades ... almost $85M' scope verbatim). 2026-09-22 twenty-first pass (late): TV-RULES-MAG7-MAR2026 registered after a full re-read of the official rules page (the stocks-edition rule profile had cited this source id without a registry entry - caught by the forward-ledger source check). Constants, ranking metric, auto-close, 3-day minimum and the 500-deep prize ladder verified verbatim; IR-36 logged for the undefined MPT/Flawless Run prize names."
+ "_meta": {
+  "description": "Registry of every source used anywhere in this project. A claim in data/ or research/ may only cite a source_id that exists here.",
+  "tier_definitions": {
+   "official_primary": "Published by the contest organiser, the listing exchange, or a government/regulatory body. Authoritative for what it states.",
+   "official_secondary": "Published by an official body but describing another body's product, or an official press release restating a rulebook.",
+   "non_official": "Third-party media, aggregator or blog. NOT used to support any verified claim. Retained only as a lead for further primary-source checking.",
+   "market_data_vendor": "Commercial market-data vendors (e.g. Yahoo Finance). NOT official exchanges, organisers or regulators. Used only for archived, fully-recomputable price-history evidence in the separate volatile-stocks module, never for contest rules or futures specifications."
   },
-  "sources": [
-    {
-      "source_id": "TV-THELEAP-LANDING",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap — Paper Trading Competition by TradingView",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "The Leap is a paper trading (virtual money) competition with real-money prizes",
-        "Identity, dates, sponsor, prize pool and participant count of the live contest",
-        "Verified net-profit records of past #1 finishers"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING.md"
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures — September, 2026",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Prize ladder for the live contest",
-        "Starting balance of 250,000 virtual USD",
-        "5-day minimum trading activity",
-        "Live leaderboard: realized profit % and $ per rank"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026.md"
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures — Terms and Conditions (Official Competition Rules)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Ranking metric: realized profit/loss on closed positions",
-        "Balance 250,000 virtual USD; leverage for futures 20:1",
-        "Complete 94-instrument permitted universe and per-instrument position limits",
-        "Competition period, registration window, eligibility, prize ladder, total cash ARV",
-        "Transaction rate limit and auto-close of open positions"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026.md"
-    },
-    {
-      "source_id": "TV-RULES-TS-JUL2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap with TradeStation — Terms and Conditions",
-      "url": "https://www.tradingview.com/the-leap/tradestation-july-2026/rules/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Prior-edition baseline: 100,000 balance, 10:1 futures leverage, $0.85/contract commission",
-        "Confirmation that leaderboard refreshes no more than once an hour",
-        "Confirmation that contest mechanics change per edition (regime risk)"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-TS-JUL2026.md"
-    },
-    {
-      "source_id": "TV-CONTEST-MAG7-MAR2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by TradingView — March, 2026 (Magnificent Seven)",
-      "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Stocks-edition Leap (March 2026): final #1 return of +17.58% (1.1758x), the smallest winning return of any edition",
-        "Edition facts: 19 days duration, 41,301 participants, prizes = 500 subscriptions, assets = Stocks"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-MAG7-MAR2026.md"
-    },
-    {
-      "source_id": "CME-SOL-GUIDE",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "The essential guide to Solana futures (contract specifications)",
-      "url": "https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "SOL1! contract size 500 SOL; MSL1! contract size 25 SOL",
-        "CME 439 / CME 440 rulebook chapters; Globex codes SOL / MSL",
-        "Minimum price fluctuation and cash settlement reference rate"
-      ],
-      "evidence_file": "research/evidence/CME-SOL-GUIDE.md"
-    },
-    {
-      "source_id": "CME-XRP-PR",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "CME Group to Expand Crypto Derivatives Suite with Launch of XRP Futures (press release, 24 Apr 2025)",
-      "url": "https://www.cmegroup.com/media-room/press-releases/2025/4/24/cme_group_to_expandcryptoderivativessuitewithlaunchofxrpfutures.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "XRP1! contract size 50,000 XRP; MXP1! contract size 2,500 XRP",
-        "Launch date 19 May 2025; cash-settled to the CME CF XRP-Dollar Reference Rate"
-      ],
-      "evidence_file": "research/evidence/CME-XRP-PR.md"
-    },
-    {
-      "source_id": "TV-RESULTS-BENBERNANKE1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "Leap by CME — winners announced (blog)",
-      "url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Official confirmation that BenBernanke1 won The Leap by CME (1st place, $3,000)",
-        "CME-edition facts: 59,187 participants, over 3 million trades, announced 2025-03-06",
-        "CME-edition prize ladder: $3,000/$1,500/$1,200/$1,000/$800 + 20x$500 + 25x$300 + 200x 6-month subscriptions"
-      ],
-      "evidence_file": "research/evidence/TV-RESULTS-BENBERNANKE1.md"
-    },
-    {
-      "source_id": "CME-SPEC-BTC1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Bitcoin futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of BTC1!: 5 bitcoin (rule CME 350)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MBT1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro Bitcoin futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MBT1!: 0.10 bitcoin"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-ETH1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Ether futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of ETH1!: 50 ether (rule CME 349)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MET1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro Ether futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MET1!: 0.1 ether"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-NG1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Henry Hub Natural Gas futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of NG1!: 10,000 mmBtu (rule NYMEX 220)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MNG1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro Henry Hub Natural Gas futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MNG1!: 1,000 mmBtu (rule NYMEX 440)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-CL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Crude Oil (Light Sweet) futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of CL1!: 1,000 barrels (rule NYMEX 200)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MCL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro WTI Crude Oil futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MCL1!: 100 barrels (rule NYMEX 309)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-QM1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "E-mini Crude Oil futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of QM1!: 500 barrels (rule NYMEX 401)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-RB1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "RBOB Gasoline futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of RB1!: 42,000 gallons (rule NYMEX 191)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-HO1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "NY Harbor ULSD (Heating Oil) futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of HO1!: 42,000 gallons (rule NYMEX 150)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-SI1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Silver futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of SI1!: 5,000 troy ounces (rule COMEX 112)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-SIC1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "100-Ounce Silver futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of SIC1!: 100 troy ounces (rule COMEX 130)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-SIL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro Silver (1000-oz) futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of SIL1!: 1,000 troy ounces"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-PL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Platinum futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of PL1!: 50 troy ounces"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-NQ1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "E-mini Nasdaq-100 futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of NQ1!: $20 x Nasdaq-100 Index (rule CME 359)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "YAHOO-DAILY-GME",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "GME",
-      "title": "GME daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 0.699999988079071 on 2020-04-03 (window 2020-03-01→2020-05-01)",
-        "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01→2021-02-01, separate fetch)",
-        "Recomputable multiple 124.11x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1609459200&period2=1612137600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-AMC",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "AMC",
-      "title": "AMC daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 20.799999237060547 on 2020-04-13 (window 2020-03-01→2020-05-01)",
-        "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15→2021-06-15, separate fetch)",
-        "Recomputable multiple 30.07x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1621036800&period2=1623715200&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-SMCI",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "SMCI",
-      "title": "SMCI daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 5.242000102996826 on 2022-10-12 (window 2022-10-01→2022-12-01)",
-        "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15→2024-04-01, separate fetch)",
-        "Recomputable multiple 22.66x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1707955200&period2=1711929600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-MSTR",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "MSTR",
-      "title": "MSTR daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 9.220000267028809 on 2020-03-18 (window 2020-03-01→2020-04-15)",
-        "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15→2025-08-01, plus confirmation window 2025-07-16→2025-12-01)",
-        "Recomputable multiple 49.45x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1749945600&period2=1753920000&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-NVDA",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "NVDA",
-      "title": "NVDA daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 11.186724662780762 on 2022-10-14 (window 2022-10-01→2022-11-15); value re-adjusted by vendor 2026-09-16 (was 11.186728477478027), see IR-13",
-        "Verified peak adjclose 135.20562744140625 on 2024-06-18 (window 2024-06-01→2024-07-01, separate fetch); value re-adjusted by vendor 2026-09-16 (was 135.20559692382812), see IR-13",
-        "Recomputable multiple 12.09x (both endpoint generations)"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "reverified_utc": "2026-09-16",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1717200000&period2=1719792000&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-TSLA",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "TSLA",
-      "title": "TSLA daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 24.08133316040039 on 2020-03-18 (window 2020-03-01→2020-04-15)",
-        "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15→2021-11-15, separate fetch)",
-        "Recomputable multiple 17.02x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1634256000&period2=1636934400&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-PLTR",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "PLTR",
-      "title": "PLTR daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 6.0 on 2022-12-27 (window 2022-12-01→2023-01-15)",
-        "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15→2025-12-15, separate fetch)",
-        "Recomputable multiple 34.53x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1760486400&period2=1765756800&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-COIN",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "COIN",
-      "title": "COIN daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 32.529998779296875 on 2022-12-28 (window 2022-12-01→2023-01-15)",
-        "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01→2024-12-01, separate fetch)",
-        "Recomputable multiple 10.00x"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1730419200&period2=1733011200&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-MONTHLY-MSTR",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "MSTR",
-      "title": "MSTR monthly adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1514764800&period2=1789516800&interval=1mo",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Monthly locator scan 2018→2026: trough monthly close 11.81 (2020-03), peak monthly close 404.23 (2025-06)",
-        "Selection of the daily trough/peak windows for MSTR"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
-    },
-    {
-      "source_id": "YAHOO-MONTHLY-GME",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "GME",
-      "title": "GME monthly adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1009843200&period2=1789516800&interval=1mo",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Full-history monthly scan: all monthly lows 2002–2019 ≥ 1.1775, below which the 2020-04-03 daily trough 0.70 sits",
-        "Confirms the April-2020 trough is the global adjusted low of the fetched history up to that point"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
-    },
-    {
-      "source_id": "YAHOO-MONTHLY-SMCI",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "SMCI",
-      "title": "SMCI monthly adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1167609600&period2=1789516800&interval=1mo",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Full-history monthly scan: monthly lows ≈ 0.44–0.51 in 2008–2009, disproving the 2022 trough as all-time",
-        "Basis for keeping the SMCI multiple window-bounded (22.66x) rather than asserting an all-time multiple"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
-    },
-    {
-      "source_id": "CME-SPEC-XRP1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "XRP futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of XRP1!: 50,000 XRP (rule CME 435), confirmed on the live spec page",
-        "Proof the XRP futures product is listed and trading (XRPU6, volume 174 on 2026-09-15), closing IR-10"
-      ],
-      "evidence_file": "research/evidence/CME-SPEC-XRP.md"
-    },
-    {
-      "source_id": "CME-SPEC-SOL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Solana (SOL) futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of SOL1!: 500 SOL (rule CME 439), confirmed on the live spec page 2026-09-16 (SOLU6, last 96.05, volume 1,405)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MSL1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro Solana futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MSL1!: 25 SOL (rule CME 440), confirmed on the live spec page 2026-09-16 (MSLU6, last 96.10, volume 1,028)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "CME-SPEC-MXP1!",
-      "publisher": "CME Group Inc.",
-      "tier": "official_primary",
-      "title": "Micro XRP futures — contract specs",
-      "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Contract multiplier of MXP1!: 2,500 XRP (rule CME 436), confirmed on the live spec page 2026-09-16 (MXPU6, last 1.2520, volume 5,280)"
-      ],
-      "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
-    },
-    {
-      "source_id": "YAHOO-DAILY-ENPH",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "ENPH",
-      "title": "ENPH daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 0.699999988079071 on 2017-05-18 (window 2017-04-15→2017-06-15, 42 sessions)",
-        "Verified peak adjclose 267.739990234375 on 2021-11-19 (window 2021-10-15→2021-11-20, 26 sessions)",
-        "Recomputable multiple 382.49x",
-        "Bounding fetch (1d): peak follow-up window 2021-11-15 to 2022-01-14: max close 261.12 on 2021-11-22, below the 2021-11-19 peak",
-        "Bounding fetch (1mo): monthly locator 2017-01-01 to 2018-06-01: lowest monthly close 0.76 (May 2017), monthly low 0.65 (May 2017)",
-        "Bounding fetch (1mo): monthly scan Jan-Oct 2021: highest monthly high 229.04 (Feb 2021) < 267.74, so no 2021 close exceeds the archived peak"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1634256000&period2=1637366400&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-AMD",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "AMD",
-      "title": "AMD daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 1.7999999523162842 on 2016-01-20 (window 2016-01-15→2016-03-01, 30 sessions)",
-        "Verified peak adjclose 580.9099731445312 on 2026-06-30 (window 2026-05-20→2026-07-01, 28 sessions)",
-        "Recomputable multiple 322.73x",
-        "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Jun 2026 is the highest monthly close (580.9099731445312) and highest monthly high (584.72998046875); Jul-Sep 2026 highs stay below 575",
-        "Bounding fetch (1d): peak sub-window 2026-06-23 to 2026-07-01 (second fetch, pins the 2026-06-30 close)"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1779235200&period2=1782864000&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-MARA",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "MARA",
-      "title": "MARA daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 0.4000000059604645 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
-        "Verified peak adjclose 76.08999633789062 on 2021-11-09 (window 2021-10-25→2021-12-01, 26 sessions)",
-        "Recomputable multiple 190.22x",
-        "Bounding fetch (1d): peak follow-up window 2021-11-12 to 2021-12-01: max close 75.91999816894531 (2021-11-12), below the 2021-11-09 peak; the 2021-11-30 close 51.06999969482422 matches the November monthly-close anchor",
-        "Bounding fetch (1mo): monthly locator Aug 2019 to May 2020: lowest monthly close 0.44999998807907104 (Mar 2020), monthly low 0.3499999940395355",
-        "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Nov 2021 has an intraday high below 76.09, and the Nov 2021 daily window pins the max close at 76.08999633789062"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1635120000&period2=1638316800&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-CVNA",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "CVNA",
-      "title": "CVNA daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 0.7440000176429749 on 2022-12-27 (window 2022-12-01→2023-01-10, 26 sessions)",
-        "Verified peak adjclose 95.69000244140625 on 2026-01-22 (window 2025-12-01→2026-03-01, 60 sessions)",
-        "Recomputable multiple 128.62x",
-        "Bounding fetch (1d): trough follow-up window 2023-01-10 to 2023-02-15: min close 0.8840000033378601 (2023-01-10), above the 2022-12-27 trough",
-        "Bounding fetch (1mo): monthly scan Feb-May 2023: lowest monthly low 1.2899999618530273 (Mar 2023), above the archived trough",
-        "Bounding fetch (1mo): monthly locator Jun 2023 to Sep 2026: highest monthly close before Dec 2025 is 78.03 (Aug 2025); Dec 2025 close 84.40; Jan 2026 high 97.37799835205078 is the 2026-01-22 intraday peak captured in the daily window; Feb-Aug 2026 highs stay below 84",
-        "Bounding fetch (1mo): events=splits fetch 2022-12-01 to 2026-09-14: \"events\":{\"splits\":{\"1777608000\":{\"date\":1778247000,\"numerator\":5.0,\"denominator\":1.0,\"splitRatio\":\"5:1\"}}}"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1764547200&period2=1772323200&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-RIOT",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "RIOT",
-      "title": "RIOT daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 0.6499999761581421 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
-        "Verified peak adjclose 77.9000015258789 on 2021-02-17 (window 2021-02-01→2021-03-15, 29 sessions)",
-        "Recomputable multiple 119.85x",
-        "Bounding fetch (1mo): monthly locator Jan 2019 to May 2020: lowest monthly close 0.8330000042915344 (Mar 2020), monthly low 0.5109999775886536",
-        "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Feb 2021 has an intraday high below 77.90; Mar 2021 high 67.85 and Apr 2021 high 61.55 bound all later closes below the archived peak; the 2021-02-26 close 43.7400016784668 matches the February monthly-close anchor"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1612137600&period2=1615766400&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-NVAX",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "NVAX",
-      "title": "NVAX daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 3.930000066757202 on 2020-01-10 (window 2019-12-01→2020-01-15, 30 sessions)",
-        "Verified peak adjclose 319.92999267578125 on 2021-02-08 (window 2021-02-01→2021-02-27, 19 sessions)",
-        "Recomputable multiple 81.41x",
-        "Bounding fetch (1mo): monthly locator Jun 2018 to Dec 2019: lowest monthly close 3.9800000190734863 (Dec 2019), monthly low 3.8499999046325684",
-        "Bounding fetch (1mo): monthly scan Jan-Jun 2020: lowest monthly low 3.6500000953674316 (Jan 2020); Feb 2020 low 6.26 excludes a lower close after the archived trough",
-        "Bounding fetch (1mo): monthly scan Jul 2020 to Nov 2021: every month except Feb 2021 has an intraday high below 319.93 (max Aug 2021 high 260.0), so no other month can contain a higher close; the 2021-02-26 close 231.22999572753906 matches the February monthly-close anchor"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1612137600&period2=1614556800&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-APP",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "APP",
-      "title": "APP daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 9.300000190734863 on 2022-12-27 (window 2022-12-01→2023-01-15, 30 sessions)",
-        "Verified peak adjclose 733.5999755859375 on 2025-12-22 (window 2025-09-01→2026-01-01, 86 sessions)",
-        "Recomputable multiple 78.88x",
-        "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: highest monthly close before the daily window is 718.5399780273438 (Sep 2025); Jan-Aug 2026 highs stay below 684, bounding all later closes below the archived peak",
-        "Bounding fetch (1mo): monthly scan Apr-Nov 2022: lowest monthly low 13.0 (Nov 2022), above the archived Dec 2022 trough"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1756684800&period2=1767225600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-SHOP",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "SHOP",
-      "title": "SHOP daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 1.9329999685287476 on 2016-02-12 (window 2016-01-01→2016-02-20, 33 sessions)",
-        "Verified peak adjclose 179.00999450683594 on 2025-10-29 (window 2025-10-01→2025-11-01, 23 sessions)",
-        "Recomputable multiple 92.61x",
-        "Bounding fetch (1mo): monthly locator Oct 2015 to Apr 2016: lowest monthly close 2.23799991607666 (Jan 2016), monthly low 1.8480000495910645",
-        "Bounding fetch (1mo): monthly scan Jan 2019 to Nov 2021: only Nov 2021 has an intraday high (176.2917938232422) above the Nov-2021 interim daily peak close 169.05999755859375 (2021-11-19)",
-        "Bounding fetch (1d): interim peak window Nov 2021: max close 169.05999755859375 on 2021-11-19 (last session of the window)",
-        "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Oct 2025 is the highest-close month (173.86000061035156, matching the 2025-10-31 daily close anchor); Dec 2025 high 178.375 and all later monthly highs stay below the archived peak close"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1759276800&period2=1762041600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-PLUG",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "PLUG",
-      "title": "PLUG daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 1.0099999904632568 on 2018-12-20 (window 2018-12-01→2019-02-01, 40 sessions)",
-        "Verified peak adjclose 73.18000030517578 on 2021-01-26 (window 2021-01-01→2021-02-01, 19 sessions)",
-        "Recomputable multiple 72.46x",
-        "Bounding fetch (1mo): monthly locator Jan 2019 to Apr 2021: Feb 2021 high 70.51000213623047 and all later monthly highs stay below the archived peak close; the 2021-01-29 close 63.16999816894531 matches the January monthly-close anchor",
-        "Bounding fetch (1mo): monthly scan Jun-Dec 2018: lowest monthly low outside Dec 2018 is 1.7100000381469727 (Nov 2018); Dec 2018 monthly low 0.9900000095367432 is inside the daily trough window",
-        "Bounding fetch (1d): alternate 2020 COVID trough window: min close 2.759999990463257 (2020-03-16), superseded by the deeper 2018-12-20 trough"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1609459200&period2=1612137600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-NIO",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "NIO",
-      "title": "NIO daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 1.3200000524520874 on 2019-10-01 (window 2019-09-25→2019-10-15, 14 sessions)",
-        "Verified peak adjclose 62.84000015258789 on 2021-02-09 (window 2021-01-01→2021-02-26, 38 sessions)",
-        "Recomputable multiple 47.61x",
-        "Bounding fetch (1d): trough guard window 2019-09-03 to 2019-09-24: min close 2.5999999046325684 (2019-09-03), above the archived trough",
-        "Bounding fetch (1mo): monthly locator Sep 2018 to Jan 2021: only the Oct 2019 bar has a monthly low (1.190000057220459) below 1.32; the Oct 2019 daily window pins the min close at 1.3200000524520874",
-        "Bounding fetch (1mo): monthly scan 2021: Jan 2021 high 66.99 and Feb 2021 high 64.60 are the only months above 62.85; both are covered by the daily peak windows; Mar-Dec 2021 highs stay below 55.14; the 2021-02-26 close 45.779998779296875 matches the February monthly-close anchor"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1609718400&period2=1614556800&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-PTON",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "PTON",
-      "title": "PTON daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 19.510000228881836 on 2020-03-12 (window 2020-03-01→2020-04-15, 31 sessions)",
-        "Verified peak adjclose 167.4199981689453 on 2021-01-14 (window 2020-12-15→2021-02-01, 31 sessions)",
-        "Recomputable multiple 8.58x",
-        "Bounding fetch (1mo): monthly scan Jan 2020 to Jan 2021: every month before Dec 2020 has an intraday high below 139.76, and the Dec 2020 high 167.3699951171875 is below the archived peak close",
-        "Bounding fetch (1mo): monthly scan 2021: Feb-Dec 2021 highs stay below 157.84, bounding all later closes below the archived peak; the 2020-12-31 close 151.72000122070312 and 2021-01-29 close 146.1300048828125 match the December and January monthly-close anchors"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1608009600&period2=1612137600&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "YAHOO-DAILY-HOOD",
-      "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "symbol": "HOOD",
-      "title": "HOOD daily adjusted-close series (Yahoo Finance v8 chart API)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Verified trough adjclose 7.699999809265137 on 2022-12-28 (window 2022-12-01→2023-01-15, 30 sessions)",
-        "Verified peak adjclose 152.4600061035156 on 2025-10-09 (window 2025-10-01→2025-11-15, 33 sessions)",
-        "Recomputable multiple 19.8x",
-        "Bounding fetch (1d): trough guard window 2022-11-15 to 2022-11-30: min close 8.850000381469727 (2022-11-21), above the archived trough",
-        "Bounding fetch (1mo): monthly locator Jan 2025 to Sep 2026: Oct 2025 is the highest-close month (146.77999877929688, matching the 2025-10-31 daily close anchor); Nov 2025 high 149.41 is below the archived peak close; Dec 2025 onward monthly highs stay below 139.76"
-      ],
-      "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
-      "endpoint_urls": [
-        {
-          "label": "trough_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d"
-        },
-        {
-          "label": "peak_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1759276800&period2=1763164800&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "TV-QUOTE-SOL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:SOL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-SOL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 98.35 USD",
-        "Capacity-model price input for CME:SOL1!",
-        "Source-reported time: 2026-09-16 17:21 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MSL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:MSL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-MSL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 97.95 USD",
-        "Capacity-model price input for CME:MSL1!",
-        "Source-reported time: 2026-09-16 16:57 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-XRP1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:XRP1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-XRP1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 1.303 USD",
-        "Capacity-model price input for CME:XRP1!",
-        "Source-reported time: 2026-09-16 16:49 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MXP1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:MXP1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-MXP1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 1.2955 USD",
-        "Capacity-model price input for CME:MXP1!",
-        "Source-reported time: 2026-09-16 17:22 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-BTC1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:BTC1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-BTC1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 76085.0 USD",
-        "Capacity-model price input for CME:BTC1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MBT1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:MBT1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-MBT1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 76025.0 USD",
-        "Capacity-model price input for CME:MBT1!",
-        "Source-reported time: 2026-09-16 17:23 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-ETH1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:ETH1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-ETH1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 2409.5 USD",
-        "Capacity-model price input for CME:ETH1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MET1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME:MET1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME-MET1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 2392.5 USD",
-        "Capacity-model price input for CME:MET1!",
-        "Source-reported time: 2026-09-16 17:29 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-NG1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:NG1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-NG1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 2.891 USD",
-        "Capacity-model price input for NYMEX:NG1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MNG1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:MNG1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-MNG1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 2.891 USD",
-        "Capacity-model price input for NYMEX:MNG1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-CL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:CL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-CL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 102.43 USD",
-        "Capacity-model price input for NYMEX:CL1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-QM1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX_MINI:QM1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX_MINI-QM1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 102.425 USD",
-        "Capacity-model price input for NYMEX_MINI:QM1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-MCL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:MCL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-MCL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 102.43 USD",
-        "Capacity-model price input for NYMEX:MCL1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-RB1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:RB1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-RB1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 3.2332 USD",
-        "Capacity-model price input for NYMEX:RB1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-HO1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:HO1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-HO1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 5.0003 USD",
-        "Capacity-model price input for NYMEX:HO1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-SI1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "COMEX:SI1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/COMEX-SI1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 64.92 USD",
-        "Capacity-model price input for COMEX:SI1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-SIC1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "COMEX:SIC1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/COMEX-SIC1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 63.2 USD",
-        "Capacity-model price input for COMEX:SIC1!",
-        "Source-reported time: 2026-09-16 17:29 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-SIL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "COMEX_MINI:SIL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/COMEX_MINI-SIL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 64.92 USD",
-        "Capacity-model price input for COMEX_MINI:SIL1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-PL1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "NYMEX:PL1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/NYMEX-PL1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 1785.9 USD",
-        "Capacity-model price input for NYMEX:PL1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-QUOTE-NQ1",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "CME_MINI:NQ1! continuous-contract overview and displayed quote",
-      "url": "https://www.tradingview.com/symbols/CME_MINI-NQ1!/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Captured display price 29256.75 USD",
-        "Capacity-model price input for CME_MINI:NQ1!",
-        "Source-reported time: 2026-09-16 16:59 GMT-4"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
-    },
-    {
-      "source_id": "TV-PINE-STRATEGIES",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "Pine Script strategies — concepts and Strategy Report",
-      "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Pine strategies simulate trades on historical and realtime bars",
-        "Strategy Report and Deep Backtesting capabilities",
-        "Broker-emulator and fill-model limitations"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
-    },
-    {
-      "source_id": "TV-PINE-AUTOTRADE",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "How to autotrade using Pine Script strategies",
-      "url": "https://www.tradingview.com/support/solutions/43000481026-how-to-autotrade-using-pine-script-strategies/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Automated Pine strategy trading with a TradingView brokerage account is not available",
-        "Pine Strategy Report is not competition-account execution"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
-    },
-    {
-      "source_id": "TV-PINE-LEVERAGE",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "How to simulate trading with leverage in Pine Script",
-      "url": "https://www.tradingview.com/support/solutions/43000717375-how-to-simulate-trading-with-leverage-in-pine-script/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "5% margin models 20:1 leverage",
-        "MarginRequired formula used by the capacity model",
-        "Margin-call limitations of Pine strategy simulation"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
-    },
-    {
-      "source_id": "TV-PAPER-PNL",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "How position profit and loss is calculated in Paper Trading",
-      "url": "https://www.tradingview.com/support/solutions/43000719857-how-is-position-profit-and-loss-in-paper-trading-calculated/",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Bid/ask execution mechanics in Paper Trading",
-        "Long-futures P/L formula",
-        "Documentation inconsistency in the short-futures formula (IR-14)"
-      ],
-      "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
-    },
-    {
-      "source_id": "CME-CONTINUOUS-SERIES",
-      "publisher": "CME Group",
-      "tier": "official_primary",
-      "title": "CME Group Continuous Price Series",
-      "url": "https://www.cmegroup.com/market-data/cme-group-continuous-price-series.html",
-      "accessed_utc": "2026-09-16",
-      "used_for": [
-        "Official settlement-based active/front continuous-series methodology",
-        "Licensed historical series option for futures backtesting",
-        "Volume and open-interest capacity data option"
-      ],
-      "evidence_file": "research/evidence/CME-CONTINUOUS-SERIES.md"
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R2",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Second timestamped capture of the public leaderboard frontier (ranks 1/50/100/250), displayed participant count, prize structure and the 94-instrument eligibility count",
-        "Frontier drift between 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z in data/frontier_history.json"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md",
-      "official_source": true
-    },
-    {
-      "source_id": "YAHOO-FUTURES-CHART",
-      "publisher": "Yahoo (market-data vendor; not an exchange, regulator or the contest organiser)",
-      "tier": "market_data_vendor",
-      "title": "Yahoo Finance chart API - daily bars for the selected contest futures (front-month continuous, unadjusted rolls)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Daily OHLC history for the walk-forward simulation of the pre-registered strategy candidates (data/market_history/, data/backtest_results.json)",
-        "Realized-volatility and explosive-move metrics for the selected futures (data/volatility_intelligence.json)"
-      ],
-      "evidence_file": "research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md",
-      "official_source": false,
-      "endpoint_urls": [
-        {
-          "label": "CME:SOL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SOL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:MSL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:XRP1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:MXP1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:BTC1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:MBT1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:ETH1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/ETH=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME:MET1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:NG1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NG=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:MNG1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:CL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX_MINI:QM1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/QM=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:MCL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:RB1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/RB=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:HO1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/HO=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "COMEX:SI1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SI=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "COMEX:SIC1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIC=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "COMEX_MINI:SIL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "NYMEX:PL1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/PL=F?period1=1726531200&period2=1789689600&interval=1d"
-        },
-        {
-          "label": "CME_MINI:NQ1!",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&period2=1789689600&interval=1d"
-        }
-      ],
-      "transport_note": "Captured by scripts/fetch_market_data.py in the capture-market-data GitHub Actions workflow; direct vendor requests are retried through the public allorigins relay when the runner IP is rate-limited (HTTP 429). Every payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures recorded in the evidence file."
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R3",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, third pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Third timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (95,709)",
-        "Frontier drift 2026-09-16T21:39:34Z -> 2026-09-17T00:30:00Z -> 2026-09-17T16:56:00Z in data/frontier_history.json",
-        "FAQ re-confirmation of the trading window, registration close and late-registration behaviour"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R3.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R3",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Line-by-line re-verification on 2026-09-17 that no rule constant changed: dates, 250,000 balance, 20:1 leverage, 5 active days, 94-symbol universe with per-instrument caps (0 equities), ranking metric, auto-close, 60/min rate limit, prize ladder, 50,000 ARV, payment methods, results timing"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R3.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R3",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (champions list re-verified 2026-09-17)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged as of 2026-09-17"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R3.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R4",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, fourth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fourth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,095)",
-        "Observation that the displayed rank-50 frontier decreased $3,583.50 versus the 16:56Z capture while ranks 100/250 rose (IR-23, H20)",
-        "Prize-block re-confirmation ($10,000/$7,000/$6,000/$3,500/$2,500/$550/$400/3-month subscription; top 300 win)"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R4",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, fourth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fourth line-by-line re-verification: dates, 250,000 balance, 20:1 leverage, 5 active days, 94-symbol universe with per-instrument caps (0 equities, programmatic diff 94/94 identical including order), ranking metric, auto-close, 60/min rate limit, prize ladder, 50,000 ARV, payment methods, tie rule, disqualification clause"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R4.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R4",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (champions list re-verified 2026-09-17, fourth pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fourth re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged (maximum remains 53.2072x, none at or above 100x)"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R4.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R5",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, fifth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fifth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,236)",
-        "Observation that ranks 1 and 50 were byte-identical to the 19:04Z capture while ranks 100 and 250 rose (H22)",
-        "Row-identity tracking: capture-4's rank-100 row re-read at rank 101 and capture-3's rank-100 row at rank 105",
-        "Prize-block and eligible-instrument re-confirmation (12 named instruments + 'and 82 more' = the 94-symbol universe)"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R5.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R5",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, fifth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fifth line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe with all 94 caps transcribed in this pass",
-        "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R5.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R5",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (champions list re-verified 2026-09-17, fifth pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Fifth re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
-        "Live-edition hero counter (96,230) versus the contest-page counter (96,236) recorded as the asynchronous-counter pattern IR-09"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R5.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R6",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, sixth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Sixth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,268)",
-        "Observation that ALL FOUR tracked frontiers were byte-identical to the 20:58Z capture while participants rose +32 (H24)",
-        "Participants hero async check: landing 96,263 vs contest 96,268 (IR-09)"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R6.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R6",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, sixth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Sixth line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe with all 94 caps transcribed in this pass",
-        "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R6.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R6",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (champions list re-verified 2026-09-17, sixth pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Sixth re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
-        "Live-edition hero counter (96,263) versus the contest-page counter (96,268) recorded as the asynchronous-counter pattern IR-09"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R6.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R7",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, seventh pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Seventh timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,344)",
-        "Observation of major threshold acceleration: Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp) in 1.68 hours (H25)",
-        "Participants hero async check: landing 96,336 vs contest 96,344 (IR-09)"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R7",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, seventh pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Seventh line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe",
-        "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R7.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R7",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (champions list re-verified 2026-09-17, seventh pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-17",
-      "used_for": [
-        "Seventh re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
-        "Live-edition hero counter (96,336) versus the contest-page counter (96,344) recorded as the asynchronous-counter pattern IR-09"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R7.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R8",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-18, eighth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-18",
-      "used_for": [
-        "Eighth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,586)",
-        "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md",
-      "official_source": true
-    },
-    {
-      "source_id": "YAHOO-INTRADAY-CHART",
-      "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
-      "tier": "market_data_vendor",
-      "official_source": false,
-      "title": "Yahoo Finance v8 chart API — 15-minute, hourly and long daily bars for the 20-stock volatile pool and the contest futures (capture path of scripts/fetch_intraday.py)",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&period2=1758240000&interval=15m",
-      "accessed_utc": "2026-09-18",
-      "used_for": [
-        "Intra-session gap-fill measurement (does a session gap fill, how many bars does it take) on committed 15-minute and hourly bars",
-        "Execution-latency measurement (next-open and k-bar-delayed fills in basis points of the decision close) for the paper-competition fill model",
-        "Price series for the volatile-stock division of the repository's own paper competition (data/stock_competition_results.json)",
-        "Long daily series (~10 years) for the warm-up window of the stock models"
-      ],
-      "evidence_file": "research/evidence/YAHOO-INTRADAY-CAPTURE.md",
-      "endpoint_urls": [
-        {
-          "label": "15m_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&period2=1758240000&interval=15m"
-        },
-        {
-          "label": "1h_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1747612800&period2=1758240000&interval=1h"
-        },
-        {
-          "label": "1d_long_window",
-          "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1441929600&period2=1758240000&interval=1d"
-        }
-      ]
-    },
-    {
-      "source_id": "NYSE-HOURS-CALENDAR",
-      "publisher": "New York Stock Exchange (Intercontinental Exchange)",
-      "tier": "official_secondary",
-      "title": "NYSE trading calendar — holidays and hours",
-      "url": "https://www.nyse.com/markets/hours-calendars",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Rule-based US equity full-closure table in intel/calendar.py annotating studied intraday sessions (weekend gaps vs gaps spanning an exchange holiday)",
-        "Line-by-line verification of the 2016-2026 closure transcription (completed 2026-09-19; see research/evidence/NYSE-CALENDAR-2016-2026.md)"
-      ],
-      "evidence_file": "research/evidence/NYSE-CALENDAR-2016-2026.md",
-      "endpoint_urls": [
-        {
-          "label": "nyse_hours_calendars",
-          "url": "https://www.nyse.com/markets/hours-calendars"
-        },
-        {
-          "label": "nyse_trading_days_pdf",
-          "url": "https://www.nyse.com/publicdocs/Trading_Days.pdf"
-        }
-      ],
-      "verification_note": "Transcribed as deterministic rules in this sandbox (no network); every date must be re-verified against the official page before authoritative use.",
-      "notes": "Historical years were read from Internet Archive captures of this same nyse.com page, the 2026 schedule was cross-checked on Nasdaq Trader, and the two special closures against ICE/NYSE press releases; all those URLs are listed in the evidence file."
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R10",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-19, tenth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Ninth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250: HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50) and displayed participant count (99,663)",
-        "Prize ladder and essentials re-verification (unchanged); first observed rank-1 turnover (H40)",
-        "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R10.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-AMP-SEP2026-R10",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - Terms and Conditions (official rules re-verification 2026-09-19, tenth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Tenth re-verification of the section-08 94-instrument universe and per-instrument caps (94/94 match, 0 equities)",
-        "Tenth re-verification of the section-09 prize ladder, $50,000 cash ARV, 14-day claim window, and balance/leverage/activity/ranking constants (all match)",
-        "Observed section-09 payment-rails text now reads a 600 USD Wire/PayPal split vs 1,000 USD at R3-R6; flagged as IR-29, contest_config.json unchanged pending manual review"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R10.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R10",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-19, tenth pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Tenth re-verification of all 15 completed-edition #1 records (all unchanged; maximum 53.2072x; none at/above 100x)",
-        "Live-edition hero count 99,658 vs contest-board 99,663 (IR-09 asynchronous counters, delta +5)"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R10.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R11",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-19, eleventh pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Tenth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250 unchanged vs R10: HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50) and displayed participant count (99,727, +64 vs R10)",
-        "H44 evidence: complete frontier stasis with a rising participant count while registration remains open",
-        "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R11.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R11",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-19, eleventh pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-19",
-      "used_for": [
-        "Eleventh live-edition hero count 99,727 matching the contest-board 99,727 at the same session (IR-09 asynchronous-counter delta 0 at this capture)"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-R11.md",
-      "official_source": true
-    },
-    {
-      "source_id": "ALPACA-STOCKBARS-DOCS",
-      "publisher": "Alpaca (brokerage and market-data API provider; authoritative for its own API, not an exchange, regulator or the contest organiser)",
-      "tier": "official_secondary",
-      "official_source": true,
-      "title": "Alpaca US equity bars API reference (IEX feed, /v2/stocks/{symbol}/bars) - the credential-gated official-provider route used by .github/workflows/official-bars.yml",
-      "url": "https://docs.alpaca.markets/us/reference/stockbars",
-      "accessed_utc": "2026-09-20",
-      "used_for": [
-        "Documents the official-provider bar endpoint the official-bars lane calls when repository secrets APCA_API_KEY_ID / APCA_API_SECRET_KEY are present",
-        "States the IEX feed and split-adjustment semantics recorded in data/official_bars/availability.json"
-      ],
-      "evidence_file": "research/evidence/ALPACA-OFFICIAL-BARS-ROUTE.md"
-    },
-    {
-      "source_id": "TV-CONTEST-AMP-SEP2026-R12",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap by AMP Futures - September 2026 (official page re-capture 2026-09-22, twelfth pass)",
-      "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
-      "accessed_utc": "2026-09-22",
-      "used_for": [
-        "Registration deadline verified verbatim: 'Join until Sep 23, 2026 · 04:00 GMT-4' - the live contest closes to new registrations the day after this capture",
-        "Trading window verified verbatim: 'Paper trade from September 1 to September 30, and for at least 5 days.' and prize display '$50 K + 250 plans'",
-        "Public leaderboard top rows re-captured (rank 1 HappyLittleTrades +1,193.11% / +$2,982,777.45; rank 2 someshsingh5845 +1,104.84%; rank 3 AlphaTradersHub +1,097.33%) with 102,747 displayed participants and a top-250 public board",
-        "data/live_contest_clock.json source of record; placement-arithmetic comparison against the repository's leaderboard lab"
-      ],
-      "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R12.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-THELEAP-LANDING-R12",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap landing page (official re-capture 2026-09-22, twelfth pass)",
-      "url": "https://www.tradingview.com/the-leap/",
-      "accessed_utc": "2026-09-22",
-      "used_for": [
-        "Champion table re-verified against the previously committed records (futures July 2026 Me-tis +155.95%, forex June 2026 Minitrader91 +91.87%, crypto May 2026 Manishh_jain92 +271.78%, stocks March 2026 prodigy5284 +17.58%, multi-asset April 2025 ICT_Hispanohablantes +308.07%, futures February 2025 BenBernanke1 +5,220.72%)",
-        "IR-35 evidence: the landing counter (102,729) and the contest-page counter (102,747) disagree by 18 within the same capture session"
-      ],
-      "evidence_file": "research/evidence/TV-THELEAP-LANDING-2026-09-22-R12.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RESULTS-MAG7-APR2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "It's time to see the results of The Leap: Magnificent Seven (official TradingView Blog results post, captured 2026-09-22)",
-      "url": "https://www.tradingview.com/blog/en/the-leap-magnificent-seven-results-57868/",
-      "accessed_utc": "2026-09-22",
-      "used_for": [
-        "Official stocks-edition top-10 result list (1st prodigy5284 ... 10th mantas19rm) with the published scope: '40K+ of you completed over 530K trades, with a total earned virtual profit of almost $85M' on TSLA, NVDA, META, AAPL, GOOGL, MSFT, AMZN",
-        "Cross-check of data/verified_explosive_returns.json stocks-edition record and the stocks-edition rule constants (100,000 balance, 1:1 leverage, 50-unit cap)"
-      ],
-      "evidence_file": "research/evidence/TV-RESULTS-MAG7-APR2026.md",
-      "official_source": true
-    },
-    {
-      "source_id": "TV-RULES-MAG7-MAR2026",
-      "publisher": "TradingView, Inc.",
-      "tier": "official_primary",
-      "title": "The Leap: Magnificent Seven - Official Competition Rules (stocks edition, captured 2026-09-22)",
-      "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/",
-      "accessed_utc": "2026-09-22",
-      "used_for": [
-        "RULE_PROFILES['stocks_official_leap'] constants verified verbatim: 100,000 virtual USD balance, 1:1 stocks leverage, 0.01% commission, 50.0-unit per-instrument cap",
-        "Ranking metric (realized profit/loss on closed positions) and end-of-competition auto-close verified verbatim",
-        "Minimum active days (3) and the 500-deep subscription prize ladder verified verbatim (1-10 / 11-50 / 51-250 / 251-500 places)",
-        "Rate limit verified verbatim (paper access prohibited at 60+ transactions per minute)",
-        "Short selling is not addressed in the rules text - the standing caveat for the short-side strategy families",
-        "IR-36 evidence: the Prize Limitation clause names an undefined 'MPT Prize' and 'Flawless Run Prize'"
-      ],
-      "evidence_file": "research/evidence/TV-RULES-MAG7-MAR2026.md",
-      "official_source": true
+  "source_count": 110,
+  "reverified_utc": "2026-09-22",
+  "reverification_note": "2026-09-19 eleventh pass (~19:35Z): contest page and landing page both displayed 99,727 participants. Ranks 1/50/100/250 were byte-identical to R10 (HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50). H44 records frontier stasis with a +64 participant rise. No IR-30. CME hours transcribed for SI/ETH/BTC only. 2026-09-22 twenty-first pass: R12 re-captures of the contest page (registration closes 'Sep 23, 2026 · 04:00 GMT-4'; board top-3 HappyLittleTrades +1,193.11% / someshsingh5845 +1,104.84% / AlphaTradersHub +1,097.33%; 102,747 displayed) and the landing page (102,729 displayed - IR-35 counter mismatch), plus the Magnificent Seven results blog registered as TV-RESULTS-MAG7-APR2026 (top-10 list and '40K+ ... over 530K trades ... almost $85M' scope verbatim). 2026-09-22 twenty-first pass (late): TV-RULES-MAG7-MAR2026 registered after a full re-read of the official rules page (the stocks-edition rule profile had cited this source id without a registry entry - caught by the forward-ledger source check). Constants, ranking metric, auto-close, 3-day minimum and the 500-deep prize ladder verified verbatim; IR-36 logged for the undefined MPT/Flawless Run prize names."
+ },
+ "sources": [
+  {
+   "source_id": "TV-THELEAP-LANDING",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap — Paper Trading Competition by TradingView",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "The Leap is a paper trading (virtual money) competition with real-money prizes",
+    "Identity, dates, sponsor, prize pool and participant count of the live contest",
+    "Verified net-profit records of past #1 finishers"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING.md"
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures — September, 2026",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Prize ladder for the live contest",
+    "Starting balance of 250,000 virtual USD",
+    "5-day minimum trading activity",
+    "Live leaderboard: realized profit % and $ per rank"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026.md"
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures — Terms and Conditions (Official Competition Rules)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Ranking metric: realized profit/loss on closed positions",
+    "Balance 250,000 virtual USD; leverage for futures 20:1",
+    "Complete 94-instrument permitted universe and per-instrument position limits",
+    "Competition period, registration window, eligibility, prize ladder, total cash ARV",
+    "Transaction rate limit and auto-close of open positions"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026.md"
+  },
+  {
+   "source_id": "TV-RULES-TS-JUL2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap with TradeStation — Terms and Conditions",
+   "url": "https://www.tradingview.com/the-leap/tradestation-july-2026/rules/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Prior-edition baseline: 100,000 balance, 10:1 futures leverage, $0.85/contract commission",
+    "Confirmation that leaderboard refreshes no more than once an hour",
+    "Confirmation that contest mechanics change per edition (regime risk)"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-TS-JUL2026.md"
+  },
+  {
+   "source_id": "TV-CONTEST-MAG7-MAR2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by TradingView — March, 2026 (Magnificent Seven)",
+   "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Stocks-edition Leap (March 2026): final #1 return of +17.58% (1.1758x), the smallest winning return of any edition",
+    "Edition facts: 19 days duration, 41,301 participants, prizes = 500 subscriptions, assets = Stocks"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-MAG7-MAR2026.md"
+  },
+  {
+   "source_id": "CME-SOL-GUIDE",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "The essential guide to Solana futures (contract specifications)",
+   "url": "https://www.cmegroup.com/articles/2025/the-essential-guide-to-solana-futures.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "SOL1! contract size 500 SOL; MSL1! contract size 25 SOL",
+    "CME 439 / CME 440 rulebook chapters; Globex codes SOL / MSL",
+    "Minimum price fluctuation and cash settlement reference rate"
+   ],
+   "evidence_file": "research/evidence/CME-SOL-GUIDE.md"
+  },
+  {
+   "source_id": "CME-XRP-PR",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "CME Group to Expand Crypto Derivatives Suite with Launch of XRP Futures (press release, 24 Apr 2025)",
+   "url": "https://www.cmegroup.com/media-room/press-releases/2025/4/24/cme_group_to_expandcryptoderivativessuitewithlaunchofxrpfutures.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "XRP1! contract size 50,000 XRP; MXP1! contract size 2,500 XRP",
+    "Launch date 19 May 2025; cash-settled to the CME CF XRP-Dollar Reference Rate"
+   ],
+   "evidence_file": "research/evidence/CME-XRP-PR.md"
+  },
+  {
+   "source_id": "TV-RESULTS-BENBERNANKE1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "Leap by CME — winners announced (blog)",
+   "url": "https://www.tradingview.com/blog/en/leap-by-cme-winners-announced-50889/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Official confirmation that BenBernanke1 won The Leap by CME (1st place, $3,000)",
+    "CME-edition facts: 59,187 participants, over 3 million trades, announced 2025-03-06",
+    "CME-edition prize ladder: $3,000/$1,500/$1,200/$1,000/$800 + 20x$500 + 25x$300 + 200x 6-month subscriptions"
+   ],
+   "evidence_file": "research/evidence/TV-RESULTS-BENBERNANKE1.md"
+  },
+  {
+   "source_id": "CME-SPEC-BTC1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Bitcoin futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of BTC1!: 5 bitcoin (rule CME 350)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MBT1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Bitcoin futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/micro-bitcoin/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MBT1!: 0.10 bitcoin"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-ETH1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Ether futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/ether/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of ETH1!: 50 ether (rule CME 349)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MET1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Ether futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/ether/micro-ether/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MET1!: 0.1 ether"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-NG1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Henry Hub Natural Gas futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of NG1!: 10,000 mmBtu (rule NYMEX 220)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MNG1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Henry Hub Natural Gas futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/natural-gas/micro-henry-hub-natural-gas.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MNG1!: 1,000 mmBtu (rule NYMEX 440)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-CL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Crude Oil (Light Sweet) futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of CL1!: 1,000 barrels (rule NYMEX 200)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MCL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro WTI Crude Oil futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/micro-wti-crude-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MCL1!: 100 barrels (rule NYMEX 309)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-QM1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "E-mini Crude Oil futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/crude-oil/emini-crude-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of QM1!: 500 barrels (rule NYMEX 401)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-RB1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "RBOB Gasoline futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of RB1!: 42,000 gallons (rule NYMEX 191)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-HO1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "NY Harbor ULSD (Heating Oil) futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/energy/refined-products/heating-oil.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of HO1!: 42,000 gallons (rule NYMEX 150)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SI1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Silver futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SI1!: 5,000 troy ounces (rule COMEX 112)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SIC1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "100-Ounce Silver futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/100-ounce-silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SIC1!: 100 troy ounces (rule COMEX 130)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-SIL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Silver (1000-oz) futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/1000-oz-silver.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SIL1!: 1,000 troy ounces"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-PL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Platinum futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/metals/precious/platinum.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of PL1!: 50 troy ounces"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-NQ1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "E-mini Nasdaq-100 futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/equities/nasdaq/e-mini-nasdaq-100.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of NQ1!: $20 x Nasdaq-100 Index (rule CME 359)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-GME",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "GME",
+   "title": "GME daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.699999988079071 on 2020-04-03 (window 2020-03-01→2020-05-01)",
+    "Verified peak adjclose 86.87750244140625 on 2021-01-27 (window 2021-01-01→2021-02-01, separate fetch)",
+    "Recomputable multiple 124.11x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1583020800&period2=1588291200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1609459200&period2=1612137600&interval=1d"
     }
-  ]
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-AMC",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "AMC",
+   "title": "AMC daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 20.799999237060547 on 2020-04-13 (window 2020-03-01→2020-05-01)",
+    "Verified peak adjclose 625.5 on 2021-06-02 (window 2021-05-15→2021-06-15, separate fetch)",
+    "Recomputable multiple 30.07x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1583020800&period2=1588291200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMC?period1=1621036800&period2=1623715200&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-SMCI",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "SMCI",
+   "title": "SMCI daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 5.242000102996826 on 2022-10-12 (window 2022-10-01→2022-12-01)",
+    "Verified peak adjclose 118.80699920654297 on 2024-03-13 (window 2024-02-15→2024-04-01, separate fetch)",
+    "Recomputable multiple 22.66x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1664582400&period2=1669852800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1707955200&period2=1711929600&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-MSTR",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "MSTR",
+   "title": "MSTR daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 9.220000267028809 on 2020-03-18 (window 2020-03-01→2020-04-15)",
+    "Verified peak adjclose 455.8999938964844 on 2025-07-16 (window 2025-06-15→2025-08-01, plus confirmation window 2025-07-16→2025-12-01)",
+    "Recomputable multiple 49.45x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1749945600&period2=1753920000&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-NVDA",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "NVDA",
+   "title": "NVDA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 11.186724662780762 on 2022-10-14 (window 2022-10-01→2022-11-15); value re-adjusted by vendor 2026-09-16 (was 11.186728477478027), see IR-13",
+    "Verified peak adjclose 135.20562744140625 on 2024-06-18 (window 2024-06-01→2024-07-01, separate fetch); value re-adjusted by vendor 2026-09-16 (was 135.20559692382812), see IR-13",
+    "Recomputable multiple 12.09x (both endpoint generations)"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "reverified_utc": "2026-09-16",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1664582400&period2=1668470400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1717200000&period2=1719792000&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-TSLA",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "TSLA",
+   "title": "TSLA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 24.08133316040039 on 2020-03-18 (window 2020-03-01→2020-04-15)",
+    "Verified peak adjclose 409.9700012207031 on 2021-11-04 (window 2021-10-15→2021-11-15, separate fetch)",
+    "Recomputable multiple 17.02x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1634256000&period2=1636934400&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-PLTR",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "PLTR",
+   "title": "PLTR daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 6.0 on 2022-12-27 (window 2022-12-01→2023-01-15)",
+    "Verified peak adjclose 207.17999267578125 on 2025-11-03 (window 2025-10-15→2025-12-15, separate fetch)",
+    "Recomputable multiple 34.53x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLTR?period1=1760486400&period2=1765756800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-COIN",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "COIN",
+   "title": "COIN daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 32.529998779296875 on 2022-12-28 (window 2022-12-01→2023-01-15)",
+    "Verified peak adjclose 325.4100036621094 on 2024-11-18 (window 2024-11-01→2024-12-01, separate fetch)",
+    "Recomputable multiple 10.00x"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/COIN?period1=1730419200&period2=1733011200&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-MSTR",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "MSTR",
+   "title": "MSTR monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSTR?period1=1514764800&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Monthly locator scan 2018→2026: trough monthly close 11.81 (2020-03), peak monthly close 404.23 (2025-06)",
+    "Selection of the daily trough/peak windows for MSTR"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-GME",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "GME",
+   "title": "GME monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/GME?period1=1009843200&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Full-history monthly scan: all monthly lows 2002–2019 ≥ 1.1775, below which the 2020-04-03 daily trough 0.70 sits",
+    "Confirms the April-2020 trough is the global adjusted low of the fetched history up to that point"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "YAHOO-MONTHLY-SMCI",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "SMCI",
+   "title": "SMCI monthly adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SMCI?period1=1167609600&period2=1789516800&interval=1mo",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Full-history monthly scan: monthly lows ≈ 0.44–0.51 in 2008–2009, disproving the 2022 trough as all-time",
+    "Basis for keeping the SMCI multiple window-bounded (22.66x) rather than asserting an all-time multiple"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-MONTHLY.md"
+  },
+  {
+   "source_id": "CME-SPEC-XRP1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "XRP futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/xrp.contractSpecs.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of XRP1!: 50,000 XRP (rule CME 435), confirmed on the live spec page",
+    "Proof the XRP futures product is listed and trading (XRPU6, volume 174 on 2026-09-15), closing IR-10"
+   ],
+   "evidence_file": "research/evidence/CME-SPEC-XRP.md"
+  },
+  {
+   "source_id": "CME-SPEC-SOL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Solana (SOL) futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/solana/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of SOL1!: 500 SOL (rule CME 439), confirmed on the live spec page 2026-09-16 (SOLU6, last 96.05, volume 1,405)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MSL1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro Solana futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/solana/micro-solana/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MSL1!: 25 SOL (rule CME 440), confirmed on the live spec page 2026-09-16 (MSLU6, last 96.10, volume 1,028)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "CME-SPEC-MXP1!",
+   "publisher": "CME Group Inc.",
+   "tier": "official_primary",
+   "title": "Micro XRP futures — contract specs",
+   "url": "https://www.cmegroup.com/markets/cryptocurrencies/xrp/micro-xrp/specs",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Contract multiplier of MXP1!: 2,500 XRP (rule CME 436), confirmed on the live spec page 2026-09-16 (MXPU6, last 1.2520, volume 5,280)"
+   ],
+   "evidence_file": "research/evidence/CME-CONTRACT-SPECS-BATCH2.md"
+  },
+  {
+   "source_id": "YAHOO-DAILY-ENPH",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "ENPH",
+   "title": "ENPH daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.699999988079071 on 2017-05-18 (window 2017-04-15→2017-06-15, 42 sessions)",
+    "Verified peak adjclose 267.739990234375 on 2021-11-19 (window 2021-10-15→2021-11-20, 26 sessions)",
+    "Recomputable multiple 382.49x",
+    "Bounding fetch (1d): peak follow-up window 2021-11-15 to 2022-01-14: max close 261.12 on 2021-11-22, below the 2021-11-19 peak",
+    "Bounding fetch (1mo): monthly locator 2017-01-01 to 2018-06-01: lowest monthly close 0.76 (May 2017), monthly low 0.65 (May 2017)",
+    "Bounding fetch (1mo): monthly scan Jan-Oct 2021: highest monthly high 229.04 (Feb 2021) < 267.74, so no 2021 close exceeds the archived peak"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1492204800&period2=1497484800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ENPH?period1=1634256000&period2=1637366400&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-AMD",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "AMD",
+   "title": "AMD daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 1.7999999523162842 on 2016-01-20 (window 2016-01-15→2016-03-01, 30 sessions)",
+    "Verified peak adjclose 580.9099731445312 on 2026-06-30 (window 2026-05-20→2026-07-01, 28 sessions)",
+    "Recomputable multiple 322.73x",
+    "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Jun 2026 is the highest monthly close (580.9099731445312) and highest monthly high (584.72998046875); Jul-Sep 2026 highs stay below 575",
+    "Bounding fetch (1d): peak sub-window 2026-06-23 to 2026-07-01 (second fetch, pins the 2026-06-30 close)"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1452816000&period2=1456790400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1779235200&period2=1782864000&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-MARA",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "MARA",
+   "title": "MARA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.4000000059604645 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
+    "Verified peak adjclose 76.08999633789062 on 2021-11-09 (window 2021-10-25→2021-12-01, 26 sessions)",
+    "Recomputable multiple 190.22x",
+    "Bounding fetch (1d): peak follow-up window 2021-11-12 to 2021-12-01: max close 75.91999816894531 (2021-11-12), below the 2021-11-09 peak; the 2021-11-30 close 51.06999969482422 matches the November monthly-close anchor",
+    "Bounding fetch (1mo): monthly locator Aug 2019 to May 2020: lowest monthly close 0.44999998807907104 (Mar 2020), monthly low 0.3499999940395355",
+    "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Nov 2021 has an intraday high below 76.09, and the Nov 2021 daily window pins the max close at 76.08999633789062"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1583020800&period2=1585699200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1635120000&period2=1638316800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-CVNA",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "CVNA",
+   "title": "CVNA daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.7440000176429749 on 2022-12-27 (window 2022-12-01→2023-01-10, 26 sessions)",
+    "Verified peak adjclose 95.69000244140625 on 2026-01-22 (window 2025-12-01→2026-03-01, 60 sessions)",
+    "Recomputable multiple 128.62x",
+    "Bounding fetch (1d): trough follow-up window 2023-01-10 to 2023-02-15: min close 0.8840000033378601 (2023-01-10), above the 2022-12-27 trough",
+    "Bounding fetch (1mo): monthly scan Feb-May 2023: lowest monthly low 1.2899999618530273 (Mar 2023), above the archived trough",
+    "Bounding fetch (1mo): monthly locator Jun 2023 to Sep 2026: highest monthly close before Dec 2025 is 78.03 (Aug 2025); Dec 2025 close 84.40; Jan 2026 high 97.37799835205078 is the 2026-01-22 intraday peak captured in the daily window; Feb-Aug 2026 highs stay below 84",
+    "Bounding fetch (1mo): events=splits fetch 2022-12-01 to 2026-09-14: \"events\":{\"splits\":{\"1777608000\":{\"date\":1778247000,\"numerator\":5.0,\"denominator\":1.0,\"splitRatio\":\"5:1\"}}}"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1669852800&period2=1673308800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CVNA?period1=1764547200&period2=1772323200&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-RIOT",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "RIOT",
+   "title": "RIOT daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 0.6499999761581421 on 2020-03-18 (window 2020-03-01→2020-04-01, 22 sessions)",
+    "Verified peak adjclose 77.9000015258789 on 2021-02-17 (window 2021-02-01→2021-03-15, 29 sessions)",
+    "Recomputable multiple 119.85x",
+    "Bounding fetch (1mo): monthly locator Jan 2019 to May 2020: lowest monthly close 0.8330000042915344 (Mar 2020), monthly low 0.5109999775886536",
+    "Bounding fetch (1mo): monthly scan Jun 2020 to May 2022: every month except Feb 2021 has an intraday high below 77.90; Mar 2021 high 67.85 and Apr 2021 high 61.55 bound all later closes below the archived peak; the 2021-02-26 close 43.7400016784668 matches the February monthly-close anchor"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1583020800&period2=1585699200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RIOT?period1=1612137600&period2=1615766400&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-NVAX",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "NVAX",
+   "title": "NVAX daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 3.930000066757202 on 2020-01-10 (window 2019-12-01→2020-01-15, 30 sessions)",
+    "Verified peak adjclose 319.92999267578125 on 2021-02-08 (window 2021-02-01→2021-02-27, 19 sessions)",
+    "Recomputable multiple 81.41x",
+    "Bounding fetch (1mo): monthly locator Jun 2018 to Dec 2019: lowest monthly close 3.9800000190734863 (Dec 2019), monthly low 3.8499999046325684",
+    "Bounding fetch (1mo): monthly scan Jan-Jun 2020: lowest monthly low 3.6500000953674316 (Jan 2020); Feb 2020 low 6.26 excludes a lower close after the archived trough",
+    "Bounding fetch (1mo): monthly scan Jul 2020 to Nov 2021: every month except Feb 2021 has an intraday high below 319.93 (max Aug 2021 high 260.0), so no other month can contain a higher close; the 2021-02-26 close 231.22999572753906 matches the February monthly-close anchor"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1575158400&period2=1579046400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVAX?period1=1612137600&period2=1614556800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-APP",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "APP",
+   "title": "APP daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 9.300000190734863 on 2022-12-27 (window 2022-12-01→2023-01-15, 30 sessions)",
+    "Verified peak adjclose 733.5999755859375 on 2025-12-22 (window 2025-09-01→2026-01-01, 86 sessions)",
+    "Recomputable multiple 78.88x",
+    "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: highest monthly close before the daily window is 718.5399780273438 (Sep 2025); Jan-Aug 2026 highs stay below 684, bounding all later closes below the archived peak",
+    "Bounding fetch (1mo): monthly scan Apr-Nov 2022: lowest monthly low 13.0 (Nov 2022), above the archived Dec 2022 trough"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/APP?period1=1756684800&period2=1767225600&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-SHOP",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "SHOP",
+   "title": "SHOP daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 1.9329999685287476 on 2016-02-12 (window 2016-01-01→2016-02-20, 33 sessions)",
+    "Verified peak adjclose 179.00999450683594 on 2025-10-29 (window 2025-10-01→2025-11-01, 23 sessions)",
+    "Recomputable multiple 92.61x",
+    "Bounding fetch (1mo): monthly locator Oct 2015 to Apr 2016: lowest monthly close 2.23799991607666 (Jan 2016), monthly low 1.8480000495910645",
+    "Bounding fetch (1mo): monthly scan Jan 2019 to Nov 2021: only Nov 2021 has an intraday high (176.2917938232422) above the Nov-2021 interim daily peak close 169.05999755859375 (2021-11-19)",
+    "Bounding fetch (1d): interim peak window Nov 2021: max close 169.05999755859375 on 2021-11-19 (last session of the window)",
+    "Bounding fetch (1mo): monthly locator Jun 2024 to Sep 2026: Oct 2025 is the highest-close month (173.86000061035156, matching the 2025-10-31 daily close anchor); Dec 2025 high 178.375 and all later monthly highs stay below the archived peak close"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1451606400&period2=1455926400&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHOP?period1=1759276800&period2=1762041600&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-PLUG",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "PLUG",
+   "title": "PLUG daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 1.0099999904632568 on 2018-12-20 (window 2018-12-01→2019-02-01, 40 sessions)",
+    "Verified peak adjclose 73.18000030517578 on 2021-01-26 (window 2021-01-01→2021-02-01, 19 sessions)",
+    "Recomputable multiple 72.46x",
+    "Bounding fetch (1mo): monthly locator Jan 2019 to Apr 2021: Feb 2021 high 70.51000213623047 and all later monthly highs stay below the archived peak close; the 2021-01-29 close 63.16999816894531 matches the January monthly-close anchor",
+    "Bounding fetch (1mo): monthly scan Jun-Dec 2018: lowest monthly low outside Dec 2018 is 1.7100000381469727 (Nov 2018); Dec 2018 monthly low 0.9900000095367432 is inside the daily trough window",
+    "Bounding fetch (1d): alternate 2020 COVID trough window: min close 2.759999990463257 (2020-03-16), superseded by the deeper 2018-12-20 trough"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1543622400&period2=1548979200&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PLUG?period1=1609459200&period2=1612137600&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-NIO",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "NIO",
+   "title": "NIO daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 1.3200000524520874 on 2019-10-01 (window 2019-09-25→2019-10-15, 14 sessions)",
+    "Verified peak adjclose 62.84000015258789 on 2021-02-09 (window 2021-01-01→2021-02-26, 38 sessions)",
+    "Recomputable multiple 47.61x",
+    "Bounding fetch (1d): trough guard window 2019-09-03 to 2019-09-24: min close 2.5999999046325684 (2019-09-03), above the archived trough",
+    "Bounding fetch (1mo): monthly locator Sep 2018 to Jan 2021: only the Oct 2019 bar has a monthly low (1.190000057220459) below 1.32; the Oct 2019 daily window pins the min close at 1.3200000524520874",
+    "Bounding fetch (1mo): monthly scan 2021: Jan 2021 high 66.99 and Feb 2021 high 64.60 are the only months above 62.85; both are covered by the daily peak windows; Mar-Dec 2021 highs stay below 55.14; the 2021-02-26 close 45.779998779296875 matches the February monthly-close anchor"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1569369600&period2=1571097600&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NIO?period1=1609718400&period2=1614556800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-PTON",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "PTON",
+   "title": "PTON daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 19.510000228881836 on 2020-03-12 (window 2020-03-01→2020-04-15, 31 sessions)",
+    "Verified peak adjclose 167.4199981689453 on 2021-01-14 (window 2020-12-15→2021-02-01, 31 sessions)",
+    "Recomputable multiple 8.58x",
+    "Bounding fetch (1mo): monthly scan Jan 2020 to Jan 2021: every month before Dec 2020 has an intraday high below 139.76, and the Dec 2020 high 167.3699951171875 is below the archived peak close",
+    "Bounding fetch (1mo): monthly scan 2021: Feb-Dec 2021 highs stay below 157.84, bounding all later closes below the archived peak; the 2020-12-31 close 151.72000122070312 and 2021-01-29 close 146.1300048828125 match the December and January monthly-close anchors"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1583020800&period2=1586908800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PTON?period1=1608009600&period2=1612137600&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "YAHOO-DAILY-HOOD",
+   "publisher": "Yahoo Finance chart API (market data vendor — not an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "symbol": "HOOD",
+   "title": "HOOD daily adjusted-close series (Yahoo Finance v8 chart API)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Verified trough adjclose 7.699999809265137 on 2022-12-28 (window 2022-12-01→2023-01-15, 30 sessions)",
+    "Verified peak adjclose 152.4600061035156 on 2025-10-09 (window 2025-10-01→2025-11-15, 33 sessions)",
+    "Recomputable multiple 19.8x",
+    "Bounding fetch (1d): trough guard window 2022-11-15 to 2022-11-30: min close 8.850000381469727 (2022-11-21), above the archived trough",
+    "Bounding fetch (1mo): monthly locator Jan 2025 to Sep 2026: Oct 2025 is the highest-close month (146.77999877929688, matching the 2025-10-31 daily close anchor); Nov 2025 high 149.41 is below the archived peak close; Dec 2025 onward monthly highs stay below 139.76"
+   ],
+   "evidence_file": "research/evidence/VOLATILE-STOCKS-YAHOO-DAILY.md",
+   "endpoint_urls": [
+    {
+     "label": "trough_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1669852800&period2=1673740800&interval=1d"
+    },
+    {
+     "label": "peak_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HOOD?period1=1759276800&period2=1763164800&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "TV-QUOTE-SOL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:SOL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-SOL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 98.35 USD",
+    "Capacity-model price input for CME:SOL1!",
+    "Source-reported time: 2026-09-16 17:21 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MSL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MSL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MSL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 97.95 USD",
+    "Capacity-model price input for CME:MSL1!",
+    "Source-reported time: 2026-09-16 16:57 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-XRP1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:XRP1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-XRP1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1.303 USD",
+    "Capacity-model price input for CME:XRP1!",
+    "Source-reported time: 2026-09-16 16:49 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MXP1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MXP1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MXP1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1.2955 USD",
+    "Capacity-model price input for CME:MXP1!",
+    "Source-reported time: 2026-09-16 17:22 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-BTC1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:BTC1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-BTC1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 76085.0 USD",
+    "Capacity-model price input for CME:BTC1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MBT1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MBT1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MBT1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 76025.0 USD",
+    "Capacity-model price input for CME:MBT1!",
+    "Source-reported time: 2026-09-16 17:23 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-ETH1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:ETH1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-ETH1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2409.5 USD",
+    "Capacity-model price input for CME:ETH1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MET1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME:MET1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME-MET1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2392.5 USD",
+    "Capacity-model price input for CME:MET1!",
+    "Source-reported time: 2026-09-16 17:29 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-NG1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:NG1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-NG1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2.891 USD",
+    "Capacity-model price input for NYMEX:NG1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MNG1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:MNG1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-MNG1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 2.891 USD",
+    "Capacity-model price input for NYMEX:MNG1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-CL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:CL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-CL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.43 USD",
+    "Capacity-model price input for NYMEX:CL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-QM1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX_MINI:QM1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX_MINI-QM1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.425 USD",
+    "Capacity-model price input for NYMEX_MINI:QM1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-MCL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:MCL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-MCL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 102.43 USD",
+    "Capacity-model price input for NYMEX:MCL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-RB1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:RB1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-RB1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 3.2332 USD",
+    "Capacity-model price input for NYMEX:RB1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-HO1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:HO1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-HO1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 5.0003 USD",
+    "Capacity-model price input for NYMEX:HO1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SI1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX:SI1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX-SI1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 64.92 USD",
+    "Capacity-model price input for COMEX:SI1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SIC1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX:SIC1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX-SIC1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 63.2 USD",
+    "Capacity-model price input for COMEX:SIC1!",
+    "Source-reported time: 2026-09-16 17:29 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-SIL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "COMEX_MINI:SIL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/COMEX_MINI-SIL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 64.92 USD",
+    "Capacity-model price input for COMEX_MINI:SIL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-PL1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "NYMEX:PL1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/NYMEX-PL1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 1785.9 USD",
+    "Capacity-model price input for NYMEX:PL1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-QUOTE-NQ1",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "CME_MINI:NQ1! continuous-contract overview and displayed quote",
+   "url": "https://www.tradingview.com/symbols/CME_MINI-NQ1!/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Captured display price 29256.75 USD",
+    "Capacity-model price input for CME_MINI:NQ1!",
+    "Source-reported time: 2026-09-16 16:59 GMT-4"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-QUOTE-SNAPSHOT-2026-09-16.md"
+  },
+  {
+   "source_id": "TV-PINE-STRATEGIES",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "Pine Script strategies — concepts and Strategy Report",
+   "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Pine strategies simulate trades on historical and realtime bars",
+    "Strategy Report and Deep Backtesting capabilities",
+    "Broker-emulator and fill-model limitations"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PINE-AUTOTRADE",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How to autotrade using Pine Script strategies",
+   "url": "https://www.tradingview.com/support/solutions/43000481026-how-to-autotrade-using-pine-script-strategies/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Automated Pine strategy trading with a TradingView brokerage account is not available",
+    "Pine Strategy Report is not competition-account execution"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PINE-LEVERAGE",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How to simulate trading with leverage in Pine Script",
+   "url": "https://www.tradingview.com/support/solutions/43000717375-how-to-simulate-trading-with-leverage-in-pine-script/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "5% margin models 20:1 leverage",
+    "MarginRequired formula used by the capacity model",
+    "Margin-call limitations of Pine strategy simulation"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "TV-PAPER-PNL",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "How position profit and loss is calculated in Paper Trading",
+   "url": "https://www.tradingview.com/support/solutions/43000719857-how-is-position-profit-and-loss-in-paper-trading-calculated/",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Bid/ask execution mechanics in Paper Trading",
+    "Long-futures P/L formula",
+    "Documentation inconsistency in the short-futures formula (IR-14)"
+   ],
+   "evidence_file": "research/evidence/TRADINGVIEW-STRATEGY-TOOLS.md"
+  },
+  {
+   "source_id": "CME-CONTINUOUS-SERIES",
+   "publisher": "CME Group",
+   "tier": "official_primary",
+   "title": "CME Group Continuous Price Series",
+   "url": "https://www.cmegroup.com/market-data/cme-group-continuous-price-series.html",
+   "accessed_utc": "2026-09-16",
+   "used_for": [
+    "Official settlement-based active/front continuous-series methodology",
+    "Licensed historical series option for futures backtesting",
+    "Volume and open-interest capacity data option"
+   ],
+   "evidence_file": "research/evidence/CME-CONTINUOUS-SERIES.md"
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R2",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Second timestamped capture of the public leaderboard frontier (ranks 1/50/100/250), displayed participant count, prize structure and the 94-instrument eligibility count",
+    "Frontier drift between 2026-09-16T21:39:34Z and 2026-09-17T00:30:00Z in data/frontier_history.json"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17.md",
+   "official_source": true
+  },
+  {
+   "source_id": "YAHOO-FUTURES-CHART",
+   "publisher": "Yahoo (market-data vendor; not an exchange, regulator or the contest organiser)",
+   "tier": "market_data_vendor",
+   "title": "Yahoo Finance chart API - daily bars for the selected contest futures (front-month continuous, unadjusted rolls)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Daily OHLC history for the walk-forward simulation of the pre-registered strategy candidates (data/market_history/, data/backtest_results.json)",
+    "Realized-volatility and explosive-move metrics for the selected futures (data/volatility_intelligence.json)",
+    "Price series replayed through the futures division of the forward-test PnL ledger (data/forward_test_ledger.json)"
+   ],
+   "evidence_file": "research/evidence/YAHOO-FUTURES-CAPTURE-2026-09-17.md",
+   "official_source": false,
+   "endpoint_urls": [
+    {
+     "label": "CME:SOL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SOL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MSL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:XRP1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/XRP=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MXP1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MXP=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:BTC1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/BTC=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MBT1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MBT=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:ETH1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/ETH=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME:MET1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MET=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:NG1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NG=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:MNG1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MNG=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:CL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX_MINI:QM1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/QM=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:MCL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MCL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:RB1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/RB=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:HO1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/HO=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX:SI1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SI=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX:SIC1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIC=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "COMEX_MINI:SIL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/SIL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "NYMEX:PL1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/PL=F?period1=1726531200&period2=1789689600&interval=1d"
+    },
+    {
+     "label": "CME_MINI:NQ1!",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?period1=1726531200&period2=1789689600&interval=1d"
+    }
+   ],
+   "transport_note": "Captured by scripts/fetch_market_data.py in the capture-market-data GitHub Actions workflow; direct vendor requests are retried through the public allorigins relay when the runner IP is rate-limited (HTTP 429). Every payload is validated against the expected vendor symbol and OHLC invariants and spot-verified against independent in-session captures recorded in the evidence file."
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R3",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, third pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Third timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (95,709)",
+    "Frontier drift 2026-09-16T21:39:34Z -> 2026-09-17T00:30:00Z -> 2026-09-17T16:56:00Z in data/frontier_history.json",
+    "FAQ re-confirmation of the trading window, registration close and late-registration behaviour"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R3.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R3",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Line-by-line re-verification on 2026-09-17 that no rule constant changed: dates, 250,000 balance, 20:1 leverage, 5 active days, 94-symbol universe with per-instrument caps (0 equities), ranking metric, auto-close, 60/min rate limit, prize ladder, 50,000 ARV, payment methods, results timing"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R3.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R3",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged as of 2026-09-17"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R3.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,095)",
+    "Observation that the displayed rank-50 frontier decreased $3,583.50 versus the 16:56Z capture while ranks 100/250 rose (IR-23, H20)",
+    "Prize-block re-confirmation ($10,000/$7,000/$6,000/$3,500/$2,500/$550/$400/3-month subscription; top 300 win)"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R4.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth line-by-line re-verification: dates, 250,000 balance, 20:1 leverage, 5 active days, 94-symbol universe with per-instrument caps (0 equities, programmatic diff 94/94 identical including order), ranking metric, auto-close, 60/min rate limit, prize ladder, 50,000 ARV, payment methods, tie rule, disqualification clause"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R4.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R4",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17, fourth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fourth re-verification that the 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged (maximum remains 53.2072x, none at or above 100x)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R4.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R5",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, fifth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fifth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,236)",
+    "Observation that ranks 1 and 50 were byte-identical to the 19:04Z capture while ranks 100 and 250 rose (H22)",
+    "Row-identity tracking: capture-4's rank-100 row re-read at rank 101 and capture-3's rank-100 row at rank 105",
+    "Prize-block and eligible-instrument re-confirmation (12 named instruments + 'and 82 more' = the 94-symbol universe)"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R5.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R5",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, fifth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fifth line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe with all 94 caps transcribed in this pass",
+    "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R5.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R5",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17, fifth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Fifth re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
+    "Live-edition hero counter (96,230) versus the contest-page counter (96,236) recorded as the asynchronous-counter pattern IR-09"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R5.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R6",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, sixth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Sixth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,268)",
+    "Observation that ALL FOUR tracked frontiers were byte-identical to the 20:58Z capture while participants rose +32 (H24)",
+    "Participants hero async check: landing 96,263 vs contest 96,268 (IR-09)"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R6.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R6",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, sixth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Sixth line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe with all 94 caps transcribed in this pass",
+    "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R6.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R6",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17, sixth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Sixth re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
+    "Live-edition hero counter (96,263) versus the contest-page counter (96,268) recorded as the asynchronous-counter pattern IR-09"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R6.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R7",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (leaderboard re-capture 2026-09-17, seventh pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Seventh timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,344)",
+    "Observation of major threshold acceleration: Rank 50 rose +$111,303.63 (+44.52 pp), Rank 100 rose +$76,695.00 (+30.68 pp), Rank 250 rose +$38,065.50 (+15.23 pp) in 1.68 hours (H25)",
+    "Participants hero async check: landing 96,336 vs contest 96,344 (IR-09)"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-17-R7.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R7",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (re-verified 2026-09-17, seventh pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Seventh line-by-line re-verification: dates, registration window, eligible territories, 250,000 balance, 20:1 leverage, 5 active days, 60/min rate limit, ranking metric, hourly board refresh, no account reset, auto-close, 94-symbol universe",
+    "Prize ladder, 50,000 USD cash ARV, wire/PayPal thresholds and the 14-day claim deadline"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R7.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R7",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (champions list re-verified 2026-09-17, seventh pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-17",
+   "used_for": [
+    "Seventh re-verification that all 15 completed-edition champion records in data/verified_explosive_returns.json are unchanged in name, percentage and participant count (maximum remains 53.2072x, none at or above 100x)",
+    "Live-edition hero counter (96,336) versus the contest-page counter (96,344) recorded as the asynchronous-counter pattern IR-09"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R7.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R8",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-18, eighth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-18",
+   "used_for": [
+    "Eighth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250) and displayed participant count (96,586)",
+    "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-18-R8.md",
+   "official_source": true
+  },
+  {
+   "source_id": "YAHOO-INTRADAY-CHART",
+   "publisher": "Yahoo Finance chart API (market data vendor — NOT an official exchange or regulator)",
+   "tier": "market_data_vendor",
+   "official_source": false,
+   "title": "Yahoo Finance v8 chart API — 15-minute, hourly and long daily bars for the 20-stock volatile pool and the contest futures (capture path of scripts/fetch_intraday.py)",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&period2=1758240000&interval=15m",
+   "accessed_utc": "2026-09-18",
+   "used_for": [
+    "Intra-session gap-fill measurement (does a session gap fill, how many bars does it take) on committed 15-minute and hourly bars",
+    "Execution-latency measurement (next-open and k-bar-delayed fills in basis points of the decision close) for the paper-competition fill model",
+    "Price series for the volatile-stock division of the repository's own paper competition (data/stock_competition_results.json)",
+    "Long daily series (~10 years) for the warm-up window of the stock models"
+   ],
+   "evidence_file": "research/evidence/YAHOO-INTRADAY-CAPTURE.md",
+   "endpoint_urls": [
+    {
+     "label": "15m_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1757635200&period2=1758240000&interval=15m"
+    },
+    {
+     "label": "1h_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1747612800&period2=1758240000&interval=1h"
+    },
+    {
+     "label": "1d_long_window",
+     "url": "https://query1.finance.yahoo.com/v8/finance/chart/MARA?period1=1441929600&period2=1758240000&interval=1d"
+    }
+   ]
+  },
+  {
+   "source_id": "NYSE-HOURS-CALENDAR",
+   "publisher": "New York Stock Exchange (Intercontinental Exchange)",
+   "tier": "official_secondary",
+   "title": "NYSE trading calendar — holidays and hours",
+   "url": "https://www.nyse.com/markets/hours-calendars",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Rule-based US equity full-closure table in intel/calendar.py annotating studied intraday sessions (weekend gaps vs gaps spanning an exchange holiday)",
+    "Line-by-line verification of the 2016-2026 closure transcription (completed 2026-09-19; see research/evidence/NYSE-CALENDAR-2016-2026.md)"
+   ],
+   "evidence_file": "research/evidence/NYSE-CALENDAR-2016-2026.md",
+   "endpoint_urls": [
+    {
+     "label": "nyse_hours_calendars",
+     "url": "https://www.nyse.com/markets/hours-calendars"
+    },
+    {
+     "label": "nyse_trading_days_pdf",
+     "url": "https://www.nyse.com/publicdocs/Trading_Days.pdf"
+    }
+   ],
+   "verification_note": "Transcribed as deterministic rules in this sandbox (no network); every date must be re-verified against the official page before authoritative use.",
+   "notes": "Historical years were read from Internet Archive captures of this same nyse.com page, the 2026 schedule was cross-checked on Nasdaq Trader, and the two special closures against ICE/NYSE press releases; all those URLs are listed in the evidence file."
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R10",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-19, tenth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Ninth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250: HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50) and displayed participant count (99,663)",
+    "Prize ladder and essentials re-verification (unchanged); first observed rank-1 turnover (H40)",
+    "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R10.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R10",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (official rules re-verification 2026-09-19, tenth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Tenth re-verification of the section-08 94-instrument universe and per-instrument caps (94/94 match, 0 equities)",
+    "Tenth re-verification of the section-09 prize ladder, $50,000 cash ARV, 14-day claim window, and balance/leverage/activity/ranking constants (all match)",
+    "Observed section-09 payment-rails text now reads a 600 USD Wire/PayPal split vs 1,000 USD at R3-R6; flagged as IR-29, contest_config.json unchanged pending manual review"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R10.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R10",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-19, tenth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Tenth re-verification of all 15 completed-edition #1 records (all unchanged; maximum 53.2072x; none at/above 100x)",
+    "Live-edition hero count 99,658 vs contest-board 99,663 (IR-09 asynchronous counters, delta +5)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R10.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R11",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-19, eleventh pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Tenth timestamped capture of the public leaderboard frontier (ranks 1/50/100/250 unchanged vs R10: HappyLittleTrades +$2,485,745.50 / ashutoshrajan6 +$1,459,666.50 / aoe900620 +$1,181,405.00 / maxeq +$757,562.50) and displayed participant count (99,727, +64 vs R10)",
+    "H44 evidence: complete frontier stasis with a rising participant count while registration remains open",
+    "Current point-in-time comparison for the moving public board; not a final prize cutoff and not a trade-history source"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-19-R11.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R11",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-19, eleventh pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-19",
+   "used_for": [
+    "Eleventh live-edition hero count 99,727 matching the contest-board 99,727 at the same session (IR-09 asynchronous-counter delta 0 at this capture)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-R11.md",
+   "official_source": true
+  },
+  {
+   "source_id": "ALPACA-STOCKBARS-DOCS",
+   "publisher": "Alpaca (brokerage and market-data API provider; authoritative for its own API, not an exchange, regulator or the contest organiser)",
+   "tier": "official_secondary",
+   "official_source": true,
+   "title": "Alpaca US equity bars API reference (IEX feed, /v2/stocks/{symbol}/bars) - the credential-gated official-provider route used by .github/workflows/official-bars.yml",
+   "url": "https://docs.alpaca.markets/us/reference/stockbars",
+   "accessed_utc": "2026-09-20",
+   "used_for": [
+    "Documents the official-provider bar endpoint the official-bars lane calls when repository secrets APCA_API_KEY_ID / APCA_API_SECRET_KEY are present",
+    "States the IEX feed and split-adjustment semantics recorded in data/official_bars/availability.json"
+   ],
+   "evidence_file": "research/evidence/ALPACA-OFFICIAL-BARS-ROUTE.md"
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R12",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official page re-capture 2026-09-22, twelfth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Registration deadline verified verbatim: 'Join until Sep 23, 2026 · 04:00 GMT-4' - the live contest closes to new registrations the day after this capture",
+    "Trading window verified verbatim: 'Paper trade from September 1 to September 30, and for at least 5 days.' and prize display '$50 K + 250 plans'",
+    "Public leaderboard top rows re-captured (rank 1 HappyLittleTrades +1,193.11% / +$2,982,777.45; rank 2 someshsingh5845 +1,104.84%; rank 3 AlphaTradersHub +1,097.33%) with 102,747 displayed participants and a top-250 public board",
+    "data/live_contest_clock.json source of record; placement-arithmetic comparison against the repository's leaderboard lab"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R12.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-R12",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap landing page (official re-capture 2026-09-22, twelfth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Champion table re-verified against the previously committed records (futures July 2026 Me-tis +155.95%, forex June 2026 Minitrader91 +91.87%, crypto May 2026 Manishh_jain92 +271.78%, stocks March 2026 prodigy5284 +17.58%, multi-asset April 2025 ICT_Hispanohablantes +308.07%, futures February 2025 BenBernanke1 +5,220.72%)",
+    "IR-35 evidence: the landing counter (102,729) and the contest-page counter (102,747) disagree by 18 within the same capture session"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-2026-09-22-R12.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RESULTS-MAG7-APR2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "It's time to see the results of The Leap: Magnificent Seven (official TradingView Blog results post, captured 2026-09-22)",
+   "url": "https://www.tradingview.com/blog/en/the-leap-magnificent-seven-results-57868/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Official stocks-edition top-10 result list (1st prodigy5284 ... 10th mantas19rm) with the published scope: '40K+ of you completed over 530K trades, with a total earned virtual profit of almost $85M' on TSLA, NVDA, META, AAPL, GOOGL, MSFT, AMZN",
+    "Cross-check of data/verified_explosive_returns.json stocks-edition record and the stocks-edition rule constants (100,000 balance, 1:1 leverage, 50-unit cap)"
+   ],
+   "evidence_file": "research/evidence/TV-RESULTS-MAG7-APR2026.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-MAG7-MAR2026",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap: Magnificent Seven - Official Competition Rules (stocks edition, captured 2026-09-22)",
+   "url": "https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "RULE_PROFILES['stocks_official_leap'] constants verified verbatim: 100,000 virtual USD balance, 1:1 stocks leverage, 0.01% commission, 50.0-unit per-instrument cap",
+    "Ranking metric (realized profit/loss on closed positions) and end-of-competition auto-close verified verbatim",
+    "Minimum active days (3) and the 500-deep subscription prize ladder verified verbatim (1-10 / 11-50 / 51-250 / 251-500 places)",
+    "Rate limit verified verbatim (paper access prohibited at 60+ transactions per minute)",
+    "Short selling is not addressed in the rules text - the standing caveat for the short-side strategy families",
+    "IR-36 evidence: the Prize Limitation clause names an undefined 'MPT Prize' and 'Flawless Run Prize'"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-MAG7-MAR2026.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-CONTEST-AMP-SEP2026-R13",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - September 2026 (official leaderboard re-capture 2026-09-22, thirteenth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Eleventh timestamped capture of the public leaderboard frontier (ranks 1/50/100/250: HappyLittleTrades +$2,982,777.45 / TRAD_ERDO +$1,525,023.75 / rishig90x +$1,236,663.00 / kumarv3 +$866,600.85) and displayed participant count (102,886, +3,159 vs R11)",
+    "H58 evidence: all four tracked frontiers rose between the R11 and R13 captures in the edition's final registration day",
+    "H59 / IR-37 evidence: displayed rank 7 (rajgaurav009 +$2,608,807.00) shows more realized profit than rank 6 (huliusalecsander +$2,566,954.75) at this capture",
+    "data/live_contest_clock.json source of record; placement-arithmetic comparison against the repository's leaderboard lab"
+   ],
+   "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R13.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-RULES-AMP-SEP2026-R13",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap by AMP Futures - Terms and Conditions (official rules re-verification 2026-09-22, thirteenth pass)",
+   "url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Thirteenth re-verification of the section-08 94-instrument universe and per-instrument caps (94/94 symbols, 94/94 caps, identical order, 0 equities)",
+    "Thirteenth re-verification of the section-09 prize ladder, $50,000 cash ARV, 14-day claim window, and the dates/balance/leverage/activity/ranking constants (all match; payment rail unchanged vs R10, IR-29 stands)",
+    "Re-confirmation that the Prize Limitation clause names undefined MPT/Flawless Run prizes (IR-36)"
+   ],
+   "evidence_file": "research/evidence/TV-RULES-AMP-SEP2026-R13.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-THELEAP-LANDING-2026-09-22-R13",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "The Leap - Paper Trading Competition by TradingView (landing re-verification 2026-09-22, thirteenth pass)",
+   "url": "https://www.tradingview.com/the-leap/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Champion-sample re-verification: all 15 completed #1 records match data/verified_explosive_returns.json field for field (no new completed edition since R12; maximum remains +5,220.72% = 53.2072x)",
+    "Landing hero counter 102,883 vs contest-page 102,886 minutes apart (IR-35 continuing observation, delta 3)"
+   ],
+   "evidence_file": "research/evidence/TV-THELEAP-LANDING-2026-09-22-R13.md",
+   "official_source": true
+  },
+  {
+   "source_id": "TV-PAPER-TRADING-SHORT-SIDE",
+   "publisher": "TradingView, Inc.",
+   "tier": "official_primary",
+   "title": "Magnificent Seven official rules + Paper Trading main functionality help page (short-side eligibility re-read 2026-09-22)",
+   "url": "https://www.tradingview.com/support/solutions/43000516466-paper-trading-main-functionality/",
+   "accessed_utc": "2026-09-22",
+   "used_for": [
+    "Completed next-session suggestion #5: line-by-line re-read of the stocks-edition rules found no short-selling prohibition or permission anywhere in the text (unverified, not forbidden)",
+    "Official confirmation that the Paper Trading order ticket documents side (buy/sell), so sell orders exist in the simulator",
+    "Standing caveat for the short-side strategy families (C18, C31, C33, C34, F2)"
+   ],
+   "evidence_file": "research/evidence/TV-PAPER-TRADING-SHORT-SIDE-2026-09-22.md",
+   "official_source": true
+  }
+ ]
 }

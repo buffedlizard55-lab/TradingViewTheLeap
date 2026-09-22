@@ -1,27 +1,26 @@
-> **2026-09-22 audit (twenty-first pass):** Four NEW structurally-distinct contrarian families are
-> frozen and rostered: **C31** failed-breakout upthrust short (Wyckoff bull-trap twin of C20),
-> **C32** hammer-rejection sniper (volume-free bar-shape trigger), **C33** thin melt-up fade
-> short (fires when volume is ABSENT), **C34** gap-exhaustion engulfing fade (failure twin of
-> the C14/C29 gap-hold longs) — registered as **H52–H55** with 8 new usernames
-> (UpthrustUrsula/CeilingTrapCal, RejectionRocco/WickWizardWilla, ThinMeltTina/MeltupMaven,
-> ExhaustionEzra/IslandIzzy); roster now **70 usernames (66 daily, 4 hourly)**. Verdicts
-> assigned mechanically for **H34–H55 (20 hypotheses)**: H36/H47 supported; H34/H37 partially
-> supported; H39/H41/H42 inconclusive zero-fire; H52–H55 all refuted on first full-pool run
-> (models stay frozen per the variant gate). New **forward-test PnL ledger**
-> ([data/forward_test_ledger.json](data/forward_test_ledger.json),
-> [research/NEXT-SESSION.md](research/NEXT-SESSION.md)) replays every username on the latest
-> window of each division with every closed tranche recorded (**210 usernames, 2,978 tranches**,
-> running cumulative P/L, cross-checked against `latest_edition` within one cent per tranche).
-> The **executive summary now leads with the orders** (answer first, caveats after) and adds a
-> **live contest clock**: official page verbatim `Join until Sep 23, 2026 · 04:00 GMT-4`
-> ([source](https://www.tradingview.com/the-leap/amp-futures-september-2026/),
-> [evidence](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R12.md)) — the live edition is
-> futures-only with public-board leaders at +934%…+1,193%. R12 official re-captures registered
-> (contest page, landing page, Mag7 results post) plus a full Mag7-rules read registering the
-> previously-cited-but-unregistered `TV-RULES-MAG7-MAR2026`; **IR-35** logged (landing 102,729 vs
-> contest 102,747 counter mismatch) and **IR-36** (official rules name undefined MPT/Flawless Run
-> prizes). Captures remain **Yahoo vendor-tier** (IR-32). Verification: **431 checks passed,
-> 0 failed** (1 audited warning, IR-22) and **180 unit tests green**. See
+> **2026-09-22 audit (twenty-second pass):** Final-registration-week captures and two NEW
+> volume-free contrarian futures families. **R13 official frontier** (capture #11,
+> 2026-09-22T23:00:00Z, **102,886 participants**): rank 1 HappyLittleTrades **+1,193.11% /
+> $2,982,777.45**, rank 50 **$1,525,023.75**, rank 100 **$1,236,663.00**, rank 250
+> **$866,600.85** — all four frontiers rose vs R11 (**H58 supported**, +3,159 participants);
+> the displayed board proved **non-monotonic** between ranks 6/7 (**H59 supported**, logged as
+> **IR-37**), and the landing counter read 102,883 (delta 3, IR-35 continuation). Rules re-read
+> line by line: §08 universe **94/94 match**, prize ladder and `≥$600 wire-only` (IR-29) /
+> undefined MPT-Flawless names (IR-36) re-confirmed; full **short-side eligibility re-read**
+> (Mag7 rules: no short/sell/borrow clause anywhere + official Paper Trading `side (buy/sell)`
+> docs) closes NEXT-SESSION suggestion #5. Two NEW frozen futures models rostered: **F1**
+> compressed-streak fade and **F2** swing-failure reclaim (preregistered, synthetic-test bugs
+> fixed pre-run) with 4 new usernames (StreakStan/CompressCleo, SpringSasha/CreekCasey) —
+> roster **19 (16 contrarian + 3 baselines)**; competition re-run (stamp
+> 2026-09-22T23:10:00Z, **456 participant-editions**, existing-15 PnL byte-identical) with
+> verdicts **H56 supported** (F1 family mean beats the baseline mean, both prongs) and **H57
+> refuted** (F2 family mean trails; CreekCasey still printed the family's only ≥5x edition at
+> 6.636686x while ruining 8/24 — variant gate applies). The **forward-test ledger grew the
+> futures division** (engine `forward-ledger-2`): all **229 usernames, 3,007 tranches**, every
+> username cross-checked against its `latest_edition` (all 229 within one cent per tranche;
+> stock divisions byte-identical to the prior engine). Hypotheses **H56–H59** registered
+> (count 59); sources **110**; evidence files for contest/landing/rules R13 + the short-side
+> addendum. Verification: **444 checks passed, 0 failed** (1 audited warning, IR-22). See
 > [the three-pass review](research/implementation_review.md) and
 > [the next-session plan and limitations](research/NEXT-SESSION.md).
 
@@ -431,8 +430,8 @@ python3 -m unittest discover -s scripts -p 'test_*.py' -v
 
 ## Live-edition facts
 
-Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Futures — September
-2026**.
+Snapshot: **2026-09-22T23:00:00Z (eleventh capture, R13)**. The official edition is **The Leap by
+AMP Futures — September 2026**.
 
 | Fact | Verified value | Manual review |
 |---|---:|---|
@@ -445,21 +444,24 @@ Snapshot: **2026-09-16T21:39:34Z**. The official edition is **The Leap by AMP Fu
 | Qualification | Activity on at least 5 UTC days | [Official rules §08](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) |
 | Prizes | Up to 300 recipients; public leaderboard exposes only ranks 1–250 | [Rules §09](https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/) · [contest](https://www.tradingview.com/the-leap/amp-futures-september-2026/) |
 
-The live page displayed **96,268 participants** at the 2026-09-17 ~21:27 UTC capture (sixth, +32 vs the 20:58 UTC capture; landing hero 96,263 at the same minute, IR-09).
-Captured public frontiers at that capture: rank 1 **+$2,335,125.00 (+934.05%)**, rank 50
-**+$1,244,313.50 (+497.73%)**, rank 100 **+$1,014,950.00 (+405.98%)**, rank 250
-**+$660,759.50 (+264.30%)**. These are moving snapshots, not final thresholds and not prize
+The live page displayed **102,886 participants** at the 2026-09-22 23:00 UTC capture (eleventh;
+landing hero 102,883 at the same session, IR-09/IR-35 asynchronous delta 3) — registration closes
+**Sep 23 08:00 UTC** (`Join until Sep 23, 2026 · 04:00 GMT-4`, official page verbatim). Captured
+public frontiers at that capture: rank 1 **+$2,982,777.45 (+1,193.11%)**, rank 50
+**+$1,525,023.75 (+610.01%)**, rank 100 **+$1,236,663.00 (+494.67%)**, rank 250
+**+$866,600.85 (+346.64%)**. These are moving snapshots, not final thresholds and not prize
 guarantees. The first (2026-09-16) capture is the point-in-time record in
 [`data/live_contest_snapshot.json`](data/live_contest_snapshot.json).
 
 ### Frontier tracker
 
-Six official captures are stored with their official URLs in
+Eleven official captures are stored with their official URLs in
 [`data/frontier_history.json`](data/frontier_history.json); the verifier re-derives all deltas and
 percentage arithmetic and requires each capture's values to be internally consistent
 (`frontier.*` checks). The raw leaderboard HTML of the first capture is archived under
-`artifact_pages/` for manual review; captures 2–5 are preserved as verbatim quotations in their
-evidence files.
+`artifact_pages/`; captures 2–11 are preserved as verbatim quotations in their evidence files
+(the table below shows the first six; captures 7–13, including the final-registration-week R13
+rows, live in the history artifact and evidence files).
 
 | Rank | Capture 1 (09-16 21:39) | Capture 2 (09-17 00:30) | Capture 3 (09-17 16:56) | Capture 4 (09-17 19:04) | Capture 5 (09-17 20:58) | Capture 6 (09-17 21:27) |
 |---|---|---|---|---|---|
@@ -625,7 +627,9 @@ the Pages table. The data does not claim all-time extrema or a realizable strate
 | `scripts/build_site.py` | Deterministic root `index.html` generator for legacy GitHub Pages |
 | `data/intraday/` + `data/intraday_index.json` | Intraday (15m/1h) and long daily (1d) vendor captures for the volatile pool: per-chunk request window, transport, raw-response SHA-256/bytes and stored-file SHA-256 |
 | `data/intraday_study.json` | Measured intra-session gap fills and execution-latency cost (basis points of the decision close) |
-| `data/competition/stock_roster.json` + `data/stock_competition_results.json` | Volatile-stock division: 20 usernames, frozen stock models, multi-season editions, latency sweep, official-rule ceiling, 20:1 counterfactual |
+| `data/competition/roster.json` + `data/competition_results.json` | Futures shadow competition: 19 usernames (C1–C5, F1–F2 contrarian + S1–S3 baselines), 24-edition season + latest edition, target summary |
+| `data/competition/stock_roster.json` + `data/stock_competition_results.json` | Volatile-stock division: 70 usernames, frozen stock models, multi-season editions, latency sweep, official-rule ceiling, 20:1 counterfactual |
+| `data/forward_test_ledger.json` | Forward-test PnL ledger (engine `forward-ledger-2`): every futures + stock roster username on its latest window, per-tranche fills with running cumulative P/L, cross-checked against each `latest_edition` |
 | `data/exec_summary.json` | Machine-derived pending orders / open positions / waiting-for table rendered at the very top of the page |
 | `data/tv_reports/` + `data/tv_benchmark.json` | TradingView Strategy Report imports (real exports if committed, labelled synthetic fixtures otherwise) and the Pine-vs-Python fill comparison |
 | `intel/intraday.py`, `intel/stock_strategies.py` | Offline intraday loader/validator (SHA-256 re-verify, OHLC invariants, sessions, ATR) and the frozen stock-model library |
@@ -646,9 +650,10 @@ python3 scripts/build_intelligence.py
 python3 scripts/build_site.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m py_compile scripts/verify.py scripts/build_site.py scripts/build_intelligence.py scripts/run_backtests.py
-# new in the eleventh pass (all deterministic under --stamp):
-python3 scripts/run_intraday_study.py        # needs data/intraday_index.json (CI capture)
+# deterministic competition/ledger builders (all accept --stamp for byte reproducibility):
+python3 scripts/run_competition.py           # data/competition_results.json (futures roster)
 python3 scripts/run_stock_competition.py     # needs data/intraday_index.json
+python3 scripts/run_forward_test.py          # data/forward_test_ledger.json (futures + stock divisions)
 python3 scripts/build_exec_summary.py
 python3 scripts/tv_benchmark.py
 ```
@@ -662,12 +667,13 @@ python3 scripts/refresh_artifacts.py   # backtests, placement lab, models.json, 
 make derived intraday stocks exec tvbench   # same steps as individual targets
 ```
 
-Current audit result (re-run at 2026-09-18 23:30 UTC on branch `arena/01a0b6d6-tradingviewtheleap`):
+Current audit result (re-run at 2026-09-22 23:40 UTC on branch `arena/01a0cb4d-tradingviewtheleap`):
 
 ```text
-verify:    387 passed, 0 failed, 3 warnings
-# prior commits: 380 passed / 5 warnings, then 386/3; self-test re-run on the prior commit was 60-checks; see research/implementation_review.md
-# this commit's self-test is pending the longer re-run (verify --self-test proves each check can fail — see scripts/verify.py)
+verify:    444 passed, 0 failed, 1 warning (IR-22)
+unit tests: 183 passed (python3 -m unittest discover -s scripts -p 'test_*.py')
+# prior commits: 431/0/1 (twenty-first pass), 401/0/1 (sixteenth), 387/3 (eleventh era); see research/implementation_review.md
+# run verify --self-test to prove each check can fail (mutation scenarios; see scripts/verify.py)
 ```
 
 Three warnings are the audited, expected notes that disappear once the intraday capture lands:
@@ -688,12 +694,12 @@ artifacts. CI rebuilds the site and fails if committed `index.html` is stale.
 
 ## Important limitations and remaining work
 
-**Intraday capture status (updated in the twelfth pass).** The capture lane now commits on its own,
-publishes a diagnostics report for every run, and refuses to commit an index that records zero
-captured series — but the branch still carries **no** `data/intraday/` as of this commit, so the
-intraday study, the volatile-stock division and the stock rows of the executive summary cannot be
-derived yet and the verifier reports them as deliberate "not produced yet" warnings. Nothing in this
-repository substitutes a guess for those numbers, and H32 stays `untested` until they exist.
+**Intraday capture status (updated in the twenty-second pass).** The capture lane commits on its
+own, publishes a diagnostics report for every run, and refuses to commit an index that records
+zero captured series. `data/intraday/` currently holds **29 of 60** stock series ({15m: 15, 1h: 9,
+1d: 5}) — the intraday study, the volatile-stock division and the stock executive-summary rows run
+on that partial pool (cron tops up toward 60/60), and every figure is labelled with the partial
+pool it came from. Missing symbols are simply absent from their pools, never filled with guesses.
 
 - **Authenticated TradingView Strategy Report import is still `blocked`, and nothing is claimed
   from it.** `intel/tv_import.py` parses the official export formats and `scripts/tv_benchmark.py`

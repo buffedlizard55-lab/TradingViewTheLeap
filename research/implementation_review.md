@@ -1,6 +1,6 @@
 # Three-pass implementation and evidence review
 
-Review date: 2026-09-18 (updated 2026-09-21 — nineteenth pass). This is an engineering audit, not a certification of every historical price or a promise of contest returns.
+Review date: 2026-09-18 (updated 2026-09-22 — twenty-second pass). This is an engineering audit, not a certification of every historical price or a promise of contest returns.
 
 ## Executive decision
 
@@ -292,6 +292,88 @@ Ordered by how much each one blocks a *successful* project, with the verified re
   the only warning is the recorded IR-22 SIC1! quote delta. Remaining blockers are unchanged in
   kind (vendor-tier prices, no authenticated export) and are listed with next steps in
   `research/NEXT-SESSION.md`.
+
+## 2026-09-22 twenty-second pass — three-pass review (R13 captures, F1/F2 futures models, forward ledger × futures division)
+
+### Pass 1 — implement and verify
+
+- **Official re-captures (R13, capture #11 at 2026-09-22T23:00:00Z):** contest page (frontier
+  rows 1–15 verbatim), landing page (all 15 champions), rules page (full line-by-line re-read +
+  §08 94-line transcription diffed 94/94 vs `data/contest_universe.json`), plus the official
+  Paper Trading help page for order-side documentation — four new evidence files with the
+  `- **URL:**`/`- **Accessed (UTC):**`/`- **Tier:**` contract and ≥2 verbatim blockquotes each.
+  `frontier_history.json` → 11 captures; `live_contest_clock.json` → R13/102,886;
+  `leaderboard_lab.py` re-run (11 captures byte-verified); `sources.json` → 110 entries.
+- **Two new frozen futures families (H56/H57):** F1 compressed-streak fade, F2 swing-failure
+  reclaim — model tables, default params, `slow5`/`shallow` variants, warmups and decide
+  branches in `intel/contrarian.py`; roster 15 → 19 (every pool symbol asserted against the
+  11-symbol eligible set); `run_competition.py` at the pinned stamp re-derived the season with
+  existing-15 PnL byte-identical to HEAD (only rank fields shifted) — 456 participant-editions.
+  Verdicts assigned mechanically: **H56 supported**, **H57 refuted** (both stay frozen), plus
+  **H58 supported** (final-week frontier rise) and **H59 supported** (non-monotonic board,
+  IR-37). Hypothesis count 59.
+- **Forward ledger extended to futures (engine `forward-ledger-2`):** `build_futures_division`
+  replays the futures roster on `data/competition_results.json` → `latest_edition` under the
+  frozen `futures_amp_sep2026` profile with `latency_bars=0, return_fills=True`; per-division
+  roster/window/cross-check routing in `scripts/verify.py`; default stamp widened to the
+  futures inputs; 3 new unit tests. Totals: **229 usernames, 3,007 tranches, 229/229
+  cross-checks green**; the three stock divisions byte-identical to the prior engine's output.
+- **Docs/site:** README banner + live-facts + repo map + audit numbers refreshed; NEXT-SESSION
+  section 1 rewritten, suggestions re-ranked (#4 futures ledger done, #5 short re-read done);
+  `build_site.py` :120 forward-ledger lead now multi-division with per-division rule profiles
+  and :1648 model heading includes F1–F2; exec summary + intelligence report + site rebuilt
+  (hero now R13 102,886). Final: **444 checks passed / 0 failed / 1 warning (IR-22)**,
+  **183 unit tests green**.
+
+### Pass 2 — bugs, assumptions, edge cases
+
+1. **F1 exact-streak off-by-one:** the first draft compared `closes[i-k+1] > closes[i-k]`
+   (duplicated the streak's first inequality — always true under `up_streak`), so F1 could
+   never fire. Caught by the synthetic fire/no-fire suite before any run; fixed to compare
+   `closes[i-k]` vs `closes[i-k-1]`.
+2. **F1 compression fired on an accelerating streak:** condition (a) alone accepted a streak
+   whose true ranges still sat below a prior window of WIDE ranges. Fixed by requiring no net
+   widening across the streak (`streak_tr[-1] > streak_tr[0] → continue`) and amending the
+   frozen claim — both before registration, so pre-registration holds.
+3. **`kind_contrast` verifier used a hardcoded model set** (`{C1..C5}`): with F1/F2 rostered
+   the artifact's contrarian block counts 16 participants and the check would have failed at
+   12. Fixed `scripts/verify.py:1604` to include F1/F2.
+4. **Model-card params label** said F1/F2 were "frozen in intel/strategy.py" (`startswith("C")`
+   gate); fixed to `startswith(("C", "F"))` and the competition re-run (diff vs the prior
+   build: exactly those two label fields).
+5. **Ledger `kind` for futures usernames** resolved through the stock `MODEL_KIND` table only
+   (C/F/S would fall through to `baseline`); now falls back to `intel.contrarian`'s kind table.
+6. **Evidence header:** the short-side file used `- **URLs:**` (plural) and tripped
+   `evidence.url`; rewritten to the singular contract with the second URL inline.
+7. **Live returns row stale vs capture #11:** `returns.live_snapshot_sync` requires the
+   in-progress record to equal the newest frontier rank-1 row exactly; re-synced
+   (1193.11% / $2,982,777.45 / 102,886 / R13 source+timestamp) and threshold counts
+   re-asserted (buckets unchanged).
+8. **Intelligence report** re-derived after the roster change (determinism, exact model-set
+   coverage and username equality checks all re-verified).
+9. **Engine-equivalence assumption tested, not assumed:** the ledger's futures cross-check is
+   the first real-data proof that `run_participant_window` + futures profile + latency 0
+   reproduces the legacy `run_participant_edition` results the season artifact was built with
+   — 19/19 usernames within one cent per tranche (worst overall $0.07 on a 15-minute stock row).
+10. **F2 post-verdict freeze:** H57 refuted → per the variant gate F2 and its `shallow`
+    variant stay frozen; the next free hypothesis id is H60.
+
+### Pass 3 — re-check against the original request
+
+- Executive summary at the very top naming the upcoming trades from top strategies: ✅
+  (regenerated from the 19-user season; order set unchanged, heroes/counts refreshed).
+- Own strategy competition, real verified pricing, usernames, unique contrarian strategies,
+  5x–100x targeting with no risk management: ✅ (19 futures + 70 stock usernames; F1/F2 are
+  the pass's two new families; H56/H57 verdicts recorded honestly — one supported, one
+  refuted with a 6.64x single edition and season ruin both reported).
+- Forward testing and PnL tracking: ✅ now spans **both** competitions (futures division added;
+  229 usernames cross-checked).
+- Official verified sources, line-by-line verification, irregularities flagged, links for
+  manual review: ✅ (R13 quartet of evidence files, IR-37 added, IR-29/IR-36 re-confirmed,
+  110 sources, 444 offline checks, 183 unit tests).
+- Clean GitHub Pages UI: ✅ (multi-division forward-PnL section, F1–F2 model cards, R13 hero).
+- Three mandatory passes executed this session; final state **444/0/1 (IR-22), 183 tests**.
+  Remaining blockers are unchanged in kind and ranked in `research/NEXT-SESSION.md`.
 
 ## Reproduce
 

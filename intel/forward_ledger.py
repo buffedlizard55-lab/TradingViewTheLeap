@@ -1,23 +1,29 @@
-"""Forward-test PnL ledger for the volatile-equity shadow competition.
+"""Forward-test PnL ledger for the shadow competitions (futures + volatile-equity).
 
 What this is
 ------------
-A trade-by-trade paper PnL ledger for EVERY username on the stock roster
-(``data/competition/stock_roster.json``), replayed with the exact engine, rule
-profile, cost scenario and window semantics of the committed season run
-(``intel.competition.run_participant_window`` with ``return_fills=True``), on
-the LATEST window of each division - the same ``latest_window`` that produced
-``latest_edition`` in ``data/stock_competition_results.json``.
+A trade-by-trade paper PnL ledger for EVERY username on BOTH rosters:
+
+- division ``futures``: every username on ``data/competition/roster.json``,
+  replayed with the exact engine, rule profile and cost scenario of the
+  committed futures season run (``intel.competition.run_participant_window``
+  with ``latency_bars=0`` and ``return_fills=True``) over the LATEST edition
+  window of ``data/competition_results.json`` - the same window that produced
+  ``latest_edition`` there.
+- divisions ``daily`` / ``hourly`` / ``15minute``: every username on
+  ``data/competition/stock_roster.json`` on the matching ``latest_window`` of
+  ``data/stock_competition_results.json``, exactly as in engine
+  ``forward-ledger-1``.
 
 Why the latest window
 ---------------------
 Editions are chronological and every model is frozen before any window runs
-(see ``intel/stock_strategies.py`` and the hypothesis register), so the latest
-window is the closest thing this repository has to a forward paper test: the
-same frozen rules, pointed at the newest captured sessions, producing an
-auditable trade ledger instead of an aggregate. It is still a replay of
-captured vendor history inside a simulation - it is NOT a live account, NOT a
-forecast, and NOT investment advice.
+(see ``intel/contrarian.py``, ``intel/stock_strategies.py`` and the hypothesis
+register), so the latest window is the closest thing this repository has to a
+forward paper test: the same frozen rules, pointed at the newest captured
+sessions, producing an auditable trade ledger instead of an aggregate. It is
+still a replay of captured vendor history inside a simulation - it is NOT a
+live account, NOT a forecast, and NOT investment advice.
 
 What is recorded per username
 -----------------------------
@@ -26,16 +32,17 @@ prices, size, side, net P/L) with a running cumulative realized P/L attached in
 exit order, plus the engine's aggregates (round trips, adds, drawdown, ruin)
 and a division leaderboard by realized P/L. Nothing is synthesized: a username
 with no fills gets an explicit empty ledger and zero counts, never a modelled
-curve. Cross-check: each username's summed tranche P/L equals the
-``latest_edition`` aggregate for the same username in the season artifact
-(scripts/verify.py fails if they disagree).
+curve. Cross-check: each username's summed tranche P/L equals the division's
+own ``latest_edition`` aggregate for the same username (season artifact
+``data/competition_results.json`` for futures, ``data/stock_competition_results.json``
+for the stock divisions; scripts/verify.py fails if they disagree).
 
 Determinism
 -----------
 ``build_ledger`` is a pure function of (captures, roster, competition artifact,
-profile, scenario, stamp). ``scripts/run_forward_test.py`` exposes it behind
-``--out`` / ``--stamp`` so ``scripts/verify.py`` can re-run it and require
-field-for-field equality.
+profile, scenario, stamp, futures bundle). ``scripts/run_forward_test.py``
+exposes it behind ``--out`` / ``--stamp`` so ``scripts/verify.py`` can re-run
+it and require field-for-field equality.
 """
 
 from __future__ import annotations
@@ -45,10 +52,12 @@ from .competition import (
     Participant,
     RuleProfile,
     Series,
+    prepare_decisions,
     run_participant_window,
     slices_and_starts,
 )
 from .contrarian import MODEL_CLAIMS as BASELINE_CLAIMS  # noqa: F401
+from .contrarian import MODEL_KIND as CONTRARIAN_KIND
 from .contrarian import MODEL_NAMES as BASELINE_NAMES
 from .contrarian import generate_decisions
 from .data import Bar
@@ -61,6 +70,8 @@ from .stock_strategies import (
     trailing_volatility,
     warmup,
 )
+
+FORWARD_LEDGER_ENGINE = "forward-ledger-2"
 
 DIVISION_INTERVALS = {"daily": "1d", "hourly": "1h", "15minute": "15m"}
 
@@ -117,6 +128,164 @@ def control_symbol_for(pool_symbols, series_map: dict[str, Series], window) -> s
     return best
 
 
+def _fill_rows(result) -> list[dict]:
+    """Engine fill log -> 2dp tranche rows with a running cumulative P/L in exit order."""
+    running = 0.0
+    out: list[dict] = []
+    fills = sorted(
+        getattr(result, "fill_log", []) or [],
+        key=lambda r: (r.get("exit_ts") or 0, r.get("entry_ts") or 0, r.get("symbol") or ""),
+    )
+    for fill in fills:
+        running = round(running + fill["net_pnl_usd"], 2)
+        row = dict(fill)
+        row["cum_realized_pnl_usd"] = running
+        out.append(row)
+    return out
+
+
+def _attach_season_crosscheck(record: dict, season_row: dict | None) -> bool:
+    """Attach the latest_edition cross-check fields; True when a season row was present.
+
+    The season artifact sums the engine's unrounded per-trade floats; the ledger
+    sums 2dp tranche rows. Each tranche can round by <= 0.005, so the honest
+    cross-check bound is one cent per tranche plus one cent of slack. The recorded
+    delta makes any (tiny) rounding difference explicit rather than hiding it, and
+    the ledger's own rows sum exactly to its own totals.
+    """
+    if season_row is None:
+        return False
+    record["latest_edition_realized_pnl_usd"] = season_row["realized_pnl_usd"]
+    tolerance = round(0.01 * record["closed_tranches"] + 0.01, 2)
+    delta = round(record["realized_pnl_usd"] - season_row["realized_pnl_usd"], 2)
+    record["latest_edition_delta_usd"] = delta
+    record["latest_edition_match_tolerance_usd"] = tolerance
+    record["ledger_matches_latest_edition"] = abs(delta) <= tolerance
+    return True
+
+
+def _leaderboard(rows: list[dict]) -> list[dict]:
+    rows = sorted(rows, key=lambda r: (-r["realized_pnl_usd"], r["username"]))
+    return [
+        {
+            "rank": i,
+            "username": r["username"],
+            "model": r["model"],
+            "variant": r["variant"],
+            "model_name": r["model_name"],
+            "kind": r["kind"],
+            "roster_division": r["roster_division"],
+            "realized_pnl_usd": r["realized_pnl_usd"],
+            "equity_multiple": r["equity_multiple"],
+            "round_trips": r["round_trips"],
+            "closed_tranches": r["closed_tranches"],
+            "winning_tranches": r["winning_tranches"],
+        }
+        for i, r in enumerate(rows, 1)
+    ]
+
+
+def _not_run(reason: str) -> dict:
+    return {
+        "status": "not_run",
+        "reason": reason,
+        "usernames": [],
+        "leaderboard": [],
+    }
+
+
+def build_futures_division(bundle: dict | None) -> tuple[dict, int, int, int]:
+    """Forward replay of the futures roster on the futures season artifact's latest window.
+
+    `bundle` carries exactly the inputs of the committed futures run: `series_map`,
+    `roster_doc`, `competition_doc`, `profile` (futures_amp_sep2026) and `scenario`.
+    Missing or incomplete inputs produce an explicit `not_run` division with a reason -
+    never an invented window. Returns (division_doc, usernames, tranches, cross_checks).
+    """
+    if not bundle:
+        return (
+            _not_run(
+                "futures inputs unavailable (data/competition_results.json, "
+                "data/competition/roster.json or the futures series map could not be loaded)"
+            ),
+            0, 0, 0,
+        )
+    series_map: dict[str, Series] = bundle.get("series_map") or {}
+    roster_doc: dict = bundle.get("roster_doc") or {}
+    comp: dict = bundle.get("competition_doc") or {}
+    profile: RuleProfile = bundle["profile"]
+    scenario: CostScenario = bundle["scenario"]
+
+    latest = comp.get("latest_edition") or {}
+    season_rows = latest.get("rows") or []
+    participants = roster_doc.get("participants") or []
+    missing = []
+    if not participants:
+        missing.append("futures roster has no participants")
+    if not latest.get("start_date") or not latest.get("end_date") or not season_rows:
+        missing.append("futures season artifact has no latest_edition window/rows")
+    if not series_map:
+        missing.append("no eligible captured futures series")
+    if missing:
+        return _not_run("; ".join(missing)), 0, 0, 0
+
+    window = (latest["start_date"], latest["end_date"])
+    season_row_by_user = {r["username"]: r for r in season_rows}
+    decisions_cache: dict[tuple[str, str | None], dict[str, list]] = {}
+
+    rows: list[dict] = []
+    cross_checks = 0
+    for entry in participants:
+        pool_symbols = tuple(s for s in entry["pool"] if s in series_map)
+        if not pool_symbols:
+            continue
+        slices, starts = slices_and_starts(pool_symbols, series_map, window)
+        if not slices:
+            continue
+        p = Participant(
+            username=entry["username"],
+            model=entry["model"],
+            variant=entry.get("variant"),
+            pool=pool_symbols,
+        )
+        # Decisions are precomputed on the FULL series map (exactly like the season
+        # run's prepare_decisions cache) and then restricted to the pool, so decision
+        # indices resolve against the same full-series bar indices.
+        key = (p.model, p.variant)
+        if key not in decisions_cache:
+            decisions_cache[key] = prepare_decisions(series_map, p.model, p.variant)
+        dec = {sym: decisions_cache[key].get(sym, []) for sym in pool_symbols}
+        result = run_participant_window(
+            dec, slices, starts, series_map, profile, scenario,
+            latency_bars=0, return_fills=True,
+        )
+        tranche_rows = _fill_rows(result)
+        record = _username_record(
+            p, result, tranche_rows, profile, roster_division="futures",
+        )
+        if _attach_season_crosscheck(record, season_row_by_user.get(p.username)):
+            cross_checks += 1
+        rows.append(record)
+
+    rows.sort(key=lambda r: (-r["realized_pnl_usd"], r["username"]))
+    leaderboard = _leaderboard(rows)
+    sessions = sorted({b.date for s in series_map.values() for b in s.bars
+                       if window[0] <= b.date <= window[1]})
+    division = {
+        "status": "replayed",
+        "window": {
+            "start_date": window[0],
+            "end_date": window[1],
+            "sessions": len(sessions),
+        },
+        "latest_edition_id": latest.get("edition_id"),
+        "symbols_with_bars": len(series_map),
+        "usernames": rows,
+        "leaderboard": leaderboard,
+    }
+    return division, len(rows), sum(r["closed_tranches"] for r in rows), cross_checks
+
+
 def build_ledger(
     captures: dict,
     roster_doc: dict,
@@ -124,34 +293,39 @@ def build_ledger(
     profile: RuleProfile,
     scenario: CostScenario,
     stamp: str,
+    futures: dict | None = None,
 ) -> dict:
-    """Build the full ledger document. Pure function of its inputs plus the stamp."""
+    """Build the full ledger document. Pure function of its inputs plus the stamp.
+
+    `futures` is the bundle consumed by `build_futures_division`; when it is None the
+    futures division is recorded as not_run with a reason (stock divisions unaffected).
+    """
     divisions_out: dict[str, dict] = {}
     total_tranches = 0
     total_users = 0
     cross_checks = 0
+
+    fut_div, fut_users, fut_tranches, fut_checks = build_futures_division(futures)
+    divisions_out["futures"] = fut_div
+    total_users += fut_users
+    total_tranches += fut_tranches
+    cross_checks += fut_checks
 
     for division, interval in DIVISION_INTERVALS.items():
         div = (competition_doc.get("divisions") or {}).get(division) or {}
         window_doc = div.get("latest_window")
         latest_edition = div.get("latest_edition") or {}
         if not window_doc or not div.get("editions"):
-            divisions_out[division] = {
-                "status": "not_run",
-                "reason": "the season has no completed latest window to forward-test on",
-                "usernames": [],
-                "leaderboard": [],
-            }
+            divisions_out[division] = _not_run(
+                "the season has no completed latest window to forward-test on",
+            )
             continue
         window = (window_doc["start_date"], window_doc["end_date"])
         series_map = build_series(captures, interval)
         if not series_map:
-            divisions_out[division] = {
-                "status": "not_run",
-                "reason": f"no captured {interval} series in data/intraday_index.json",
-                "usernames": [],
-                "leaderboard": [],
-            }
+            divisions_out[division] = _not_run(
+                f"no captured {interval} series in data/intraday_index.json",
+            )
             continue
 
         season_row_by_user = {r["username"]: r for r in latest_edition.get("rows") or []}
@@ -179,56 +353,18 @@ def build_ledger(
                 dec, slices, starts, series_map, profile, scenario,
                 latency_bars=0, control_symbol=control, return_fills=True,
             )
-            tranche_rows = []
-            running = 0.0
-            fills = sorted(
-                getattr(result, "fill_log", []) or [],
-                key=lambda r: (r.get("exit_ts") or 0, r.get("entry_ts") or 0, r.get("symbol") or ""),
-            )
-            for fill in fills:
-                running = round(running + fill["net_pnl_usd"], 2)
-                row = dict(fill)
-                row["cum_realized_pnl_usd"] = running
-                tranche_rows.append(row)
+            tranche_rows = _fill_rows(result)
             record = _username_record(
                 p, result, tranche_rows, profile,
                 roster_division=entry.get("division", "daily"),
                 control_symbol=control,
             )
-            season_row = season_row_by_user.get(p.username)
-            if season_row is not None:
-                record["latest_edition_realized_pnl_usd"] = season_row["realized_pnl_usd"]
-                # The season artifact sums the engine's unrounded per-trade floats; the ledger
-                # sums 2dp tranche rows. Each tranche can round by <= 0.005, so the honest
-                # cross-check bound is one cent per tranche plus one cent of slack. The
-                # recorded delta makes the (tiny) rounding difference explicit rather than
-                # hiding it, and the ledger's own rows sum exactly to its own totals.
-                tolerance = round(0.01 * record["closed_tranches"] + 0.01, 2)
-                delta = round(record["realized_pnl_usd"] - season_row["realized_pnl_usd"], 2)
-                record["latest_edition_delta_usd"] = delta
-                record["latest_edition_match_tolerance_usd"] = tolerance
-                record["ledger_matches_latest_edition"] = abs(delta) <= tolerance
+            if _attach_season_crosscheck(record, season_row_by_user.get(p.username)):
                 cross_checks += 1
             rows.append(record)
 
         rows.sort(key=lambda r: (-r["realized_pnl_usd"], r["username"]))
-        leaderboard = [
-            {
-                "rank": i,
-                "username": r["username"],
-                "model": r["model"],
-                "variant": r["variant"],
-                "model_name": r["model_name"],
-                "kind": r["kind"],
-                "roster_division": r["roster_division"],
-                "realized_pnl_usd": r["realized_pnl_usd"],
-                "equity_multiple": r["equity_multiple"],
-                "round_trips": r["round_trips"],
-                "closed_tranches": r["closed_tranches"],
-                "winning_tranches": r["winning_tranches"],
-            }
-            for i, r in enumerate(rows, 1)
-        ]
+        leaderboard = _leaderboard(rows)
         sessions = sorted({b.date for s in series_map.values() for b in s.bars
                            if window[0] <= b.date <= window[1]})
         divisions_out[division] = {
@@ -246,30 +382,61 @@ def build_ledger(
         total_tranches += sum(r["closed_tranches"] for r in rows)
         total_users += len(rows)
 
+    fut_profile = (futures or {}).get("profile")
+    fut_scenario = (futures or {}).get("scenario")
+    source_ids = list(profile.source_ids)
+    if fut_profile is not None:
+        source_ids = list(fut_profile.source_ids) + source_ids
+        if "YAHOO-FUTURES-CHART" not in source_ids:
+            source_ids.append("YAHOO-FUTURES-CHART")
+    if "YAHOO-INTRADAY-CHART" not in source_ids:
+        source_ids.append("YAHOO-INTRADAY-CHART")
+    rule_profiles = {
+        "stocks": {
+            "profile_id": profile.profile_id,
+            "label": profile.label,
+            "min_active_days": profile.min_active_days,
+            "starting_balance_usd": profile.starting_balance,
+        },
+    }
+    if fut_profile is not None:
+        rule_profiles = {
+            "futures": {
+                "profile_id": fut_profile.profile_id,
+                "label": fut_profile.label,
+                "min_active_days": fut_profile.min_active_days,
+                "starting_balance_usd": fut_profile.starting_balance,
+            },
+            **rule_profiles,
+        }
+
     return {
         "_meta": {
             "kind": "forward_test_pnl_ledger",
-            "engine": "forward-ledger-1",
+            "engine": FORWARD_LEDGER_ENGINE,
             "generated_utc": stamp,
             "description": (
-                "Forward-test paper PnL ledger: every stock-roster username replayed on the "
-                "latest window of each division (the same latest_window that produced "
-                "latest_edition in data/stock_competition_results.json) with the same engine, "
+                "Forward-test paper PnL ledger: every futures-roster username (division "
+                "'futures') and every stock-roster username (divisions daily/hourly/15minute) "
+                "replayed on that division's committed latest window with the same engine, "
                 "rule profile and cost scenario as the committed season run. Every closed "
                 "tranche is the engine's own fill log (date, fill price, size, side, net P/L) "
                 "with a running cumulative realized P/L in exit order. Nothing is synthesized."
             ),
             "window_definition": (
-                "latest_window per division in data/stock_competition_results.json (editions "
-                "are chronological; models are frozen before any window runs, so this window "
-                "is forward with respect to every parameter choice)"
+                "futures division: latest_edition window (start_date..end_date) in "
+                "data/competition_results.json; stock divisions: latest_window per division "
+                "in data/stock_competition_results.json (editions are chronological; models "
+                "are frozen before any window runs, so each window is forward with respect "
+                "to every parameter choice)"
             ),
-            "rule_profile": profile.profile_id,
-            "rule_profile_label": profile.label,
+            "rule_profiles": rule_profiles,
             "cost_scenario": getattr(scenario, "name", None) or "moderate",
+            "futures_cost_scenario": (
+                getattr(fut_scenario, "name", None) or "moderate"
+            ) if fut_scenario is not None else None,
             "starting_balance_usd": profile.starting_balance,
-            "min_active_days": profile.min_active_days,
-            "source_ids": list(profile.source_ids) + ["YAHOO-INTRADAY-CHART"],
+            "source_ids": source_ids,
             "participant_count": total_users,
             "closed_tranche_count": total_tranches,
             "latest_edition_cross_checks": cross_checks,
@@ -295,7 +462,9 @@ def _username_record(
     control_symbol: str | None = None,
 ) -> dict:
     model_name = MODEL_NAMES.get(p.model) or BASELINE_NAMES.get(p.model, p.model)
-    kind = MODEL_KIND.get(p.model, "baseline")
+    # Stock roster models resolve through stock_strategies; futures roster models
+    # (C1-C5, F1-F2, S1-S3) resolve through intel.contrarian's kind table.
+    kind = MODEL_KIND.get(p.model) or CONTRARIAN_KIND.get(p.model, "baseline")
     # The ledger is self-consistent by construction: the recorded totals are the exact sum
     # of the recorded 2dp tranche rows, so any reader can add the column and land on the
     # published figure. The engine's own unrounded aggregate may differ by at most half a

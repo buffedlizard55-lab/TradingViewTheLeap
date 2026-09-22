@@ -3,7 +3,7 @@
   "kind": "own_shadow_competition_simulation",
   "description": "The repository's own paper competition: every username in data/competition/roster.json trades a frozen contrarian or baseline strategy on captured vendor daily bars with a fresh 250,000 virtual USD account per edition, under the official rule constants. NOT the official contest, NOT a TradingView Strategy Report, NOT a prediction.",
   "engine": "intel-competition-2",
-  "generated_utc": "2026-09-21T04:07:43Z",
+  "generated_utc": "2026-09-22T23:10:00Z",
   "primary_scenario": "moderate",
   "price_source": "data/market_history_index.json (market_data_vendor tier; front-month continuous, unadjusted rolls)",
   "rules_source": "data/contest_config.json (official rules transcription, TV-RULES-AMP-SEP2026)",
@@ -291,6 +291,61 @@
     "CME:BTC1!",
     "CME:ETH1!"
    ]
+  },
+  {
+   "username": "StreakStan",
+   "kind": "contrarian",
+   "model": "F1",
+   "model_name": "Compressed-streak fade",
+   "variant": null,
+   "params_label": "default",
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!"
+   ]
+  },
+  {
+   "username": "CompressCleo",
+   "kind": "contrarian",
+   "model": "F1",
+   "model_name": "Compressed-streak fade",
+   "variant": "slow5",
+   "params_label": "hold_bars=12, streak_bars=5",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!"
+   ]
+  },
+  {
+   "username": "SpringSasha",
+   "kind": "contrarian",
+   "model": "F2",
+   "model_name": "Swing-failure reclaim",
+   "variant": null,
+   "params_label": "default",
+   "pool": [
+    "CME:BTC1!",
+    "CME:ETH1!",
+    "CME_MINI:NQ1!"
+   ]
+  },
+  {
+   "username": "CreekCasey",
+   "kind": "contrarian",
+   "model": "F2",
+   "model_name": "Swing-failure reclaim",
+   "variant": "shallow",
+   "params_label": "hold_bars=5, sweep_atr_mult=0.1",
+   "pool": [
+    "NYMEX:CL1!",
+    "NYMEX:HO1!",
+    "NYMEX:RB1!",
+    "COMEX:SI1!"
+   ]
   }
  ],
  "models": [
@@ -349,6 +404,20 @@
    "kind": "baseline",
    "claim": "Baseline Bollinger squeeze release (for contrast against the contrarian roster).",
    "params": "frozen in intel/strategy.py (DEFAULT_PARAMS)"
+  },
+  {
+   "model": "F1",
+   "name": "Compressed-streak fade",
+   "kind": "contrarian",
+   "claim": "Exactly k consecutive same-direction closes whose true ranges both sit below the prior k bars (streak range-sum <= 0.85x) and fail to widen across the streak (last streak bar's range <= first's) mark a momentum death, not a trend: the k-th close is faded for hold_bars sessions. Structurally the opposite regime of C1 (which requires ATR expansion) and volume-free like the rest of the futures library.",
+   "params": "frozen in intel/contrarian.py (DEFAULT_PARAMS/VARIANTS)"
+  },
+  {
+   "model": "F2",
+   "name": "Swing-failure reclaim",
+   "kind": "contrarian",
+   "claim": "A sweep of the prior 20-bar low by >=0.25 ATR that closes back ABOVE that level is a spring; the symmetric high-sweep closing back inside is an upthrust. The failed break is faded for hold_bars sessions, both directions, volume-free - the futures-native relative of the stock-side failed-breakout family (C31), not a copy of it.",
+   "params": "frozen in intel/contrarian.py (DEFAULT_PARAMS/VARIANTS)"
   }
  ],
  "editions": [
@@ -358,32 +427,32 @@
    "end_date": "2024-10-16",
    "calendar_days": 30,
    "sessions_in_window": 22,
-   "participants": 15,
+   "participants": 19,
    "leader": {
-    "username": "BandFadeBella",
-    "realized_pnl_usd": 0.0,
-    "equity_multiple": 1.0
+    "username": "CompressCleo",
+    "realized_pnl_usd": 30418.86,
+    "equity_multiple": 1.121675
    },
    "rows": [
     {
-     "username": "BandFadeBella",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
+     "username": "CompressCleo",
+     "realized_pnl_usd": 30418.86,
+     "equity_multiple": 1.121675,
+     "trades": 1,
+     "active_days": 2,
      "meets_min_active_days": false,
      "ruined": false,
      "margin_breach_bars": 0,
      "add_tranches": 0,
-     "long_trades": 0,
+     "long_trades": 1,
      "short_trades": 0,
      "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
+     "max_drawdown_usd": 34000.02,
      "multiple_buckets": [],
      "rank": 1
     },
     {
-     "username": "CapitulationKate",
+     "username": "BandFadeBella",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -400,7 +469,7 @@
      "rank": 2
     },
     {
-     "username": "ContrarianQueen",
+     "username": "CapitulationKate",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -417,7 +486,7 @@
      "rank": 3
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "ContrarianQueen",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -434,7 +503,7 @@
      "rank": 4
     },
     {
-     "username": "ExhaustionEd",
+     "username": "CreekCasey",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -451,7 +520,7 @@
      "rank": 5
     },
     {
-     "username": "FadeThePanic",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -468,7 +537,7 @@
      "rank": 6
     },
     {
-     "username": "GapGhost",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -485,7 +554,7 @@
      "rank": 7
     },
     {
-     "username": "MomentumMoe",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -502,7 +571,7 @@
      "rank": 8
     },
     {
-     "username": "PanicPyramider",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -519,7 +588,7 @@
      "rank": 9
     },
     {
-     "username": "ReversalRaja",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -536,7 +605,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSam",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -553,7 +622,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -570,7 +639,7 @@
      "rank": 12
     },
     {
-     "username": "TrendTina",
+     "username": "SpringSasha",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -587,6 +656,74 @@
      "rank": 13
     },
     {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
      "username": "GapGoblin",
      "realized_pnl_usd": -13223.51,
      "equity_multiple": 0.947106,
@@ -601,7 +738,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 12375.03,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "ClimaxCarla",
@@ -618,7 +755,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 353089.78,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -628,7 +765,7 @@
    "end_date": "2024-11-15",
    "calendar_days": 30,
    "sessions_in_window": 22,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "GapGhost",
     "realized_pnl_usd": 20874.0,
@@ -653,24 +790,24 @@
      "rank": 1
     },
     {
-     "username": "BandFadeBella",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
+     "username": "SpringSasha",
+     "realized_pnl_usd": 3617.85,
+     "equity_multiple": 1.014471,
+     "trades": 3,
+     "active_days": 5,
+     "meets_min_active_days": true,
      "ruined": false,
      "margin_breach_bars": 0,
      "add_tranches": 0,
      "long_trades": 0,
-     "short_trades": 0,
+     "short_trades": 3,
      "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
+     "max_drawdown_usd": 20325.0,
      "multiple_buckets": [],
      "rank": 2
     },
     {
-     "username": "CapitulationKate",
+     "username": "BandFadeBella",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -687,7 +824,7 @@
      "rank": 3
     },
     {
-     "username": "ClimaxCarla",
+     "username": "CapitulationKate",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -704,7 +841,7 @@
      "rank": 4
     },
     {
-     "username": "ContrarianQueen",
+     "username": "ClimaxCarla",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -721,7 +858,7 @@
      "rank": 5
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -738,7 +875,7 @@
      "rank": 6
     },
     {
-     "username": "ExhaustionEd",
+     "username": "ContrarianQueen",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -755,7 +892,7 @@
      "rank": 7
     },
     {
-     "username": "FadeThePanic",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -772,7 +909,7 @@
      "rank": 8
     },
     {
-     "username": "MomentumMoe",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -789,7 +926,7 @@
      "rank": 9
     },
     {
-     "username": "PanicPyramider",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -806,7 +943,7 @@
      "rank": 10
     },
     {
-     "username": "ReversalRaja",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -823,7 +960,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSam",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -840,7 +977,7 @@
      "rank": 12
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -857,7 +994,7 @@
      "rank": 13
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -872,6 +1009,74 @@
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
      "rank": 14
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -83048.5,
+     "equity_multiple": 0.667806,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 2,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 74874.88,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "GapGoblin",
@@ -888,7 +1093,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 252730.64,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -898,13 +1103,30 @@
    "end_date": "2024-12-15",
    "calendar_days": 30,
    "sessions_in_window": 19,
-   "participants": 15,
+   "participants": 19,
    "leader": {
-    "username": "GapGoblin",
-    "realized_pnl_usd": 225347.0,
-    "equity_multiple": 1.901388
+    "username": "CreekCasey",
+    "realized_pnl_usd": 262498.14,
+    "equity_multiple": 2.049993
    },
    "rows": [
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 262498.14,
+     "equity_multiple": 2.049993,
+     "trades": 3,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 116570.19,
+     "multiple_buckets": [],
+     "rank": 1
+    },
     {
      "username": "GapGoblin",
      "realized_pnl_usd": 225347.0,
@@ -920,7 +1142,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 155625.1,
      "multiple_buckets": [],
-     "rank": 1
+     "rank": 2
     },
     {
      "username": "BandFadeBella",
@@ -937,7 +1159,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 39074.93,
      "multiple_buckets": [],
-     "rank": 2
+     "rank": 3
     },
     {
      "username": "CapitulationKate",
@@ -954,7 +1176,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 4
     },
     {
      "username": "ClimaxCarla",
@@ -971,27 +1193,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 4
-    },
-    {
-     "username": "ContrarianQueen",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 5
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1008,7 +1213,7 @@
      "rank": 6
     },
     {
-     "username": "FadeThePanic",
+     "username": "ContrarianQueen",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1025,7 +1230,7 @@
      "rank": 7
     },
     {
-     "username": "GapGhost",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1042,7 +1247,7 @@
      "rank": 8
     },
     {
-     "username": "MomentumMoe",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1059,7 +1264,7 @@
      "rank": 9
     },
     {
-     "username": "PanicPyramider",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1076,7 +1281,7 @@
      "rank": 10
     },
     {
-     "username": "ReversalRaja",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1093,7 +1298,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSam",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1110,7 +1315,7 @@
      "rank": 12
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1127,7 +1332,7 @@
      "rank": 13
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1144,6 +1349,74 @@
      "rank": 14
     },
     {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -40230.75,
+     "equity_multiple": 0.839077,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 27550.0,
+     "multiple_buckets": [],
+     "rank": 18
+    },
+    {
      "username": "ExhaustionEd",
      "realized_pnl_usd": -42766.46,
      "equity_multiple": 0.828934,
@@ -1158,7 +1431,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 61516.47,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -1168,7 +1441,7 @@
    "end_date": "2025-01-14",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "PanicPyramider",
     "realized_pnl_usd": 443565.11,
@@ -1312,24 +1585,24 @@
      "rank": 8
     },
     {
-     "username": "BandFadeBella",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
+     "username": "SpringSasha",
+     "realized_pnl_usd": 8559.41,
+     "equity_multiple": 1.034238,
+     "trades": 1,
+     "active_days": 1,
      "meets_min_active_days": false,
      "ruined": false,
      "margin_breach_bars": 0,
      "add_tranches": 0,
-     "long_trades": 0,
+     "long_trades": 1,
      "short_trades": 0,
      "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
+     "max_drawdown_usd": 11025.0,
      "multiple_buckets": [],
      "rank": 9
     },
     {
-     "username": "ExhaustionEd",
+     "username": "BandFadeBella",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1346,7 +1619,7 @@
      "rank": 10
     },
     {
-     "username": "GapGhost",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1363,7 +1636,7 @@
      "rank": 11
     },
     {
-     "username": "MomentumMoe",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1380,7 +1653,7 @@
      "rank": 12
     },
     {
-     "username": "ReversalRaja",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1397,6 +1670,57 @@
      "rank": 13
     },
     {
+     "username": "MomentumMoe",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
      "username": "ClimaxCarla",
      "realized_pnl_usd": -74329.4,
      "equity_multiple": 0.702682,
@@ -1411,7 +1735,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 148199.92,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
     },
     {
      "username": "TrendTina",
@@ -1428,7 +1752,24 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 287849.86,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -377955.11,
+     "equity_multiple": -0.51182,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 4,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 386115.3,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -1438,7 +1779,7 @@
    "end_date": "2025-02-13",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "EuphoriaEarl",
     "realized_pnl_usd": 240726.73,
@@ -1480,6 +1821,23 @@
      "rank": 2
     },
     {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 139450.66,
+     "equity_multiple": 1.557803,
+     "trades": 4,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 3,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 116100.08,
+     "multiple_buckets": [],
+     "rank": 3
+    },
+    {
      "username": "ContrarianQueen",
      "realized_pnl_usd": 69629.9,
      "equity_multiple": 1.27852,
@@ -1494,7 +1852,7 @@
      "skipped_entries": 5,
      "max_drawdown_usd": 196490.04,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 4
     },
     {
      "username": "MomentumMoe",
@@ -1511,7 +1869,7 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 123819.94,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 5
     },
     {
      "username": "BandFadeBella",
@@ -1528,27 +1886,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 5
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 6
     },
     {
-     "username": "ReversalRaja",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1565,6 +1906,57 @@
      "rank": 7
     },
     {
+     "username": "ExhaustionEd",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 8
+    },
+    {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 9
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 10
+    },
+    {
      "username": "CapitulationKate",
      "realized_pnl_usd": -9441.12,
      "equity_multiple": 0.962236,
@@ -1579,7 +1971,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 114904.96,
      "multiple_buckets": [],
-     "rank": 8
+     "rank": 11
     },
     {
      "username": "GapGhost",
@@ -1596,7 +1988,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 63609.49,
      "multiple_buckets": [],
-     "rank": 9
+     "rank": 12
     },
     {
      "username": "SqueezeSam",
@@ -1613,7 +2005,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 54875.0,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 13
     },
     {
      "username": "ClimaxCarla",
@@ -1630,7 +2022,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 79982.37,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 14
     },
     {
      "username": "SqueezeSpark",
@@ -1647,7 +2039,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 98295.0,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
     },
     {
      "username": "FadeThePanic",
@@ -1664,7 +2056,7 @@
      "skipped_entries": 3,
      "max_drawdown_usd": 324843.09,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 16
     },
     {
      "username": "TrendTina",
@@ -1681,7 +2073,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 265339.98,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -214127.06,
+     "equity_multiple": 0.143492,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 8,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 214127.06,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "PanicPyramider",
@@ -1698,7 +2107,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 344959.78,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -1708,7 +2117,7 @@
    "end_date": "2025-03-15",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "MomentumMoe",
     "realized_pnl_usd": 184993.44,
@@ -1852,7 +2261,7 @@
      "rank": 8
     },
     {
-     "username": "ExhaustionEd",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1869,7 +2278,7 @@
      "rank": 9
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1886,7 +2295,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSam",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1903,7 +2312,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSpark",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -1918,6 +2327,40 @@
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
      "rank": 12
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
     },
     {
      "username": "GapGoblin",
@@ -1934,7 +2377,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 85500.24,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 15
     },
     {
      "username": "ClimaxCarla",
@@ -1951,7 +2394,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 196955.29,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 16
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -224383.6,
+     "equity_multiple": 0.102466,
+     "trades": 4,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 14,
+     "add_tranches": 0,
+     "long_trades": 3,
+     "short_trades": 1,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 295133.17,
+     "multiple_buckets": [],
+     "rank": 17
     },
     {
      "username": "EuphoriaEarl",
@@ -1968,7 +2428,24 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 400920.0,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -370018.79,
+     "equity_multiple": -0.480075,
+     "trades": 3,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 8,
+     "add_tranches": 0,
+     "long_trades": 3,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 359973.41,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -1978,13 +2455,30 @@
    "end_date": "2025-04-14",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
-    "username": "ClimaxCarla",
-    "realized_pnl_usd": 775297.46,
-    "equity_multiple": 4.10119
+    "username": "CreekCasey",
+    "realized_pnl_usd": 970201.76,
+    "equity_multiple": 4.880807
    },
    "rows": [
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 970201.76,
+     "equity_multiple": 4.880807,
+     "trades": 6,
+     "active_days": 7,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 3,
+     "short_trades": 3,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 705499.89,
+     "multiple_buckets": [],
+     "rank": 1
+    },
     {
      "username": "ClimaxCarla",
      "realized_pnl_usd": 775297.46,
@@ -2000,7 +2494,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 765020.1,
      "multiple_buckets": [],
-     "rank": 1
+     "rank": 2
     },
     {
      "username": "GapGoblin",
@@ -2017,7 +2511,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 425274.94,
      "multiple_buckets": [],
-     "rank": 2
+     "rank": 3
     },
     {
      "username": "EuphoriaEarl",
@@ -2034,7 +2528,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 1357695.0,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 4
     },
     {
      "username": "ContrarianQueen",
@@ -2051,7 +2545,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 1257125.0,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 5
     },
     {
      "username": "BandFadeBella",
@@ -2068,7 +2562,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "ExhaustionEd",
@@ -2085,7 +2579,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
+     "rank": 7
     },
     {
      "username": "GapGhost",
@@ -2102,7 +2596,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 7
+     "rank": 8
     },
     {
      "username": "PanicPyramider",
@@ -2119,7 +2613,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 8
+     "rank": 9
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 10
     },
     {
      "username": "SqueezeSam",
@@ -2136,7 +2647,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 68249.97,
      "multiple_buckets": [],
-     "rank": 9
+     "rank": 11
+    },
+    {
+     "username": "CompressCleo",
+     "realized_pnl_usd": -49662.25,
+     "equity_multiple": 0.801351,
+     "trades": 2,
+     "active_days": 1,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 36499.98,
+     "multiple_buckets": [],
+     "rank": 12
     },
     {
      "username": "TrendTina",
@@ -2153,7 +2681,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 224369.73,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 13
     },
     {
      "username": "ReversalRaja",
@@ -2170,7 +2698,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 105499.98,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 14
     },
     {
      "username": "FadeThePanic",
@@ -2187,7 +2715,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 255195.05,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
     },
     {
      "username": "CapitulationKate",
@@ -2204,7 +2732,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 289129.53,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 16
     },
     {
      "username": "SqueezeSpark",
@@ -2221,7 +2749,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 290500.16,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -218180.41,
+     "equity_multiple": 0.127278,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 6,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 603420.0,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "MomentumMoe",
@@ -2238,7 +2783,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 170519.94,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -2248,7 +2793,7 @@
    "end_date": "2025-05-14",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "FadeThePanic",
     "realized_pnl_usd": 522841.08,
@@ -2358,7 +2903,7 @@
      "rank": 6
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2375,7 +2920,7 @@
      "rank": 7
     },
     {
-     "username": "ExhaustionEd",
+     "username": "CreekCasey",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2392,7 +2937,7 @@
      "rank": 8
     },
     {
-     "username": "GapGhost",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2409,7 +2954,7 @@
      "rank": 9
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2426,7 +2971,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSam",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2443,7 +2988,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2460,7 +3005,7 @@
      "rank": 12
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2477,6 +3022,40 @@
      "rank": 13
     },
     {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
      "username": "GapGoblin",
      "realized_pnl_usd": -5675.42,
      "equity_multiple": 0.977298,
@@ -2491,7 +3070,41 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 28250.05,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 16
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -12785.09,
+     "equity_multiple": 0.94886,
+     "trades": 2,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 12000.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -26835.62,
+     "equity_multiple": 0.892658,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 75810.06,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "MomentumMoe",
@@ -2508,7 +3121,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 160750.15,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -2518,7 +3131,7 @@
    "end_date": "2025-06-13",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "TrendTina",
     "realized_pnl_usd": 144710.52,
@@ -2594,7 +3207,7 @@
      "rank": 4
     },
     {
-     "username": "ContrarianQueen",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2611,7 +3224,7 @@
      "rank": 5
     },
     {
-     "username": "ExhaustionEd",
+     "username": "ContrarianQueen",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2628,7 +3241,7 @@
      "rank": 6
     },
     {
-     "username": "FadeThePanic",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2645,7 +3258,7 @@
      "rank": 7
     },
     {
-     "username": "PanicPyramider",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2662,7 +3275,7 @@
      "rank": 8
     },
     {
-     "username": "ReversalRaja",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2679,7 +3292,7 @@
      "rank": 9
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2696,6 +3309,40 @@
      "rank": 10
     },
     {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
      "username": "MomentumMoe",
      "realized_pnl_usd": -1222.37,
      "equity_multiple": 0.995111,
@@ -2710,7 +3357,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 14425.0,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 13
     },
     {
      "username": "SqueezeSam",
@@ -2727,7 +3374,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 14425.0,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 14
     },
     {
      "username": "GapGhost",
@@ -2744,7 +3391,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 68749.96,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 15
     },
     {
      "username": "CapitulationKate",
@@ -2761,7 +3408,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 147124.94,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 16
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -117414.15,
+     "equity_multiple": 0.530343,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 8,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 142251.35,
+     "multiple_buckets": [],
+     "rank": 17
     },
     {
      "username": "ClimaxCarla",
@@ -2778,7 +3442,24 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 355680.18,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -648479.64,
+     "equity_multiple": -1.593919,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 3,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 632940.09,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -2788,7 +3469,7 @@
    "end_date": "2025-07-13",
    "calendar_days": 30,
    "sessions_in_window": 19,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "FadeThePanic",
     "realized_pnl_usd": 373275.56,
@@ -2864,6 +3545,23 @@
      "rank": 4
     },
     {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 30768.14,
+     "equity_multiple": 1.123073,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 32250.0,
+     "multiple_buckets": [],
+     "rank": 5
+    },
+    {
      "username": "PanicPyramider",
      "realized_pnl_usd": 23923.49,
      "equity_multiple": 1.095694,
@@ -2878,7 +3576,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 246009.64,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "BandFadeBella",
@@ -2895,27 +3593,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
-    },
-    {
-     "username": "EuphoriaEarl",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 7
     },
     {
-     "username": "ExhaustionEd",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2932,7 +3613,7 @@
      "rank": 8
     },
     {
-     "username": "ReversalRaja",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2949,7 +3630,7 @@
      "rank": 9
     },
     {
-     "username": "SqueezeSam",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2966,7 +3647,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -2983,6 +3664,74 @@
      "rank": 11
     },
     {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -12591.94,
+     "equity_multiple": 0.949632,
+     "trades": 3,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 3,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 3,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 170309.97,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
      "username": "CapitulationKate",
      "realized_pnl_usd": -43720.67,
      "equity_multiple": 0.825117,
@@ -2997,7 +3746,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 211907.28,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 16
     },
     {
      "username": "TrendTina",
@@ -3014,7 +3763,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 269535.04,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 17
     },
     {
      "username": "GapGoblin",
@@ -3031,7 +3780,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 163787.69,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "ClimaxCarla",
@@ -3048,7 +3797,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 246009.64,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -3058,7 +3807,7 @@
    "end_date": "2025-08-12",
    "calendar_days": 30,
    "sessions_in_window": 22,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "GapGoblin",
     "realized_pnl_usd": 400712.4,
@@ -3270,6 +4019,23 @@
      "rank": 12
     },
     {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -46272.5,
+     "equity_multiple": 0.81491,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 59639.88,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
      "username": "FadeThePanic",
      "realized_pnl_usd": -80027.83,
      "equity_multiple": 0.679889,
@@ -3284,7 +4050,41 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 224279.92,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 14
+    },
+    {
+     "username": "CompressCleo",
+     "realized_pnl_usd": -81798.41,
+     "equity_multiple": 0.672806,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 146999.97,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -116734.6,
+     "equity_multiple": 0.533062,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 2,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 224279.92,
+     "multiple_buckets": [],
+     "rank": 16
     },
     {
      "username": "ContrarianQueen",
@@ -3301,7 +4101,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 213089.93,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -173972.81,
+     "equity_multiple": 0.304109,
+     "trades": 4,
+     "active_days": 8,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 8,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 4,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 173972.81,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "SqueezeSam",
@@ -3318,7 +4135,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 265019.92,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -3328,7 +4145,7 @@
    "end_date": "2025-09-11",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ClimaxCarla",
     "realized_pnl_usd": 386732.91,
@@ -3370,6 +4187,23 @@
      "rank": 2
     },
     {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 78251.73,
+     "equity_multiple": 1.313007,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 141600.0,
+     "multiple_buckets": [],
+     "rank": 3
+    },
+    {
      "username": "TrendTina",
      "realized_pnl_usd": 53985.32,
      "equity_multiple": 1.215941,
@@ -3384,7 +4218,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 83160.03,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 4
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 15733.49,
+     "equity_multiple": 1.062934,
+     "trades": 4,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 3,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 94913.53,
+     "multiple_buckets": [],
+     "rank": 5
     },
     {
      "username": "EuphoriaEarl",
@@ -3401,7 +4252,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 60905.0,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 6
     },
     {
      "username": "BandFadeBella",
@@ -3418,44 +4269,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 5
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
-     "rank": 6
-    },
-    {
-     "username": "MomentumMoe",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 7
     },
     {
-     "username": "PanicPyramider",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3472,7 +4289,7 @@
      "rank": 8
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3489,7 +4306,7 @@
      "rank": 9
     },
     {
-     "username": "SqueezeSam",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3506,6 +4323,74 @@
      "rank": 10
     },
     {
+     "username": "PanicPyramider",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
      "username": "SqueezeSpark",
      "realized_pnl_usd": -3884.33,
      "equity_multiple": 0.984463,
@@ -3520,7 +4405,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 8190.0,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 15
     },
     {
      "username": "CapitulationKate",
@@ -3537,7 +4422,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 8805.45,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 16
     },
     {
      "username": "ContrarianQueen",
@@ -3554,7 +4439,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 98927.44,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 17
     },
     {
      "username": "GapGhost",
@@ -3571,7 +4456,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 83160.03,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "FadeThePanic",
@@ -3588,7 +4473,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 83160.03,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -3598,7 +4483,7 @@
    "end_date": "2025-10-11",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ContrarianQueen",
     "realized_pnl_usd": 130934.61,
@@ -3708,7 +4593,7 @@
      "rank": 6
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3725,7 +4610,7 @@
      "rank": 7
     },
     {
-     "username": "ReversalRaja",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3742,7 +4627,7 @@
      "rank": 8
     },
     {
-     "username": "SqueezeSam",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3759,7 +4644,7 @@
      "rank": 9
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -3776,6 +4661,23 @@
      "rank": 10
     },
     {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
      "username": "SqueezeSpark",
      "realized_pnl_usd": -12145.46,
      "equity_multiple": 0.951418,
@@ -3790,7 +4692,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 57800.37,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 12
     },
     {
      "username": "GapGhost",
@@ -3807,7 +4709,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 49250.01,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 13
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -57656.94,
+     "equity_multiple": 0.769372,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 198986.86,
+     "multiple_buckets": [],
+     "rank": 14
     },
     {
      "username": "MomentumMoe",
@@ -3824,7 +4743,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 97999.99,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 15
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -87196.21,
+     "equity_multiple": 0.651215,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 7,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 156100.0,
+     "multiple_buckets": [],
+     "rank": 16
     },
     {
      "username": "ClimaxCarla",
@@ -3841,7 +4777,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 210139.99,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
     },
     {
      "username": "CapitulationKate",
@@ -3858,7 +4794,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 322134.51,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -279080.09,
+     "equity_multiple": -0.11632,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 5,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 280610.28,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -3868,7 +4821,7 @@
    "end_date": "2025-11-10",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ContrarianQueen",
     "realized_pnl_usd": 287106.58,
@@ -3944,6 +4897,23 @@
      "rank": 4
     },
     {
+     "username": "StreakStan",
+     "realized_pnl_usd": 60033.81,
+     "equity_multiple": 1.240135,
+     "trades": 2,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 129599.88,
+     "multiple_buckets": [],
+     "rank": 5
+    },
+    {
      "username": "GapGoblin",
      "realized_pnl_usd": 50117.12,
      "equity_multiple": 1.200468,
@@ -3958,7 +4928,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 257354.97,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "MomentumMoe",
@@ -3975,27 +4945,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 50050.0,
      "multiple_buckets": [],
-     "rank": 6
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 7
     },
     {
-     "username": "ReversalRaja",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4012,7 +4965,7 @@
      "rank": 8
     },
     {
-     "username": "SqueezeSam",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4029,6 +4982,57 @@
      "rank": 9
     },
     {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 10
+    },
+    {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -3730.93,
+     "equity_multiple": 0.985076,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 14650.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
      "username": "TrendTina",
      "realized_pnl_usd": -8837.45,
      "equity_multiple": 0.96465,
@@ -4043,7 +5047,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 197325.0,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 13
     },
     {
      "username": "GapGhost",
@@ -4060,7 +5064,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 142700.84,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 14
     },
     {
      "username": "FadeThePanic",
@@ -4077,7 +5081,7 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 323538.59,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
     },
     {
      "username": "PanicPyramider",
@@ -4094,7 +5098,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 392120.01,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 16
     },
     {
      "username": "SqueezeSpark",
@@ -4111,7 +5115,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 584814.7,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -182842.32,
+     "equity_multiple": 0.268631,
+     "trades": 3,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 8,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 1,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 176875.18,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "CapitulationKate",
@@ -4128,7 +5149,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 539487.06,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -4138,7 +5159,7 @@
    "end_date": "2025-12-10",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "GapGoblin",
     "realized_pnl_usd": 206863.06,
@@ -4180,6 +5201,40 @@
      "rank": 2
     },
     {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 173438.19,
+     "equity_multiple": 1.693753,
+     "trades": 5,
+     "active_days": 7,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 3,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 223199.96,
+     "multiple_buckets": [],
+     "rank": 3
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 168306.26,
+     "equity_multiple": 1.673225,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 221850.0,
+     "multiple_buckets": [],
+     "rank": 4
+    },
+    {
      "username": "ClimaxCarla",
      "realized_pnl_usd": 84684.52,
      "equity_multiple": 1.338738,
@@ -4194,7 +5249,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 192950.04,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 5
     },
     {
      "username": "BandFadeBella",
@@ -4211,44 +5266,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 4
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
-     "rank": 5
-    },
-    {
-     "username": "GapGhost",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 6
     },
     {
-     "username": "ReversalRaja",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4265,7 +5286,7 @@
      "rank": 7
     },
     {
-     "username": "SqueezeSam",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4282,6 +5303,74 @@
      "rank": 8
     },
     {
+     "username": "GapGhost",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 9
+    },
+    {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 10
+    },
+    {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
      "username": "MomentumMoe",
      "realized_pnl_usd": -13295.28,
      "equity_multiple": 0.946819,
@@ -4296,7 +5385,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 5144.98,
      "multiple_buckets": [],
-     "rank": 9
+     "rank": 13
     },
     {
      "username": "TrendTina",
@@ -4313,7 +5402,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 5144.98,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 14
     },
     {
      "username": "FadeThePanic",
@@ -4330,7 +5419,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 224105.0,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 15
     },
     {
      "username": "EuphoriaEarl",
@@ -4347,7 +5436,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 156415.0,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 16
     },
     {
      "username": "ContrarianQueen",
@@ -4364,7 +5453,7 @@
      "skipped_entries": 5,
      "max_drawdown_usd": 258781.58,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 17
     },
     {
      "username": "CapitulationKate",
@@ -4381,7 +5470,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 489058.68,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "SqueezeSpark",
@@ -4398,7 +5487,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 963468.36,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -4408,7 +5497,7 @@
    "end_date": "2026-01-09",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ContrarianQueen",
     "realized_pnl_usd": 1677955.89,
@@ -4537,7 +5626,7 @@
      "rank": 7
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4554,7 +5643,7 @@
      "rank": 8
     },
     {
-     "username": "ExhaustionEd",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4571,7 +5660,7 @@
      "rank": 9
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4588,7 +5677,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSam",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4605,6 +5694,57 @@
      "rank": 11
     },
     {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -4173.86,
+     "equity_multiple": 0.983305,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 191923.79,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
      "username": "GapGhost",
      "realized_pnl_usd": -111077.91,
      "equity_multiple": 0.555688,
@@ -4619,7 +5759,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 156500.04,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
     },
     {
      "username": "CapitulationKate",
@@ -4636,7 +5776,7 @@
      "skipped_entries": 5,
      "max_drawdown_usd": 506499.92,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 16
     },
     {
      "username": "BandFadeBella",
@@ -4653,7 +5793,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 698179.93,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
     },
     {
      "username": "GapGoblin",
@@ -4670,7 +5810,24 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 697226.5,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -693373.23,
+     "equity_multiple": -1.773493,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 3,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 777093.17,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -4680,7 +5837,7 @@
    "end_date": "2026-02-08",
    "calendar_days": 30,
    "sessions_in_window": 19,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ClimaxCarla",
     "realized_pnl_usd": 355050.13,
@@ -4756,7 +5913,7 @@
      "rank": 4
     },
     {
-     "username": "ReversalRaja",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4773,7 +5930,7 @@
      "rank": 5
     },
     {
-     "username": "SqueezeSam",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -4790,6 +5947,40 @@
      "rank": 6
     },
     {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 7
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 8
+    },
+    {
      "username": "FadeThePanic",
      "realized_pnl_usd": -31607.66,
      "equity_multiple": 0.873569,
@@ -4804,7 +5995,7 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 897964.4,
      "multiple_buckets": [],
-     "rank": 7
+     "rank": 9
     },
     {
      "username": "GapGhost",
@@ -4821,7 +6012,41 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 279250.03,
      "multiple_buckets": [],
-     "rank": 8
+     "rank": 10
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -83279.2,
+     "equity_multiple": 0.666883,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 65125.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -99499.86,
+     "equity_multiple": 0.602001,
+     "trades": 3,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": false,
+     "margin_breach_bars": 4,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 3,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 327233.53,
+     "multiple_buckets": [],
+     "rank": 12
     },
     {
      "username": "PanicPyramider",
@@ -4838,7 +6063,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 889249.98,
      "multiple_buckets": [],
-     "rank": 9
+     "rank": 13
     },
     {
      "username": "ContrarianQueen",
@@ -4855,7 +6080,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 910250.04,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 14
     },
     {
      "username": "SqueezeSpark",
@@ -4872,7 +6097,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 458160.1,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 15
     },
     {
      "username": "CapitulationKate",
@@ -4889,7 +6114,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 511555.14,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 16
     },
     {
      "username": "ExhaustionEd",
@@ -4906,7 +6131,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 762749.97,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 17
     },
     {
      "username": "TrendTina",
@@ -4923,7 +6148,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 1055750.01,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "GapGoblin",
@@ -4940,7 +6165,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 2704138.14,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -4950,7 +6175,7 @@
    "end_date": "2026-03-10",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "CapitulationKate",
     "realized_pnl_usd": 625859.31,
@@ -5009,6 +6234,23 @@
      "rank": 3
     },
     {
+     "username": "CompressCleo",
+     "realized_pnl_usd": 57879.6,
+     "equity_multiple": 1.231518,
+     "trades": 2,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 462600.33,
+     "multiple_buckets": [],
+     "rank": 4
+    },
+    {
      "username": "MomentumMoe",
      "realized_pnl_usd": 11771.49,
      "equity_multiple": 1.047086,
@@ -5023,7 +6265,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 89750.05,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 5
     },
     {
      "username": "ContrarianQueen",
@@ -5040,7 +6282,7 @@
      "skipped_entries": 8,
      "max_drawdown_usd": 264007.2,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "BandFadeBella",
@@ -5057,7 +6299,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
+     "rank": 7
     },
     {
      "username": "EuphoriaEarl",
@@ -5074,7 +6316,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 7
+     "rank": 8
     },
     {
      "username": "ExhaustionEd",
@@ -5091,7 +6333,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 8
+     "rank": 9
     },
     {
      "username": "ReversalRaja",
@@ -5108,7 +6350,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 9
+     "rank": 10
     },
     {
      "username": "SqueezeSam",
@@ -5125,7 +6367,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 10
+     "rank": 11
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
     },
     {
      "username": "TrendTina",
@@ -5142,7 +6401,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 13
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -10813.8,
+     "equity_multiple": 0.956745,
+     "trades": 1,
+     "active_days": 1,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
     },
     {
      "username": "ClimaxCarla",
@@ -5159,7 +6435,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 968771.52,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -799613.74,
+     "equity_multiple": -2.198455,
+     "trades": 4,
+     "active_days": 6,
+     "meets_min_active_days": true,
+     "ruined": true,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 4,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 566017.16,
+     "multiple_buckets": [],
+     "rank": 16
     },
     {
      "username": "GapGhost",
@@ -5176,7 +6469,7 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 1647799.53,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 17
     },
     {
      "username": "FadeThePanic",
@@ -5193,7 +6486,7 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 570674.94,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 18
     },
     {
      "username": "PanicPyramider",
@@ -5210,7 +6503,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 2254919.86,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -5220,7 +6513,7 @@
    "end_date": "2026-04-09",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "FadeThePanic",
     "realized_pnl_usd": 2788271.94,
@@ -5424,6 +6717,40 @@
      "rank": 11
     },
     {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -29948.04,
+     "equity_multiple": 0.880208,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 5,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 238635.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
      "username": "SqueezeSam",
      "realized_pnl_usd": -147273.5,
      "equity_multiple": 0.410906,
@@ -5438,7 +6765,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 422350.0,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 14
     },
     {
      "username": "EuphoriaEarl",
@@ -5455,7 +6782,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 399688.28,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 15
     },
     {
      "username": "GapGoblin",
@@ -5472,7 +6799,41 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 349220.86,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 16
+    },
+    {
+     "username": "CompressCleo",
+     "realized_pnl_usd": -335681.55,
+     "equity_multiple": -0.342726,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 11,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 621855.09,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -383687.69,
+     "equity_multiple": -0.534751,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 5,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 1,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 432639.88,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "TrendTina",
@@ -5489,7 +6850,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 422350.0,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -5499,7 +6860,7 @@
    "end_date": "2026-05-09",
    "calendar_days": 30,
    "sessions_in_window": 21,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "ClimaxCarla",
     "realized_pnl_usd": 322609.43,
@@ -5575,7 +6936,7 @@
      "rank": 4
     },
     {
-     "username": "EuphoriaEarl",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5592,7 +6953,7 @@
      "rank": 5
     },
     {
-     "username": "ExhaustionEd",
+     "username": "EuphoriaEarl",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5609,7 +6970,7 @@
      "rank": 6
     },
     {
-     "username": "GapGhost",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5626,7 +6987,7 @@
      "rank": 7
     },
     {
-     "username": "MomentumMoe",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5643,7 +7004,7 @@
      "rank": 8
     },
     {
-     "username": "ReversalRaja",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5660,7 +7021,7 @@
      "rank": 9
     },
     {
-     "username": "SqueezeSam",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5677,7 +7038,7 @@
      "rank": 10
     },
     {
-     "username": "SqueezeSpark",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5694,7 +7055,7 @@
      "rank": 11
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSpark",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5709,6 +7070,40 @@
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
      "rank": 12
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -108853.74,
+     "equity_multiple": 0.564585,
+     "trades": 3,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 3,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 112195.0,
+     "multiple_buckets": [],
+     "rank": 14
     },
     {
      "username": "FadeThePanic",
@@ -5725,7 +7120,24 @@
      "skipped_entries": 3,
      "max_drawdown_usd": 740939.77,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 15
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -252034.64,
+     "equity_multiple": -0.008139,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 5,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 294210.0,
+     "multiple_buckets": [],
+     "rank": 16
     },
     {
      "username": "PanicPyramider",
@@ -5742,7 +7154,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 740939.77,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
     },
     {
      "username": "ContrarianQueen",
@@ -5759,7 +7171,24 @@
      "skipped_entries": 2,
      "max_drawdown_usd": 740939.77,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -350566.31,
+     "equity_multiple": -0.402265,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 6,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 636479.78,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -5769,13 +7198,49 @@
    "end_date": "2026-06-08",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
-    "username": "GapGoblin",
-    "realized_pnl_usd": 237654.14,
-    "equity_multiple": 1.950617
+    "username": "CreekCasey",
+    "realized_pnl_usd": 1409171.43,
+    "equity_multiple": 6.636686
    },
    "rows": [
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": 1409171.43,
+     "equity_multiple": 6.636686,
+     "trades": 3,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 690999.6,
+     "multiple_buckets": [
+      5.0
+     ],
+     "rank": 1
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 281318.49,
+     "equity_multiple": 2.125274,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 300300.01,
+     "multiple_buckets": [],
+     "rank": 2
+    },
     {
      "username": "GapGoblin",
      "realized_pnl_usd": 237654.14,
@@ -5791,7 +7256,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 521510.28,
      "multiple_buckets": [],
-     "rank": 1
+     "rank": 3
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 93353.91,
+     "equity_multiple": 1.373416,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 6,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 178910.0,
+     "multiple_buckets": [],
+     "rank": 4
     },
     {
      "username": "ContrarianQueen",
@@ -5808,7 +7290,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 97640.0,
      "multiple_buckets": [],
-     "rank": 2
+     "rank": 5
     },
     {
      "username": "EuphoriaEarl",
@@ -5825,7 +7307,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 6
     },
     {
      "username": "BandFadeBella",
@@ -5842,7 +7324,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 7
     },
     {
      "username": "CapitulationKate",
@@ -5859,7 +7341,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 8
     },
     {
      "username": "ClimaxCarla",
@@ -5876,61 +7358,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
-     "rank": 7
-    },
-    {
-     "username": "FadeThePanic",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
-     "rank": 8
-    },
-    {
-     "username": "GapGhost",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 9
     },
     {
-     "username": "MomentumMoe",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5947,7 +7378,7 @@
      "rank": 10
     },
     {
-     "username": "PanicPyramider",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5964,7 +7395,7 @@
      "rank": 11
     },
     {
-     "username": "ReversalRaja",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5981,7 +7412,7 @@
      "rank": 12
     },
     {
-     "username": "SqueezeSam",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -5998,7 +7429,7 @@
      "rank": 13
     },
     {
-     "username": "SqueezeSpark",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6015,7 +7446,7 @@
      "rank": 14
     },
     {
-     "username": "TrendTina",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6030,6 +7461,74 @@
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
      "rank": 15
+    },
+    {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 18
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -6039,7 +7538,7 @@
    "end_date": "2026-07-08",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "GapGoblin",
     "realized_pnl_usd": 535510.29,
@@ -6081,6 +7580,23 @@
      "rank": 2
     },
     {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 250476.63,
+     "equity_multiple": 2.001907,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 1,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 249400.0,
+     "multiple_buckets": [],
+     "rank": 3
+    },
+    {
      "username": "EuphoriaEarl",
      "realized_pnl_usd": 159718.67,
      "equity_multiple": 1.638875,
@@ -6095,7 +7611,7 @@
      "skipped_entries": 1,
      "max_drawdown_usd": 187440.0,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 4
     },
     {
      "username": "BandFadeBella",
@@ -6112,7 +7628,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 5
     },
     {
      "username": "CapitulationKate",
@@ -6129,7 +7645,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "ClimaxCarla",
@@ -6146,27 +7662,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 7
     },
     {
-     "username": "FadeThePanic",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6183,7 +7682,7 @@
      "rank": 8
     },
     {
-     "username": "GapGhost",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6200,7 +7699,7 @@
      "rank": 9
     },
     {
-     "username": "MomentumMoe",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6217,7 +7716,7 @@
      "rank": 10
     },
     {
-     "username": "PanicPyramider",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6234,7 +7733,7 @@
      "rank": 11
     },
     {
-     "username": "ReversalRaja",
+     "username": "MomentumMoe",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6251,7 +7750,7 @@
      "rank": 12
     },
     {
-     "username": "SqueezeSam",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6268,7 +7767,7 @@
      "rank": 13
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6285,7 +7784,7 @@
      "rank": 14
     },
     {
-     "username": "TrendTina",
+     "username": "SqueezeSam",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6300,6 +7799,74 @@
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
      "rank": 15
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 17
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 18
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -406704.66,
+     "equity_multiple": -0.626819,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 4,
+     "add_tranches": 0,
+     "long_trades": 2,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 464519.98,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   },
@@ -6309,13 +7876,30 @@
    "end_date": "2026-08-07",
    "calendar_days": 30,
    "sessions_in_window": 22,
-   "participants": 15,
+   "participants": 19,
    "leader": {
-    "username": "SqueezeSam",
-    "realized_pnl_usd": 84808.69,
-    "equity_multiple": 1.339235
+    "username": "StreakStan",
+    "realized_pnl_usd": 155114.92,
+    "equity_multiple": 1.62046
    },
    "rows": [
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": 155114.92,
+     "equity_multiple": 1.62046,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 4,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 271425.1,
+     "multiple_buckets": [],
+     "rank": 1
+    },
     {
      "username": "SqueezeSam",
      "realized_pnl_usd": 84808.69,
@@ -6331,7 +7915,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 93999.98,
      "multiple_buckets": [],
-     "rank": 1
+     "rank": 2
     },
     {
      "username": "MomentumMoe",
@@ -6348,7 +7932,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 51280.0,
      "multiple_buckets": [],
-     "rank": 2
+     "rank": 3
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": 968.44,
+     "equity_multiple": 1.003874,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 1,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 4008.0,
+     "multiple_buckets": [],
+     "rank": 4
     },
     {
      "username": "BandFadeBella",
@@ -6365,7 +7966,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 3
+     "rank": 5
     },
     {
      "username": "CapitulationKate",
@@ -6382,44 +7983,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 4
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
-     "rank": 5
-    },
-    {
-     "username": "GapGhost",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 6
     },
     {
-     "username": "PanicPyramider",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6436,7 +8003,7 @@
      "rank": 7
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6453,7 +8020,7 @@
      "rank": 8
     },
     {
-     "username": "SqueezeSpark",
+     "username": "GapGhost",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6470,7 +8037,7 @@
      "rank": 9
     },
     {
-     "username": "TrendTina",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6487,6 +8054,57 @@
      "rank": 10
     },
     {
+     "username": "ReversalRaja",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 11
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 12
+    },
+    {
+     "username": "TrendTina",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 13
+    },
+    {
      "username": "FadeThePanic",
      "realized_pnl_usd": -28600.49,
      "equity_multiple": 0.885598,
@@ -6501,7 +8119,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 39500.0,
      "multiple_buckets": [],
-     "rank": 11
+     "rank": 14
     },
     {
      "username": "GapGoblin",
@@ -6518,7 +8136,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 104115.09,
      "multiple_buckets": [],
-     "rank": 12
+     "rank": 15
     },
     {
      "username": "EuphoriaEarl",
@@ -6535,7 +8153,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 149360.0,
      "multiple_buckets": [],
-     "rank": 13
+     "rank": 16
     },
     {
      "username": "ContrarianQueen",
@@ -6552,7 +8170,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 315840.0,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
+    },
+    {
+     "username": "CreekCasey",
+     "realized_pnl_usd": -267923.14,
+     "equity_multiple": -0.071693,
+     "trades": 2,
+     "active_days": 4,
+     "meets_min_active_days": false,
+     "ruined": true,
+     "margin_breach_bars": 6,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 267923.14,
+     "multiple_buckets": [],
+     "rank": 18
     },
     {
      "username": "ClimaxCarla",
@@ -6569,7 +8204,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 374381.79,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 19
     }
    ]
   },
@@ -6579,7 +8214,7 @@
    "end_date": "2026-09-06",
    "calendar_days": 30,
    "sessions_in_window": 20,
-   "participants": 15,
+   "participants": 19,
    "leader": {
     "username": "GapGoblin",
     "realized_pnl_usd": 403759.1,
@@ -6604,24 +8239,24 @@
      "rank": 1
     },
     {
-     "username": "FadeThePanic",
-     "realized_pnl_usd": 40215.51,
-     "equity_multiple": 1.160862,
-     "trades": 1,
-     "active_days": 2,
-     "meets_min_active_days": false,
+     "username": "CreekCasey",
+     "realized_pnl_usd": 360731.58,
+     "equity_multiple": 2.442926,
+     "trades": 3,
+     "active_days": 5,
+     "meets_min_active_days": true,
      "ruined": false,
      "margin_breach_bars": 0,
      "add_tranches": 0,
-     "long_trades": 1,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 61634.84,
+     "long_trades": 0,
+     "short_trades": 3,
+     "skipped_entries": 2,
+     "max_drawdown_usd": 294375.42,
      "multiple_buckets": [],
      "rank": 2
     },
     {
-     "username": "GapGhost",
+     "username": "FadeThePanic",
      "realized_pnl_usd": 40215.51,
      "equity_multiple": 1.160862,
      "trades": 1,
@@ -6638,6 +8273,23 @@
      "rank": 3
     },
     {
+     "username": "GapGhost",
+     "realized_pnl_usd": 40215.51,
+     "equity_multiple": 1.160862,
+     "trades": 1,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 1,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 61634.84,
+     "multiple_buckets": [],
+     "rank": 4
+    },
+    {
      "username": "MomentumMoe",
      "realized_pnl_usd": 8863.28,
      "equity_multiple": 1.035453,
@@ -6652,7 +8304,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 20275.0,
      "multiple_buckets": [],
-     "rank": 4
+     "rank": 5
     },
     {
      "username": "TrendTina",
@@ -6669,7 +8321,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 20850.0,
      "multiple_buckets": [],
-     "rank": 5
+     "rank": 6
     },
     {
      "username": "BandFadeBella",
@@ -6686,7 +8338,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 6
+     "rank": 7
     },
     {
      "username": "CapitulationKate",
@@ -6703,7 +8355,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 7
+     "rank": 8
     },
     {
      "username": "ClimaxCarla",
@@ -6720,27 +8372,10 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 0.0,
      "multiple_buckets": [],
-     "rank": 8
-    },
-    {
-     "username": "ExhaustionEd",
-     "realized_pnl_usd": 0.0,
-     "equity_multiple": 1.0,
-     "trades": 0,
-     "active_days": 0,
-     "meets_min_active_days": false,
-     "ruined": false,
-     "margin_breach_bars": 0,
-     "add_tranches": 0,
-     "long_trades": 0,
-     "short_trades": 0,
-     "skipped_entries": 0,
-     "max_drawdown_usd": 0.0,
-     "multiple_buckets": [],
      "rank": 9
     },
     {
-     "username": "PanicPyramider",
+     "username": "CompressCleo",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6757,7 +8392,7 @@
      "rank": 10
     },
     {
-     "username": "ReversalRaja",
+     "username": "ExhaustionEd",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6774,7 +8409,7 @@
      "rank": 11
     },
     {
-     "username": "SqueezeSam",
+     "username": "PanicPyramider",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6791,7 +8426,7 @@
      "rank": 12
     },
     {
-     "username": "SqueezeSpark",
+     "username": "ReversalRaja",
      "realized_pnl_usd": 0.0,
      "equity_multiple": 1.0,
      "trades": 0,
@@ -6808,6 +8443,57 @@
      "rank": 13
     },
     {
+     "username": "SqueezeSam",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 14
+    },
+    {
+     "username": "SqueezeSpark",
+     "realized_pnl_usd": 0.0,
+     "equity_multiple": 1.0,
+     "trades": 0,
+     "active_days": 0,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 0,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 0.0,
+     "multiple_buckets": [],
+     "rank": 15
+    },
+    {
+     "username": "SpringSasha",
+     "realized_pnl_usd": -10700.7,
+     "equity_multiple": 0.957197,
+     "trades": 2,
+     "active_days": 3,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 0,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 0,
+     "max_drawdown_usd": 22675.0,
+     "multiple_buckets": [],
+     "rank": 16
+    },
+    {
      "username": "ContrarianQueen",
      "realized_pnl_usd": -19022.87,
      "equity_multiple": 0.923909,
@@ -6822,7 +8508,7 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 22675.0,
      "multiple_buckets": [],
-     "rank": 14
+     "rank": 17
     },
     {
      "username": "EuphoriaEarl",
@@ -6839,7 +8525,24 @@
      "skipped_entries": 0,
      "max_drawdown_usd": 22675.0,
      "multiple_buckets": [],
-     "rank": 15
+     "rank": 18
+    },
+    {
+     "username": "StreakStan",
+     "realized_pnl_usd": -203179.37,
+     "equity_multiple": 0.187283,
+     "trades": 2,
+     "active_days": 2,
+     "meets_min_active_days": false,
+     "ruined": false,
+     "margin_breach_bars": 5,
+     "add_tranches": 0,
+     "long_trades": 0,
+     "short_trades": 2,
+     "skipped_entries": 1,
+     "max_drawdown_usd": 388220.11,
+     "multiple_buckets": [],
+     "rank": 19
     }
    ]
   }
@@ -6850,7 +8553,7 @@
   "end_date": "2026-09-17",
   "calendar_days": 30,
   "sessions_in_window": 21,
-  "participants": 15,
+  "participants": 19,
   "leader": {
    "username": "GapGoblin",
    "realized_pnl_usd": 470072.41,
@@ -6960,7 +8663,7 @@
     "rank": 6
    },
    {
-    "username": "ExhaustionEd",
+    "username": "CompressCleo",
     "realized_pnl_usd": 0.0,
     "equity_multiple": 1.0,
     "trades": 0,
@@ -6977,7 +8680,7 @@
     "rank": 7
    },
    {
-    "username": "PanicPyramider",
+    "username": "ExhaustionEd",
     "realized_pnl_usd": 0.0,
     "equity_multiple": 1.0,
     "trades": 0,
@@ -6994,7 +8697,7 @@
     "rank": 8
    },
    {
-    "username": "ReversalRaja",
+    "username": "PanicPyramider",
     "realized_pnl_usd": 0.0,
     "equity_multiple": 1.0,
     "trades": 0,
@@ -7011,7 +8714,7 @@
     "rank": 9
    },
    {
-    "username": "SqueezeSam",
+    "username": "ReversalRaja",
     "realized_pnl_usd": 0.0,
     "equity_multiple": 1.0,
     "trades": 0,
@@ -7028,7 +8731,7 @@
     "rank": 10
    },
    {
-    "username": "SqueezeSpark",
+    "username": "SqueezeSam",
     "realized_pnl_usd": 0.0,
     "equity_multiple": 1.0,
     "trades": 0,
@@ -7045,6 +8748,57 @@
     "rank": 11
    },
    {
+    "username": "SqueezeSpark",
+    "realized_pnl_usd": 0.0,
+    "equity_multiple": 1.0,
+    "trades": 0,
+    "active_days": 0,
+    "meets_min_active_days": false,
+    "ruined": false,
+    "margin_breach_bars": 0,
+    "add_tranches": 0,
+    "long_trades": 0,
+    "short_trades": 0,
+    "skipped_entries": 0,
+    "max_drawdown_usd": 0.0,
+    "multiple_buckets": [],
+    "rank": 12
+   },
+   {
+    "username": "StreakStan",
+    "realized_pnl_usd": 0.0,
+    "equity_multiple": 1.0,
+    "trades": 0,
+    "active_days": 0,
+    "meets_min_active_days": false,
+    "ruined": false,
+    "margin_breach_bars": 0,
+    "add_tranches": 0,
+    "long_trades": 0,
+    "short_trades": 0,
+    "skipped_entries": 0,
+    "max_drawdown_usd": 0.0,
+    "multiple_buckets": [],
+    "rank": 13
+   },
+   {
+    "username": "SpringSasha",
+    "realized_pnl_usd": -7087.24,
+    "equity_multiple": 0.971651,
+    "trades": 3,
+    "active_days": 6,
+    "meets_min_active_days": true,
+    "ruined": false,
+    "margin_breach_bars": 0,
+    "add_tranches": 0,
+    "long_trades": 0,
+    "short_trades": 3,
+    "skipped_entries": 0,
+    "max_drawdown_usd": 22675.0,
+    "multiple_buckets": [],
+    "rank": 14
+   },
+   {
     "username": "MomentumMoe",
     "realized_pnl_usd": -9011.72,
     "equity_multiple": 0.963953,
@@ -7059,7 +8813,7 @@
     "skipped_entries": 0,
     "max_drawdown_usd": 29975.0,
     "multiple_buckets": [],
-    "rank": 12
+    "rank": 15
    },
    {
     "username": "CapitulationKate",
@@ -7076,7 +8830,7 @@
     "skipped_entries": 0,
     "max_drawdown_usd": 25375.06,
     "multiple_buckets": [],
-    "rank": 13
+    "rank": 16
    },
    {
     "username": "TrendTina",
@@ -7093,7 +8847,7 @@
     "skipped_entries": 0,
     "max_drawdown_usd": 29975.0,
     "multiple_buckets": [],
-    "rank": 14
+    "rank": 17
    },
    {
     "username": "EuphoriaEarl",
@@ -7110,7 +8864,24 @@
     "skipped_entries": 0,
     "max_drawdown_usd": 22675.0,
     "multiple_buckets": [],
-    "rank": 15
+    "rank": 18
+   },
+   {
+    "username": "CreekCasey",
+    "realized_pnl_usd": -210758.07,
+    "equity_multiple": 0.156968,
+    "trades": 4,
+    "active_days": 8,
+    "meets_min_active_days": true,
+    "ruined": false,
+    "margin_breach_bars": 7,
+    "add_tranches": 0,
+    "long_trades": 0,
+    "short_trades": 4,
+    "skipped_entries": 2,
+    "max_drawdown_usd": 236497.96,
+    "multiple_buckets": [],
+    "rank": 19
    }
   ]
  },
@@ -7280,7 +9051,7 @@
    "total_add_tranches": 0,
    "median_active_days": 2.0,
    "editions_meeting_min_active_days": 3,
-   "latest_edition_rank": 15,
+   "latest_edition_rank": 18,
    "latest_edition_multiple": 0.937563,
    "season_rank": 5
   },
@@ -7320,7 +9091,7 @@
    "total_add_tranches": 0,
    "median_active_days": 1.5,
    "editions_meeting_min_active_days": 0,
-   "latest_edition_rank": 12,
+   "latest_edition_rank": 15,
    "latest_edition_multiple": 0.963953,
    "season_rank": 6
   },
@@ -7351,7 +9122,7 @@
    "total_add_tranches": 3,
    "median_active_days": 2.0,
    "editions_meeting_min_active_days": 2,
-   "latest_edition_rank": 8,
+   "latest_edition_rank": 9,
    "latest_edition_multiple": 1.0,
    "season_rank": 7
   },
@@ -7382,7 +9153,7 @@
    "total_add_tranches": 12,
    "median_active_days": 0.0,
    "editions_meeting_min_active_days": 3,
-   "latest_edition_rank": 11,
+   "latest_edition_rank": 12,
    "latest_edition_multiple": 1.0,
    "season_rank": 8
   },
@@ -7444,7 +9215,7 @@
    "total_add_tranches": 0,
    "median_active_days": 0.0,
    "editions_meeting_min_active_days": 0,
-   "latest_edition_rank": 9,
+   "latest_edition_rank": 10,
    "latest_edition_multiple": 1.0,
    "season_rank": 10
   },
@@ -7484,9 +9255,107 @@
    "total_add_tranches": 0,
    "median_active_days": 0.0,
    "editions_meeting_min_active_days": 0,
-   "latest_edition_rank": 10,
+   "latest_edition_rank": 11,
    "latest_edition_multiple": 1.0,
    "season_rank": 11
+  },
+  {
+   "username": "CompressCleo",
+   "kind": "contrarian",
+   "model": "F1",
+   "model_name": "Compressed-streak fade",
+   "variant": "slow5",
+   "params_label": "hold_bars=12, streak_bars=5",
+   "pool": [
+    "COMEX:SI1!",
+    "COMEX_MINI:SIL1!",
+    "NYMEX:PL1!"
+   ],
+   "editions_played": 24,
+   "ruined_editions": 1,
+   "negative_editions": 1,
+   "season_realized_pnl_usd": -378843.75,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 1.231518,
+   "worst_edition_multiple": -0.342726,
+   "editions_ge_5x": 0,
+   "editions_ge_10x": 0,
+   "editions_ge_20x": 0,
+   "editions_ge_50x": 0,
+   "editions_ge_100x": 0,
+   "total_trades": 7,
+   "total_add_tranches": 0,
+   "median_active_days": 0.0,
+   "editions_meeting_min_active_days": 0,
+   "latest_edition_rank": 7,
+   "latest_edition_multiple": 1.0,
+   "season_rank": 12
+  },
+  {
+   "username": "StreakStan",
+   "kind": "contrarian",
+   "model": "F1",
+   "model_name": "Compressed-streak fade",
+   "variant": null,
+   "params_label": "default",
+   "pool": [
+    "NYMEX:NG1!",
+    "NYMEX:CL1!",
+    "NYMEX:RB1!",
+    "NYMEX:HO1!",
+    "NYMEX_MINI:QM1!"
+   ],
+   "editions_played": 24,
+   "ruined_editions": 1,
+   "negative_editions": 1,
+   "season_realized_pnl_usd": -476806.54,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 2.125274,
+   "worst_edition_multiple": -0.402265,
+   "editions_ge_5x": 0,
+   "editions_ge_10x": 0,
+   "editions_ge_20x": 0,
+   "editions_ge_50x": 0,
+   "editions_ge_100x": 0,
+   "total_trades": 14,
+   "total_add_tranches": 0,
+   "median_active_days": 0.0,
+   "editions_meeting_min_active_days": 0,
+   "latest_edition_rank": 13,
+   "latest_edition_multiple": 1.0,
+   "season_rank": 13
+  },
+  {
+   "username": "SpringSasha",
+   "kind": "contrarian",
+   "model": "F2",
+   "model_name": "Swing-failure reclaim",
+   "variant": null,
+   "params_label": "default",
+   "pool": [
+    "CME:BTC1!",
+    "CME:ETH1!",
+    "CME_MINI:NQ1!"
+   ],
+   "editions_played": 24,
+   "ruined_editions": 1,
+   "negative_editions": 1,
+   "season_realized_pnl_usd": -632822.25,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 2.001907,
+   "worst_edition_multiple": -0.480075,
+   "editions_ge_5x": 0,
+   "editions_ge_10x": 0,
+   "editions_ge_20x": 0,
+   "editions_ge_50x": 0,
+   "editions_ge_100x": 0,
+   "total_trades": 41,
+   "total_add_tranches": 0,
+   "median_active_days": 3.0,
+   "editions_meeting_min_active_days": 2,
+   "latest_edition_rank": 14,
+   "latest_edition_multiple": 0.971651,
+   "season_rank": 14
   },
   {
    "username": "ExhaustionEd",
@@ -7514,9 +9383,9 @@
    "total_add_tranches": 0,
    "median_active_days": 0.0,
    "editions_meeting_min_active_days": 0,
-   "latest_edition_rank": 7,
+   "latest_edition_rank": 8,
    "latest_edition_multiple": 1.0,
-   "season_rank": 12
+   "season_rank": 15
   },
   {
    "username": "CapitulationKate",
@@ -7546,9 +9415,9 @@
    "total_add_tranches": 0,
    "median_active_days": 3.0,
    "editions_meeting_min_active_days": 9,
-   "latest_edition_rank": 13,
+   "latest_edition_rank": 16,
    "latest_edition_multiple": 0.959494,
-   "season_rank": 13
+   "season_rank": 16
   },
   {
    "username": "GapGhost",
@@ -7581,7 +9450,40 @@
    "editions_meeting_min_active_days": 0,
    "latest_edition_rank": 4,
    "latest_edition_multiple": 1.221456,
-   "season_rank": 14
+   "season_rank": 17
+  },
+  {
+   "username": "CreekCasey",
+   "kind": "contrarian",
+   "model": "F2",
+   "model_name": "Swing-failure reclaim",
+   "variant": "shallow",
+   "params_label": "hold_bars=5, sweep_atr_mult=0.1",
+   "pool": [
+    "NYMEX:CL1!",
+    "NYMEX:HO1!",
+    "NYMEX:RB1!",
+    "COMEX:SI1!"
+   ],
+   "editions_played": 24,
+   "ruined_editions": 8,
+   "negative_editions": 9,
+   "season_realized_pnl_usd": -1426265.41,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 6.636686,
+   "worst_edition_multiple": -2.198455,
+   "editions_ge_5x": 1,
+   "editions_ge_10x": 0,
+   "editions_ge_20x": 0,
+   "editions_ge_50x": 0,
+   "editions_ge_100x": 0,
+   "total_trades": 59,
+   "total_add_tranches": 0,
+   "median_active_days": 4.0,
+   "editions_meeting_min_active_days": 9,
+   "latest_edition_rank": 19,
+   "latest_edition_multiple": 0.156968,
+   "season_rank": 18
   },
   {
    "username": "TrendTina",
@@ -7619,9 +9521,9 @@
    "total_add_tranches": 0,
    "median_active_days": 1.5,
    "editions_meeting_min_active_days": 1,
-   "latest_edition_rank": 14,
+   "latest_edition_rank": 17,
    "latest_edition_multiple": 0.951189,
-   "season_rank": 15
+   "season_rank": 19
   }
  ],
  "leaderboard": [
@@ -7715,6 +9617,30 @@
   },
   {
    "season_rank": 12,
+   "username": "CompressCleo",
+   "season_realized_pnl_usd": -378843.75,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 1.231518,
+   "editions_ge_5x": 0
+  },
+  {
+   "season_rank": 13,
+   "username": "StreakStan",
+   "season_realized_pnl_usd": -476806.54,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 2.125274,
+   "editions_ge_5x": 0
+  },
+  {
+   "season_rank": 14,
+   "username": "SpringSasha",
+   "season_realized_pnl_usd": -632822.25,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 2.001907,
+   "editions_ge_5x": 0
+  },
+  {
+   "season_rank": 15,
    "username": "ExhaustionEd",
    "season_realized_pnl_usd": -644312.8,
    "season_multiple": 0.0,
@@ -7722,7 +9648,7 @@
    "editions_ge_5x": 0
   },
   {
-   "season_rank": 13,
+   "season_rank": 16,
    "username": "CapitulationKate",
    "season_realized_pnl_usd": -1043818.67,
    "season_multiple": 0.0,
@@ -7730,7 +9656,7 @@
    "editions_ge_5x": 0
   },
   {
-   "season_rank": 14,
+   "season_rank": 17,
    "username": "GapGhost",
    "season_realized_pnl_usd": -1225341.63,
    "season_multiple": 0.0,
@@ -7738,7 +9664,15 @@
    "editions_ge_5x": 0
   },
   {
-   "season_rank": 15,
+   "season_rank": 18,
+   "username": "CreekCasey",
+   "season_realized_pnl_usd": -1426265.41,
+   "season_multiple": 0.0,
+   "best_edition_multiple": 6.636686,
+   "editions_ge_5x": 1
+  },
+  {
+   "season_rank": 19,
    "username": "TrendTina",
    "season_realized_pnl_usd": -1658287.37,
    "season_multiple": 0.0,
@@ -7749,9 +9683,9 @@
  "scenario_zero_season_leaders": [
   {
    "edition_id": "E01",
-   "username": "BandFadeBella",
-   "realized_pnl_usd": 0.0,
-   "equity_multiple": 1.0
+   "username": "CompressCleo",
+   "realized_pnl_usd": 32624.97,
+   "equity_multiple": 1.1305
   },
   {
    "edition_id": "E02",
@@ -7761,9 +9695,9 @@
   },
   {
    "edition_id": "E03",
-   "username": "GapGoblin",
-   "realized_pnl_usd": 238544.95,
-   "equity_multiple": 1.95418
+   "username": "CreekCasey",
+   "realized_pnl_usd": 282885.03,
+   "equity_multiple": 2.13154
   },
   {
    "edition_id": "E04",
@@ -7785,9 +9719,9 @@
   },
   {
    "edition_id": "E07",
-   "username": "ClimaxCarla",
-   "realized_pnl_usd": 819801.87,
-   "equity_multiple": 4.279207
+   "username": "CreekCasey",
+   "realized_pnl_usd": 1030394.03,
+   "equity_multiple": 5.121576
   },
   {
    "edition_id": "E08",
@@ -7869,9 +9803,9 @@
   },
   {
    "edition_id": "E21",
-   "username": "GapGoblin",
-   "realized_pnl_usd": 267265.4,
-   "equity_multiple": 2.069062
+   "username": "CreekCasey",
+   "realized_pnl_usd": 1515760.2,
+   "equity_multiple": 7.063041
   },
   {
    "edition_id": "E22",
@@ -7881,25 +9815,25 @@
   },
   {
    "edition_id": "E23",
-   "username": "SqueezeSam",
-   "realized_pnl_usd": 88500.02,
-   "equity_multiple": 1.354
+   "username": "StreakStan",
+   "realized_pnl_usd": 174300.13,
+   "equity_multiple": 1.697201
   },
   {
    "edition_id": "E24",
-   "username": "GapGoblin",
-   "realized_pnl_usd": 418984.99,
-   "equity_multiple": 2.67594
+   "username": "CreekCasey",
+   "realized_pnl_usd": 425286.93,
+   "equity_multiple": 2.701148
   }
  ],
  "scenario_zero_leader_wins": [
   [
-   "GapGoblin",
-   6
+   "CreekCasey",
+   4
   ],
   [
    "ClimaxCarla",
-   4
+   3
   ],
   [
    "ContrarianQueen",
@@ -7908,28 +9842,28 @@
  ],
  "target_summary": {
   "basis": "participant-editions at moderate cost across 24 season editions",
-  "participant_editions": 360,
-  "ge_5x": 5,
+  "participant_editions": 456,
+  "ge_5x": 6,
   "ge_10x": 1,
   "ge_20x": 0,
   "ge_50x": 0,
   "ge_100x": 0,
-  "users_reaching_5x_any_edition": 4,
+  "users_reaching_5x_any_edition": 5,
   "users_reaching_10x_any_edition": 1,
   "users_reaching_20x_any_edition": 0,
   "users_reaching_50x_any_edition": 0,
   "users_reaching_100x_any_edition": 0,
-  "ruined_participant_editions": 16
+  "ruined_participant_editions": 27
  },
  "kind_contrast": {
   "contrarian": {
-   "participants": 12,
+   "participants": 16,
    "best_single_edition_multiple": 12.153088,
    "best_season_multiple": 0.550071,
-   "median_best_edition_multiple": 3.288238,
-   "participant_editions_ge_5x": 5,
+   "median_best_edition_multiple": 2.711176,
+   "participant_editions_ge_5x": 6,
    "participant_editions_ge_10x": 1,
-   "ruined_editions": 16,
+   "ruined_editions": 27,
    "season_positive_participants": 6
   },
   "baseline": {
