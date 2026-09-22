@@ -3,7 +3,7 @@
     "kind": "full_pool_hypothesis_verdicts",
     "description": "Mechanical verdicts for H34-H39, H41-H43, H45 and H46, derived from data/stock_competition_results.json by the pre-registered decision rule below. scripts/verify.py re-runs the same rule and fails if this file or the hypothesis register disagrees.",
     "engine": "full-pool-verdicts-1",
-    "generated_utc": "2026-09-21T23:13:12+00:00",
+    "generated_utc": "2026-09-22T03:43:01+00:00",
     "competition_generated_utc": "2026-09-21T20:00:08+00:00",
     "competition_engine": "intel-competition-3",
     "primary_profile": "stocks_official_leap",
@@ -510,6 +510,216 @@
           "total_add_tranches": 23,
           "ruined_editions": 0,
           "beats_control_season": false,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H47": {
+      "model": "C26",
+      "status": "supported",
+      "beat_all": true,
+      "beat_any": true,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "GammaGina",
+          "variant": null,
+          "season_realized_pnl_usd": -3025.94,
+          "season_multiple": 0.969553,
+          "forward_realized_pnl_usd": 948.66,
+          "total_trades": 27,
+          "total_add_tranches": 16,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": true,
+          "beats_control_both": true
+        },
+        {
+          "username": "SqueezeChaserSam",
+          "variant": "aggressive",
+          "season_realized_pnl_usd": 12015.78,
+          "season_multiple": 1.115194,
+          "forward_realized_pnl_usd": 861.83,
+          "total_trades": 50,
+          "total_add_tranches": 29,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": true,
+          "beats_control_both": true
+        }
+      ]
+    },
+    "H48": {
+      "model": "C27",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "SqueezeSniper",
+          "variant": "tight",
+          "season_realized_pnl_usd": -26.53,
+          "season_multiple": 0.999735,
+          "forward_realized_pnl_usd": 0.0,
+          "total_trades": 2,
+          "total_add_tranches": 0,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "VolatilityVulcan",
+          "variant": null,
+          "season_realized_pnl_usd": -216.97,
+          "season_multiple": 0.997832,
+          "forward_realized_pnl_usd": 0.0,
+          "total_trades": 6,
+          "total_add_tranches": 1,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H49": {
+      "model": "C28",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "LotteryLarry",
+          "variant": null,
+          "season_realized_pnl_usd": 1465.66,
+          "season_multiple": 1.011179,
+          "forward_realized_pnl_usd": 59.63,
+          "total_trades": 97,
+          "total_add_tranches": 17,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "MartingaleMolly",
+          "variant": "deep",
+          "season_realized_pnl_usd": 605.2,
+          "season_multiple": 1.004975,
+          "forward_realized_pnl_usd": 113.74,
+          "total_trades": 49,
+          "total_add_tranches": 6,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H50": {
+      "model": "C29",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "GapAndGoGary",
+          "variant": null,
+          "season_realized_pnl_usd": 2216.26,
+          "season_multiple": 1.021285,
+          "forward_realized_pnl_usd": -395.3,
+          "total_trades": 64,
+          "total_add_tranches": 33,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "MomentumMona",
+          "variant": "aggressive",
+          "season_realized_pnl_usd": 24916.89,
+          "season_multiple": 1.242845,
+          "forward_realized_pnl_usd": 360.48,
+          "total_trades": 142,
+          "total_add_tranches": 74,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H51": {
+      "model": "C30",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "BounceBobby",
+          "variant": null,
+          "season_realized_pnl_usd": -348.8,
+          "season_multiple": 0.996497,
+          "forward_realized_pnl_usd": -87.14,
+          "total_trades": 10,
+          "total_add_tranches": 3,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "DeadCatDave",
+          "variant": "deep",
+          "season_realized_pnl_usd": -750.15,
+          "season_multiple": 0.992511,
+          "forward_realized_pnl_usd": -207.18,
+          "total_trades": 6,
+          "total_add_tranches": 2,
+          "ruined_editions": 0,
+          "beats_control_season": true,
           "beats_control_forward": false,
           "beats_control_both": false
         }

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Assign the H34-H39/H41-H43/H45-H46 full-pool verdicts mechanically, from the committed competition run.
+"""Assign the H34-H39/H41-H43/H45-H51 full-pool verdicts mechanically, from the committed competition run.
 
 Why this is a script and not a sentence somebody typed
 ------------------------------------------------------
-H34-H39 and H41 are the seven hypotheses that claim a frozen stock model (C14-C19, C22)
+H34-H39, H41-H43, H45-H51 are the sixteen hypotheses that claim a frozen stock model (C14-C30)
 beats the B1 control on the *full* 20-stock daily pool. Each one was registered with its prediction and
 its test written down before any full-pool result existed, and `scripts/verify.py` refuses
 to let any of them carry a `supported`/`refuted` status until the capture matrix holds all
@@ -60,7 +60,7 @@ VOLATILE_PATH = os.path.join(ROOT, "data", "volatile_stocks.json")
 OUT_PATH = os.path.join(ROOT, "data", "full_pool_verdicts.json")
 
 INTERVALS = ("15m", "1h", "1d")
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46", "H47", "H48", "H49", "H50", "H51")
 CONTROL_USERNAME = "VolatilityVera"
 CONTROL_MODEL = "B1"
 
@@ -213,7 +213,9 @@ def main() -> int:
     models = {"H34": "C14", "H35": "C15", "H36": "C16",
               "H37": "C17", "H38": "C18", "H39": "C19",
               "H41": "C22", "H42": "C19A", "H43": "C23",
-              "H45": "C24", "H46": "C25"}
+              "H45": "C24", "H46": "C25",
+              "H47": "C26", "H48": "C27", "H49": "C28",
+              "H50": "C29", "H51": "C30"}
 
     verdicts = {}
     for hid in FULL_POOL_HYPOTHESES:

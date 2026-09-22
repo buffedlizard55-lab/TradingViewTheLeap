@@ -1742,7 +1742,7 @@ def _volatile_pool_symbols() -> set:
     return {r["symbol"] for r in vs["records"]}
 
 
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46", "H47", "H48", "H49", "H50", "H51")
 
 
 def check_h34_h39_coverage_gate(rep: Report) -> None:

@@ -310,27 +310,27 @@
     },
     {
      "season_rank": 2,
+     "username": "MomentumMona",
+     "season_realized_pnl_usd": 24916.89,
+     "best_edition_multiple": 1.218405
+    },
+    {
+     "season_rank": 3,
      "username": "EmaEddie",
      "season_realized_pnl_usd": 13643.9,
      "best_edition_multiple": 1.031404
     },
     {
-     "season_rank": 3,
-     "username": "TurboTad",
-     "season_realized_pnl_usd": 9571.19,
-     "best_edition_multiple": 1.044176
-    },
-    {
      "season_rank": 4,
-     "username": "VolcanoVic",
-     "season_realized_pnl_usd": 8555.75,
-     "best_edition_multiple": 1.057986
+     "username": "SqueezeChaserSam",
+     "season_realized_pnl_usd": 12015.78,
+     "best_edition_multiple": 1.151632
     },
     {
      "season_rank": 5,
-     "username": "MartingaleMax",
-     "season_realized_pnl_usd": 7722.63,
-     "best_edition_multiple": 1.070558
+     "username": "TurboTad",
+     "season_realized_pnl_usd": 9571.19,
+     "best_edition_multiple": 1.044176
     }
    ],
    "recommendations": [
@@ -393,6 +393,46 @@
      ]
     },
     {
+     "username": "MomentumMona",
+     "division": "stocks_daily",
+     "model": "C29",
+     "model_name": "Overnight Momentum Surfer",
+     "variant": "aggressive",
+     "params_label": "gap_atr_mult=1.5, hold_bars=14, max_adds=6",
+     "rule_profile": "stocks_official_leap",
+     "season_realized_pnl_usd": 24916.89,
+     "season_rank": 2,
+     "best_edition_multiple": 1.218405,
+     "entry_condition": "Gap up >=2 ATR over prior close that holds (close in top half, close>open, >=2x volume) is not over-reaction but institutional demand discovery - the gap-and-go momentum surfer but more aggressive than C14. Pyramid every +0.75 ATR (max 5 adds), hold 10 sessions, targeting multi-day runners.",
+     "as_of_last_bar": "2026-09-18",
+     "open_positions": [],
+     "pending_orders": [],
+     "waiting_for": "Gap up >=2 ATR over prior close that holds (close in top half, close>open, >=2x volume) is not over-reaction but institutional demand discovery - the gap-and-go momentum surfer but more aggressive than C14. Pyramid every +0.75 ATR (max 5 adds), hold 10 sessions, targeting multi-day runners.",
+     "strategy_kind": "signal_timed",
+     "symbols_watched": [
+      "ENPH",
+      "AMD",
+      "MARA",
+      "CVNA",
+      "GME",
+      "RIOT",
+      "SHOP",
+      "NVAX",
+      "APP",
+      "PLUG",
+      "MSTR",
+      "NIO",
+      "PLTR",
+      "AMC",
+      "SMCI",
+      "HOOD",
+      "TSLA",
+      "NVDA",
+      "COIN",
+      "PTON"
+     ]
+    },
+    {
      "username": "EmaEddie",
      "division": "stocks_daily",
      "model": "S2",
@@ -401,7 +441,7 @@
      "params_label": "default",
      "rule_profile": "stocks_official_leap",
      "season_realized_pnl_usd": 13643.9,
-     "season_rank": 2,
+     "season_rank": 3,
      "best_edition_multiple": 1.031404,
      "entry_condition": "Baseline EMA-crossover impulse continuation (for contrast against the contrarian roster).",
      "as_of_last_bar": "2026-09-18",
@@ -564,31 +604,6 @@
       "NVDA",
       "COIN",
       "PTON"
-     ]
-    },
-    {
-     "username": "TurboTad",
-     "division": "stocks_daily",
-     "model": "C13",
-     "model_name": "Momentum runner surfer",
-     "variant": "runner",
-     "params_label": "add_atr_step=2.0, hold_bars=20, max_adds=3, volume_mult=3.5",
-     "rule_profile": "stocks_official_leap",
-     "season_realized_pnl_usd": 9571.19,
-     "season_rank": 3,
-     "best_edition_multiple": 1.044176,
-     "entry_condition": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
-     "as_of_last_bar": "2026-09-18",
-     "open_positions": [],
-     "pending_orders": [],
-     "waiting_for": "A new 30-session high breakout accompanied by >=3x average volume and expanding ATR indicates an explosive momentum runner; entering long with full buying power and aggressive pyramiding targets runaway multiples (5x-20x).",
-     "strategy_kind": "signal_timed",
-     "symbols_watched": [
-      "ENPH",
-      "NVDA",
-      "TSLA",
-      "SMCI",
-      "AMD"
      ]
     }
    ]
