@@ -1,9 +1,9 @@
 {
   "_meta": {
     "kind": "full_pool_hypothesis_verdicts",
-    "description": "Mechanical verdicts for H34-H39, H41-H43, H45 and H46, derived from data/stock_competition_results.json by the pre-registered decision rule below. scripts/verify.py re-runs the same rule and fails if this file or the hypothesis register disagrees.",
+    "description": "Mechanical verdicts for H34-H39, H41-H43, H45-H55, derived from data/stock_competition_results.json by the pre-registered decision rule below. scripts/verify.py re-runs the same rule and fails if this file or the hypothesis register disagrees.",
     "engine": "full-pool-verdicts-1",
-    "generated_utc": "2026-09-22T19:06:19+00:00",
+    "generated_utc": "2026-09-22T20:37:36+00:00",
     "competition_generated_utc": "2026-09-22T18:37:48+00:00",
     "competition_engine": "intel-competition-3",
     "primary_profile": "stocks_official_leap",
@@ -720,6 +720,174 @@
           "total_add_tranches": 2,
           "ruined_editions": 0,
           "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H52": {
+      "model": "C31",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "CeilingTrapCal",
+          "variant": "aggressive",
+          "season_realized_pnl_usd": -26072.41,
+          "season_multiple": 0.752728,
+          "forward_realized_pnl_usd": 1703.93,
+          "total_trades": 458,
+          "total_add_tranches": 161,
+          "ruined_editions": 0,
+          "beats_control_season": false,
+          "beats_control_forward": true,
+          "beats_control_both": false
+        },
+        {
+          "username": "UpthrustUrsula",
+          "variant": null,
+          "season_realized_pnl_usd": -25146.88,
+          "season_multiple": 0.767108,
+          "forward_realized_pnl_usd": -2045.28,
+          "total_trades": 334,
+          "total_add_tranches": 107,
+          "ruined_editions": 0,
+          "beats_control_season": false,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H53": {
+      "model": "C32",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "RejectionRocco",
+          "variant": null,
+          "season_realized_pnl_usd": -9842.32,
+          "season_multiple": 0.905131,
+          "forward_realized_pnl_usd": -1238.67,
+          "total_trades": 109,
+          "total_add_tranches": 31,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "WickWizardWilla",
+          "variant": "quick",
+          "season_realized_pnl_usd": -3458.34,
+          "season_multiple": 0.963487,
+          "forward_realized_pnl_usd": 268.88,
+          "total_trades": 328,
+          "total_add_tranches": 65,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H54": {
+      "model": "C33",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "MeltupMaven",
+          "variant": "aggressive",
+          "season_realized_pnl_usd": 8720.97,
+          "season_multiple": 1.085209,
+          "forward_realized_pnl_usd": 439.97,
+          "total_trades": 108,
+          "total_add_tranches": 30,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "ThinMeltTina",
+          "variant": null,
+          "season_realized_pnl_usd": -646.8,
+          "season_multiple": 0.99332,
+          "forward_realized_pnl_usd": 0.0,
+          "total_trades": 14,
+          "total_add_tranches": 5,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        }
+      ]
+    },
+    "H55": {
+      "model": "C34",
+      "status": "refuted",
+      "beat_all": false,
+      "beat_any": false,
+      "zero_fire": false,
+      "control": {
+        "username": "VolatilityVera",
+        "model": "B1",
+        "season_realized_pnl_usd": -11803.86,
+        "forward_realized_pnl_usd": 576.21,
+        "total_trades": 81
+      },
+      "usernames": [
+        {
+          "username": "ExhaustionEzra",
+          "variant": null,
+          "season_realized_pnl_usd": -7398.6,
+          "season_multiple": 0.926582,
+          "forward_realized_pnl_usd": 0.0,
+          "total_trades": 4,
+          "total_add_tranches": 0,
+          "ruined_editions": 0,
+          "beats_control_season": true,
+          "beats_control_forward": false,
+          "beats_control_both": false
+        },
+        {
+          "username": "IslandIzzy",
+          "variant": "tight",
+          "season_realized_pnl_usd": -24856.81,
+          "season_multiple": 0.77037,
+          "forward_realized_pnl_usd": -7379.9,
+          "total_trades": 36,
+          "total_add_tranches": 5,
+          "ruined_editions": 0,
+          "beats_control_season": false,
           "beats_control_forward": false,
           "beats_control_both": false
         }

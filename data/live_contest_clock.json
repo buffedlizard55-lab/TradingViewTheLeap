@@ -1,0 +1,39 @@
+{
+ "_meta": {
+  "kind": "live_contest_clock",
+  "description": "Point-in-time capture of the live The Leap by AMP Futures September 2026 contest page's own displayed facts: registration deadline, trading window, prize display, displayed participants and the visible top of the public leaderboard. Transcribed verbatim from the official page; not a live feed, not a forecast. data/exec_summary.json and the site render this as an upcoming-action clock.",
+  "captured_at_utc": "2026-09-22",
+  "source_id": "TV-CONTEST-AMP-SEP2026-R12",
+  "source_url": "https://www.tradingview.com/the-leap/amp-futures-september-2026/",
+  "evidence_file": "research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R12.md",
+  "not_a_forecast": true
+ },
+ "registration_close_display": "Join until Sep 23, 2026 · 04:00 GMT-4",
+ "registration_close_utc": "2026-09-23T08:00:00Z",
+ "trading_window_display": "Paper trade from September 1 to September 30, and for at least 5 days.",
+ "prize_display": "$50 K + 250 plans",
+ "duration_display": "30 days",
+ "assets_display": "Futures",
+ "participants_displayed": 102747,
+ "public_leaderboard_rows": 250,
+ "top_of_public_board": [
+  {
+   "rank": 1,
+   "trader": "HappyLittleTrades",
+   "realized_profit_pct": 1193.11,
+   "realized_profit_usd": 2982777.45
+  },
+  {
+   "rank": 2,
+   "trader": "someshsingh5845",
+   "realized_profit_pct": 1104.84,
+   "realized_profit_usd": 2762088.0
+  },
+  {
+   "rank": 3,
+   "trader": "AlphaTradersHub",
+   "realized_profit_pct": 1097.33,
+   "realized_profit_usd": 2743334.5
+  }
+ ]
+}

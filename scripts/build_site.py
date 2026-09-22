@@ -79,14 +79,98 @@ def load_optional(rel: str):
         return json.load(fh)
 
 
-def render_exec_orders(exec_summary, stock_comp) -> str:
+def render_live_clock(clock) -> str:
+    """Upcoming real-contest deadline + board context, read from data/live_contest_clock.json."""
+    if not clock:
+        return ""
+    meta = clock.get("_meta", {})
+    top = clock.get("top_of_public_board") or []
+    top_rows = "".join(
+        f'<tr><td class="num">{r["rank"]}</td><td>{esc(r["trader"])}</td>'
+        f'<td class="num">+{number_or_dash(r["realized_profit_pct"], 2)}%</td>'
+        f'<td class="num">{money(r["realized_profit_usd"])}</td></tr>' for r in top)
+    return f"""<div class="callout high" style="border-left-width:6px;">
+<h3>⏰ LIVE CONTEST CLOCK — REGISTRATION CLOSES {esc(clock.get("registration_close_display", ""))}</h3>
+<p>The live edition on the official site right now is <strong>The Leap by AMP Futures</strong>
+(futures, {esc(clock.get("trading_window_display", ""))} Prizes: <strong>{esc(clock.get("prize_display", ""))}</strong>,
+{esc(clock.get("duration_display", ""))}). If you intend to enter the real contest, the binding
+upcoming date is the registration close: <strong>{esc(clock.get("registration_close_display", ""))}</strong>
+(UTC rendering <code>{esc(clock.get("registration_close_utc", ""))}</code>).
+Captured {esc(meta.get("captured_at_utc", ""))} from
+{link(meta.get("source_url", "#"), "the official contest page ↗")} — verbatim strings in
+{esc(meta.get("evidence_file", ""))}. {number_or_dash(clock.get("participants_displayed"))} participants displayed;
+the board publishes its top {number_or_dash(clock.get("public_leaderboard_rows"))} rows.</p>
+<div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Trader</th>
+<th class="num">Realized profit %</th><th class="num">Realized profit $</th></tr></thead>
+<tbody>{top_rows}</tbody></table></div>
+<p class="note">Point-in-time snapshot of the official page, not a live feed. The board moves:
+the placement math below is what it actually takes to enter the prize ranks, and it is measured
+against these dollars.</p></div>"""
+
+
+def render_forward_ledger(ledger) -> str:
+    """Forward-test PnL tracking: per-division leaderboards from data/forward_test_ledger.json."""
+    if not ledger:
+        return """<section id="forwardtest"><h2>Forward test PnL — trade-by-trade tracking</h2>
+<div class="callout warn"><h3>Pending: run scripts/run_forward_test.py</h3>
+<p>No forward-test ledger artifact is present. Until it is generated, no forward PnL figure is
+shown rather than a placeholder.</p></div></section>"""
+    meta = ledger.get("_meta", {})
+    parts = [f"""<section id="forwardtest"><h2>Forward test PnL — trade-by-trade tracking</h2>
+<p class="lead">Every username on the stock roster, replayed on the <strong>latest window</strong>
+of each division (the same windows behind <code>latest_edition</code> in the season artifact),
+with every closed tranche recorded: entry/exit dates, fill prices, size, side, net P/L and a
+running cumulative P/L per username. Engine, rule profile ({esc(meta.get("rule_profile", ""))})
+and cost scenario ({esc(meta.get("cost_scenario", ""))}) are exactly the season run's;
+totals sum exactly to the recorded rows. <strong>{number_or_dash(meta.get("participant_count"))}
+usernames</strong>, <strong>{number_or_dash(meta.get("closed_tranche_count"))} closed tranches</strong>,
+<strong>{number_or_dash(meta.get("latest_edition_cross_checks"))} cross-checks</strong> against
+the season artifact (each within one cent per tranche of rounding).</p>
+<div class="disclaimer"><strong>Forward paper test, not live trading.</strong> {esc(meta.get("honesty_note", ""))}</div>"""]
+    for name, div in (ledger.get("divisions") or {}).items():
+        if div.get("status") != "replayed":
+            parts.append(f'<h3>{esc(name)}</h3><p class="note">{esc(div.get("reason") or div.get("status", ""))}</p>')
+            continue
+        w = div["window"]
+        rows = []
+        for r in div.get("leaderboard") or []:
+            rows.append(
+                f'<tr data-flrow="{esc(name)}"><td class="num">{r["rank"]}</td>'
+                f'<td><strong>{esc(r["username"])}</strong></td>'
+                f'<td>{esc(r["model"])} · {esc(r["model_name"] if "model_name" in r else r["model"])}</td>'
+                f'<td><span class="pill {"ok" if r["realized_pnl_usd"] > 0 else "no" if r["realized_pnl_usd"] < 0 else "mut"}">'
+                f'{money(r["realized_pnl_usd"])}</span></td>'
+                f'<td class="num">{r["equity_multiple"]}x</td>'
+                f'<td class="num">{number_or_dash(r["round_trips"])}</td>'
+                f'<td class="num">{number_or_dash(r["closed_tranches"])}</td>'
+                f'<td class="num">{number_or_dash(r["winning_tranches"])}</td></tr>')
+        parts.append(f"""<h3>{esc(name)} — window {esc(w["start_date"])} → {esc(w["end_date"])}
+({number_or_dash(w["sessions"])} sessions)</h3>
+<div class="table-wrap"><table><thead><tr><th class="num">Rank</th><th>Username</th><th>Model</th>
+<th>Realized P/L</th><th class="num">Multiple</th><th class="num">Round trips</th>
+<th class="num">Closed tranches</th><th class="num">Winning tranches</th></tr></thead>
+<tbody>{''.join(rows)}</tbody></table></div>
+<p class="note">Roster division labels differ per username; every roster username is replayed in
+every division exactly as the season engine does. The full per-tranche ledgers (entry/exit dates
+and fill prices) are in <code>data/forward_test_ledger.json</code>; the verifier re-runs
+<code>scripts/run_forward_test.py</code> at its stored stamp and requires field-for-field equality.</p>""")
+    parts.append("""<p class="note">Manual review sources:
+<a href="https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/">Official stocks-edition rules ↗</a> ·
+<a href="https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/">Official futures-edition rules ↗</a> ·
+<a href="https://www.tradingview.com/support/solutions/43000613680-how-to-export-strategy-data/">Official export documentation ↗</a></p></section>""")
+    return "\n".join(parts)
+
+
+def render_exec_orders(exec_summary, stock_comp, forward_ledger=None) -> str:
     """Machine-derived 'what gets placed next' block for the very top of the page.
 
     This is the explicit, obvious answer to 'what upcoming trades should be placed
     based on the top performing strategies on our simulated strategy competition list?'
     Every row is a mechanical replay of a frozen model's decision on committed vendor
     bars, sized from official rule constants (CME multipliers, TradingView caps) and
-    labelled as simulated. Official sources:
+    labelled as simulated. The ORDERS COME FIRST in the markup - the answer to the
+    question is the first thing on the page; provenance and limits follow the answer,
+    they do not bury it. Official sources:
     - Rules: https://www.tradingview.com/the-leap/amp-futures-september-2026/rules/
       (futures 250k, 20:1, section-08 per-symbol caps)
       https://www.tradingview.com/the-leap/magnificent-seven-2026/rules/
@@ -185,17 +269,53 @@ produced the order; the hypothetical fill is the following bar's open, which is 
     if waiting:
         waiting_block = ('<h4>What the top usernames are waiting for (no pending order)</h4>'
                          f'<ul class="compact">{"" .join(waiting)}</ul>')
-    return f"""<div class="callout good" style="border-left-width: 6px;">
-<h3>HISTORICAL CANDIDATES — NOT RELEASED FOR EXECUTION</h3>
+    # Forward-window PnL of the exact usernames whose orders are listed above: the
+    # mechanical basis for calling them 'top-performing'. Rendered from
+    # data/forward_test_ledger.json only - never typed in.
+    basis_block = ""
+    if forward_ledger:
+        want = {entry["username"]
+                for div in exec_summary["divisions"].values()
+                for entry in div.get("recommendations", [])}
+        fwd_rows = []
+        for name, fdiv in (forward_ledger.get("divisions") or {}).items():
+            for u in fdiv.get("usernames") or []:
+                if u["username"] in want:
+                    fwd_rows.append((name, u))
+        if fwd_rows:
+            cells = "".join(
+                f'<tr><td>{esc(u["username"])}</td><td>{esc(name)}</td>'
+                f'<td>{money(u["realized_pnl_usd"])}</td>'
+                f'<td class="num">{u["equity_multiple"]}x</td>'
+                f'<td class="num">{number_or_dash(u["closed_tranches"])}</td></tr>'
+                for name, u in sorted(fwd_rows, key=lambda t: (-t[1]["realized_pnl_usd"], t[0]))
+                if u["closed_tranches"] > 0)
+            stamp_fwd = forward_ledger.get("_meta", {}).get("generated_utc", "")
+            basis_block = (
+                '<h4>Why these strategies — forward-window paper PnL of every recommended '
+                'username (most recent held-out window)</h4>'
+                f'<div class="table-wrap"><table><thead><tr><th>Username</th><th>Division</th>'
+                f'<th>Realized P/L</th><th class="num">Multiple</th>'
+                f'<th class="num">Closed tranches</th></tr></thead><tbody>{cells}</tbody></table></div>'
+                f'<p class="note">Replayed from <code>data/forward_test_ledger.json</code> '
+                f'(stamp <code>{esc(stamp_fwd)}</code>) on the latest window of each division - '
+                'the same frozen models, engine and rule profile as the season run, with every '
+                'closed tranche recorded. Usernames with no closed tranches in a division are '
+                'omitted here and listed in the full section below. Simulated paper results on '
+                'vendor captures; not advice and not a forecast. Full trade-by-trade ledgers are '
+                'in the <a href="#forwardtest">Forward test PnL</a> section.</p>')
+    return f"""{table}
+{waiting_block}
+{basis_block}
+<div class="callout info">
+<h3>HOW THESE ORDERS WERE DERIVED — PAPER SIMULATION, NOT AN ORDER DESK</h3>
 <p><strong>{number_or_dash(pending)} order(s)</strong> would be placed at the next bar open by the
 top-ranked usernames of the repository's own paper competitions, replayed from their frozen
 parameters on the committed vendor bars as of <code>{esc(stamp)}</code>. This is the explicit,
 generated answer to "what should be placed next"; the narrative cards further down explain each
 model. Everything here is a simulation of rules on historical vendor prices — it is not advice
 and not a forecast.</p>
-</div>
-{table}
-{waiting_block}"""
+</div>"""
 
 
 def render_stock_division(stock_comp, exec_summary) -> str:
@@ -709,6 +829,8 @@ def build() -> str:
     intelligence = load("data/intelligence_report.json")
     exec_summary = load_optional("data/exec_summary.json")
     stock_comp = load_optional("data/stock_competition_results.json")
+    forward_ledger = load_optional("data/forward_test_ledger.json")
+    live_clock = load_optional("data/live_contest_clock.json")
     intraday_study = load_optional("data/intraday_study.json")
     intraday_index = load_optional("data/intraday_index.json")
     tv_bench = load_optional("data/tv_benchmark.json")
@@ -826,6 +948,7 @@ are labeled separately.</p>
 </div></div></header>
 <nav class="toc"><div class="wrap"><ul>
 <li><a href="#exec-summary">Exec summary</a></li>
+<li><a href="#forwardtest">Forward PnL</a></li>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#targets">Return targets</a></li>
 <li><a href="#placement">Placement math</a></li>
@@ -853,20 +976,25 @@ are labeled separately.</p>
 <main class="wrap">
 """)
 
-    # Executive Summary
+    # Executive Summary. The ORDERS are the first content of the section - the explicit,
+    # obvious answer to "what upcoming trades should be placed" leads; provenance, limits
+    # and narrative follow it.
     add(f"""<section id="exec-summary"><h2>Executive Summary &mdash; Upcoming Paper Trades</h2>
-<div class="callout high"><h3>PLACE NO NEW TRADES FROM THIS PAGE — RESEARCH ONLY</h3>
+{render_exec_orders(exec_summary, stock_comp, forward_ledger)}
+{render_live_clock(live_clock)}
+<div class="callout high"><h3>PROVENANCE AND LIMITS — READ BEFORE ACTING ON ANY ROW</h3>
 <p>Official-source pricing and authenticated TradingView fill validation are not complete.
 The historical rankings below are exploratory, not a verified current order queue.
 The stock capture matrix is at {stock_series_captured} of {stock_series_total} series
 ({stock_daily_captured} of {stock_pool_size} names on daily bars); {coverage_note}.
 Prices are Yahoo vendor-tier captures, not exchange-verified prints.
 Missing prices are never synthesized. The stock pool is our own experiment, not the eligible
-universe of the current futures-only Leap contest.</p>
+universe of the current futures-only Leap contest. Everything above and below is a paper
+simulation &mdash; do not treat it as an instruction to place real orders.</p>
 <p><a href="research/implementation_review.md">Three-pass audit and remaining blockers</a> ·
+<a href="research/NEXT-SESSION.md">Next-session work and limitations</a> ·
 <a href="https://docs.alpaca.markets/us/docs/about-market-data-api">Official free-feed documentation</a> ·
 <a href="https://www.tradingview.com/support/solutions/43000613680-how-to-export-strategy-data/">Official export documentation</a></p></div>
-{render_exec_orders(exec_summary, stock_comp)}
 <p class="lead">Explicit and obvious upcoming trade setups derived from the top-ranked usernames
 of this repository's own simulated strategy competitions. Every card and every matrix cell below is
 rendered field by field from <code>data/exec_summary.json</code>, which is itself re-derived from the
@@ -888,6 +1016,9 @@ replay of a frozen model on committed vendor history inside a paper competition.
 placed, no figure here is a forecast, and none of it is investment advice. The repository's verifier
 re-derives these numbers from the artifacts before the page can be rebuilt.</div>
 </section>""")
+
+    # Forward-test PnL tracking (trade-by-trade, every username).
+    add(render_forward_ledger(forward_ledger))
 
     # Overview
     add(f"""<section id="overview"><h2>What matters now</h2>

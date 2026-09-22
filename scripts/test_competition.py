@@ -801,5 +801,98 @@ class MultiSeasonEngineTests(unittest.TestCase):
                 self.assertEqual(row["roll_closes"], 0)
 
 
+class TestStockModelsC31ToC34(unittest.TestCase):
+    """The four twenty-first-pass contrarian families: resolve, warm up, and fire."""
+
+    @staticmethod
+    def _bars(specs, t0=1700000000, step=86400):
+        from intel.data import Bar
+        return [Bar(t0 + i * step, o, h, l, c, v)
+                for i, (o, h, l, c, v) in enumerate(specs)]
+
+    def test_c31_c34_resolve_and_warmup(self):
+        from intel.stock_strategies import (
+            STOCK_MODEL_IDS, VARIANTS, resolve_params as stock_resolve,
+            warmup as stock_warmup,
+        )
+        for model in ("C31", "C32", "C33", "C34"):
+            self.assertIn(model, STOCK_MODEL_IDS)
+            self.assertIn("hold_bars", stock_resolve(model))
+        p31 = stock_resolve("C31", "aggressive")
+        self.assertEqual(p31["lookback"], 10)
+        self.assertEqual(p31["max_adds"], 5)
+        self.assertEqual(stock_warmup("C31", None), 22)
+        p32 = stock_resolve("C32", "quick")
+        self.assertEqual(p32["flush_atr_mult"], 1.0)
+        self.assertEqual(stock_warmup("C32", None), 23)
+        p33 = stock_resolve("C33", "tight")
+        self.assertEqual(p33["run_pct"], 0.05)
+        self.assertEqual(stock_warmup("C33", "aggressive"), 23)
+        p34 = stock_resolve("C34", "tight")
+        self.assertEqual(p34["gap_atr_mult"], 1.0)
+        self.assertEqual(stock_warmup("C34", None), 22)
+        for model in ("C31", "C32", "C33", "C34"):
+            self.assertTrue(VARIANTS[model])
+            with self.assertRaises(ValueError):
+                stock_resolve(model, "nope")
+        with self.assertRaises(ValueError):
+            stock_resolve("C99")
+
+    def test_c31_upthrust_short_fires(self):
+        from intel.stock_strategies import generate_stock_decisions
+        base = self._bars([(100.0, 100.5, 99.5, 100.0, 1000)] * 40)
+        # High pierces the 20-bar high but the close falls back well under it,
+        # bottom half of the range, on >=1.5x average volume -> short.
+        spike = self._bars([(100.0, 112.0, 98.5, 99.8, 5000)])[0]
+        after = self._bars([(99.0, 100.0, 98.0, 99.0, 1000)] * 12, t0=1700000000 + 41 * 86400)
+        d = generate_stock_decisions(base + [spike] + after, "C31")
+        self.assertEqual(d[0].action, "short")
+        self.assertEqual(d[0].index, 40)
+        self.assertIn("exit", {x.action for x in d})
+
+    def test_c32_hammer_long_fires(self):
+        from intel.stock_strategies import generate_stock_decisions
+        base = self._bars([(100.0, 100.5, 99.5, 100.0, 1000)] * 40)
+        flush = self._bars([(100.0, 100.5, 90.0, 91.0, 1000)])[0]
+        # Hammer: lower wick (93-86 at open 91 -> min(o,c)-low = 5) >= 2x body (2),
+        # close (93) in the upper half of the range (86..93.5).
+        hammer = self._bars([(91.0, 93.5, 86.0, 93.0, 1000)])[0]
+        after = self._bars([(93.0, 94.0, 92.0, 93.0, 1000)] * 10, t0=1700000000 + 42 * 86400)
+        d = generate_stock_decisions(base + [flush, hammer] + after, "C32")
+        self.assertEqual(d[0].action, "long")
+        self.assertEqual(d[0].index, 41)
+
+    def test_c33_thin_meltup_short_fires(self):
+        from intel.stock_strategies import generate_stock_decisions
+        base = self._bars([(100.0, 100.5, 99.5, 100.0, 1000)] * 40)
+        melt, px = [], 100.0
+        for i in range(3):
+            o = px
+            px *= 1.035
+            melt.extend(self._bars([(o, px + 0.2, o - 0.1, px, 100)],
+                                   t0=1700000000 + (40 + i) * 86400))
+        after = self._bars([(px, px + 1, px - 1, px, 1000)] * 14,
+                           t0=1700000000 + 43 * 86400)
+        d = generate_stock_decisions(base + melt + after, "C33")
+        self.assertEqual(d[0].action, "short")
+        self.assertEqual(d[0].index, 42)
+
+    def test_c34_exhaustion_gap_short_fires(self):
+        from intel.stock_strategies import generate_stock_decisions
+        base = self._bars([(100.0, 100.5, 99.5, 100.0, 1000)] * 40)
+        # Gap to 112 over the prior close 100, then close below the prior close.
+        engulf = self._bars([(112.0, 113.0, 98.0, 99.0, 5000)])[0]
+        after = self._bars([(99.0, 100.0, 98.0, 99.0, 1000)] * 12, t0=1700000000 + 41 * 86400)
+        d = generate_stock_decisions(base + [engulf] + after, "C34")
+        self.assertEqual(d[0].action, "short")
+        self.assertEqual(d[0].index, 40)
+
+    def test_c31_c34_flat_series_do_not_fire(self):
+        from intel.stock_strategies import generate_stock_decisions
+        flat = self._bars([(100.0, 100.5, 99.5, 100.0, 1000)] * 60)
+        for model in ("C31", "C32", "C33", "C34"):
+            self.assertEqual(generate_stock_decisions(flat, model), [])
+
+
 if __name__ == "__main__":
     unittest.main()

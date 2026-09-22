@@ -1,18 +1,29 @@
-> **2026-09-22 audit (twentieth pass):** The volatile-stock matrix is **60/60 stock series**
-> (20 symbols x 15m/1h/1d, byte-level SHA-256 provenance in `data/intraday_index.json`) and the
-> competition was re-run on it. Roster now **62 participants (58 daily, 4 hourly)** with 10 new usernames
-> for **C26-C30**: GammaGina/SqueezeChaserSam (C26 Gamma Squeeze Chaser), VolatilityVulcan/SqueezeSniper (C27 Volatility Squeeze Ignition),
-> LotteryLarry/MartingaleMolly (C28 Mean Reversion Lottery / Martingale), GapAndGoGary/MomentumMona (C29 Overnight Momentum Surfer),
-> BounceBobby/DeadCatDave (C30 Dead Cat Bounce). Full-pool verdicts mechanically assigned for **H34-H51 (16 hypotheses)**:
-> H36 supported; H34/H37 partially supported; H35/H38/H43/H45/H46/H48-H51 refuted; H39/H41/H42 inconclusive; **H47 supported** (C26 beats B1 control in both in-sample and forward),
-> H48-H51 refuted. Daily champion **BreakoutBea C16 $26,149.57 (best 1.279x)**, rank2 **MomentumMona C29 $24,916.89 (1.218x best)**,
-> rank4 **SqueezeChaserSam C26 $12,015.78**. Official stocks-edition bound max **4.738222x** observed across 81 editions, 0 editions >=5x,
-> counterfactual 20:1 also 0 >=5x across 744 participant-editions — leverage not binding, 50-unit cap + short edition length is.
-> New research doc **[EXPLOSIVE-PLAYBOOK-2026-09-22.md](research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-22.md)** documents explosive-return design,
-> why 5x-100x unattainable under official stocks rules, and explicit upcoming trades (6 mechanical orders at next bar open).
-> Captures remain **Yahoo vendor-tier, not exchange-verified**: Alpaca IEX route blocked (IR-32, no egress/no secrets),
-> no authenticated TradingView export. Verification: **416 checks passed, 0 failed, 1 audited warning**; **172 unit tests green**.
-> See [the three-pass review](research/implementation_review.md) and [explosive playbook](research/strategy/EXPLOSIVE-PLAYBOOK-2026-09-22.md).
+> **2026-09-22 audit (twenty-first pass):** Four NEW structurally-distinct contrarian families are
+> frozen and rostered: **C31** failed-breakout upthrust short (Wyckoff bull-trap twin of C20),
+> **C32** hammer-rejection sniper (volume-free bar-shape trigger), **C33** thin melt-up fade
+> short (fires when volume is ABSENT), **C34** gap-exhaustion engulfing fade (failure twin of
+> the C14/C29 gap-hold longs) — registered as **H52–H55** with 8 new usernames
+> (UpthrustUrsula/CeilingTrapCal, RejectionRocco/WickWizardWilla, ThinMeltTina/MeltupMaven,
+> ExhaustionEzra/IslandIzzy); roster now **70 usernames (66 daily, 4 hourly)**. Verdicts
+> assigned mechanically for **H34–H55 (20 hypotheses)**: H36/H47 supported; H34/H37 partially
+> supported; H39/H41/H42 inconclusive zero-fire; H52–H55 all refuted on first full-pool run
+> (models stay frozen per the variant gate). New **forward-test PnL ledger**
+> ([data/forward_test_ledger.json](data/forward_test_ledger.json),
+> [research/NEXT-SESSION.md](research/NEXT-SESSION.md)) replays every username on the latest
+> window of each division with every closed tranche recorded (**210 usernames, 2,978 tranches**,
+> running cumulative P/L, cross-checked against `latest_edition` within one cent per tranche).
+> The **executive summary now leads with the orders** (answer first, caveats after) and adds a
+> **live contest clock**: official page verbatim `Join until Sep 23, 2026 · 04:00 GMT-4`
+> ([source](https://www.tradingview.com/the-leap/amp-futures-september-2026/),
+> [evidence](research/evidence/TV-CONTEST-AMP-SEP2026-2026-09-22-R12.md)) — the live edition is
+> futures-only with public-board leaders at +934%…+1,193%. R12 official re-captures registered
+> (contest page, landing page, Mag7 results post) plus a full Mag7-rules read registering the
+> previously-cited-but-unregistered `TV-RULES-MAG7-MAR2026`; **IR-35** logged (landing 102,729 vs
+> contest 102,747 counter mismatch) and **IR-36** (official rules name undefined MPT/Flawless Run
+> prizes). Captures remain **Yahoo vendor-tier** (IR-32). Verification: **431 checks passed,
+> 0 failed** (1 audited warning, IR-22) and **180 unit tests green**. See
+> [the three-pass review](research/implementation_review.md) and
+> [the next-session plan and limitations](research/NEXT-SESSION.md).
 
 # TradingView The Leap — evidence-first research lab
 
@@ -23,6 +34,9 @@ as a platform result, and it never mixes real historical market returns with sim
 returns.
 
 **GitHub Pages:** https://buffedlizard55-lab.github.io/TradingViewTheLeap/
+
+**Start here for next steps:** [research/NEXT-SESSION.md](research/NEXT-SESSION.md) — what remains
+to be done, ranked suggestions, and every known limitation (with official links for manual review).
 
 ## September 18 eleventh pass: generated executive summary, intraday pipeline, stock division, Pine-vs-Python benchmark
 

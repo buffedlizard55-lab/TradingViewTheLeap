@@ -1742,7 +1742,7 @@ def _volatile_pool_symbols() -> set:
     return {r["symbol"] for r in vs["records"]}
 
 
-FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46", "H47", "H48", "H49", "H50", "H51")
+FULL_POOL_HYPOTHESES = ("H34", "H35", "H36", "H37", "H38", "H39", "H41", "H42", "H43", "H45", "H46", "H47", "H48", "H49", "H50", "H51", "H52", "H53", "H54", "H55")
 
 
 def check_h34_h39_coverage_gate(rep: Report) -> None:
@@ -2421,6 +2421,161 @@ def check_exec_summary(rep: Report, source_ids: dict) -> None:
                  "pending orders in the artifact")
     rep.ok(f"exec summary: {orders} pending orders re-derived and cross-checked "
            f"against {len(season_pnl)} competition rows")
+
+
+def check_forward_ledger(rep: Report, source_ids: dict) -> None:
+    """Audit the forward-test PnL ledger: reproduced, arithmetically self-consistent, cross-checked.
+
+    Every rule below re-derives from the committed artifacts: the ledger is re-run at its
+    stored stamp and must match field-for-field; every username's recorded totals must be
+    the exact sum of its recorded 2dp tranche rows; the running cumulative P/L chain must
+    hold tranche by tranche; the window must be the season artifact's own latest_window;
+    and each username's ledger sum must sit within one cent per tranche of the season
+    artifact's latest_edition aggregate (the rounding bound of summing 2dp rows).
+    """
+    doc = _reproduce(rep, "forward_test_ledger", "run_forward_test.py",
+                     "data/forward_test_ledger.json")
+    if doc is None:
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "forward_test_pnl_ledger":
+        rep.fail("forward_ledger.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("engine") != "forward-ledger-1":
+        rep.fail("forward_ledger.engine", f"unexpected _meta.engine {meta.get('engine')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("forward_ledger.honesty", "artifact must declare not_a_forecast: true")
+    if "not investment advice" not in (meta.get("honesty_note") or ""):
+        rep.fail("forward_ledger.honesty", "artifact must carry the paper-trading honesty note")
+    for sid in meta.get("source_ids") or []:
+        if sid not in source_ids:
+            rep.fail("forward_ledger.source", f"unregistered source {sid}")
+
+    roster = _load_or_fail(rep, "data/competition/stock_roster.json", "forward_ledger.roster")
+    comp = _load_or_fail(rep, "data/stock_competition_results.json", "forward_ledger.competition")
+    if roster is None or comp is None:
+        return
+    roster_users = {p["username"] for p in roster["participants"]}
+
+    total_users = 0
+    total_tranches = 0
+    cross_checks = 0
+    divisions = doc.get("divisions") or {}
+    for name, div in divisions.items():
+        if div.get("status") != "replayed":
+            if not div.get("reason"):
+                rep.fail("forward_ledger.status", f"{name}: not_run without a reason")
+            continue
+        season_div = (comp.get("divisions") or {}).get(name) or {}
+        want_window = season_div.get("latest_window") or {}
+        got_window = div.get("window") or {}
+        for key in ("start_date", "end_date"):
+            if got_window.get(key) != want_window.get(key):
+                rep.fail("forward_ledger.window",
+                         f"{name}: window {key} {got_window.get(key)!r} != season "
+                         f"latest_window {want_window.get(key)!r}")
+        season_rows = {r["username"]: r for r in
+                       ((season_div.get("latest_edition") or {}).get("rows") or [])}
+        for u in div.get("usernames") or []:
+            total_users += 1
+            uname = u["username"]
+            if uname not in roster_users:
+                rep.fail("forward_ledger.roster", f"{name}/{uname}: not on the stock roster")
+            rows = u.get("tranche_ledger") or []
+            total_tranches += len(rows)
+            if u["closed_tranches"] != len(rows):
+                rep.fail("forward_ledger.count",
+                         f"{name}/{uname}: closed_tranches {u['closed_tranches']} != {len(rows)} rows")
+            summed = round(sum(r["net_pnl_usd"] for r in rows), 2)
+            if abs(summed - u["realized_pnl_usd"]) > 0.001:
+                rep.fail("forward_ledger.arithmetic",
+                         f"{name}/{uname}: realized {u['realized_pnl_usd']} != tranche sum {summed}")
+            running = 0.0
+            for r in rows:
+                running = round(running + r["net_pnl_usd"], 2)
+                if abs(running - r["cum_realized_pnl_usd"]) > 0.001:
+                    rep.fail("forward_ledger.cumulative",
+                             f"{name}/{uname}: cum {r['cum_realized_pnl_usd']} != running {running} "
+                             f"at exit {r.get('exit_date')}")
+                    break
+            wins = sum(1 for r in rows if r["net_pnl_usd"] > 0)
+            losses = sum(1 for r in rows if r["net_pnl_usd"] < 0)
+            if wins != u["winning_tranches"] or losses != u["losing_tranches"]:
+                rep.fail("forward_ledger.wins",
+                         f"{name}/{uname}: win/loss counts disagree with the tranche rows")
+            ending = round(u["starting_balance_usd"] + u["realized_pnl_usd"], 2)
+            if abs(ending - u["ending_equity_usd"]) > 0.001:
+                rep.fail("forward_ledger.equity",
+                         f"{name}/{uname}: ending equity {u['ending_equity_usd']} != "
+                         f"balance + realized {ending}")
+            season_row = season_rows.get(uname)
+            if season_row is not None:
+                cross_checks += 1
+                if u.get("ledger_matches_latest_edition") is not True:
+                    rep.fail("forward_ledger.crosscheck",
+                             f"{name}/{uname}: ledger {u['realized_pnl_usd']} vs latest_edition "
+                             f"{season_row['realized_pnl_usd']} exceeds declared tolerance "
+                             f"{u.get('latest_edition_match_tolerance_usd')}")
+                else:
+                    tol = 0.01 * u["closed_tranches"] + 0.01
+                    if abs(u["realized_pnl_usd"] - season_row["realized_pnl_usd"]) > tol + 0.001:
+                        rep.fail("forward_ledger.crosscheck",
+                                 f"{name}/{uname}: delta exceeds the one-cent-per-tranche bound")
+        lb = div.get("leaderboard") or []
+        pnls = [r["realized_pnl_usd"] for r in lb]
+        if pnls != sorted(pnls, reverse=True):
+            rep.fail("forward_ledger.leaderboard", f"{name}: leaderboard not sorted by realized P/L")
+        if [r["rank"] for r in lb] != list(range(1, len(lb) + 1)):
+            rep.fail("forward_ledger.leaderboard", f"{name}: ranks are not 1..{len(lb)}")
+        if len(lb) != len(div.get("usernames") or []):
+            rep.fail("forward_ledger.leaderboard", f"{name}: leaderboard does not cover every username")
+
+    if meta.get("participant_count") != total_users:
+        rep.fail("forward_ledger.counts",
+                 f"_meta.participant_count {meta.get('participant_count')} != {total_users}")
+    if meta.get("closed_tranche_count") != total_tranches:
+        rep.fail("forward_ledger.counts",
+                 f"_meta.closed_tranche_count {meta.get('closed_tranche_count')} != {total_tranches}")
+    if meta.get("latest_edition_cross_checks") != cross_checks:
+        rep.fail("forward_ledger.counts",
+                 f"_meta.latest_edition_cross_checks {meta.get('latest_edition_cross_checks')} "
+                 f"!= {cross_checks}")
+    rep.ok(f"forward-test ledger: {total_users} usernames, {total_tranches} closed tranches "
+           f"re-derived, cumulative P/L chains verified, {cross_checks} latest-edition cross-checks")
+
+
+def check_live_clock(rep: Report, source_ids: dict) -> None:
+    """Audit the live-contest clock: schema, registered source, non-empty deadline strings."""
+    doc = _load_or_fail(rep, "data/live_contest_clock.json", "live_clock.present")
+    if doc is None:
+        return
+    meta = doc.get("_meta", {})
+    if meta.get("kind") != "live_contest_clock":
+        rep.fail("live_clock.kind", f"unexpected _meta.kind {meta.get('kind')!r}")
+    if meta.get("not_a_forecast") is not True:
+        rep.fail("live_clock.honesty", "artifact must declare not_a_forecast: true")
+    sid = meta.get("source_id")
+    if sid not in source_ids:
+        rep.fail("live_clock.source", f"unregistered source {sid!r}")
+    elif source_ids[sid]["url"] != meta.get("source_url"):
+        rep.fail("live_clock.source",
+                 f"source_url {meta.get('source_url')!r} != registry URL {source_ids[sid]['url']!r}")
+    for field in ("registration_close_display", "registration_close_utc",
+                  "trading_window_display", "prize_display"):
+        if not doc.get(field):
+            rep.fail("live_clock.fields", f"{field} is empty")
+    if "Join until" not in (doc.get("registration_close_display") or ""):
+        rep.fail("live_clock.deadline",
+                 "registration_close_display no longer carries the verbatim 'Join until' string")
+    rows = doc.get("top_of_public_board") or []
+    if [r["rank"] for r in rows] != list(range(1, len(rows) + 1)):
+        rep.fail("live_clock.board", "top_of_public_board ranks are not 1..n")
+    for r in rows:
+        usd = r.get("realized_profit_usd")
+        pct = r.get("realized_profit_pct")
+        if not isinstance(usd, (int, float)) or not isinstance(pct, (int, float)):
+            rep.fail("live_clock.board", f"rank {r.get('rank')}: non-numeric profit figures")
+    rep.ok(f"live-contest clock: deadline '{doc.get('registration_close_display')}' and "
+           f"{len(rows)} board rows traceable to {sid}")
 
 
 def check_tv_benchmark(rep: Report, source_ids: dict) -> None:
@@ -3537,6 +3692,8 @@ def main() -> int:
     check_intraday(rep, source_ids)
     check_stock_competition(rep, source_ids)
     check_exec_summary(rep, source_ids)
+    check_forward_ledger(rep, source_ids)
+    check_live_clock(rep, source_ids)
     check_tv_benchmark(rep, source_ids)
     check_cme_specs(rep, source_ids)
     check_full_pool_verdicts(rep, source_ids)

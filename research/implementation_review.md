@@ -232,6 +232,67 @@ Ordered by how much each one blocks a *successful* project, with the verified re
    retrospectively for volatility, so every division result carries selection and survivorship bias. This
    is stated on the page and in every artifact; it is a limitation of the experiment's design, not a bug.
 
+## 2026-09-22 twenty-first pass — three-pass review (new strategies, forward PnL ledger, exec-first page)
+
+### Pass 1 — implement and verify
+
+- Four new contrarian families frozen before any run (C31 upthrust short, C32 hammer sniper,
+  C33 thin melt-up fade, C34 gap-exhaustion engulf) → H52–H55, 8 new usernames, roster 70.
+  All four fire on synthetic fixtures and flat-series negative tests
+  (`scripts/test_competition.py::TestStockModelsC31ToC34`).
+- Forward-test PnL ledger: `intel/forward_ledger.py` + `scripts/run_forward_test.py` →
+  `data/forward_test_ledger.json` (210 usernames, 2,978 closed tranches, running cumulative P/L,
+  latest-edition cross-check within one cent per tranche). Verified by
+  `verify.py::check_forward_ledger` (field-for-field re-run at the stored stamp) and
+  `scripts/test_forward_ledger.py`.
+- Executive summary restructured: orders render first, caveats after; forward-window PnL of the
+  recommending usernames is the rendered "why these" basis. Live-contest clock added
+  (`data/live_contest_clock.json`, verbatim `Join until Sep 23, 2026 · 04:00 GMT-4`).
+- Official re-captures R12 (contest page, landing page) + the Mag7 results post + a full
+  Mag7-rules read; `TV-RULES-MAG7-MAR2026` registered (it had been cited without a registry
+  entry — caught by the new forward-ledger source check). IR-35 (counter mismatch) and
+  IR-36 (undefined MPT/Flawless Run prizes in the official rules) logged.
+
+### Pass 2 — bugs, missing requirements, edge cases (what review found and fixed)
+
+1. **Duplicate model-name cells (198×)** `C16 · C16` in the forward section: the ledger's
+   leaderboard rows omitted `model_name`, and the renderer's fallback rendered the id twice.
+   Fixed in `intel/forward_ledger.py` (leaderboard rows now carry `model_name`/`kind`).
+2. **`EmaEddie (S2 · S2)`** in the exec-order list and table: `build_exec_summary.py` resolved
+   names from the stock map only, where S1–S3 are absent. Fixed with the same two-map fallback
+   the claims lookup already used (`names.get(model) or FUTURES_NAMES.get(model, model)`).
+3. **Basis-block noise:** usernames with zero closed tranches rendered as `$0.00 / 0` rows.
+   Filtered out of the basis block (they remain in the full Forward PnL section).
+4. **Unregistered source surfaced:** `RULE_PROFILES["stocks_official_leap"]` cited
+   `TV-RULES-MAG7-MAR2026` but the registry had no such entry (the older stock checks only
+   validated `price_source_ids`). Fixed by registering the source with a verbatim evidence file
+   and re-checking all four constants against the live rules text — all four match exactly.
+5. **Evidence-format contract:** the three R12 evidence files initially used free-form headers
+   and backtick quotes; `check_evidence_quotes` requires `- **URL:**` / `- **Accessed (UTC):**` /
+   `- **Tier:**` headers and `> ` blockquote verbatim lines. Rewritten to the contract.
+6. Parallel-edit races on single files dropped two edits silently (STOCK_MODEL_IDS tuple, the
+   forward/live loads in `build()`); both caught by immediate parse/smoke checks and re-applied.
+   Lesson recorded: never batch two edits to the same file.
+
+### Pass 3 — re-check against the original request
+
+- Exec summary at the very top of the page, explicitly listing the upcoming trades from the top
+  performing strategies: ✅ (banner + plain-language order list + table are the first content;
+  the header capsule surfaces "N order(s) at next bar open" above the fold).
+- Own simulated competition with username tracking, contrarian strategies, no risk management,
+  full deployment: ✅ (70 usernames × 3 divisions, 55 registered hypotheses, deployment note).
+- Forward testing and PnL tracking: ✅ (trade-by-trade ledger, running P/L, leaderboards).
+- Official verified sources with links for manual review, line-by-line verification,
+  irregularities flagged, no invented numbers: ✅ (106 registered sources, 36 irregularities,
+  verbatim evidence files, 431 offline checks, 180 unit tests, CI render assertions including
+  the new forward-ledger and live-clock counts).
+- Clean GitHub Pages UI: ✅ (orders-first exec summary, Forward PnL section with per-division
+  leaderboards, live clock, sources table; `docs/` mirror byte-identical).
+- Final state after this review: **431 checks passed, 0 failed, 180 unit tests green**;
+  the only warning is the recorded IR-22 SIC1! quote delta. Remaining blockers are unchanged in
+  kind (vendor-tier prices, no authenticated export) and are listed with next steps in
+  `research/NEXT-SESSION.md`.
+
 ## Reproduce
 
 ```sh
